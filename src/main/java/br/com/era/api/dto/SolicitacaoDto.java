@@ -10,7 +10,7 @@ public final class SolicitacaoDto {
     private SolicitacaoDto() {}
     public record MaterialRequisicao(@NotBlank String nome,@NotNull @Min(1) Integer quantidade,String identificacao) {}
     public record MaterialResposta(Long id,String nome,Integer quantidade,String identificacao) {}
-    public record Requisicao(@NotBlank String tipo,@NotBlank String tecnico,Long obraOrigemId,Long obraDestinoId,@NotNull LocalDate dataSolicitacao,String observacao,@NotEmpty List<@Valid MaterialRequisicao> materiais) {}
+    public record Requisicao(@NotBlank String tecnico,Long obraOrigemId,Long obraDestinoId,@NotNull LocalDate dataSolicitacao,String observacao,@NotEmpty List<@Valid MaterialRequisicao> materiais) {}
     public record Atualizacao(String tecnico,Long obraOrigemId,Long obraDestinoId,String observacao,List<@Valid MaterialRequisicao> materiais) {}
     public record Resposta(Long id,String tipo,String status,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,String observacao,List<MaterialResposta> materiais) {}
 }
