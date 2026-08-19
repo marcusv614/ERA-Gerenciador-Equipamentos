@@ -16,6 +16,7 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,7 +25,9 @@ import java.util.List;
 public class SecurityConfig {
     @Bean SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         CookieCsrfTokenRepository csrf=CookieCsrfTokenRepository.withHttpOnlyFalse();csrf.setCookiePath("/");
-        return http.cors(Customizer.withDefaults()).csrf(config->config.csrfTokenRepository(csrf))
+        return http.cors(Customizer.withDefaults()).csrf(config->config
+            .csrfTokenRepository(csrf)
+            .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).sessionFixation(fixation->fixation.migrateSession()).maximumSessions(1))
             .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.OPTIONS,"/**").permitAll().requestMatchers(HttpMethod.GET,"/auth/csrf").permitAll().requestMatchers(HttpMethod.POST,"/auth/login").permitAll().requestMatchers("/usuarios/**").hasRole("ADMIN").requestMatchers(HttpMethod.POST,"/equipamentos","/obras").hasRole("ADMIN").anyRequest().authenticated())
             .logout(logout->logout.logoutUrl("/auth/logout").deleteCookies("JSESSIONID","XSRF-TOKEN").invalidateHttpSession(true).clearAuthentication(true).logoutSuccessHandler((request,response,authentication)->response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
