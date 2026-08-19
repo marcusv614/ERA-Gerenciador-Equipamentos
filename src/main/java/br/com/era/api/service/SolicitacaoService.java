@@ -1,0 +1,30 @@
+package br.com.era.api.service;
+import br.com.era.api.dto.SolicitacaoDto;
+import br.com.era.api.exception.RecursoNaoEncontradoException;
+import br.com.era.api.exception.RegraNegocioException;
+import br.com.era.api.model.*;
+import br.com.era.api.repository.EquipamentoRepository;
+import br.com.era.api.repository.MovimentacaoRepository;
+import br.com.era.api.repository.SolicitacaoRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+@Service
+public class SolicitacaoService {
+    private final SolicitacaoRepository repository; private final EquipamentoRepository equipamentos; private final MovimentacaoRepository movimentacoes; private final ObraService obras; private final FuncionarioService funcionarios; private final EquipamentoService equipamentoService;
+    public SolicitacaoService(SolicitacaoRepository repository,EquipamentoRepository equipamentos,MovimentacaoRepository movimentacoes,ObraService obras,FuncionarioService funcionarios,EquipamentoService equipamentoService){this.repository=repository;this.equipamentos=equipamentos;this.movimentacoes=movimentacoes;this.obras=obras;this.funcionarios=funcionarios;this.equipamentoService=equipamentoService;}
+    @Transactional(readOnly=true) public List<SolicitacaoDto.Resposta> listar(){return repository.findAll().stream().map(this::resposta).toList();}
+    @Transactional public SolicitacaoDto.Resposta cadastrar(SolicitacaoDto.Requisicao d){Solicitacao s=new Solicitacao();s.setTipo(d.tipo());s.setStatus("Pendente");s.setTecnico(funcionarios.buscarPorNome(d.tecnico()));s.setObraOrigem(obras.buscarOpcional(d.obraOrigemId()));s.setObraDestino(obras.buscarOpcional(d.obraDestinoId()));s.setDataSolicitacao(d.dataSolicitacao());s.setObservacao(d.observacao());s.substituirMateriais(criarMateriais(d.materiais()));return resposta(repository.save(s));}
+    @Transactional public SolicitacaoDto.Resposta atualizar(Long id,SolicitacaoDto.Atualizacao d){Solicitacao s=buscar(id);if("Rejeitada".equals(s.getStatus()))throw new RegraNegocioException("Solicitações rejeitadas não podem ser editadas.");if(d.tecnico()!=null)s.setTecnico(funcionarios.buscarPorNome(d.tecnico()));s.setObraOrigem(obras.buscarOpcional(d.obraOrigemId()));s.setObraDestino(obras.buscarOpcional(d.obraDestinoId()));if(d.observacao()!=null)s.setObservacao(d.observacao());if(d.materiais()!=null)s.substituirMateriais(criarMateriais(d.materiais()));if("Aprovada".equals(s.getStatus()))sincronizarMovimentacoes(s);return resposta(s);}
+    @Transactional public SolicitacaoDto.Resposta aprovar(Long id){Solicitacao s=buscar(id);if(!"Pendente".equals(s.getStatus()))throw new RegraNegocioException("A solicitação já foi analisada.");if("Movimentação".equals(s.getTipo()))sincronizarMovimentacoes(s);s.setStatus("Aprovada");s.setDataDecisao(LocalDate.now());return resposta(s);}
+    @Transactional public SolicitacaoDto.Resposta rejeitar(Long id){Solicitacao s=buscar(id);if(!"Pendente".equals(s.getStatus()))throw new RegraNegocioException("A solicitação já foi analisada.");s.setStatus("Rejeitada");s.setDataDecisao(LocalDate.now());return resposta(s);}
+    @Transactional(readOnly=true) public Solicitacao buscar(Long id){return repository.findById(id).orElseThrow(()->new RecursoNaoEncontradoException("Solicitação não encontrada."));}
+    private void sincronizarMovimentacoes(Solicitacao s){if(!"Movimentação".equals(s.getTipo()))return;Set<Long> idsAtuais=new HashSet<>();for(MaterialSolicitado material:s.getMateriais()){if(material.getIdentificacao()==null||material.getIdentificacao().isBlank())throw new RegraNegocioException("Todo equipamento movimentado precisa de identificação/série.");Equipamento e=equipamentos.findBySerieIgnoreCase(material.getIdentificacao()).orElseThrow(()->new RecursoNaoEncontradoException("Equipamento não encontrado pela série: "+material.getIdentificacao()));idsAtuais.add(e.getId());Movimentacao m=movimentacoes.findBySolicitacaoIdAndEquipamentoId(s.getId(),e.getId()).orElseGet(()->equipamentoService.novaMovimentacao(e,s,s.getObraOrigem(),s.getObraDestino(),s.getTecnico(),"Em campo",s.getDataSolicitacao()));m.reativar();m.setObraOrigem(s.getObraOrigem());m.setObraDestino(s.getObraDestino());m.setTecnico(s.getTecnico());m.setStatus(s.getObraDestino()==null?"Em estoque":"Em campo");m.setDataMovimentacao(s.getDataSolicitacao());movimentacoes.save(m);equipamentoService.aplicarDestino(e,s.getObraDestino(),s.getTecnico(),m.getStatus(),s.getDataSolicitacao());}
+        for(Movimentacao removida:movimentacoes.findBySolicitacaoId(s.getId()))if(removida.isAtiva()&&!idsAtuais.contains(removida.getEquipamento().getId())){Equipamento e=removida.getEquipamento();equipamentoService.aplicarDestino(e,s.getObraOrigem(),null,s.getObraOrigem()==null?"Em estoque":"Em campo",s.getDataSolicitacao());removida.cancelar();}
+    }
+    private List<MaterialSolicitado> criarMateriais(List<SolicitacaoDto.MaterialRequisicao> itens){return itens.stream().map(i->new MaterialSolicitado(i.nome(),i.quantidade(),i.identificacao())).toList();}
+    private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getTipo(),s.getStatus(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getObservacao(),s.getMateriais().stream().map(m->new SolicitacaoDto.MaterialResposta(m.getId(),m.getNome(),m.getQuantidade(),m.getIdentificacao())).toList());}
+}
