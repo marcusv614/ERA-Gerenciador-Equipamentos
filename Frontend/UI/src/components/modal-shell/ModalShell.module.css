@@ -70,3 +70,25 @@
 .body {
   padding: 20px;
 }
+
+@media (max-width: 600px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 8px;
+  }
+  .modal,
+  .modalWide {
+    max-width: none;
+    max-height: calc(100dvh - 16px);
+    border-radius: 16px 16px 10px 10px;
+  }
+  .header { padding: 16px; }
+  .body { padding: 16px; }
+  .close {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    margin: -8px -8px 0 0;
+  }
+}

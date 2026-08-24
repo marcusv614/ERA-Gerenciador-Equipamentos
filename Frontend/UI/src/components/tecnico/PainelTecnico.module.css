@@ -38,4 +38,70 @@
 .blocoInventario{border-radius:12px;padding:16px}
 .cartaoSolicitacao{border-radius:12px;box-shadow:none}
 @media(max-width:980px){.gradePrincipal{grid-template-columns:1fr}.resumoPedido{position:static}}
-@media(max-width:640px){.cabecalho{height:60px}.conteudo{width:calc(100% - 24px);padding-top:12px}.abas{top:60px;background:#f6f6f3;gap:18px;padding-top:2px}.abas button{flex:0 0 auto;font-size:11px;padding:12px 1px}.formulario,.resumoPedido,.acompanhamento,.inventarioObra{padding:16px;border-radius:12px}.cabecalhoFormulario{padding-bottom:18px;margin-bottom:20px}.cabecalhoFormulario h1{font-size:22px}.rota{grid-template-columns:1fr 22px 1fr;gap:6px}.setaRota{transform:none;margin-bottom:14px;width:17px}.rota select{font-size:12px;padding:12px 9px}.tituloSecao h2{font-size:15px}.tituloSecao p{font-size:11px}.faixaObra{padding:14px}.listaMateriais{max-height:none}}
+@media(max-width:640px){.cabecalho{height:60px}.conteudo{width:calc(100% - 24px);padding-top:12px}.abas{top:60px;background:#f6f6f3;gap:18px;padding-top:2px}.abas button{flex:0 0 auto;font-size:11px;padding:12px 1px;min-height:44px}.formulario,.resumoPedido,.acompanhamento,.inventarioObra{padding:16px;border-radius:12px}.cabecalhoFormulario{padding-bottom:18px;margin-bottom:20px}.cabecalhoFormulario h1{font-size:22px}.rota{grid-template-columns:minmax(0,1fr);gap:7px}.setaRota{transform:rotate(90deg);margin:0 auto;width:17px}.rota select{font-size:16px;padding:12px 9px}.tituloSecao h2{font-size:15px}.tituloSecao p{font-size:11px}.faixaObra{padding:14px}.listaMateriais{max-height:none}.material{min-height:58px}.enviar{min-height:48px}}
+
+.botaoTema{color:#59645e!important}
+.pagina[data-theme="dark"]{background:#101714;color:#edf2ef;--verde:#79b89d;--laranja:#ee9d3e;--creme:#17201c}
+.pagina[data-theme="dark"] .cabecalho{background:rgba(19,27,23,.94);border-color:#2b3731}
+.pagina[data-theme="dark"] .marca span{background:#29483a;color:#dcebe4}
+.pagina[data-theme="dark"] .usuario small{color:#8f9d96}
+.pagina[data-theme="dark"] .usuario button{background:#1a2520;border-color:#34433c;color:#becbc4}
+.pagina[data-theme="dark"] .usuario button:hover{background:#26352e;color:#f2ad59}
+.pagina[data-theme="dark"] .abas{border-color:#2b3731}
+.pagina[data-theme="dark"] .abas button{color:#98a59e}
+.pagina[data-theme="dark"] .abas .abaAtiva{color:#e7eee9}
+.pagina[data-theme="dark"] .formulario,
+.pagina[data-theme="dark"] .resumoPedido,
+.pagina[data-theme="dark"] .acompanhamento,
+.pagina[data-theme="dark"] .inventarioObra,
+.pagina[data-theme="dark"] .blocoInventario,
+.pagina[data-theme="dark"] .cartaoSolicitacao{background:#17201c;border-color:#2d3933;box-shadow:none}
+.pagina[data-theme="dark"] .cabecalhoFormulario,
+.pagina[data-theme="dark"] .segundaEtapa,
+.pagina[data-theme="dark"] .cabecalhoHistorico,
+.pagina[data-theme="dark"] .tituloInventario,
+.pagina[data-theme="dark"] .section,
+.pagina[data-theme="dark"] .itemResumo,
+.pagina[data-theme="dark"] .linhaMaterial{border-color:#2b3731}
+.pagina[data-theme="dark"] .cabecalhoFormulario h1,
+.pagina[data-theme="dark"] .tituloSecao h2,
+.pagina[data-theme="dark"] .cabecalhoHistorico h2,
+.pagina[data-theme="dark"] .topoInventario h2,
+.pagina[data-theme="dark"] .tituloInventario h3,
+.pagina[data-theme="dark"] .material strong,
+.pagina[data-theme="dark"] .itemResumo strong,
+.pagina[data-theme="dark"] .linhaMaterial strong{color:#edf2ef}
+.pagina[data-theme="dark"] .cabecalhoFormulario p,
+.pagina[data-theme="dark"] .tituloSecao p,
+.pagina[data-theme="dark"] .cabecalhoHistorico p,
+.pagina[data-theme="dark"] .topoInventario p{color:#929f98}
+.pagina[data-theme="dark"] .tituloSecao>span{background:#223029;border-color:#35463e;color:#a8d1bf}
+.pagina[data-theme="dark"] .rota select,
+.pagina[data-theme="dark"] .observacao textarea,
+.pagina[data-theme="dark"] .busca,
+.pagina[data-theme="dark"] .busca input,
+.pagina[data-theme="dark"] .topoInventario select{background:#111915;border-color:#344139;color:#e5ece8}
+.pagina[data-theme="dark"] .material{background:#1b2621;border-color:#303e37;color:#edf2ef}
+.pagina[data-theme="dark"] .material:hover{background:#202e27;border-color:#557363}
+.pagina[data-theme="dark"] .materialSelecionado{background:#20372d;border-color:#6da78e}
+.pagina[data-theme="dark"] .iconeMaterial,
+.pagina[data-theme="dark"] .miniIcone{background:#26322c;color:#aab7b0}
+.pagina[data-theme="dark"] .materialSelecionado .iconeMaterial{background:#62977f;color:#0f1814}
+.pagina[data-theme="dark"] .dadosMaterial small,
+.pagina[data-theme="dark"] .linhaMaterial small,
+.pagina[data-theme="dark"] .itemResumo small{color:#89978f}
+.pagina[data-theme="dark"] .miniRota,
+.pagina[data-theme="dark"] .dicaResumo,
+.pagina[data-theme="dark"] .quantidade,
+.pagina[data-theme="dark"] .metricas span,
+.pagina[data-theme="dark"] .trajetoCartao,
+.pagina[data-theme="dark"] .materiaisCartao>span{background:#222e28;color:#dce5e0}
+.pagina[data-theme="dark"] .faixaObra{background:#1d2b24;border-color:#34463d;color:#ecf2ef}
+.pagina[data-theme="dark"] .faixaObra small,
+.pagina[data-theme="dark"] .faixaObra span{color:#9eafa6}
+.pagina[data-theme="dark"] .iconeObra{background:#2b4035;color:#efaa54}
+.pagina[data-theme="dark"] .statusSaiu{background:#2a342f;color:#aeb9b3}
+.pagina[data-theme="dark"] .sucesso{background:#17382b;color:#a9dec6}
+.pagina[data-theme="dark"] .erro{background:#40231e;color:#efb5aa}
+@media(max-width:640px){.pagina[data-theme="dark"] .abas{background:#101714}.usuario{gap:8px}.usuario button{width:38px;height:38px}}
+@media(max-width:380px){.usuario>div{display:none}.marca img{width:68px}.cabecalho{padding-inline:12px}.conteudo{width:calc(100% - 16px)}.abas{gap:14px}.abas button{font-size:10.5px}.statusSolicitacao{display:grid;grid-template-columns:38px minmax(0,1fr)}.statusSolicitacao time{grid-column:2;margin-left:0}.faixaObra strong{font-size:17px}.linhaMaterial{grid-template-columns:32px minmax(0,1fr) auto}}

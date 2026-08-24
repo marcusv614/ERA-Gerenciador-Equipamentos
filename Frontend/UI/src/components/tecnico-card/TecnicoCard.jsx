@@ -1,10 +1,10 @@
-import { PackageSearch } from 'lucide-react';
+import { PackageSearch, Pencil } from 'lucide-react';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData } from '../../utils/datas';
 import styles from './TecnicoCard.module.css';
 
-export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras }) {
+export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, aoEditar }) {
   const { nome, cargo, email, telefone, status } = funcionario;
   const initials = nome
     .split(' ')
@@ -33,6 +33,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras }
             </span>
           </div>
         </div>
+        <button type="button" className={styles.editButton} onClick={() => aoEditar(funcionario)} aria-label={`Editar dados de ${nome}`}><Pencil size={15} /> Editar</button>
       </div>
 
       {obras.length > 0 && (

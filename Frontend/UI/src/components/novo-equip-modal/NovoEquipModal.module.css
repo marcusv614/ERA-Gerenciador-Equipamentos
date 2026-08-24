@@ -88,3 +88,11 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+@media (max-width: 600px) {
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .typeRow { flex-wrap: wrap; }
+  .typeBtn { flex: 1 1 calc(50% - 4px); min-height: 44px; }
+  .actions { flex-direction: column-reverse; }
+  .cancel, .submit { width: 100%; min-height: 44px; }
+}

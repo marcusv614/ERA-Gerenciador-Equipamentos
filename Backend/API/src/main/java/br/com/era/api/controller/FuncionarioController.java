@@ -10,5 +10,5 @@ public class FuncionarioController {
     private final FuncionarioService service; public FuncionarioController(FuncionarioService service){this.service=service;}
     @GetMapping public List<FuncionarioDto.Resposta> listar(){return service.listar();}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public FuncionarioDto.Resposta cadastrar(@Valid @RequestBody FuncionarioDto.Requisicao dados){return service.cadastrar(dados);}
-    @PatchMapping("/{id}") public FuncionarioDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody FuncionarioDto.Requisicao dados){return service.atualizar(id,dados);}
+    @PatchMapping("/{id}") public FuncionarioDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody FuncionarioDto.Atualizacao dados){return service.atualizar(id,dados);}
 }

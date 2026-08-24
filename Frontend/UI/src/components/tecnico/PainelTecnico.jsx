@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, Download, History, LogOut, MapPin, Minus, PackageCheck, Plus, Search, Send, ShieldCheck, X } from 'lucide-react';
+import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, Download, History, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
@@ -26,6 +26,16 @@ export function PainelTecnico() {
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
   const [mensagem, definirMensagem] = useState(null);
+  const [temaEscuro, definirTemaEscuro] = useState(() => {
+    const temaSalvo = localStorage.getItem('era-tema-tecnico');
+    return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  });
+
+  const alternarTema = () => definirTemaEscuro((temaAtual) => {
+    const novoTema = !temaAtual;
+    localStorage.setItem('era-tema-tecnico', novoTema ? 'escuro' : 'claro');
+    return novoTema;
+  });
 
   useEffect(() => {
     let componenteAtivo = true;
@@ -104,11 +114,12 @@ export function PainelTecnico() {
     }
   };
 
-  return <div className={estilos.pagina}>
+  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'}>
     <header className={estilos.cabecalho}>
       <div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>campo</span></div>
       <div className={estilos.usuario}>
         <div><small>Olá, técnico</small><strong>{usuario.nome}</strong></div>
+        <button type="button" className={estilos.botaoTema} onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun size={18} /> : <Moon size={18} />}</button>
         <button type="button" onClick={encerrarSessao} aria-label="Sair"><LogOut size={19} /></button>
       </div>
     </header>

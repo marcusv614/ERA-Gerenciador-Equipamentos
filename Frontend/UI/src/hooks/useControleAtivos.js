@@ -133,6 +133,34 @@ export function useControleAtivos() {
     return true;
   }
 
+  async function atualizarFuncionario(funcionarioAtual, dadosAtualizados, obrasIds) {
+    const idsSelecionados = new Set(obrasIds.map(String));
+    const obrasAtualizadas = obras.map((obra) => {
+      const outrosResponsaveis = (obra.responsaveis || []).filter((nome) => nome !== funcionarioAtual.nome);
+      return {
+        ...obra,
+        responsaveis: idsSelecionados.has(String(obra.id))
+          ? [...outrosResponsaveis, dadosAtualizados.nome]
+          : outrosResponsaveis,
+      };
+    });
+    if (apiHabilitada) {
+      try {
+        const funcionarioAtualizado = await apiFuncionarios.atualizar(funcionarioAtual.id, { ...dadosAtualizados, obraIds: obrasIds.map(Number) });
+        definirFuncionarios((atuais) => atuais.map((funcionario) => funcionario.id === funcionarioAtual.id ? funcionarioAtualizado : funcionario));
+        definirObras(obrasAtualizadas);
+        definirErroApi(null);
+        return true;
+      } catch (erro) {
+        definirErroApi(erro.message);
+        return false;
+      }
+    }
+    definirFuncionarios((atuais) => atuais.map((funcionario) => funcionario.id === funcionarioAtual.id ? { ...funcionario, ...dadosAtualizados } : funcionario));
+    definirObras(obrasAtualizadas);
+    return true;
+  }
+
   async function movimentarEquipamento(identificador, dadosMovimentacao) {
     const equipamento = equipamentos.find(({ id }) => id === identificador);
     if (!equipamento) return false;
@@ -287,6 +315,7 @@ export function useControleAtivos() {
     cadastrarObra,
     cadastrarEquipamento,
     cadastrarFuncionario,
+    atualizarFuncionario,
     movimentarEquipamento,
     consultarHistorico,
     definirStatusSolicitacao,
