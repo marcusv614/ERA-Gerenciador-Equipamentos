@@ -1,0 +1,9 @@
+UPDATE funcionarios SET telefone = '(92) 99000-1001' WHERE email = 'jander@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1002' WHERE email = 'rodrigo.paes@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1003' WHERE email = 'eduardo.araujo@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1004' WHERE email = 'adriel.cruz@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1005' WHERE email = 'denis@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1006' WHERE email = 'islando@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1007' WHERE email = 'marcos@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1008' WHERE email = 'jonas@era.com.br';
+UPDATE funcionarios SET telefone = '(92) 99000-1009' WHERE email = 'thaisa@era.com.br';

@@ -1,0 +1,130 @@
+.pagina {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: radial-gradient(circle at 20% 15%, #fff0d3 0, transparent 35%), #f5f2eb;
+  color: #282725;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.cartao {
+  width: min(100%, 430px);
+  display: grid;
+  gap: 28px;
+  padding: 38px;
+  border: 1px solid #ded7ca;
+  border-radius: 24px;
+  background: #fffdf8;
+  box-shadow: 0 24px 70px rgba(50, 42, 25, 0.12);
+  text-align: center;
+}
+
+.logo {
+  width: 170px;
+  max-height: 74px;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+.sobretitulo {
+  margin: 0 0 8px;
+  color: #b76800;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cartao h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.descricao {
+  max-width: 330px;
+  margin: 8px auto 0;
+  color: #786f62;
+}
+
+.formulario {
+  display: grid;
+  gap: 18px;
+  text-align: left;
+}
+
+.formulario label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.campo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+  border: 1px solid #d8d0c3;
+  border-radius: 12px;
+  background: white;
+  text-align: left;
+}
+
+.campo:focus-within {
+  border-color: #d67800;
+  box-shadow: 0 0 0 3px rgba(214, 120, 0, 0.13);
+}
+
+.campo svg { color: #8c7d68; }
+
+.campo input {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+}
+
+.formulario button {
+  height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: #c66d00;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.formulario .secundario {
+  border: 1px solid #d8d0c3;
+  background: transparent;
+  color: #786f62;
+}
+
+.formulario button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.erro {
+  margin: 0;
+  padding: 11px;
+  border-radius: 9px;
+  background: #fff0ee;
+  color: #9c291f;
+  font-size: 13px;
+  text-align: left;
+}
+
+@media (max-width: 520px) {
+  .cartao {
+    padding: 28px 22px;
+    border-radius: 18px;
+  }
+
+  .cartao h1 { font-size: 27px; }
+}

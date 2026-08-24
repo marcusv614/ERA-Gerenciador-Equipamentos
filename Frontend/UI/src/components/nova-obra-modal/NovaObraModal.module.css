@@ -1,0 +1,205 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.input {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+}
+
+.multiSelect {
+  position: relative;
+}
+
+.multiSelectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.multiSelectTrigger::-webkit-details-marker {
+  display: none;
+}
+
+.multiSelect[open] .multiSelectTrigger {
+  color: var(--text);
+  border-color: var(--accent);
+  border-radius: 8px 8px 0 0;
+}
+
+.multiSelect[open] .multiSelectTrigger svg {
+  transform: rotate(180deg);
+}
+
+.multiSelectMenu {
+  max-height: 176px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--accent);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  background: var(--surface);
+  box-shadow: 0 12px 24px rgba(47, 47, 47, 0.12);
+}
+
+.multiSelectOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 9px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.multiSelectOption:hover,
+.multiSelectOptionSelected {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.multiSelectOption input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.optionCheck {
+  width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  color: #fff;
+}
+
+.multiSelectOptionSelected .optionCheck {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.selectedChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.selectedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px 4px 9px;
+  border-radius: 999px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.selectedChip button {
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.statusRow {
+  display: flex;
+  gap: 8px;
+}
+
+.statusBtn {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+}
+
+.statusBtnActive {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cancel {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.submit {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fffaf0;
+  border: none;
+  cursor: pointer;
+}
+.submit:hover {
+  filter: brightness(1.08);
+}
+.submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,42 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.campo {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.campo .dot {
+  color: var(--accent);
+}
+
+.estoque {
+  background: rgba(var(--era-bolt-rgb), 0.12);
+  color: var(--info);
+}
+.estoque .dot {
+  color: var(--info);
+}
+
+.manutencao {
+  background: rgba(var(--era-yellow-rgb), 0.32);
+  color: var(--warn);
+  font-weight: 700;
+}
+.manutencao .dot {
+  color: var(--warn);
+}
+
+.transito {
+  background: rgba(var(--era-orange-rgb), 0.1);
+  color: var(--era-orange);
+}
+.transito .dot {
+  color: var(--era-orange);
+}

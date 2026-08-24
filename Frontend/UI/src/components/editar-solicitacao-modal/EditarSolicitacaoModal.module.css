@@ -1,0 +1,10 @@
+.formulario { display:flex; flex-direction:column; gap:14px; }
+.campo { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font:14px var(--font-body); }
+.materiais { min-height:112px; resize:vertical; line-height:1.55; }
+.observacao { min-height:76px; resize:vertical; }
+.acoes { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+.cancelar,.salvar { min-height:40px; padding:8px 16px; border-radius:8px; font:600 14px var(--font-body); cursor:pointer; }
+.cancelar { border:0; background:transparent; color:var(--text-muted); }
+.salvar { border:0; background:var(--accent); color:#fffaf0; }
+.salvar:disabled { opacity:.45; cursor:not-allowed; }
+@media (max-width:600px) { .acoes { flex-direction:column-reverse; } .cancelar,.salvar { width:100%; min-height:44px; } }

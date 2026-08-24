@@ -1,0 +1,90 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.input {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.typeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.typeBtn {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+}
+
+.typeBtnActive {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cancel {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.submit {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fffaf0;
+  border: none;
+  cursor: pointer;
+}
+.submit:hover {
+  filter: brightness(1.08);
+}
+.submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

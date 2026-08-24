@@ -1,0 +1,23 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.planejada {
+  background: rgba(var(--era-bolt-rgb), 0.12);
+  color: var(--info);
+}
+
+.emAndamento {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.concluida {
+  background: rgba(47, 47, 47, 0.1);
+  color: var(--text-muted);
+}

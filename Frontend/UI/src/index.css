@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --era-orange: #E68A00;
+  --era-yellow: #E5C236;
+  --era-bolt: #EA8B00;
+  --era-graphite: #2F2F2F;
+  --era-orange-rgb: 230, 138, 0;
+  --era-yellow-rgb: 229, 194, 54;
+  --era-bolt-rgb: 234, 139, 0;
+  --bg: #f7f4ec;
+  --surface: #fffaf0;
+  --surface-2: #f2ebdc;
+  --border: rgba(47, 47, 47, 0.22);
+  --border-strong: rgba(47, 47, 47, 0.38);
+  --text: var(--era-graphite);
+  --text-muted: #756c5d;
+  --accent: #B86900;
+  --accent-dim: rgba(var(--era-orange-rgb), 0.18);
+  --warn: #7C5B00;
+  --info: var(--era-bolt);
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+}
+
+input,
+select,
+textarea {
+  outline: none;
+}
+
+::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}

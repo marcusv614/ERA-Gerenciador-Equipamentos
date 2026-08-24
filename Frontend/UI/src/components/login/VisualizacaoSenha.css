@@ -1,0 +1,23 @@
+button[aria-label="Visualizar senha"],
+button[aria-label="Ocultar senha"],
+button[aria-label="Visualizar senhas"],
+button[aria-label="Ocultar senhas"] {
+  width: 36px !important;
+  height: 36px !important;
+  flex: 0 0 36px;
+  display: grid !important;
+  place-items: center;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #786f62 !important;
+}
+
+button[aria-label="Visualizar senha"]:hover,
+button[aria-label="Ocultar senha"]:hover,
+button[aria-label="Visualizar senhas"]:hover,
+button[aria-label="Ocultar senhas"]:hover {
+  background: rgba(198, 109, 0, 0.1) !important;
+  color: #b66000 !important;
+}

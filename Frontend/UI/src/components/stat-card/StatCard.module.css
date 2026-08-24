@@ -1,0 +1,35 @@
+.card {
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.accent {
+  color: var(--accent);
+}
+.info {
+  color: var(--info);
+}
+.warn {
+  color: var(--warn);
+  font-weight: 700;
+}
