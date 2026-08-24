@@ -21,7 +21,7 @@ export function PainelTecnico() {
   const [busca, definirBusca] = useState('');
   const [itens, definirItens] = useState([]);
   const [observacao, definirObservacao] = useState('');
-  const [aba, definirAba] = useState('solicitar');
+  const [aba, definirAba] = useState('materiais');
   const [obraInventarioId, definirObraInventarioId] = useState('');
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
@@ -115,9 +115,9 @@ export function PainelTecnico() {
 
     <main className={estilos.conteudo}>
       <nav className={estilos.abas} aria-label="Navegação do técnico">
-        <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><Plus size={18} /> Nova solicitação</button>
-        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Acompanhar {pendentes > 0 && <span>{pendentes}</span>}</button>
-        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 size={18} /> Materiais da obra</button>
+        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 size={18} /> Minha obra</button>
+        <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight size={18} /> Movimentar</button>
+        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Histórico {pendentes > 0 && <span>{pendentes}</span>}</button>
       </nav>
 
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
@@ -125,14 +125,15 @@ export function PainelTecnico() {
 
       {!carregando && aba === 'solicitar' && <div className={estilos.gradePrincipal}>
         <section className={estilos.formulario}>
-          <div className={estilos.tituloSecao}><span>1</span><div><h2>Sai de onde e vai para onde?</h2><p>Escolha os dois locais. É só tocar e selecionar.</p></div></div>
+          <div className={estilos.cabecalhoFormulario}><div><span className={estilos.selo}>Nova movimentação</span><h1>Para onde o material vai?</h1><p>Informe o trajeto e selecione os materiais. O gerente receberá tudo para aprovação.</p></div></div>
+          <div className={estilos.tituloSecao}><span>1</span><div><h2>Defina o trajeto</h2><p>Escolha onde o material está agora e o destino.</p></div></div>
           <div className={estilos.rota}>
-            <label><span>O material está onde?</span><select value={origem} onChange={(evento) => trocarOrigem(evento.target.value)}><option value="">Toque para escolher</option><option value="deposito">Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
+            <label><span>Origem</span><select value={origem} onChange={(evento) => trocarOrigem(evento.target.value)}><option value="">Selecione o local atual</option><option value="deposito">Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
             <ArrowRight className={estilos.setaRota} />
-            <label><span>Para onde vai?</span><select value={destino} onChange={(evento) => definirDestino(evento.target.value)}><option value="">Toque para escolher</option><option value="deposito" disabled={origem === 'deposito'}>Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id} disabled={String(obra.id) === origem}>{obra.nome}</option>)}</select></label>
+            <label><span>Destino</span><select value={destino} onChange={(evento) => definirDestino(evento.target.value)}><option value="">Selecione o destino</option><option value="deposito" disabled={origem === 'deposito'}>Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id} disabled={String(obra.id) === origem}>{obra.nome}</option>)}</select></label>
           </div>
 
-          <div className={`${estilos.tituloSecao} ${estilos.segundaEtapa}`}><span>2</span><div><h2>Toque nos materiais que quer levar</h2><p>{origem ? `Mostrando o que está em ${nomeLocal(origem)}` : 'Primeiro escolha onde o material está.'}</p></div></div>
+          <div className={`${estilos.tituloSecao} ${estilos.segundaEtapa}`}><span>2</span><div><h2>Selecione os materiais</h2><p>{origem ? `Disponíveis em ${nomeLocal(origem)}` : 'Escolha a origem para ver os materiais disponíveis.'}</p></div></div>
           {origem && <><div className={estilos.busca}><Search size={19} /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material, tipo ou número de série" /></div>
             <div className={estilos.listaMateriais}>{equipamentosDaOrigem.length ? equipamentosDaOrigem.map((equipamento) => {
               const selecionado = itens.some(({ id }) => id === identificadorLocal(equipamento));
@@ -142,13 +143,13 @@ export function PainelTecnico() {
             }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material disponível</strong><span>Tente outro termo ou selecione outra origem.</span></div>}</div></>}
         </section>
 
-        <aside className={estilos.resumoPedido}>
+        <aside className={estilos.resumoPedido} aria-label="Resumo da movimentação">
           <div className={estilos.resumoTopo}><span><ClipboardList /></span><div><small>Sua movimentação</small><strong>{quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'}</strong></div></div>
           {origem && destino ? <div className={estilos.miniRota}><span><MapPin />{nomeLocal(origem)}</span><i /><span><MapPin />{nomeLocal(destino)}</span></div> : <p className={estilos.dicaResumo}>Selecione origem e destino para visualizar o trajeto.</p>}
           <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong><small>{equipamento.serie}</small></div><div className={estilos.quantidade}><button onClick={() => alterarQuantidade(id, -1)}><Minus /></button><b>{quantidade}</b><button onClick={() => alterarQuantidade(id, 1)} disabled={quantidade >= (equipamento.quantidadeDisponivel ?? 1)}><Plus /></button></div></div>)}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
           <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>
-          <button className={estilos.enviar} disabled={!podeEnviar} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar pedido <ChevronRight /></>}</button>
+          <button className={estilos.enviar} disabled={!podeEnviar} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao gerente <ChevronRight /></>}</button>
           <p className={estilos.seguranca}><ShieldCheck /> O gerente revisará tudo antes da movimentação.</p>
         </aside>
       </div>}
@@ -165,7 +166,7 @@ export function PainelTecnico() {
 
       {!carregando && aba === 'materiais' && <section className={estilos.inventarioObra}>
         <div className={estilos.topoInventario}>
-          <div><span className={estilos.selo}>Controle da obra</span><h2>Materiais da obra</h2><p>Veja o que está aqui agora e o que já passou por aqui.</p></div>
+          <div><span className={estilos.selo}>Visão do campo</span><h2>Minha obra</h2><p>Consulte os materiais atuais e o histórico da obra.</p></div>
           <label><span>Qual obra?</span><select value={obraInventarioId} onChange={(evento) => definirObraInventarioId(evento.target.value)}>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
         </div>
         {obraInventario && <div className={estilos.faixaObra}><div className={estilos.iconeObra}><Building2 /></div><div><small>Obra escolhida</small><strong>{obraInventario.nome}</strong><span><MapPin /> {obraInventario.cidade} · {obraInventario.cliente}</span></div><button type="button" onClick={() => imprimirCautelaObra(obraInventario, equipamentos)}><Download /> Baixar cautela</button></div>}

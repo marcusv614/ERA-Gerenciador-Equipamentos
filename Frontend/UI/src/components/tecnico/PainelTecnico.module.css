@@ -4,3 +4,38 @@
 .inventarioObra{background:var(--creme);border:1px solid #dfddd4;border-radius:22px;padding:clamp(22px,4vw,40px)}.topoInventario{display:flex;align-items:end;justify-content:space-between;gap:24px}.topoInventario h2{font:700 28px var(--font-display);margin:12px 0 5px}.topoInventario p{margin:0;color:#85877f;font-size:13px}.topoInventario label{display:flex;flex-direction:column;gap:7px;min-width:260px}.topoInventario label span{font-size:11px;font-weight:700}.topoInventario select{border:1px solid #d7d4ca;border-radius:12px;background:white;padding:13px;color:#292c28}.faixaObra{margin:25px 0 18px;padding:18px;border-radius:16px;background:var(--verde);color:white;display:flex;align-items:center;gap:14px}.iconeObra{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.1);display:grid;place-items:center;color:#efad4a}.faixaObra>div:nth-child(2){display:flex;flex-direction:column}.faixaObra small{color:#aebfb7;font-size:10px;text-transform:uppercase;letter-spacing:.12em}.faixaObra strong{font:700 20px var(--font-display);margin:3px 0}.faixaObra span{display:flex;align-items:center;gap:5px;color:#c7d4ce;font-size:11px}.faixaObra span svg{width:13px}.faixaObra button{margin-left:auto;border:0;border-radius:12px;background:var(--laranja);color:white;padding:13px 17px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer}.faixaObra button svg{width:17px}.blocosInventario{display:grid;grid-template-columns:1fr 1fr;gap:14px}.blocoInventario{border:1px solid #e0ddd4;border-radius:16px;background:white;padding:18px;min-width:0}.tituloInventario{display:flex;align-items:center;gap:11px;padding-bottom:15px;border-bottom:1px solid #ebe8df}.tituloInventario>span{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}.tituloInventario>span svg{width:19px}.agora{background:#dff1e9;color:#267256}.passado{background:#eeeae0;color:#77776f}.tituloInventario h3{font:700 16px var(--font-display);margin:0}.tituloInventario p{font-size:10px;color:#92948c;margin:4px 0 0}.tabelaMateriais{display:flex;flex-direction:column;max-height:480px;overflow:auto}.linhaMaterial{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:12px 2px;border-bottom:1px solid #efede6}.miniIcone{width:34px;height:34px;border-radius:10px;background:#f2f0e9;display:grid;place-items:center;color:#777a72}.miniIcone svg{width:16px}.linhaMaterial>div{display:flex;flex-direction:column;min-width:0}.linhaMaterial strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.linhaMaterial small{font-size:9px;color:#91938b;margin-top:3px}.linhaMaterial em{font-size:9px;color:#aa752d;font-style:normal;margin-top:4px}.quantidadeMaterial{display:flex;flex-direction:column;text-align:right}.quantidadeMaterial b{font:700 17px var(--font-display);color:var(--verde)}.quantidadeMaterial small{text-transform:uppercase;font-size:8px}.statusSaiu{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#85877f;background:#efede7;border-radius:20px;padding:5px 8px}.listaVazia{min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#a0a198}.listaVazia svg{margin-bottom:10px;color:#c1a273}.listaVazia strong{color:#62655e;font-size:13px}.listaVazia span{font-size:10px;margin-top:5px;max-width:220px}
 @media(max-width:980px){.blocosInventario{grid-template-columns:1fr}}
 @media(max-width:640px){.abas{overflow-x:auto;justify-content:flex-start}.abas button{min-width:max-content}.inventarioObra{border-radius:17px;padding:18px}.topoInventario{align-items:stretch;flex-direction:column}.topoInventario label{min-width:0}.faixaObra{align-items:flex-start;flex-wrap:wrap}.faixaObra button{margin:4px 0 0;width:100%;justify-content:center}.blocoInventario{padding:14px}}
+
+/* Painel de campo: hierarquia simples, com uma tarefa principal por tela. */
+.pagina{background:#f6f6f3}
+.cabecalho{height:68px;background:#fff;border-color:#e7e7e1;box-shadow:0 1px 0 rgba(25,48,39,.02)}
+.conteudo{width:min(1180px,calc(100% - 40px));padding-top:22px}
+.abas{width:100%;margin:0 0 20px;padding:0;background:transparent;border-bottom:1px solid #dedfd9;border-radius:0;gap:28px}
+.abas button{padding:13px 2px 14px;border-radius:0;color:#747871;position:relative}
+.abas .abaAtiva{background:transparent;box-shadow:none;color:var(--verde)}
+.abas .abaAtiva:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--laranja)}
+.gradePrincipal{grid-template-columns:minmax(0,1fr) 320px;gap:18px}
+.formulario,.resumoPedido,.acompanhamento,.inventarioObra{border-color:#e1e2dc;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(27,45,36,.035)}
+.formulario{padding:30px}
+.cabecalhoFormulario{padding-bottom:25px;margin-bottom:25px;border-bottom:1px solid #ecece7}
+.cabecalhoFormulario h1{font:700 27px/1.2 var(--font-display);margin:9px 0 6px;color:#222722}
+.cabecalhoFormulario p{margin:0;color:#7c8078;font-size:13px;line-height:1.5;max-width:620px}
+.tituloSecao>span{background:#f2f2ed;color:var(--verde);border:1px solid #dedfd8}
+.tituloSecao h2{font-size:17px}
+.rota{margin-top:18px}
+.rota select,.observacao textarea,.busca{border-color:#dcddd7;border-radius:10px}
+.segundaEtapa{margin-top:28px;padding-top:26px}
+.listaMateriais{grid-template-columns:1fr;max-height:390px;gap:7px}
+.material{border-radius:10px;padding:10px 12px;box-shadow:none;transform:none}
+.material:hover{transform:none;background:#fafaf7}
+.resumoPedido{top:88px;padding:20px;box-shadow:0 5px 18px rgba(27,45,36,.035)}
+.resumoTopo>span{width:42px;height:42px;border-radius:11px}
+.enviar{border-radius:10px;box-shadow:none}
+.inventarioObra{padding:30px}
+.faixaObra{background:#f4f6f3;color:#263d33;border:1px solid #dfe5e1;border-radius:12px}
+.faixaObra small,.faixaObra span{color:#707a74}
+.faixaObra button{border-radius:9px;box-shadow:none}
+.iconeObra{background:#e5ece8;color:#2e7258}
+.blocoInventario{border-radius:12px;padding:16px}
+.cartaoSolicitacao{border-radius:12px;box-shadow:none}
+@media(max-width:980px){.gradePrincipal{grid-template-columns:1fr}.resumoPedido{position:static}}
+@media(max-width:640px){.cabecalho{height:60px}.conteudo{width:calc(100% - 24px);padding-top:12px}.abas{top:60px;background:#f6f6f3;gap:18px;padding-top:2px}.abas button{flex:0 0 auto;font-size:11px;padding:12px 1px}.formulario,.resumoPedido,.acompanhamento,.inventarioObra{padding:16px;border-radius:12px}.cabecalhoFormulario{padding-bottom:18px;margin-bottom:20px}.cabecalhoFormulario h1{font-size:22px}.rota{grid-template-columns:1fr 22px 1fr;gap:6px}.setaRota{transform:none;margin-bottom:14px;width:17px}.rota select{font-size:12px;padding:12px 9px}.tituloSecao h2{font-size:15px}.tituloSecao p{font-size:11px}.faixaObra{padding:14px}.listaMateriais{max-height:none}}
