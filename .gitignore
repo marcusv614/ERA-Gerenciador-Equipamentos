@@ -1,0 +1,5 @@
+.env
+*.log
+Frontend/UI/node_modules/
+Frontend/UI/dist/
+Backend/API/target/

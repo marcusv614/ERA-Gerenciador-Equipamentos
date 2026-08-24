@@ -1,0 +1,65 @@
+name: era-erp
+
+services:
+  database:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-era_erp}
+      POSTGRES_USER: ${POSTGRES_USER:-era}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [era_network]
+
+  api:
+    build:
+      context: ./Backend/API
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/${POSTGRES_DB:-era_erp}
+      DB_USERNAME: ${POSTGRES_USER:-era}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      CORS_ALLOWED_ORIGINS: http://localhost:${APP_PORT:-8088}
+      ADMIN_INITIAL_NAME: ${ADMIN_INITIAL_NAME:-Administrador ERA}
+      ADMIN_INITIAL_LOGIN: ${ADMIN_INITIAL_LOGIN:-admin}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:?Defina ADMIN_INITIAL_PASSWORD no arquivo .env}
+      SESSION_COOKIE_SECURE: "false"
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT:-30m}
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [era_network]
+
+  ui:
+    build:
+      context: ./Frontend/UI
+      args:
+        VITE_API_URL: /api
+        VITE_USAR_API: "true"
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8088}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [era_network]
+
+volumes:
+  postgres_data:
+
+networks:
+  era_network:
+    driver: bridge
