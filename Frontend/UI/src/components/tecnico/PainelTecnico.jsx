@@ -16,9 +16,8 @@ export function PainelTecnico() {
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
   const [solicitacoes, definirSolicitacoes] = useState([]);
-  const [origem, definirOrigem] = useState('deposito');
+  const [origem, definirOrigem] = useState('');
   const [destino, definirDestino] = useState('');
-  const [sentidoMovimentacao, definirSentidoMovimentacao] = useState('entrada');
   const [busca, definirBusca] = useState('');
   const [itens, definirItens] = useState([]);
   const [observacao, definirObservacao] = useState('');
@@ -75,13 +74,6 @@ export function PainelTecnico() {
     definirItens([]);
     if (valor === destino) definirDestino('');
   };
-  const escolherSentido = (sentido) => {
-    definirSentidoMovimentacao(sentido);
-    definirItens([]);
-    definirBusca('');
-    if (sentido === 'entrada') { definirOrigem('deposito'); definirDestino(''); }
-    else { definirOrigem(''); definirDestino('deposito'); }
-  };
 
   const enviarSolicitacao = async () => {
     if (!podeEnviar) return;
@@ -133,14 +125,12 @@ export function PainelTecnico() {
 
       {!carregando && aba === 'solicitar' && <div className={estilos.gradePrincipal}>
         <section className={estilos.formulario}>
-          <div className={estilos.escolhaMovimentacao}><button type="button" className={sentidoMovimentacao === 'entrada' ? estilos.escolhaAtiva : ''} onClick={() => escolherSentido('entrada')}><Plus /><span><strong>Pedir material</strong><small>Depósito → obra</small></span></button><button type="button" className={sentidoMovimentacao === 'retirada' ? estilos.escolhaAtiva : ''} onClick={() => escolherSentido('retirada')}><Minus /><span><strong>Retirar material</strong><small>Obra → depósito</small></span></button></div>
           <div className={estilos.tituloSecao}><span>1</span><div><h2>Sai de onde e vai para onde?</h2><p>Escolha os dois locais. É só tocar e selecionar.</p></div></div>
           <div className={estilos.rota}>
-            <label><span>O material está onde?</span><select value={origem} disabled={sentidoMovimentacao === 'entrada'} onChange={(evento) => trocarOrigem(evento.target.value)}><option value="">Escolha uma obra sua</option><option value="deposito">Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
+            <label><span>O material está onde?</span><select value={origem} onChange={(evento) => trocarOrigem(evento.target.value)}><option value="">Toque para escolher</option><option value="deposito">Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
             <ArrowRight className={estilos.setaRota} />
-            <label><span>Para onde vai?</span><select value={destino} disabled={sentidoMovimentacao === 'retirada'} onChange={(evento) => definirDestino(evento.target.value)}><option value="">Escolha uma obra sua</option><option value="deposito" disabled={origem === 'deposito'}>Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id} disabled={String(obra.id) === origem}>{obra.nome}</option>)}</select></label>
+            <label><span>Para onde vai?</span><select value={destino} onChange={(evento) => definirDestino(evento.target.value)}><option value="">Toque para escolher</option><option value="deposito" disabled={origem === 'deposito'}>Depósito central</option>{obrasAtivas.map((obra) => <option key={obra.id} value={obra.id} disabled={String(obra.id) === origem}>{obra.nome}</option>)}</select></label>
           </div>
-          {!obrasAtivas.length && <div className={estilos.semObraAtribuida}><Building2 /><div><strong>Você ainda não tem obra</strong><span>Peça ao gerente para colocar seu nome como responsável por uma obra.</span></div></div>}
 
           <div className={`${estilos.tituloSecao} ${estilos.segundaEtapa}`}><span>2</span><div><h2>Toque nos materiais que quer levar</h2><p>{origem ? `Mostrando o que está em ${nomeLocal(origem)}` : 'Primeiro escolha onde o material está.'}</p></div></div>
           {origem && <><div className={estilos.busca}><Search size={19} /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material, tipo ou número de série" /></div>
