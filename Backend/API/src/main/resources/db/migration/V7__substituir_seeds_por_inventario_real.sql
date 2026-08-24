@@ -1,9 +1,11 @@
 DELETE FROM movimentacoes WHERE id IN (1, 2, 3, 4, 5, 6, 7);
 DELETE FROM solicitacoes WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8);
 
-UPDATE equipamentos
-SET quantidade = quantidade + (SELECT quantidade FROM equipamentos WHERE id = 100)
-WHERE id = 9;
+UPDATE equipamentos AS equipamento_destino
+SET quantidade = equipamento_destino.quantidade + equipamento_origem.quantidade
+FROM equipamentos AS equipamento_origem
+WHERE equipamento_destino.id = 9
+  AND equipamento_origem.id = 100;
 
 DELETE FROM equipamentos WHERE id IN (1, 2, 3, 4, 5, 6, 100);
 DELETE FROM obra_responsaveis WHERE obra_id IN (1, 2, 3);
