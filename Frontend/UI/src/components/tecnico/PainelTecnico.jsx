@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Box, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Minus, PackageCheck, Plus, Search, Send, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, Download, History, LogOut, MapPin, Minus, PackageCheck, Plus, Search, Send, ShieldCheck, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
+import { imprimirCautelaObra } from '../../services/documentosEquipamentos';
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelTecnico.module.css';
 
@@ -21,6 +22,7 @@ export function PainelTecnico() {
   const [itens, definirItens] = useState([]);
   const [observacao, definirObservacao] = useState('');
   const [aba, definirAba] = useState('solicitar');
+  const [obraInventarioId, definirObraInventarioId] = useState('');
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
   const [mensagem, definirMensagem] = useState(null);
@@ -33,11 +35,13 @@ export function PainelTecnico() {
         definirObras(obrasRecebidas);
         definirEquipamentos(equipamentosRecebidos);
         definirSolicitacoes(solicitacoesRecebidas);
+        const obraDoTecnico = obrasRecebidas.find(({ responsaveis }) => responsaveis?.some((nome) => nome.toLocaleLowerCase('pt-BR') === usuario.nome.toLocaleLowerCase('pt-BR')));
+        definirObraInventarioId(String(obraDoTecnico?.id || obrasRecebidas[0]?.id || ''));
       })
       .catch((erro) => { if (componenteAtivo) definirMensagem({ tipo: 'erro', texto: erro.message }); })
       .finally(() => { if (componenteAtivo) definirCarregando(false); });
     return () => { componenteAtivo = false; };
-  }, []);
+  }, [usuario.nome]);
 
   const obrasAtivas = useMemo(() => obras.filter(({ status }) => status !== 'Concluída'), [obras]);
   const equipamentosDaOrigem = useMemo(() => equipamentos.filter((equipamento) => {
@@ -51,6 +55,9 @@ export function PainelTecnico() {
   const aprovadas = solicitacoes.filter(({ status }) => status === 'Aprovada').length;
   const quantidadeTotal = itens.reduce((total, item) => total + item.quantidade, 0);
   const podeEnviar = origem && destino && origem !== destino && itens.length > 0 && !enviando;
+  const obraInventario = obras.find(({ id }) => String(id) === obraInventarioId);
+  const materiaisAtuaisDaObra = equipamentos.filter(({ obraId }) => String(obraId) === obraInventarioId);
+  const materiaisQuePassaramNaObra = equipamentos.filter((equipamento) => String(equipamento.obraId) !== obraInventarioId && equipamento.historico?.some(({ origemObraId, destinoObraId }) => String(origemObraId) === obraInventarioId || String(destinoObraId) === obraInventarioId));
 
   const adicionarItem = (equipamento) => definirItens((atuais) => {
     const id = identificadorLocal(equipamento);
@@ -107,14 +114,10 @@ export function PainelTecnico() {
     </header>
 
     <main className={estilos.conteudo}>
-      <section className={estilos.hero}>
-        <div className={estilos.heroTexto}><span className={estilos.selo}><Sparkles size={14} /> Central de campo</span><h1>Material certo,<br /><em>no lugar certo.</em></h1><p>Monte sua movimentação em poucos passos e acompanhe a decisão do gerente.</p></div>
-        <div className={estilos.pulso}><span>{pendentes}</span><small>em análise</small><i /></div>
-      </section>
-
       <nav className={estilos.abas} aria-label="Navegação do técnico">
         <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><Plus size={18} /> Nova solicitação</button>
         <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Acompanhar {pendentes > 0 && <span>{pendentes}</span>}</button>
+        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 size={18} /> Materiais da obra</button>
       </nav>
 
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
@@ -158,6 +161,18 @@ export function PainelTecnico() {
           <div className={estilos.materiaisCartao}>{solicitacao.materiais.map((material) => <span key={`${material.identificacao}-${material.id}`}><b>{material.quantidade}×</b> {material.nome}<small>{material.identificacao}</small></span>)}</div>
           {solicitacao.observacao && <p className={estilos.notaCartao}>“{solicitacao.observacao}”</p>}
         </article>) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3><p>Sua primeira movimentação aparecerá aqui.</p><button onClick={() => definirAba('solicitar')}>Criar solicitação</button></div>}</div>
+      </section>}
+
+      {!carregando && aba === 'materiais' && <section className={estilos.inventarioObra}>
+        <div className={estilos.topoInventario}>
+          <div><span className={estilos.selo}>Controle da obra</span><h2>Materiais da obra</h2><p>Veja o que está aqui agora e o que já passou por aqui.</p></div>
+          <label><span>Qual obra?</span><select value={obraInventarioId} onChange={(evento) => definirObraInventarioId(evento.target.value)}>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
+        </div>
+        {obraInventario && <div className={estilos.faixaObra}><div className={estilos.iconeObra}><Building2 /></div><div><small>Obra escolhida</small><strong>{obraInventario.nome}</strong><span><MapPin /> {obraInventario.cidade} · {obraInventario.cliente}</span></div><button type="button" onClick={() => imprimirCautelaObra(obraInventario, equipamentos)}><Download /> Baixar cautela</button></div>}
+        <div className={estilos.blocosInventario}>
+          <div className={estilos.blocoInventario}><div className={estilos.tituloInventario}><span className={estilos.agora}><PackageCheck /></span><div><h3>Está na obra agora</h3><p>{materiaisAtuaisDaObra.length} {materiaisAtuaisDaObra.length === 1 ? 'material' : 'materiais'}</p></div></div><div className={estilos.tabelaMateriais}>{materiaisAtuaisDaObra.length ? materiaisAtuaisDaObra.map((equipamento) => <div key={equipamento.id} className={estilos.linhaMaterial}><span className={estilos.miniIcone}><Box /></span><div><strong>{equipamento.modelo}</strong><small>{equipamento.tipo} · Série {equipamento.serie}</small></div><span className={estilos.quantidadeMaterial}><b>{equipamento.quantidade || 1}</b><small>unid.</small></span></div>) : <div className={estilos.listaVazia}><PackageCheck /><strong>Nenhum material nesta obra</strong><span>Materiais aprovados aparecerão aqui.</span></div>}</div></div>
+          <div className={estilos.blocoInventario}><div className={estilos.tituloInventario}><span className={estilos.passado}><History /></span><div><h3>Já passou por esta obra</h3><p>Materiais que já saíram daqui</p></div></div><div className={estilos.tabelaMateriais}>{materiaisQuePassaramNaObra.length ? materiaisQuePassaramNaObra.map((equipamento) => { const ultima = equipamento.historico.filter(({ origemObraId, destinoObraId }) => String(origemObraId) === obraInventarioId || String(destinoObraId) === obraInventarioId).at(-1); const dataRegistro = ultima?.dataMovimentacao || ultima?.dataSaida || ultima?.dataEntrada; return <div key={equipamento.id} className={estilos.linhaMaterial}><span className={estilos.miniIcone}><History /></span><div><strong>{equipamento.modelo}</strong><small>{equipamento.tipo} · Série {equipamento.serie}</small>{dataRegistro && <em>Último registro: {new Date(`${dataRegistro}T12:00:00`).toLocaleDateString('pt-BR')}</em>}</div><span className={estilos.statusSaiu}>Já saiu</span></div>; }) : <div className={estilos.listaVazia}><History /><strong>Nenhum material anterior</strong><span>O histórico desta obra ainda está vazio.</span></div>}</div></div>
+        </div>
       </section>}
     </main>
   </div>;
