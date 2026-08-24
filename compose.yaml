@@ -2,14 +2,14 @@ name: era-erp
 
 services:
   database:
-    image: postgres:17-bookworm
+    image: postgres:16-bookworm
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-era_erp}
       POSTGRES_USER: ${POSTGRES_USER:-era}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres16_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -58,7 +58,7 @@ services:
     networks: [era_network]
 
 volumes:
-  postgres_data:
+  postgres16_data:
 
 networks:
   era_network:
