@@ -29,12 +29,22 @@ public class SecurityConfig {
             .csrfTokenRepository(csrf)
             .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).sessionFixation(fixation->fixation.migrateSession()).maximumSessions(1))
-            .authorizeHttpRequests(authorize->authorize.requestMatchers(HttpMethod.OPTIONS,"/**").permitAll().requestMatchers(HttpMethod.GET,"/auth/csrf","/actuator/health").permitAll().requestMatchers(HttpMethod.POST,"/auth/login").permitAll().requestMatchers("/usuarios/**").hasRole("ADMIN").requestMatchers(HttpMethod.POST,"/equipamentos","/obras").hasRole("ADMIN").requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE").requestMatchers(HttpMethod.POST,"/atividades/*/aprovacao","/atividades/*/rejeicao").hasAnyRole("ADMIN","GERENTE").requestMatchers(HttpMethod.POST,"/equipamentos/*/movimentacoes").hasAnyRole("ADMIN","GERENTE").anyRequest().authenticated())
+            .authorizeHttpRequests(authorize->authorize
+                .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/auth/csrf","/actuator/health").permitAll()
+                .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                .requestMatchers("/usuarios/**").hasRole("ADMIN")
+                .requestMatchers("/painel/**","/funcionarios/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.POST,"/equipamentos","/obras").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**","/atividades/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.POST,"/atividades/*/aprovacao","/atividades/*/rejeicao","/equipamentos/*/movimentacoes").hasAnyRole("ADMIN","GERENTE")
+                .anyRequest().authenticated())
             .logout(logout->logout.logoutUrl("/auth/logout").deleteCookies("JSESSIONID","XSRF-TOKEN").invalidateHttpSession(true).clearAuthentication(true).logoutSuccessHandler((request,response,authentication)->response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
-            .exceptionHandling(errors->errors.authenticationEntryPoint((request,response,e)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED)).accessDeniedHandler((request,response,e)->response.sendError(HttpServletResponse.SC_FORBIDDEN))).build();
+            .exceptionHandling(errors->errors.authenticationEntryPoint((request,response,e)->escreverErro(response,HttpServletResponse.SC_UNAUTHORIZED,"Autenticação necessária.")).accessDeniedHandler((request,response,e)->escreverErro(response,HttpServletResponse.SC_FORBIDDEN,"Você não tem permissão para realizar esta operação."))).build();
     }
     @Bean PasswordEncoder passwordEncoder(){return new Argon2PasswordEncoder(16,32,1,19456,2);}
     @Bean AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)throws Exception{return configuration.getAuthenticationManager();}
     @Bean ApplicationRunner criarAdminInicial(UsuarioService usuarios,@Value("${app.bootstrap.admin.nome:Administrador ERA}")String nome,@Value("${app.bootstrap.admin.login:}")String login,@Value("${app.bootstrap.admin.senha:}")String senha){return args->usuarios.criarAdminInicial(nome,login,senha);}
     @Bean CorsConfigurationSource corsConfigurationSource(CorsProperties properties){CorsConfiguration c=new CorsConfiguration();c.setAllowedOrigins(properties.allowedOrigins());c.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));c.setAllowedHeaders(List.of("Content-Type","Accept","X-XSRF-TOKEN"));c.setExposedHeaders(List.of("Location","X-XSRF-TOKEN"));c.setAllowCredentials(true);c.setMaxAge(3600L);UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();source.registerCorsConfiguration("/**",c);return source;}
+    private static void escreverErro(HttpServletResponse response,int status,String mensagem)throws java.io.IOException{response.setStatus(status);response.setContentType("application/json");response.setCharacterEncoding("UTF-8");response.getWriter().write("{\"status\":"+status+",\"mensagem\":\""+mensagem+"\",\"detalhes\":{}}");}
 }
