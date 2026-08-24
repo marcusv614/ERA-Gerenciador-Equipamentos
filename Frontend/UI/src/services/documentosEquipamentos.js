@@ -148,6 +148,34 @@ export function imprimirCautelaSolicitacao(solicitacao, buscarObraPorId) {
   abrirJanelaDeImpressao(`${tituloCautela} — ${identificadorSolicitacao}`, conteudo);
 }
 
+export function imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObraPorId) {
+  const identificador = String(solicitacao.id ?? 'sem identificação').padStart(4, '0');
+  const obraOrigem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId) : null;
+  const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
+  const origem = obraOrigem?.nome || 'Depósito central';
+  const destino = obraDestino?.nome || 'Depósito central';
+  const tipo = solicitacao.obraDestinoId ? 'Envio para obra' : 'Retirada da obra';
+  const materiais = Array.isArray(solicitacao.materiais) ? solicitacao.materiais : [];
+  const linhas = materiais.length
+    ? materiais.map((material, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao || 'Não definida')}</td></tr>`).join('')
+    : '<tr><td colspan="4">Nenhum material registrado.</td></tr>';
+  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Relatório de auditoria da movimentação</h1></div><div class="header">
+    <div class="header-row"><span class="label">Solicitação</span><span class="value">#${textoSeguro(identificador)}</span></div>
+    <div class="header-row"><span class="label">Tipo da operação</span><span class="value">${textoSeguro(tipo)}</span></div>
+    <div class="header-row"><span class="label">Status atual</span><span class="value">${textoSeguro(solicitacao.status)}</span></div>
+    <div class="header-row"><span class="label">Data da solicitação</span><span class="value">${formatarData(solicitacao.dataSolicitacao)}</span></div>
+    <div class="header-row"><span class="label">Data da decisão</span><span class="value">${formatarData(solicitacao.dataDecisao)}</span></div>
+    <div class="header-row"><span class="label">Solicitante</span><span class="value">${textoSeguro(solicitacao.solicitante || solicitacao.tecnico)}</span></div>
+    <div class="header-row"><span class="label">Técnico responsável</span><span class="value">${textoSeguro(solicitacao.tecnico)}</span></div>
+    <div class="header-row"><span class="label">Origem</span><span class="value">${textoSeguro(origem)}</span></div>
+    <div class="header-row"><span class="label">Destino</span><span class="value">${textoSeguro(destino)}</span></div>
+    <div class="header-row"><span class="label">Total de unidades</span><span class="value">${materiais.reduce((total, material) => total + Number(material.quantidade || 0), 0)}</span></div>
+  </div></div>`;
+  const observacao = solicitacao.observacao ? `<h2>Observações registradas</h2><p class="muted">${textoSeguro(solicitacao.observacao)}</p>` : '<h2>Observações registradas</h2><p class="muted">Nenhuma observação informada.</p>';
+  const conteudo = `${cabecalho}<h2>Materiais da movimentação</h2><table><thead><tr><th>Item</th><th>Quantidade</th><th>Material</th><th>Identificação / Série</th></tr></thead><tbody>${linhas}</tbody></table>${observacao}<p class="muted">Documento interno para auditoria. Gerado em ${textoSeguro(new Date().toLocaleString('pt-BR'))}.</p>`;
+  abrirJanelaDeImpressao(`Auditoria da movimentação #${identificador}`, conteudo);
+}
+
 export function imprimirHistoricoObra(obra, equipamentos) {
   const equipamentosAtuais = equipamentos.filter(({ obraId }) => obraId === obra.id);
   const equipamentosAnteriores = equipamentos.filter(({ historico }) => historico?.some((movimentacao) => movimentacao.destinoObraId === obra.id || movimentacao.origemObraId === obra.id));
