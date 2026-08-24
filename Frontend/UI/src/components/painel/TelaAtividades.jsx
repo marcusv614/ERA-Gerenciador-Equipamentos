@@ -1,20 +1,22 @@
-import { ArrowRight, Check, Clock3, FileDown, Pencil, Route, X } from 'lucide-react';
+import { ArrowRight, Check, Clock3, FileDown, PackageCheck, Pencil, Route, Truck, X } from 'lucide-react';
 import { formatarData } from '../../utils/datas';
 
 const CONFIGURACAO_STATUS = [
   { status: 'Pendente', titulo: 'Solicitações pendentes', descricao: 'Aguardando sua análise e decisão.', classe: 'atividadeStatusPendente' },
   { status: 'Aprovada', titulo: 'Solicitações aprovadas', descricao: 'Autorizações concedidas para as equipes.', classe: 'atividadeStatusAprovada' },
+  { status: 'Em trânsito', titulo: 'Materiais em trânsito', descricao: 'Materiais retirados e ainda não recebidos.', classe: 'atividadeStatusPendente' },
+  { status: 'Concluída', titulo: 'Movimentações concluídas', descricao: 'Recebimento confirmado e estoque atualizado.', classe: 'atividadeStatusAprovada' },
   { status: 'Rejeitada', titulo: 'Solicitações rejeitadas', descricao: 'Pedidos que não foram autorizados.', classe: 'atividadeStatusRejeitada' },
 ];
 
-export function TelaAtividades({ solicitacoes, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarCautela, estilos }) {
+export function TelaAtividades({ solicitacoes, buscarObraPorId, aoAprovar, aoRejeitar, aoIniciarTransito, aoConcluir, aoEditar, aoExportarCautela, estilos }) {
   const contarPorStatus = (status) => solicitacoes.filter((solicitacao) => solicitacao.status === status).length;
 
   const renderizarSolicitacao = (solicitacao, classeStatus) => {
     const obraOrigem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId) : null;
     const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
     const pendente = solicitacao.status === 'Pendente';
-    const podeEditar = solicitacao.status !== 'Rejeitada';
+    const podeEditar = ['Pendente', 'Aprovada'].includes(solicitacao.status);
 
     return <article key={solicitacao.id} className={estilos.atividadeCard}>
       <header className={estilos.atividadeCabecalho}>
@@ -46,6 +48,8 @@ export function TelaAtividades({ solicitacoes, buscarObraPorId, aoAprovar, aoRej
         <div className={estilos.atividadeAcoesDecisao}>
           <button type="button" onClick={() => aoRejeitar(solicitacao.id)} disabled={!pendente} className={estilos.atividadeRejeitar}><X size={15} /> Rejeitar</button>
           <button type="button" onClick={() => aoAprovar(solicitacao.id)} disabled={!pendente} className={estilos.atividadeAprovar}><Check size={15} /> Aprovar</button>
+          {solicitacao.status === 'Aprovada' && <button type="button" onClick={() => aoIniciarTransito(solicitacao.id)} className={estilos.atividadeAprovar}><Truck size={15} /> Confirmar retirada</button>}
+          {solicitacao.status === 'Em trânsito' && <button type="button" onClick={() => aoConcluir(solicitacao.id)} className={estilos.atividadeAprovar}><PackageCheck size={15} /> Confirmar recebimento</button>}
         </div>
       </footer>
     </article>;

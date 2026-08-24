@@ -60,6 +60,8 @@ export const apiAtividades = {
   atualizar: (atividadeId, dados) => atualizar(ROTAS_API.atividade(atividadeId), dados),
   aprovar: (atividadeId) => criar(ROTAS_API.aprovarAtividade(atividadeId)),
   rejeitar: (atividadeId) => criar(ROTAS_API.rejeitarAtividade(atividadeId)),
+  iniciarTransito: (atividadeId) => criar(ROTAS_API.iniciarTransitoAtividade(atividadeId)),
+  concluir: (atividadeId) => criar(ROTAS_API.concluirAtividade(atividadeId)),
   obterCautela: (atividadeId) => obter(ROTAS_API.cautelaAtividade(atividadeId), { responseType: 'blob' }),
 };
 

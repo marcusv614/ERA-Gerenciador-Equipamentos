@@ -258,25 +258,36 @@ export function useControleAtivos() {
   }
 
   async function definirStatusSolicitacao(identificador, status) {
+    let respostaApi = null;
     if (apiHabilitada) {
       try {
-        if (status === 'Aprovada') await apiAtividades.aprovar(identificador);
-        if (status === 'Rejeitada') await apiAtividades.rejeitar(identificador);
+        if (status === 'Aprovada') respostaApi = await apiAtividades.aprovar(identificador);
+        if (status === 'Rejeitada') respostaApi = await apiAtividades.rejeitar(identificador);
         definirErroApi(null);
       } catch (erro) {
         definirErroApi(erro.message);
         return false;
       }
     }
-    const solicitacaoAtual = solicitacoes.find((solicitacao) => solicitacao.id === identificador);
-    if (status === 'Aprovada' && solicitacaoAtual?.status !== 'Aprovada') {
-      sincronizarMovimentacaoAprovada({ ...solicitacaoAtual, status });
-    }
     definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
       solicitacao.id === identificador
-        ? { ...solicitacao, status, dataDecisao: obterDataAtual() }
+        ? (respostaApi || { ...solicitacao, status, dataDecisao: obterDataAtual() })
         : solicitacao));
     return true;
+  }
+
+  async function avancarMovimentacao(identificador, acao) {
+    const solicitacaoAtual = solicitacoes.find(({ id }) => id === identificador);
+    if (!solicitacaoAtual) return false;
+    try {
+      const resposta = apiHabilitada
+        ? await (acao === 'transito' ? apiAtividades.iniciarTransito(identificador) : apiAtividades.concluir(identificador))
+        : { ...solicitacaoAtual, status: acao === 'transito' ? 'Em trânsito' : 'Concluída' };
+      if (acao === 'concluir') sincronizarMovimentacaoAprovada(resposta, solicitacaoAtual);
+      definirSolicitacoes((atuais) => atuais.map((solicitacao) => solicitacao.id === identificador ? resposta : solicitacao));
+      definirErroApi(null);
+      return true;
+    } catch (erro) { definirErroApi(erro.message); return false; }
   }
 
   async function editarSolicitacao(identificador, dadosAtualizados) {
@@ -319,6 +330,7 @@ export function useControleAtivos() {
     movimentarEquipamento,
     consultarHistorico,
     definirStatusSolicitacao,
+    avancarMovimentacao,
     editarSolicitacao,
   };
 }

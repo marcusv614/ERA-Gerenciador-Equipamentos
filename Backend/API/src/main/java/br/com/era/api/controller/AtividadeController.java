@@ -14,4 +14,6 @@ public class AtividadeController {
     @PatchMapping("/{id}") public SolicitacaoDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody SolicitacaoDto.Atualizacao dados){return service.atualizar(id,dados);}
     @PostMapping("/{id}/aprovacao") public SolicitacaoDto.Resposta aprovar(@PathVariable Long id){return service.aprovar(id);}
     @PostMapping("/{id}/rejeicao") public SolicitacaoDto.Resposta rejeitar(@PathVariable Long id){return service.rejeitar(id);}
+    @PostMapping("/{id}/transito") public SolicitacaoDto.Resposta iniciarTransito(@PathVariable Long id,Authentication autenticacao){return service.iniciarTransito(id,autenticacao.getName());}
+    @PostMapping("/{id}/conclusao") public SolicitacaoDto.Resposta concluir(@PathVariable Long id,Authentication autenticacao){return service.concluir(id,autenticacao.getName());}
 }

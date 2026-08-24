@@ -10,17 +10,20 @@
 }
 
 .root[data-theme="dark"] {
-  --bg: #141414;
-  --surface: #1d1d1d;
-  --surface-2: #28251f;
-  --border: rgba(255, 250, 240, 0.24);
-  --border-strong: rgba(255, 250, 240, 0.44);
-  --text: #fffaf0;
-  --text-muted: #d8cdb8;
-  --accent: #ffb13b;
-  --accent-dim: rgba(var(--era-orange-rgb), 0.28);
-  --warn: #ffe08a;
+  --bg: #101714;
+  --surface: #17201c;
+  --surface-2: #222e28;
+  --border: #2d3933;
+  --border-strong: #405149;
+  --text: #edf2ef;
+  --text-muted: #98a59e;
+  --accent: #ee9d3e;
+  --accent-dim: rgba(238, 157, 62, 0.16);
+  --warn: #e3bd69;
+  --info: #79b89d;
 }
+
+.themeButton{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border:1px solid var(--border);border-radius:50%;background:var(--surface-2);color:var(--text-muted);cursor:pointer;transition:.18s ease}.themeButton:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
 
 .sidebarScrim {
   display: none;
@@ -101,10 +104,9 @@
   height: auto;
   max-height: 74px;
   object-fit: contain;
-  padding: 8px;
-  border-radius: 8px;
-  background: #fffaf0;
-  border: 1px solid rgba(var(--era-orange-rgb), 0.14);
+  padding: 8px 0;
+  background: transparent;
+  border: 0;
 }
 
 .nav {

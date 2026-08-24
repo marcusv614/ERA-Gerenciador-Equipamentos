@@ -29,7 +29,10 @@ export function PainelControleAtivos() {
   const filtros = useFiltrosPainel(controleAtivos);
   const [telaAtual, definirTelaAtual] = useState('equipamentos');
   const [menuLateralAberto, definirMenuLateralAberto] = useState(true);
-  const [modoEscuro, definirModoEscuro] = useState(false);
+  const [modoEscuro, definirModoEscuro] = useState(() => {
+    const temaSalvo = localStorage.getItem('era-tema-gerente');
+    return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  });
   const [barraSuperiorRecolhida, definirBarraSuperiorRecolhida] = useState(false);
   const [modalNovaObraAberto, definirModalNovaObraAberto] = useState(false);
   const [modalNovoEquipamentoAberto, definirModalNovoEquipamentoAberto] = useState(false);
@@ -92,7 +95,7 @@ export function PainelControleAtivos() {
       {menuLateralAberto ? <ChevronLeft size={18} strokeWidth={2.2} /> : <ChevronRight size={18} strokeWidth={2.2} />}
     </button>
     <main className={estilos.main}>
-      <BarraSuperior telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} ehAdmin={ehAdmin} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={() => definirModoEscuro((escuro) => !escuro)} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoUsuario={() => definirModalNovoUsuarioAberto(true)} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
+      <BarraSuperior telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} ehAdmin={ehAdmin} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={() => definirModoEscuro((escuro) => { const novoTema=!escuro; localStorage.setItem('era-tema-gerente',novoTema?'escuro':'claro'); return novoTema; })} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoUsuario={() => definirModalNovoUsuarioAberto(true)} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
       <div className={estilos.content}>
         {controleAtivos.carregandoDados && <div className={estilos.apiFeedback}>Sincronizando dados com a API...</div>}
         {controleAtivos.erroApi && <div className={`${estilos.apiFeedback} ${estilos.apiFeedbackErro}`} role="alert">Falha na comunicação com a API: {controleAtivos.erroApi}</div>}
@@ -100,7 +103,7 @@ export function PainelControleAtivos() {
         {telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoMover={definirEquipamentoParaMover} estilos={estilos} />}
         {telaAtual === 'obras' && <TelaObras obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} aoMoverEquipamento={definirEquipamentoParaMover} aoImprimirCautela={(obra) => imprimirCautelaObra(obra, controleAtivos.equipamentos)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
         {telaAtual === 'funcionarios' && <TelaFuncionarios funcionarios={filtros.funcionariosFiltrados} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} aoEditarFuncionario={definirFuncionarioEmEdicao} estilos={estilos} />}
-        {telaAtual === 'atividades' && <TelaAtividades solicitacoes={solicitacoesFiltradas} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoEditar={definirSolicitacaoEmEdicao} aoExportarCautela={(solicitacao) => imprimirCautelaSolicitacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
+        {telaAtual === 'atividades' && <TelaAtividades solicitacoes={solicitacoesFiltradas} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoIniciarTransito={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'transito')} aoConcluir={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'concluir')} aoEditar={definirSolicitacaoEmEdicao} aoExportarCautela={(solicitacao) => imprimirCautelaSolicitacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
         {telaAtual === 'deposito' && <CartaoDeposito equipamentos={filtros.equipamentosDoDeposito} obras={controleAtivos.obras} />}
       </div>
     </main>
