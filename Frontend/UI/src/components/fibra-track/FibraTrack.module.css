@@ -1640,6 +1640,20 @@ button.equipCard {
     justify-self: start;
   }
 
+  .themeButton {
+    order: -1;
+    width: 44px;
+    height: 44px;
+  }
+
+  .searchBox {
+    flex-basis: calc(100% - 52px);
+  }
+
+  .atividadeAcoes > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .statsGrid {
     grid-template-columns: minmax(0, 1fr);
   }

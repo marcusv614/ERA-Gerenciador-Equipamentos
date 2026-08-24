@@ -16,5 +16,5 @@ public class ObraController {
     @GetMapping public List<ObraDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public ObraDto.Resposta cadastrar(@Valid @RequestBody ObraDto.Requisicao dados){return service.cadastrar(dados);}
     @PatchMapping("/{id}") public ObraDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody ObraDto.Requisicao dados){return service.atualizar(id,dados);}
-    @GetMapping("/{id}/historico") public List<MovimentacaoDto.Resposta> historico(@PathVariable Long id,Authentication autenticacao){service.buscarParaUsuario(id,autenticacao.getName());return movimentacoes.findByObraOrigemIdOrObraDestinoIdOrderByDataMovimentacaoAscIdAsc(id,id).stream().map(equipamentos::respostaMovimentacao).toList();}
+    @GetMapping("/{id}/historico") public List<MovimentacaoDto.Resposta> historico(@PathVariable Long id,Authentication autenticacao){service.buscarParaUsuario(id,autenticacao.getName());return equipamentos.restringirHistoricoParaUsuario(movimentacoes.findByObraOrigemIdOrObraDestinoIdOrderByDataMovimentacaoAscIdAsc(id,id),autenticacao.getName());}
 }

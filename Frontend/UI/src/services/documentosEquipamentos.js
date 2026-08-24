@@ -129,10 +129,11 @@ export function imprimirCautelaSolicitacao(solicitacao, buscarObraPorId) {
   const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
   const origem = obraOrigem?.nome || 'Depósito central';
   const destino = obraDestino?.nome || 'Depósito central';
+  const tituloCautela = solicitacao.obraDestinoId ? 'Cautela de entrada na obra' : 'Cautela de saída da obra';
   const linhas = materiais.length
     ? materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao)}</td></tr>`).join('')
     : '<tr><td colspan="3">Nenhum material informado na solicitação.</td></tr>';
-  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Cautela da solicitação</h1></div><div class="header">
+  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${tituloCautela}</h1></div><div class="header">
     <div class="header-row"><span class="label">Solicitação</span><span class="value">${textoSeguro(identificadorSolicitacao)}</span></div>
     <div class="header-row"><span class="label">Tipo</span><span class="value">Movimentação</span></div>
     <div class="header-row"><span class="label">Status</span><span class="value">${textoSeguro(solicitacao.status)}</span></div>
@@ -144,7 +145,7 @@ export function imprimirCautelaSolicitacao(solicitacao, buscarObraPorId) {
   </div></div>`;
   const observacao = solicitacao.observacao ? `<h2>Observação</h2><p class="muted">${textoSeguro(solicitacao.observacao)}</p>` : '';
   const conteudo = `${cabecalho}<h2>Materiais solicitados</h2><table><thead><tr><th>Quantidade</th><th>Material</th><th>Identificação / Série</th></tr></thead><tbody>${linhas}</tbody></table>${observacao}${ASSINATURAS_CAUTELA}<p class="muted">Gerado em ${formatarData(new Date())}</p>`;
-  abrirJanelaDeImpressao(`Cautela da solicitação — ${identificadorSolicitacao}`, conteudo);
+  abrirJanelaDeImpressao(`${tituloCautela} — ${identificadorSolicitacao}`, conteudo);
 }
 
 export function imprimirHistoricoObra(obra, equipamentos) {

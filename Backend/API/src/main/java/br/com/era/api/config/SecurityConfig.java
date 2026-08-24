@@ -35,9 +35,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")
                 .requestMatchers("/painel/**","/funcionarios/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers("/deposito/**").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
                 .requestMatchers(HttpMethod.POST,"/equipamentos","/obras").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**","/atividades/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/aprovacao","/atividades/*/rejeicao","/equipamentos/*/movimentacoes").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.POST,"/atividades/*/transito","/atividades/*/conclusao").hasAnyRole("ESTOQUE","TECNICO")
                 .anyRequest().authenticated())
             .logout(logout->logout.logoutUrl("/auth/logout").deleteCookies("JSESSIONID","XSRF-TOKEN").invalidateHttpSession(true).clearAuthentication(true).logoutSuccessHandler((request,response,authentication)->response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
             .exceptionHandling(errors->errors.authenticationEntryPoint((request,response,e)->escreverErro(response,HttpServletResponse.SC_UNAUTHORIZED,"Autenticação necessária.")).accessDeniedHandler((request,response,e)->escreverErro(response,HttpServletResponse.SC_FORBIDDEN,"Você não tem permissão para realizar esta operação."))).build();

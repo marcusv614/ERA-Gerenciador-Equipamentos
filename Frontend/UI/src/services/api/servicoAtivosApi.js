@@ -42,6 +42,7 @@ export const apiObras = {
 
 export const apiEquipamentos = {
   listar: async () => (await obter(ROTAS_API.equipamentos)).map(normalizarEquipamento),
+  listarCatalogo: () => obter(`${ROTAS_API.equipamentos}/catalogo`),
   cadastrar: async (dados) => normalizarEquipamento(await criar(ROTAS_API.equipamentos, dados)),
   atualizar: async (equipamentoId, dados) => normalizarEquipamento(await atualizar(ROTAS_API.equipamento(equipamentoId), dados)),
   movimentar: async (equipamentoId, dados) => normalizarEquipamento(await criar(ROTAS_API.movimentacoesEquipamento(equipamentoId), dados)),
