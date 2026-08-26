@@ -60,7 +60,7 @@ export function PainelAdmin() {
 
   const criarUsuario = async (dados) => {
     await apiUsuarios.cadastrar(dados);
-    definirMensagem('Acesso criado. O técnico deverá trocar a senha temporária no primeiro login.');
+    definirMensagem('Acesso criado. O usuário deverá trocar a senha temporária no primeiro login.');
     await carregar();
   };
 
@@ -89,7 +89,7 @@ export function PainelAdmin() {
     </header>
 
     {area === 'usuarios' && <main className={estilos.conteudo}>
-      <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais vinculadas aos técnicos e controle quem pode acessar o ERA.</p></div><button type="button" onClick={() => definirCriandoUsuario(true)} disabled={!funcionariosSemAcesso.length}><UserPlus /> Criar acesso técnico</button></section>
+      <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle quem pode acessar o ERA.</p></div><button type="button" onClick={() => definirCriandoUsuario(true)}><UserPlus /> Criar usuário</button></section>
       {mensagem && <p className={estilos.sucesso}>{mensagem}</p>}
       {erro && <p className={estilos.erro} role="alert">{erro}</p>}
       {carregando ? <p>Carregando usuários...</p> : <section className={estilos.grade}>
@@ -99,14 +99,14 @@ export function PainelAdmin() {
           <footer><button type="button" onClick={() => { definirRedefinindo(item); definirSenhaTemporaria(''); }}><KeyRound /> Redefinir senha</button><button type="button" disabled={item.id === usuario.id} title={item.id === usuario.id ? 'Você não pode desativar sua própria conta' : undefined} className={item.ativo ? estilos.desativar : estilos.reativar} onClick={() => alternarStatus(item)}>{item.ativo ? 'Desativar' : 'Reativar'}</button></footer>
         </article>)}
       </section>}
-      {!funcionariosSemAcesso.length && <p className={estilos.aviso}>Todos os funcionários cadastrados já possuem um usuário vinculado.</p>}
+      {!funcionariosSemAcesso.length && <p className={estilos.aviso}>Todos os técnicos cadastrados já possuem um usuário vinculado. Ainda é possível criar acessos administrativos, gerenciais ou de estoque.</p>}
     </main>}
 
     {area === 'gerencia' && <PainelControleAtivos />}
     {area === 'estoque' && <PainelEstoque />}
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de auditoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador /></>}
 
-    {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} apenasTecnicos aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}
+    {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}
     {redefinindo && <EstruturaModal titulo="Redefinir senha" subtitulo={`Crie uma senha temporária para ${redefinindo.nome}`} aoFechar={() => definirRedefinindo(null)}><div className={estilos.redefinir}><label>Senha temporária <input type="password" autoComplete="new-password" value={senhaTemporaria} onChange={(evento) => definirSenhaTemporaria(evento.target.value)} minLength={8} maxLength={128} /></label><small>Mínimo de 8 caracteres e não pode conter o login.</small><div><button type="button" onClick={() => definirRedefinindo(null)}>Cancelar</button><button type="button" disabled={senhaTemporaria.length < 8} onClick={redefinirSenha}>Redefinir senha</button></div></div></EstruturaModal>}
   </div>;
 }
