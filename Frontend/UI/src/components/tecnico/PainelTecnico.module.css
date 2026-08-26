@@ -113,3 +113,8 @@
 .cabecalho{background:#fffdf7;backdrop-filter:none}
 .pagina[data-theme="dark"] .cabecalho{background:#131b17}
 .trajetoCartao:has(>span:only-child){grid-template-columns:1fr}
+.trajetoCartao>span:only-child{text-align:center}
+.listaObrasEscolha .obraSelecionada{background:#edf5f0;border-color:#5d8c78;box-shadow:0 0 0 2px rgba(93,140,120,.14)}
+.listaObrasEscolha .obraSelecionada>svg:first-child{background:var(--verde);color:white}
+.listaObrasEscolha .obraSelecionada>svg:last-child{color:#347157}
+.pagina[data-theme="dark"] .listaObrasEscolha .obraSelecionada{background:#20372d;border-color:#6da78e;box-shadow:0 0 0 2px rgba(109,167,142,.14)}

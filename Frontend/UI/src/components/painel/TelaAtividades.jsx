@@ -46,7 +46,7 @@ export function TelaAtividades({ solicitacoes, cautelas, buscarObraPorId, aoApro
       <footer className={estilos.atividadeAcoes}>
         <div className={estilos.atividadeAcoesDocumento}>{podeEditar && <button type="button" onClick={() => aoEditar(solicitacao)} className={estilos.atividadeEditar}><Pencil size={15} /> Editar solicitação</button>}{solicitacao.status === 'Aprovada' && !aguardandoDefinicao && <button type="button" onClick={() => aoExportarRomaneio(solicitacao)} className={estilos.atividadeEditar}><FileText size={15} /> Romaneio</button>}{cautelasDaSolicitacao.map((cautela) => <button type="button" key={cautela.id} onClick={() => aoExportarCautela(cautela)} className={estilos.atividadeEditar}><Download size={15} /> Cautela</button>)}</div>
         <div className={estilos.atividadeAcoesDecisao}>
-          {pendente && <><button type="button" onClick={() => aoRejeitar(solicitacao.id)} className={estilos.atividadeRejeitar}><X size={15} /> Rejeitar</button><button type="button" onClick={() => aoAprovar(solicitacao.id)} className={estilos.atividadeAprovar}><Check size={15} /> Aprovar necessidade</button></>}
+          {pendente && <><button type="button" onClick={() => aoRejeitar(solicitacao.id)} className={estilos.atividadeRejeitar}><X size={15} /> Rejeitar</button><button type="button" onClick={() => aoAprovar(solicitacao.id)} className={estilos.atividadeAprovar}><Check size={15} /> Aprovar</button></>}
         </div>
       </footer>
     </article>;
