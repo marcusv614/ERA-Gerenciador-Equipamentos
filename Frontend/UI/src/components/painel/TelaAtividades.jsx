@@ -1,77 +1,255 @@
-import { ArrowRight, Check, Clock3, Download, FileText, Pencil, Route, X } from 'lucide-react';
-import { formatarData } from '../../utils/datas';
+import {
+  ArrowRight,
+  Check,
+  Clock3,
+  Download,
+  FileText,
+  Pencil,
+  Route,
+  X,
+} from "lucide-react";
+import { formatarData } from "../../utils/datas";
 
 const CONFIGURACAO_STATUS = [
-  { status: 'Pendente', titulo: 'Solicitações pendentes', descricao: 'Aguardando sua análise e decisão.', classe: 'atividadeStatusPendente' },
-  { status: 'Aprovada', titulo: 'Solicitações aprovadas', descricao: 'Autorizações concedidas para as equipes.', classe: 'atividadeStatusAprovada' },
-  { status: 'Aguardando coleta', titulo: 'Aguardando coleta', descricao: 'Retiradas aprovadas aguardando confirmação do técnico.', classe: 'atividadeStatusPendente' },
-  { status: 'Em trânsito', titulo: 'Materiais em trânsito', descricao: 'Materiais retirados e ainda não recebidos.', classe: 'atividadeStatusPendente' },
-  { status: 'Concluída', titulo: 'Movimentações concluídas', descricao: 'Recebimento confirmado e estoque atualizado.', classe: 'atividadeStatusAprovada' },
-  { status: 'Rejeitada', titulo: 'Solicitações rejeitadas', descricao: 'Pedidos que não foram autorizados.', classe: 'atividadeStatusRejeitada' },
+  {
+    status: "Pendente",
+    titulo: "Solicitações pendentes",
+    descricao: "Aguardando sua análise e decisão.",
+    classe: "atividadeStatusPendente",
+  },
+  {
+    status: "Aprovada",
+    titulo: "Solicitações aprovadas",
+    descricao: "Autorizações concedidas para as equipes.",
+    classe: "atividadeStatusAprovada",
+  },
+  {
+    status: "Aguardando coleta",
+    titulo: "Aguardando coleta",
+    descricao: "Retiradas aprovadas aguardando confirmação do técnico.",
+    classe: "atividadeStatusPendente",
+  },
+  {
+    status: "Concluída",
+    titulo: "Movimentações concluídas",
+    descricao: "Recebimento confirmado e estoque atualizado.",
+    classe: "atividadeStatusAprovada",
+  },
+  {
+    status: "Rejeitada",
+    titulo: "Solicitações rejeitadas",
+    descricao: "Pedidos que não foram autorizados.",
+    classe: "atividadeStatusRejeitada",
+  },
 ];
 
-export function TelaAtividades({ solicitacoes, cautelas, buscarObraPorId, aoAprovar, aoRejeitar, aoIniciarTransito, aoConcluir, aoEditar, aoExportarRomaneio, aoExportarCautela, estilos }) {
-  const contarPorStatus = (status) => solicitacoes.filter((solicitacao) => solicitacao.status === status).length;
+export function TelaAtividades({
+  solicitacoes,
+  cautelas,
+  buscarObraPorId,
+  aoAprovar,
+  aoRejeitar,
+  aoIniciarTransito,
+  aoConcluir,
+  aoEditar,
+  aoExportarRomaneio,
+  aoExportarCautela,
+  estilos,
+}) {
+  const contarPorStatus = (status) =>
+    solicitacoes.filter((solicitacao) => solicitacao.status === status).length;
 
   const renderizarSolicitacao = (solicitacao, classeStatus) => {
-    const obraOrigem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId) : null;
-    const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
-    const pendente = solicitacao.status === 'Pendente';
-    const podeEditar = solicitacao.status === 'Pendente';
-    const aguardandoDefinicao = solicitacao.materiais.some(({ identificacao }) => !identificacao);
-    const cautelasDaSolicitacao = cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id);
+    const obraOrigem = solicitacao.obraOrigemId
+      ? buscarObraPorId(solicitacao.obraOrigemId)
+      : null;
+    const obraDestino = solicitacao.obraDestinoId
+      ? buscarObraPorId(solicitacao.obraDestinoId)
+      : null;
+    const pendente = solicitacao.status === "Pendente";
+    const podeEditar = solicitacao.status === "Pendente";
+    const aguardandoDefinicao = solicitacao.materiais.some(
+      ({ identificacao }) => !identificacao,
+    );
+    const cautelasDaSolicitacao = cautelas.filter(
+      ({ solicitacaoId }) => solicitacaoId === solicitacao.id,
+    );
 
-    return <article key={solicitacao.id} className={estilos.atividadeCard}>
-      <header className={estilos.atividadeCabecalho}>
-        <div className={estilos.atividadeIcone}><Route size={19} /></div>
-        <div className={estilos.atividadeTitulo}>
-          <div><h2>{solicitacao.tipo} de material</h2><span className={`${estilos.atividadeStatus} ${estilos[classeStatus]}`}>{solicitacao.status}</span></div>
-          <p>Solicitada por <strong>{solicitacao.solicitante || solicitacao.tecnico}</strong> em {formatarData(solicitacao.dataSolicitacao)}</p>
+    return (
+      <article key={solicitacao.id} className={estilos.atividadeCard}>
+        <header className={estilos.atividadeCabecalho}>
+          <div className={estilos.atividadeIcone}>
+            <Route size={19} />
+          </div>
+          <div className={estilos.atividadeTitulo}>
+            <div>
+              <h2>{solicitacao.tipo} de material</h2>
+              <span
+                className={`${estilos.atividadeStatus} ${estilos[classeStatus]}`}
+              >
+                {solicitacao.status}
+              </span>
+            </div>
+            <p>
+              Solicitada por{" "}
+              <strong>{solicitacao.solicitante || solicitacao.tecnico}</strong>{" "}
+              em {formatarData(solicitacao.dataSolicitacao)}
+            </p>
+          </div>
+        </header>
+
+        <div className={estilos.atividadeRota}>
+          <div>
+            <span>Origem</span>
+            <strong>
+              {aguardandoDefinicao
+                ? "A definir pelo gerente"
+                : obraOrigem?.nome || "Depósito central"}
+            </strong>
+          </div>
+          <ArrowRight size={18} aria-hidden="true" />
+          <div>
+            <span>Destino</span>
+            <strong>{obraDestino?.nome || "Depósito central"}</strong>
+          </div>
         </div>
-      </header>
 
-      <div className={estilos.atividadeRota}>
-        <div><span>Origem</span><strong>{aguardandoDefinicao ? 'A definir pelo gerente' : obraOrigem?.nome || 'Depósito central'}</strong></div>
-        <ArrowRight size={18} aria-hidden="true" />
-        <div><span>Destino</span><strong>{obraDestino?.nome || 'Depósito central'}</strong></div>
-      </div>
-
-      <div className={estilos.atividadeMateriais}>
-        <h3>Materiais solicitados</h3>
-        <ul>{solicitacao.materiais.map((material) => <li key={material.id}><span className={estilos.materialQuantidade}>{material.quantidade}x</span><span>{material.nome}{material.identificacao && <small>{material.identificacao}</small>}</span></li>)}</ul>
-      </div>
-
-      {solicitacao.observacao && <p className={estilos.atividadeObservacao}>{solicitacao.observacao}</p>}
-
-      <footer className={estilos.atividadeAcoes}>
-        <div className={estilos.atividadeAcoesDocumento}>{podeEditar && <button type="button" onClick={() => aoEditar(solicitacao)} className={estilos.atividadeEditar}><Pencil size={15} /> Editar solicitação</button>}{solicitacao.status === 'Aprovada' && !aguardandoDefinicao && <button type="button" onClick={() => aoExportarRomaneio(solicitacao)} className={estilos.atividadeEditar}><FileText size={15} /> Romaneio</button>}{cautelasDaSolicitacao.map((cautela) => <button type="button" key={cautela.id} onClick={() => aoExportarCautela(cautela)} className={estilos.atividadeEditar}><Download size={15} /> Cautela</button>)}</div>
-        <div className={estilos.atividadeAcoesDecisao}>
-          {pendente && <><button type="button" onClick={() => aoRejeitar(solicitacao.id)} className={estilos.atividadeRejeitar}><X size={15} /> Rejeitar</button><button type="button" onClick={() => aoAprovar(solicitacao.id)} className={estilos.atividadeAprovar}><Check size={15} /> Aprovar</button></>}
+        <div className={estilos.atividadeMateriais}>
+          <h3>Materiais solicitados</h3>
+          <ul>
+            {solicitacao.materiais.map((material) => (
+              <li key={material.id}>
+                <span className={estilos.materialQuantidade}>
+                  {material.quantidade}x
+                </span>
+                <span>
+                  {material.nome}
+                  {material.identificacao && (
+                    <small>{material.identificacao}</small>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </footer>
-    </article>;
+
+        {solicitacao.observacao && (
+          <p className={estilos.atividadeObservacao}>
+            {solicitacao.observacao}
+          </p>
+        )}
+
+        <footer className={estilos.atividadeAcoes}>
+          <div className={estilos.atividadeAcoesDocumento}>
+            {podeEditar && (
+              <button
+                type="button"
+                onClick={() => aoEditar(solicitacao)}
+                className={estilos.atividadeEditar}
+              >
+                <Pencil size={15} /> Editar solicitação
+              </button>
+            )}
+            {solicitacao.status === "Aprovada" && !aguardandoDefinicao && (
+              <button
+                type="button"
+                onClick={() => aoExportarRomaneio(solicitacao)}
+                className={estilos.atividadeEditar}
+              >
+                <FileText size={15} /> Romaneio
+              </button>
+            )}
+            {cautelasDaSolicitacao.map((cautela) => (
+              <button
+                type="button"
+                key={cautela.id}
+                onClick={() => aoExportarCautela(cautela)}
+                className={estilos.atividadeEditar}
+              >
+                <Download size={15} /> Cautela
+              </button>
+            ))}
+          </div>
+          <div className={estilos.atividadeAcoesDecisao}>
+            {pendente && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => aoRejeitar(solicitacao.id)}
+                  className={estilos.atividadeRejeitar}
+                >
+                  <X size={15} /> Rejeitar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => aoAprovar(solicitacao.id)}
+                  className={estilos.atividadeAprovar}
+                >
+                  <Check size={15} /> Aprovar
+                </button>
+              </>
+            )}
+          </div>
+        </footer>
+      </article>
+    );
   };
 
-  return <section className={estilos.atividadesTela}>
-    <div className={estilos.atividadesResumo} aria-label="Resumo das solicitações">
-      <div><Clock3 size={17} /><span><strong>{contarPorStatus('Pendente')}</strong> pendentes</span></div>
-      <div><Check size={17} /><span><strong>{contarPorStatus('Aprovada')}</strong> aprovadas</span></div>
-      <div><X size={17} /><span><strong>{contarPorStatus('Rejeitada')}</strong> rejeitadas</span></div>
-    </div>
+  return (
+    <section className={estilos.atividadesTela}>
+      <div
+        className={estilos.atividadesResumo}
+        aria-label="Resumo das solicitações"
+      >
+        <div>
+          <Clock3 size={17} />
+          <span>
+            <strong>{contarPorStatus("Pendente")}</strong> pendentes
+          </span>
+        </div>
+        <div>
+          <Check size={17} />
+          <span>
+            <strong>{contarPorStatus("Aprovada")}</strong> aprovadas
+          </span>
+        </div>
+        <div>
+          <X size={17} />
+          <span>
+            <strong>{contarPorStatus("Rejeitada")}</strong> rejeitadas
+          </span>
+        </div>
+      </div>
 
-    <div className={estilos.atividadesGrupos}>
-      {CONFIGURACAO_STATUS.map((grupo) => {
-        const solicitacoesDoGrupo = solicitacoes.filter(({ status }) => status === grupo.status);
-        return <section key={grupo.status} className={estilos.atividadeGrupo}>
-          <header className={estilos.atividadeGrupoCabecalho}>
-            <div><h2>{grupo.titulo}</h2><p>{grupo.descricao}</p></div>
-            <span>{solicitacoesDoGrupo.length}</span>
-          </header>
-          {solicitacoesDoGrupo.length > 0
-            ? <div className={estilos.atividadesLista}>{solicitacoesDoGrupo.map((solicitacao) => renderizarSolicitacao(solicitacao, grupo.classe))}</div>
-            : <div className={estilos.atividadeGrupoVazio}>Nenhuma solicitação nesta categoria.</div>}
-        </section>;
-      })}
-    </div>
-  </section>;
+      <div className={estilos.atividadesGrupos}>
+        {CONFIGURACAO_STATUS.map((grupo) => {
+          const solicitacoesDoGrupo = solicitacoes.filter(
+            ({ status }) => status === grupo.status,
+          );
+          return (
+            <section key={grupo.status} className={estilos.atividadeGrupo}>
+              <header className={estilos.atividadeGrupoCabecalho}>
+                <div>
+                  <h2>{grupo.titulo}</h2>
+                  <p>{grupo.descricao}</p>
+                </div>
+                <span>{solicitacoesDoGrupo.length}</span>
+              </header>
+              {solicitacoesDoGrupo.length > 0 ? (
+                <div className={estilos.atividadesLista}>
+                  {solicitacoesDoGrupo.map((solicitacao) =>
+                    renderizarSolicitacao(solicitacao, grupo.classe),
+                  )}
+                </div>
+              ) : (
+                <div className={estilos.atividadeGrupoVazio}>
+                  Nenhuma solicitação nesta categoria.
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
