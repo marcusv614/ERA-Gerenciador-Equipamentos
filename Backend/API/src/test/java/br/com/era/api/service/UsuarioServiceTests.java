@@ -80,4 +80,45 @@ class UsuarioServiceTests {
 
         assertTrue(erro.getMessage().contains("própria conta"));
     }
+
+    @Test
+    void deveAtualizarLoginPerfilVinculoESenha() {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Usuário antigo");
+        usuario.setLogin("antigo");
+        usuario.setPerfil(PerfilUsuario.GERENTE);
+        usuario.setAtivo(true);
+        Funcionario tecnico = new Funcionario();
+        tecnico.setNome("Técnico atualizado");
+        when(repository.findById(2L)).thenReturn(Optional.of(usuario));
+        when(repository.existsByLoginIgnoreCaseAndIdNot("novo.login", 2L)).thenReturn(false);
+        when(repository.existsByFuncionarioIdAndIdNot(10L, 2L)).thenReturn(false);
+        when(funcionarios.findById(10L)).thenReturn(Optional.of(tecnico));
+        when(encoder.encode("Senha#Nova123")).thenReturn("novo-hash");
+
+        UsuarioDto.Resposta resposta = service.atualizar(2L, new UsuarioDto.Atualizacao(
+            10L, "Nome atualizado", "NOVO.LOGIN", PerfilUsuario.TECNICO, "Senha#Nova123"
+        ));
+
+        assertEquals("novo.login", resposta.login());
+        assertEquals(PerfilUsuario.TECNICO, resposta.perfil());
+        assertTrue(resposta.deveAlterarSenha());
+        verify(encoder).encode("Senha#Nova123");
+    }
+
+    @Test
+    void deveImpedirRebaixamentoDoUltimoAdministradorAtivo() {
+        Usuario administrador = new Usuario();
+        administrador.setLogin("admin");
+        administrador.setPerfil(PerfilUsuario.ADMIN);
+        administrador.setAtivo(true);
+        when(repository.findById(1L)).thenReturn(Optional.of(administrador));
+        when(repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)).thenReturn(1L);
+
+        RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(
+            1L, new UsuarioDto.Atualizacao(null, "Administrador", "admin", PerfilUsuario.GERENTE, null)
+        ));
+
+        assertTrue(erro.getMessage().contains("último administrador"));
+    }
 }

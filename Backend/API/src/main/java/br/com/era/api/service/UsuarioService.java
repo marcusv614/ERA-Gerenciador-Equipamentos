@@ -40,6 +40,17 @@ public class UsuarioService implements UserDetailsService {
         if(dados.funcionarioId()!=null){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário não encontrado."));usuario.setFuncionario(funcionario);}
         return resposta(repository.save(usuario));
     }
+    @Transactional public UsuarioDto.Resposta atualizar(Long id,UsuarioDto.Atualizacao dados){
+        Usuario usuario=buscar(id);String login=normalizar(dados.login());
+        if(repository.existsByLoginIgnoreCaseAndIdNot(login,id))throw new RegraNegocioException("Já existe um usuário com esse login.");
+        if(dados.perfil()==PerfilUsuario.TECNICO&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico precisa estar vinculado a um funcionário.");
+        if(dados.funcionarioId()!=null&&repository.existsByFuncionarioIdAndIdNot(dados.funcionarioId(),id))throw new RegraNegocioException("Este funcionário já possui um usuário vinculado.");
+        if(usuario.isAtivo()&&usuario.getPerfil()==PerfilUsuario.ADMIN&&dados.perfil()!=PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ter o perfil alterado.");
+        usuario.setNome(dados.nome().trim());usuario.setLogin(login);usuario.setPerfil(dados.perfil());
+        if(dados.perfil()==PerfilUsuario.TECNICO){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário não encontrado."));usuario.setFuncionario(funcionario);}else usuario.setFuncionario(null);
+        if(dados.senhaTemporaria()!=null){validarSenha(login,dados.senhaTemporaria());usuario.setSenhaHash(encoder.encode(dados.senhaTemporaria()));usuario.setDeveAlterarSenha(true);usuario.setTentativasFalhas(0);usuario.setBloqueadoAte(null);}
+        return resposta(usuario);
+    }
     @Transactional public UsuarioDto.Resposta definirStatus(Long id,boolean ativo,String solicitante){Usuario u=buscar(id);if(!ativo&&u.getLogin().equalsIgnoreCase(solicitante))throw new RegraNegocioException("O administrador não pode desativar a própria conta.");if(!ativo&&u.getPerfil()==PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ser desativado.");u.setAtivo(ativo);if(ativo){u.setTentativasFalhas(0);u.setBloqueadoAte(null);}return resposta(u);}
     @Transactional public UsuarioDto.Resposta redefinirSenha(Long id,String senha){Usuario u=buscar(id);validarSenha(u.getLogin(),senha);u.setSenhaHash(encoder.encode(senha));u.setDeveAlterarSenha(true);u.setTentativasFalhas(0);u.setBloqueadoAte(null);return resposta(u);}
     @Transactional public void registrarFalha(String login){repository.findByLoginIgnoreCase(normalizar(login)).ifPresent(u->{int tentativas=u.getTentativasFalhas()+1;u.setTentativasFalhas(tentativas);if(tentativas>=MAX_TENTATIVAS)u.setBloqueadoAte(OffsetDateTime.now().plusMinutes(15));});}
