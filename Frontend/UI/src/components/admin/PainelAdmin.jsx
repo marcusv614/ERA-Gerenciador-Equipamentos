@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Boxes, KeyRound, LayoutDashboard, LogOut, Pencil, ShieldCheck, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
+import { Boxes, KeyRound, LayoutDashboard, LogOut, Pencil, Search, ShieldCheck, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiFuncionarios } from '../../services/api/servicoAtivosApi';
@@ -17,6 +17,8 @@ const AREAS = [
   { id: 'tecnico', rotulo: 'Visão técnica', icone: Wrench },
 ];
 
+const normalizarBusca = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 export function PainelAdmin() {
   const { usuario, encerrarSessao } = useAutenticacao();
   const [area, definirArea] = useState('usuarios');
@@ -29,6 +31,7 @@ export function PainelAdmin() {
   const [editandoUsuario, definirEditandoUsuario] = useState(null);
   const [redefinindo, definirRedefinindo] = useState(null);
   const [senhaTemporaria, definirSenhaTemporaria] = useState('');
+  const [termoBusca, definirTermoBusca] = useState('');
 
   const carregar = async () => {
     definirErro('');
@@ -58,6 +61,20 @@ export function PainelAdmin() {
 
   const funcionariosSemAcesso = useMemo(() => funcionarios.filter((funcionario) =>
     !usuarios.some((item) => item.funcionarioId === funcionario.id)), [funcionarios, usuarios]);
+  const usuariosFiltrados = useMemo(() => {
+    const termo = normalizarBusca(termoBusca.trim());
+    if (!termo) return usuarios;
+    return usuarios.filter((item) => normalizarBusca([
+      item.nome,
+      item.login,
+      item.perfil,
+      item.perfil === 'TECNICO' ? 'tecnico' : '',
+      item.perfil === 'ESTOQUE' ? 'estoquista' : '',
+      item.perfil === 'GERENTE' ? 'gerente' : '',
+      item.perfil === 'ADMIN' ? 'administrador' : '',
+      item.funcionarioId ? `funcionario ${item.funcionarioId}` : '',
+    ].join(' ')).includes(termo));
+  }, [termoBusca, usuarios]);
 
   const criarUsuario = async (dados) => {
     await apiUsuarios.cadastrar(dados);
@@ -101,15 +118,17 @@ export function PainelAdmin() {
 
     {area === 'usuarios' && <main className={estilos.conteudo}>
       <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle quem pode acessar o ERA.</p></div><button type="button" onClick={() => definirCriandoUsuario(true)}><UserPlus /> Criar usuário</button></section>
+      <div className={estilos.pesquisa}><Search aria-hidden="true" /><input type="search" value={termoBusca} onChange={(evento) => definirTermoBusca(evento.target.value)} placeholder="Pesquisar por nome, login, perfil ou funcionário" aria-label="Pesquisar usuários" /><span>{usuariosFiltrados.length} {usuariosFiltrados.length === 1 ? 'resultado' : 'resultados'}</span></div>
       {mensagem && <p className={estilos.sucesso}>{mensagem}</p>}
       {erro && <p className={estilos.erro} role="alert">{erro}</p>}
       {carregando ? <p>Carregando usuários...</p> : <section className={estilos.grade}>
-        {usuarios.map((item) => <article key={item.id} className={estilos.usuario}>
+        {usuariosFiltrados.map((item) => <article key={item.id} className={estilos.usuario}>
           <div className={estilos.usuarioTopo}><span><Users /></span><div><strong>{item.nome}</strong><small>{item.login}</small></div><b data-ativo={item.ativo}>{item.ativo ? 'Ativo' : 'Inativo'}</b></div>
           <dl><div><dt>Perfil</dt><dd>{item.perfil}</dd></div><div><dt>Funcionário</dt><dd>{item.funcionarioId ? `#${item.funcionarioId}` : 'Sem vínculo'}</dd></div><div><dt>Senha</dt><dd>{item.deveAlterarSenha ? 'Troca obrigatória' : 'Definida'}</dd></div></dl>
           <footer><button type="button" onClick={() => definirEditandoUsuario(item)}><Pencil /> Editar</button><button type="button" onClick={() => { definirRedefinindo(item); definirSenhaTemporaria(''); }}><KeyRound /> Redefinir senha</button><button type="button" disabled={item.id === usuario.id} title={item.id === usuario.id ? 'Você não pode desativar sua própria conta' : undefined} className={item.ativo ? estilos.desativar : estilos.reativar} onClick={() => alternarStatus(item)}>{item.ativo ? 'Desativar' : 'Reativar'}</button></footer>
         </article>)}
       </section>}
+      {!carregando && termoBusca && !usuariosFiltrados.length && <p className={estilos.semResultados}>Nenhum usuário encontrado para “{termoBusca}”.</p>}
       {!funcionariosSemAcesso.length && <p className={estilos.aviso}>Todos os técnicos cadastrados já possuem um usuário vinculado. Ainda é possível criar acessos administrativos, gerenciais ou de estoque.</p>}
     </main>}
 
