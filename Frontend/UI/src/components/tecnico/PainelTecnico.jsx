@@ -11,7 +11,7 @@ const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
 const rotulosStatus = { Pendente: 'Aguardando análise', Aprovada: 'Aprovada pelo gerente', 'Aguardando coleta': 'Liberada para retirada', 'Em trânsito': 'Em trânsito', Concluída: 'Recebida', Rejeitada: 'Rejeitada' };
 
-export function PainelTecnico() {
+export function PainelTecnico({ modoAdministrador = false }) {
   const { usuario, encerrarSessao } = useAutenticacao();
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
@@ -154,7 +154,7 @@ export function PainelTecnico() {
     <main className={estilos.conteudo}>
       <nav className={estilos.abas} aria-label="Navegação do técnico">
         <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 size={18} /> Minha obra</button>
-        <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight size={18} /> Movimentar</button>
+        {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight size={18} /> Movimentar</button>}
         <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Histórico {pendentes > 0 && <span>{pendentes}</span>}</button>
       </nav>
 
@@ -199,7 +199,7 @@ export function PainelTecnico() {
           {solicitacao.observacao && <p className={estilos.notaCartao}>“{solicitacao.observacao}”</p>}
           {cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id).map((cautela) => <button key={cautela.id} className={estilos.acaoMovimentacao} onClick={() => imprimirCautelaEmitida(cautela)}><Download /> Cautela</button>)}
           {solicitacao.status === 'Aguardando coleta' && <span>Aguardando o estoque confirmar a retirada.</span>}
-          {solicitacao.status === 'Em trânsito' && solicitacao.obraDestinoId && <button className={estilos.acaoMovimentacao} onClick={() => avancarSolicitacao(solicitacao, 'concluir')}><PackageCheck /> Confirmar recebimento na obra</button>}
+          {!modoAdministrador && solicitacao.status === 'Em trânsito' && solicitacao.obraDestinoId && <button className={estilos.acaoMovimentacao} onClick={() => avancarSolicitacao(solicitacao, 'concluir')}><PackageCheck /> Confirmar recebimento na obra</button>}
         </article>) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3><p>Sua primeira movimentação aparecerá aqui.</p><button onClick={() => definirAba('solicitar')}>Criar solicitação</button></div>}</div>
       </section>}
 

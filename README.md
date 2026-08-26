@@ -38,6 +38,23 @@ docker compose down
 
 Para apagar também o volume do PostgreSQL, use `docker compose down -v` somente quando quiser reinicializar todos os dados.
 
+## Testes externos com ngrok
+
+1. Inicie o túnel para a interface publicada pelo Compose:
+
+```bash
+ngrok http 8088
+```
+
+2. Copie a URL HTTPS exibida pelo ngrok e defina `PUBLIC_APP_URL` no `.env`.
+3. Recrie API e interface usando o override seguro:
+
+```bash
+docker compose -f compose.yaml -f compose.ngrok.yaml up -d --build
+```
+
+O override ativa cookies de sessão `Secure`, preserva o protocolo HTTPS encaminhado e restringe o CORS à URL informada. Use somente dados de teste e encerre o túnel ao final da homologação.
+
 ## Serviços
 
 - `ui`: build React servido por Nginx, que encaminha `/api` para a API.

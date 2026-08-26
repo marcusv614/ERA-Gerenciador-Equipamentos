@@ -3,7 +3,7 @@ WORKDIR /workspace
 COPY pom.xml ./
 RUN mvn -B -ntp dependency:go-offline
 COPY src ./src
-RUN mvn -B -ntp clean package -DskipTests
+RUN mvn -B -ntp clean package
 
 FROM eclipse-temurin:21-jre-jammy
 RUN groupadd --system era && useradd --system --gid era --no-create-home era

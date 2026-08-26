@@ -49,8 +49,6 @@ export function TelaAtividades({
   buscarObraPorId,
   aoAprovar,
   aoRejeitar,
-  aoIniciarTransito,
-  aoConcluir,
   aoEditar,
   aoExportarRomaneio,
   aoExportarCautela,
