@@ -1655,6 +1655,23 @@ button.equipCard {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .atividadeCard {
+    padding: 13px;
+  }
+
+  .atividadeTitulo > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .atividadeStatus {
+    align-self: flex-start;
+  }
+
+  .atividadeGrupoCabecalho {
+    align-items: flex-start;
+  }
+
   .statsGrid {
     grid-template-columns: minmax(0, 1fr);
   }
