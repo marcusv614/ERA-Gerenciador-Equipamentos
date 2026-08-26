@@ -16,10 +16,10 @@ const ESTILOS_DOCUMENTO = `
 `;
 
 const ASSINATURAS_CAUTELA = `<div class="signatures">
-  <div class="signature-box"><span>Responsável técnico — Entrada</span><div class="line"></div></div>
-  <div class="signature-box"><span>Responsável técnico — Saída</span><div class="line"></div></div>
-  <div class="signature-box"><span>Responsável cliente — Entrada</span><div class="line"></div></div>
-  <div class="signature-box"><span>Responsável cliente — Saída</span><div class="line"></div></div>
+  <div class="signature-box"><span>Responsável técnico entrada</span><div class="line"></div></div>
+  <div class="signature-box"><span>Responsável técnico saída</span><div class="line"></div></div>
+  <div class="signature-box"><span>Responsável cliente entrada</span><div class="line"></div></div>
+  <div class="signature-box"><span>Responsável cliente saída</span><div class="line"></div></div>
 </div>`;
 
 function textoSeguro(valor) {
@@ -118,18 +118,18 @@ export function imprimirCautelaObra(obra, equipamentos) {
   const equipamentosDaObra = equipamentos.filter(({ obraId }) => obraId === obra.id);
   const tecnicos = [...new Set(equipamentosDaObra.map(({ tecnico }) => tecnico).filter(Boolean))];
   const linhas = equipamentosDaObra.length ? equipamentosDaObra.map((equipamento) => `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${textoSeguro(equipamento.serie)}</td><td>${textoSeguro(equipamento.tecnico)}</td><td>${formatarData(equipamento.data || equipamento.dataEntrada || equipamento.saida)}</td></tr>`).join('') : '<tr><td colspan="5">Nenhum equipamento cadastrado na obra.</td></tr>';
-  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Cautela de materiais')}<h2>Equipamentos atuais</h2><table><thead><tr><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th></tr></thead><tbody>${linhas}</tbody></table>${ASSINATURAS_CAUTELA}<p class="muted">Gerado em ${formatarData(new Date())}</p>`;
-  abrirJanelaDeImpressao(`Cautela — ${obra.nome}`, conteudo);
+  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Relatório de inventário da obra')}<h2>Equipamentos atuais</h2><table><thead><tr><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Retrato do inventário atual. Gerado em ${formatarData(new Date())}</p>`;
+  abrirJanelaDeImpressao(`Inventário — ${obra.nome}`, conteudo);
 }
 
-export function imprimirCautelaSolicitacao(solicitacao, buscarObraPorId) {
+export function imprimirRomaneioSeparacao(solicitacao, buscarObraPorId) {
   const identificadorSolicitacao = String(solicitacao.id ?? 'sem identificacao').toUpperCase();
   const materiais = Array.isArray(solicitacao.materiais) ? solicitacao.materiais : [];
   const obraOrigem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId) : null;
   const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
   const origem = obraOrigem?.nome || 'Depósito central';
   const destino = obraDestino?.nome || 'Depósito central';
-  const tituloCautela = solicitacao.obraDestinoId ? 'Cautela de entrada na obra' : 'Cautela de saída da obra';
+  const tituloCautela = 'Romaneio de separação';
   const linhas = materiais.length
     ? materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao)}</td></tr>`).join('')
     : '<tr><td colspan="3">Nenhum material informado na solicitação.</td></tr>';
@@ -144,8 +144,28 @@ export function imprimirCautelaSolicitacao(solicitacao, buscarObraPorId) {
     <div class="header-row"><span class="label">Destino</span><span class="value">${textoSeguro(destino)}</span></div>
   </div></div>`;
   const observacao = solicitacao.observacao ? `<h2>Observação</h2><p class="muted">${textoSeguro(solicitacao.observacao)}</p>` : '';
-  const conteudo = `${cabecalho}<h2>Materiais solicitados</h2><table><thead><tr><th>Quantidade</th><th>Material</th><th>Identificação / Série</th></tr></thead><tbody>${linhas}</tbody></table>${observacao}${ASSINATURAS_CAUTELA}<p class="muted">Gerado em ${formatarData(new Date())}</p>`;
+  const conteudo = `${cabecalho}<p style="padding:7px;border:1px solid #d99b45;background:#fff4df;font-size:9px;font-weight:700">ROMANEIO — documento para conferência da separação. A cautela será emitida no início do transporte.</p><h2>Materiais separados</h2><table><thead><tr><th>Quantidade</th><th>Material</th><th>Identificação / Série</th></tr></thead><tbody>${linhas}</tbody></table>${observacao}<p class="muted">Gerado em ${formatarData(new Date())}</p>`;
   abrirJanelaDeImpressao(`${tituloCautela} — ${identificadorSolicitacao}`, conteudo);
+}
+
+export function imprimirCautelaEmitida(cautela) {
+  const titulo = 'Cautela de equipamentos';
+  const linhas = cautela.materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao)}</td></tr>`).join('');
+  const emitidaEm = new Date(cautela.emitidaEm).toLocaleString('pt-BR');
+  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${titulo}</h1></div><div class="header">
+    <div class="header-row"><span class="label">Número</span><span class="value">${textoSeguro(cautela.numero)}</span></div>
+    <div class="header-row"><span class="label">Solicitação / raiz</span><span class="value">#${textoSeguro(cautela.solicitacaoId)} / #${textoSeguro(cautela.solicitacaoRaizId)}</span></div>
+    <div class="header-row"><span class="label">Emissão</span><span class="value">${textoSeguro(emitidaEm)}</span></div>
+    <div class="header-row"><span class="label">Emitida por</span><span class="value">${textoSeguro(cautela.emitidaPor)}</span></div>
+    <div class="header-row"><span class="label">Status registrado</span><span class="value">${textoSeguro(cautela.statusMovimentacao)}</span></div>
+    <div class="header-row"><span class="label">Origem</span><span class="value">${textoSeguro(cautela.origemNome)}</span></div>
+    <div class="header-row"><span class="label">Destino</span><span class="value">${textoSeguro(cautela.destinoNome)}</span></div>
+    <div class="header-row"><span class="label">Solicitante</span><span class="value">${textoSeguro(cautela.solicitanteNome)}</span></div>
+    <div class="header-row"><span class="label">Técnico responsável</span><span class="value">${textoSeguro(cautela.tecnicoNome)}</span></div>
+  </div></div>`;
+  const observacao = cautela.observacao ? `<h2>Observação</h2><p class="muted">${textoSeguro(cautela.observacao)}</p>` : '';
+  const conteudo = `${cabecalho}<h2>Materiais movimentados</h2><table><thead><tr><th>Quantidade</th><th>Material</th><th>Identificação / Série</th></tr></thead><tbody>${linhas}</tbody></table>${observacao}${ASSINATURAS_CAUTELA}<p class="muted">Documento imutável emitido pelo sistema.</p>`;
+  abrirJanelaDeImpressao(`${cautela.numero} — ${titulo}`, conteudo);
 }
 
 export function imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObraPorId) {

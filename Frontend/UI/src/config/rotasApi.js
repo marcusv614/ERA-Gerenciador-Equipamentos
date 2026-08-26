@@ -10,7 +10,6 @@ export const ROTAS_API = {
   resumo: '/painel/resumo',
   obras: '/obras',
   obra: (obraId) => `/obras/${obraId}`,
-  cautelaObra: (obraId) => `/obras/${obraId}/cautela`,
   historicoObra: (obraId) => `/obras/${obraId}/historico`,
   equipamentos: '/equipamentos',
   equipamento: (equipamentoId) => `/equipamentos/${equipamentoId}`,
@@ -23,7 +22,9 @@ export const ROTAS_API = {
   atividade: (atividadeId) => `/atividades/${atividadeId}`,
   aprovarAtividade: (atividadeId) => `/atividades/${atividadeId}/aprovacao`,
   rejeitarAtividade: (atividadeId) => `/atividades/${atividadeId}/rejeicao`,
+  solicitarCompraMaterial: (atividadeId, materialId) => `/atividades/${atividadeId}/materiais/${materialId}/compra`,
+  distribuirAtividade: (atividadeId) => `/atividades/${atividadeId}/distribuicao`,
   iniciarTransitoAtividade: (atividadeId) => `/atividades/${atividadeId}/transito`,
   concluirAtividade: (atividadeId) => `/atividades/${atividadeId}/conclusao`,
-  cautelaAtividade: (atividadeId) => `/atividades/${atividadeId}/cautela`,
+  cautelas: '/cautelas',
 };

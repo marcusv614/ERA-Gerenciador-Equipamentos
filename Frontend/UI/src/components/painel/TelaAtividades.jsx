@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Clock3, Pencil, Route, X } from 'lucide-react';
+import { ArrowRight, Check, Clock3, Download, FileText, Pencil, Route, X } from 'lucide-react';
 import { formatarData } from '../../utils/datas';
 
 const CONFIGURACAO_STATUS = [
@@ -10,7 +10,7 @@ const CONFIGURACAO_STATUS = [
   { status: 'Rejeitada', titulo: 'Solicitações rejeitadas', descricao: 'Pedidos que não foram autorizados.', classe: 'atividadeStatusRejeitada' },
 ];
 
-export function TelaAtividades({ solicitacoes, buscarObraPorId, aoAprovar, aoRejeitar, aoIniciarTransito, aoConcluir, aoEditar, aoExportarCautela, estilos }) {
+export function TelaAtividades({ solicitacoes, cautelas, buscarObraPorId, aoAprovar, aoRejeitar, aoIniciarTransito, aoConcluir, aoEditar, aoExportarRomaneio, aoExportarCautela, estilos }) {
   const contarPorStatus = (status) => solicitacoes.filter((solicitacao) => solicitacao.status === status).length;
 
   const renderizarSolicitacao = (solicitacao, classeStatus) => {
@@ -19,6 +19,7 @@ export function TelaAtividades({ solicitacoes, buscarObraPorId, aoAprovar, aoRej
     const pendente = solicitacao.status === 'Pendente';
     const podeEditar = solicitacao.status === 'Pendente';
     const aguardandoDefinicao = solicitacao.materiais.some(({ identificacao }) => !identificacao);
+    const cautelasDaSolicitacao = cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id);
 
     return <article key={solicitacao.id} className={estilos.atividadeCard}>
       <header className={estilos.atividadeCabecalho}>
@@ -43,7 +44,7 @@ export function TelaAtividades({ solicitacoes, buscarObraPorId, aoAprovar, aoRej
       {solicitacao.observacao && <p className={estilos.atividadeObservacao}>{solicitacao.observacao}</p>}
 
       <footer className={estilos.atividadeAcoes}>
-        <div className={estilos.atividadeAcoesDocumento}>{podeEditar && <button type="button" onClick={() => aoEditar(solicitacao)} className={estilos.atividadeEditar}><Pencil size={15} /> Editar solicitação</button>}</div>
+        <div className={estilos.atividadeAcoesDocumento}>{podeEditar && <button type="button" onClick={() => aoEditar(solicitacao)} className={estilos.atividadeEditar}><Pencil size={15} /> Editar solicitação</button>}{solicitacao.status === 'Aprovada' && !aguardandoDefinicao && <button type="button" onClick={() => aoExportarRomaneio(solicitacao)} className={estilos.atividadeEditar}><FileText size={15} /> Romaneio</button>}{cautelasDaSolicitacao.map((cautela) => <button type="button" key={cautela.id} onClick={() => aoExportarCautela(cautela)} className={estilos.atividadeEditar}><Download size={15} /> Cautela</button>)}</div>
         <div className={estilos.atividadeAcoesDecisao}>
           {pendente && <><button type="button" onClick={() => aoRejeitar(solicitacao.id)} className={estilos.atividadeRejeitar}><X size={15} /> Rejeitar</button><button type="button" onClick={() => aoAprovar(solicitacao.id)} className={estilos.atividadeAprovar}><Check size={15} /> Aprovar necessidade</button></>}
         </div>

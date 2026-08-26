@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BarraSuperior } from './BarraSuperior';
 import { MenuLateral } from './MenuLateral';
@@ -16,11 +16,12 @@ import { ModalNovoFuncionario } from '../novo-funcionario-modal/NovoFuncionarioM
 import { ModalEditarFuncionario } from '../editar-funcionario-modal/EditarFuncionarioModal';
 import { ModalNovoUsuario } from '../novo-usuario-modal/NovoUsuarioModal';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
+import { apiCautelas } from '../../services/api/servicoAtivosApi';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { ModalEditarSolicitacao } from '../editar-solicitacao-modal/EditarSolicitacaoModal';
 import { useControleAtivos } from '../../hooks/useControleAtivos';
 import { useFiltrosPainel } from '../../hooks/useFiltrosPainel';
-import { imprimirCautelaObra, imprimirCautelaSolicitacao, imprimirHistoricoEquipamento, imprimirHistoricoObra } from '../../services/documentosEquipamentos';
+import { imprimirCautelaEmitida, imprimirCautelaObra, imprimirRomaneioSeparacao, imprimirHistoricoEquipamento, imprimirHistoricoObra } from '../../services/documentosEquipamentos';
 import estilos from '../fibra-track/FibraTrack.module.css';
 
 export function PainelControleAtivos() {
@@ -42,6 +43,8 @@ export function PainelControleAtivos() {
   const [equipamentoParaMover, definirEquipamentoParaMover] = useState(null);
   const [equipamentoComHistoricoAberto, definirEquipamentoComHistoricoAberto] = useState(null);
   const [solicitacaoEmEdicao, definirSolicitacaoEmEdicao] = useState(null);
+  const [cautelas, definirCautelas] = useState([]);
+  useEffect(() => { apiCautelas.listar().then(definirCautelas).catch(() => definirCautelas([])); }, [controleAtivos.solicitacoes]);
 
   const imprimirHistoricoDoEquipamento = (equipamento) => imprimirHistoricoEquipamento(equipamento, controleAtivos.consultarHistorico(equipamento), controleAtivos.buscarObraPorId);
   const cadastrarObra = async (novaObra) => {
@@ -103,7 +106,7 @@ export function PainelControleAtivos() {
         {telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoMover={definirEquipamentoParaMover} estilos={estilos} />}
         {telaAtual === 'obras' && <TelaObras obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} aoMoverEquipamento={definirEquipamentoParaMover} aoImprimirCautela={(obra) => imprimirCautelaObra(obra, controleAtivos.equipamentos)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
         {telaAtual === 'funcionarios' && <TelaFuncionarios funcionarios={filtros.funcionariosFiltrados} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} aoEditarFuncionario={definirFuncionarioEmEdicao} estilos={estilos} />}
-        {telaAtual === 'atividades' && <TelaAtividades solicitacoes={solicitacoesFiltradas} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoIniciarTransito={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'transito')} aoConcluir={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'concluir')} aoEditar={definirSolicitacaoEmEdicao} aoExportarCautela={(solicitacao) => imprimirCautelaSolicitacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
+        {telaAtual === 'atividades' && <TelaAtividades solicitacoes={solicitacoesFiltradas} cautelas={cautelas} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoIniciarTransito={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'transito')} aoConcluir={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'concluir')} aoEditar={definirSolicitacaoEmEdicao} aoExportarRomaneio={(solicitacao) => imprimirRomaneioSeparacao(solicitacao, controleAtivos.buscarObraPorId)} aoExportarCautela={imprimirCautelaEmitida} estilos={estilos} />}
         {telaAtual === 'deposito' && <CartaoDeposito equipamentos={filtros.equipamentosDoDeposito} obras={controleAtivos.obras} />}
       </div>
     </main>

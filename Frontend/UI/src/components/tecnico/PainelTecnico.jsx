@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, Download, History, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, Truck, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
-import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
+import { apiAtividades, apiCautelas, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
-import { imprimirCautelaSolicitacao } from '../../services/documentosEquipamentos';
+import { imprimirCautelaEmitida } from '../../services/documentosEquipamentos';
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelTecnico.module.css';
 
@@ -17,6 +17,7 @@ export function PainelTecnico() {
   const [equipamentos, definirEquipamentos] = useState([]);
   const [catalogoMateriais, definirCatalogoMateriais] = useState([]);
   const [solicitacoes, definirSolicitacoes] = useState([]);
+  const [cautelas, definirCautelas] = useState([]);
   const [origem, definirOrigem] = useState('');
   const [destino, definirDestino] = useState('');
   const [busca, definirBusca] = useState('');
@@ -43,13 +44,14 @@ export function PainelTecnico() {
 
   useEffect(() => {
     let componenteAtivo = true;
-    Promise.all([apiObras.listar(), apiEquipamentos.listar(), apiEquipamentos.listarCatalogo(), apiAtividades.listar()])
-      .then(([obrasRecebidas, equipamentosRecebidos, catalogoRecebido, solicitacoesRecebidas]) => {
+    Promise.all([apiObras.listar(), apiEquipamentos.listar(), apiEquipamentos.listarCatalogo(), apiAtividades.listar(), apiCautelas.listar()])
+      .then(([obrasRecebidas, equipamentosRecebidos, catalogoRecebido, solicitacoesRecebidas, cautelasRecebidas]) => {
         if (!componenteAtivo) return;
         definirObras(obrasRecebidas);
         definirEquipamentos(equipamentosRecebidos);
         definirCatalogoMateriais(catalogoRecebido);
         definirSolicitacoes(solicitacoesRecebidas);
+        definirCautelas(cautelasRecebidas);
         const obraDoTecnico = obrasRecebidas.find(({ responsaveis }) => responsaveis?.some((nome) => nome.toLocaleLowerCase('pt-BR') === usuario.nome.toLocaleLowerCase('pt-BR')));
         definirObraInventarioId(String(obraDoTecnico?.id || obrasRecebidas[0]?.id || ''));
       })
@@ -105,7 +107,7 @@ export function PainelTecnico() {
     try {
       const atualizada = acao === 'transito' ? await apiAtividades.iniciarTransito(solicitacao.id) : await apiAtividades.concluir(solicitacao.id);
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
-      definirEquipamentos(await apiEquipamentos.listar());
+      const [equipamentosAtualizados,cautelasAtualizadas]=await Promise.all([apiEquipamentos.listar(),apiCautelas.listar()]);definirEquipamentos(equipamentosAtualizados);definirCautelas(cautelasAtualizadas);
       definirMensagem({ tipo: 'sucesso', texto: acao === 'transito' ? 'Retirada confirmada. Material em trânsito.' : 'Recebimento confirmado. Estoque atualizado.' });
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
   };
@@ -192,8 +194,8 @@ export function PainelTecnico() {
           <div className={estilos.trajetoCartao}><span>{solicitacao.obraDestinoId ? `Entrega solicitada para ${nomeLocal(solicitacao.obraDestinoId)}` : 'Retirada solicitada da sua obra'}</span></div>
           <div className={estilos.materiaisCartao}>{solicitacao.materiais.map((material) => <span key={`${material.identificacao}-${material.id}`}><b>{material.quantidade}×</b> {material.nome}<small>{material.identificacao}</small></span>)}</div>
           {solicitacao.observacao && <p className={estilos.notaCartao}>“{solicitacao.observacao}”</p>}
-          {solicitacao.status === 'Aguardando coleta' && solicitacao.materiais.every(({ identificacao }) => identificacao) && <button className={estilos.acaoMovimentacao} onClick={() => imprimirCautelaSolicitacao(solicitacao, (id) => obras.find((obra) => String(obra.id) === String(id)))}><Download /> Cautela para a portaria</button>}
-          {solicitacao.status === 'Aguardando coleta' && <button className={estilos.acaoMovimentacao} onClick={() => avancarSolicitacao(solicitacao, 'transito')}><Truck /> Confirmar saída da obra</button>}
+          {cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id).map((cautela) => <button key={cautela.id} className={estilos.acaoMovimentacao} onClick={() => imprimirCautelaEmitida(cautela)}><Download /> Cautela</button>)}
+          {solicitacao.status === 'Aguardando coleta' && <span>Aguardando o estoque confirmar a retirada.</span>}
           {solicitacao.status === 'Em trânsito' && solicitacao.obraDestinoId && <button className={estilos.acaoMovimentacao} onClick={() => avancarSolicitacao(solicitacao, 'concluir')}><PackageCheck /> Confirmar recebimento na obra</button>}
         </article>) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3><p>Sua primeira movimentação aparecerá aqui.</p><button onClick={() => definirAba('solicitar')}>Criar solicitação</button></div>}</div>
       </section>}

@@ -37,7 +37,6 @@ export const apiObras = {
   cadastrar: (dados) => criar(ROTAS_API.obras, dados),
   atualizar: (obraId, dados) => atualizar(ROTAS_API.obra(obraId), dados),
   obterHistorico: (obraId) => obter(ROTAS_API.historicoObra(obraId)),
-  obterCautela: (obraId) => obter(ROTAS_API.cautelaObra(obraId), { responseType: 'blob' }),
 };
 
 export const apiEquipamentos = {
@@ -61,10 +60,12 @@ export const apiAtividades = {
   atualizar: (atividadeId, dados) => atualizar(ROTAS_API.atividade(atividadeId), dados),
   aprovar: (atividadeId) => criar(ROTAS_API.aprovarAtividade(atividadeId)),
   rejeitar: (atividadeId) => criar(ROTAS_API.rejeitarAtividade(atividadeId)),
+  solicitarCompra: (atividadeId, materialId, quantidade) => criar(ROTAS_API.solicitarCompraMaterial(atividadeId, materialId), { quantidade }),
+  distribuir: (atividadeId, atendimentos) => criar(ROTAS_API.distribuirAtividade(atividadeId), { atendimentos }),
   iniciarTransito: (atividadeId) => criar(ROTAS_API.iniciarTransitoAtividade(atividadeId)),
   concluir: (atividadeId) => criar(ROTAS_API.concluirAtividade(atividadeId)),
-  obterCautela: (atividadeId) => obter(ROTAS_API.cautelaAtividade(atividadeId), { responseType: 'blob' }),
 };
+export const apiCautelas = { listar: (solicitacaoId) => obter(ROTAS_API.cautelas, { params: solicitacaoId ? { solicitacaoId } : {} }) };
 
 export const apiDeposito = { listar: () => obter(ROTAS_API.deposito) };
 export const apiPainel = { obterResumo: () => obter(ROTAS_API.resumo) };

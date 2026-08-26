@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/aprovacao","/atividades/*/rejeicao","/equipamentos/*/movimentacoes").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.POST,"/atividades/*/materiais/*/compra").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
+                .requestMatchers(HttpMethod.POST,"/atividades/*/distribuicao").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/transito","/atividades/*/conclusao").hasAnyRole("ESTOQUE","TECNICO")
                 .anyRequest().authenticated())
             .logout(logout->logout.logoutUrl("/auth/logout").deleteCookies("JSESSIONID","XSRF-TOKEN").invalidateHttpSession(true).clearAuthentication(true).logoutSuccessHandler((request,response,authentication)->response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
