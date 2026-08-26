@@ -22,12 +22,17 @@ export function PainelEstoque() {
   const [obraFiltrada, definirObraFiltrada] = useState('todas');
   const [temaEscuro, definirTemaEscuro] = useState(() => localStorage.getItem('era-tema-estoque') === 'escuro');
 
-  const carregar = async () => {
-    const [obrasRecebidas, equipamentosRecebidos, solicitacoesRecebidas, cautelasRecebidas] = await Promise.all([apiObras.listar(), apiEquipamentos.listar(), apiAtividades.listar(), apiCautelas.listar()]);
-    definirObras(obrasRecebidas); definirEquipamentos(equipamentosRecebidos); definirSolicitacoes(solicitacoesRecebidas); definirCautelas(cautelasRecebidas);
-  };
-
-  useEffect(() => { carregar().catch((erro) => definirMensagem({ tipo: 'erro', texto: erro.message })).finally(() => definirCarregando(false)); }, []);
+  useEffect(() => {
+    let ativo = true;
+    Promise.all([apiObras.listar(), apiEquipamentos.listar(), apiAtividades.listar(), apiCautelas.listar()])
+      .then(([obrasRecebidas, equipamentosRecebidos, solicitacoesRecebidas, cautelasRecebidas]) => {
+        if (!ativo) return;
+        definirObras(obrasRecebidas); definirEquipamentos(equipamentosRecebidos); definirSolicitacoes(solicitacoesRecebidas); definirCautelas(cautelasRecebidas);
+      })
+      .catch((erro) => { if (ativo) definirMensagem({ tipo: 'erro', texto: erro.message }); })
+      .finally(() => { if (ativo) definirCarregando(false); });
+    return () => { ativo = false; };
+  }, []);
   const buscarObra = (id) => obras.find((obra) => String(obra.id) === String(id));
   const nomeLocal = (id) => id == null || id === 'deposito' ? 'Depósito central' : buscarObra(id)?.nome || 'Obra';
   const pendencias = useMemo(() => solicitacoes.filter(({ status }) => ['Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status)), [solicitacoes]);

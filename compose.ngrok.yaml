@@ -1,0 +1,6 @@
+services:
+  api:
+    environment:
+      CORS_ALLOWED_ORIGINS: ${PUBLIC_APP_URL:?Defina PUBLIC_APP_URL com a URL HTTPS fornecida pelo ngrok}
+      SESSION_COOKIE_SECURE: "true"
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
