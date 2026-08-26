@@ -5,6 +5,7 @@ export const ROTAS_API = {
   sessao: '/auth/me',
   alterarSenha: '/auth/alterar-senha',
   usuarios: '/usuarios',
+  usuario: (usuarioId) => `/usuarios/${usuarioId}`,
   statusUsuario: (usuarioId) => `/usuarios/${usuarioId}/status`,
   redefinirSenhaUsuario: (usuarioId) => `/usuarios/${usuarioId}/redefinicao-senha`,
   resumo: '/painel/resumo',

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Boxes, KeyRound, LayoutDashboard, LogOut, ShieldCheck, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
+import { Boxes, KeyRound, LayoutDashboard, LogOut, Pencil, ShieldCheck, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiFuncionarios } from '../../services/api/servicoAtivosApi';
@@ -26,6 +26,7 @@ export function PainelAdmin() {
   const [erro, definirErro] = useState('');
   const [mensagem, definirMensagem] = useState('');
   const [criandoUsuario, definirCriandoUsuario] = useState(false);
+  const [editandoUsuario, definirEditandoUsuario] = useState(null);
   const [redefinindo, definirRedefinindo] = useState(null);
   const [senhaTemporaria, definirSenhaTemporaria] = useState('');
 
@@ -64,6 +65,16 @@ export function PainelAdmin() {
     await carregar();
   };
 
+  const editarUsuario = async (dados) => {
+    await apiUsuarios.atualizar(editandoUsuario.id, dados);
+    if (editandoUsuario.id === usuario.id) {
+      await encerrarSessao();
+      return;
+    }
+    definirMensagem('Usuário atualizado com sucesso. Uma nova senha exigirá troca no próximo login.');
+    await carregar();
+  };
+
   const alternarStatus = async (item) => {
     try {
       await apiUsuarios.definirStatus(item.id, !item.ativo);
@@ -96,7 +107,7 @@ export function PainelAdmin() {
         {usuarios.map((item) => <article key={item.id} className={estilos.usuario}>
           <div className={estilos.usuarioTopo}><span><Users /></span><div><strong>{item.nome}</strong><small>{item.login}</small></div><b data-ativo={item.ativo}>{item.ativo ? 'Ativo' : 'Inativo'}</b></div>
           <dl><div><dt>Perfil</dt><dd>{item.perfil}</dd></div><div><dt>Funcionário</dt><dd>{item.funcionarioId ? `#${item.funcionarioId}` : 'Sem vínculo'}</dd></div><div><dt>Senha</dt><dd>{item.deveAlterarSenha ? 'Troca obrigatória' : 'Definida'}</dd></div></dl>
-          <footer><button type="button" onClick={() => { definirRedefinindo(item); definirSenhaTemporaria(''); }}><KeyRound /> Redefinir senha</button><button type="button" disabled={item.id === usuario.id} title={item.id === usuario.id ? 'Você não pode desativar sua própria conta' : undefined} className={item.ativo ? estilos.desativar : estilos.reativar} onClick={() => alternarStatus(item)}>{item.ativo ? 'Desativar' : 'Reativar'}</button></footer>
+          <footer><button type="button" onClick={() => definirEditandoUsuario(item)}><Pencil /> Editar</button><button type="button" onClick={() => { definirRedefinindo(item); definirSenhaTemporaria(''); }}><KeyRound /> Redefinir senha</button><button type="button" disabled={item.id === usuario.id} title={item.id === usuario.id ? 'Você não pode desativar sua própria conta' : undefined} className={item.ativo ? estilos.desativar : estilos.reativar} onClick={() => alternarStatus(item)}>{item.ativo ? 'Desativar' : 'Reativar'}</button></footer>
         </article>)}
       </section>}
       {!funcionariosSemAcesso.length && <p className={estilos.aviso}>Todos os técnicos cadastrados já possuem um usuário vinculado. Ainda é possível criar acessos administrativos, gerenciais ou de estoque.</p>}
@@ -107,6 +118,7 @@ export function PainelAdmin() {
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de auditoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador /></>}
 
     {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}
+    {editandoUsuario && <ModalNovoUsuario usuario={editandoUsuario} funcionarios={funcionarios.filter((funcionario) => !usuarios.some((item) => item.id !== editandoUsuario.id && item.funcionarioId === funcionario.id))} aoFechar={() => definirEditandoUsuario(null)} aoSalvar={editarUsuario} />}
     {redefinindo && <EstruturaModal titulo="Redefinir senha" subtitulo={`Crie uma senha temporária para ${redefinindo.nome}`} aoFechar={() => definirRedefinindo(null)}><div className={estilos.redefinir}><label>Senha temporária <input type="password" autoComplete="new-password" value={senhaTemporaria} onChange={(evento) => definirSenhaTemporaria(evento.target.value)} minLength={8} maxLength={128} /></label><small>Mínimo de 8 caracteres e não pode conter o login.</small><div><button type="button" onClick={() => definirRedefinindo(null)}>Cancelar</button><button type="button" disabled={senhaTemporaria.length < 8} onClick={redefinirSenha}>Redefinir senha</button></div></div></EstruturaModal>}
   </div>;
 }

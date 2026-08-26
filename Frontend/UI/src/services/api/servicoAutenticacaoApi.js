@@ -24,6 +24,7 @@ export async function alterarSenha(dados) {
 export const apiUsuarios = {
   listar: async () => obterDadosResposta(await clienteHttp.get(ROTAS_API.usuarios)),
   cadastrar: async (dados) => obterDadosResposta(await clienteHttp.post(ROTAS_API.usuarios, dados)),
+  atualizar: async (id, dados) => obterDadosResposta(await clienteHttp.put(ROTAS_API.usuario(id), dados)),
   definirStatus: async (id, ativo) => obterDadosResposta(await clienteHttp.patch(ROTAS_API.statusUsuario(id), { ativo })),
   redefinirSenha: async (id, senhaTemporaria) => obterDadosResposta(await clienteHttp.post(ROTAS_API.redefinirSenhaUsuario(id), { senhaTemporaria })),
 };
