@@ -44,12 +44,14 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
   });
   const podeSalvar = tecnico && obraOrigemId !== obraDestinoId && itensValidos;
 
-  return <EstruturaModal titulo="Editar solicitação" subtitulo={`Movimentação · ${String(solicitacao.id).toUpperCase()}`} aoFechar={aoFechar}>
+  return <EstruturaModal titulo="Editar solicitação" subtitulo={`Movimentação · ${String(solicitacao.id).toUpperCase()}`} aoFechar={aoFechar} largo>
     <div className={styles.formulario}>
       <CampoFormulario rotulo="Técnico solicitante"><select className={styles.campo} value={tecnico} onChange={(evento) => definirTecnico(evento.target.value)}>{tecnicosCadastrados.map((nome) => <option key={nome}>{nome}</option>)}</select></CampoFormulario>
       <CampoFormulario rotulo="Obra de origem"><select className={styles.campo} value={obraOrigemId} onChange={(evento) => alterarOrigem(evento.target.value)}><option value="deposito">Depósito central</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></CampoFormulario>
       <CampoFormulario rotulo="Obra de destino"><select className={styles.campo} value={obraDestinoId} onChange={(evento) => definirObraDestinoId(evento.target.value)}><option value="deposito">Depósito central</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></CampoFormulario>
-      <CampoFormulario rotulo="Itens da solicitação" dica="Selecione somente itens disponíveis na origem. O saldo inclui o que já estava reservado nesta solicitação.">
+      <div className={styles.grupoMateriais}>
+        <span className={styles.rotuloMateriais}>Itens da solicitação</span>
+        <small className={styles.dicaMateriais}>Selecione somente itens disponíveis na origem. O saldo inclui o que já estava reservado nesta solicitação.</small>
         <div className={styles.listaMateriais}>
           {itens.map((item, indice) => {
             const equipamento = equipamentoPorSerie(item.identificacao);
@@ -62,8 +64,8 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
           })}
           {!itens.length && <p className={styles.semMateriais}>Nenhum item selecionado.</p>}
         </div>
-      </CampoFormulario>
-      <button type="button" className={styles.adicionar} onClick={adicionarItem} disabled={!equipamentosDisponiveis.length || itens.length >= equipamentosDisponiveis.length}><Plus /> Adicionar novo item</button>
+        <button type="button" className={styles.adicionar} onClick={adicionarItem} disabled={!equipamentosDisponiveis.length || itens.length >= equipamentosDisponiveis.length}><Plus /> Adicionar novo item</button>
+      </div>
       {!equipamentosDisponiveis.length && <p className={styles.aviso}>Não existem itens disponíveis na origem selecionada.</p>}
       <CampoFormulario rotulo="Observação"><textarea className={`${styles.campo} ${styles.observacao}`} value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} /></CampoFormulario>
       <div className={styles.acoes}><button type="button" className={styles.cancelar} onClick={aoFechar}>Cancelar</button><button type="button" className={styles.salvar} disabled={!podeSalvar} onClick={() => aoSalvar(solicitacao.id, { tecnico, obraOrigemId: obraOrigemId === 'deposito' ? null : Number(obraOrigemId), obraDestinoId: obraDestinoId === 'deposito' ? null : Number(obraDestinoId), materiais, observacao: observacao.trim() })}>Salvar alterações</button></div>
