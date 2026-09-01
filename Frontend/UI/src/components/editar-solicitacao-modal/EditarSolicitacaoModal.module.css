@@ -1,10 +1,20 @@
 .formulario { display:flex; flex-direction:column; gap:14px; }
 .campo { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font:14px var(--font-body); }
-.materiais { min-height:112px; resize:vertical; line-height:1.55; }
+.listaMateriais { display:flex; flex-direction:column; gap:9px; }
+.material { display:grid; grid-template-columns:minmax(0,1fr) 145px 40px; align-items:end; gap:8px; padding:11px; border:1px solid var(--border); border-radius:10px; background:var(--surface); }
+.material label { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.material label>span { color:var(--text-muted); font-size:11px; font-weight:600; }
+.quantidade input { min-height:41px; }
+.remover { width:40px; height:41px; display:grid; place-items:center; border:1px solid var(--border); border-radius:8px; background:transparent; color:#ad4437; cursor:pointer; }
+.remover svg,.adicionar svg { width:17px; }
+.adicionar { min-height:42px; display:flex; align-items:center; justify-content:center; gap:7px; border:1px dashed var(--accent); border-radius:9px; background:var(--accent-dim); color:var(--accent); font-weight:700; cursor:pointer; }
+.adicionar:disabled { opacity:.45; cursor:not-allowed; }
+.semMateriais,.aviso { margin:0; padding:12px; border-radius:8px; color:var(--text-muted); background:var(--surface-2); text-align:center; font-size:12px; }
+.aviso { color:#87500e; background:#fff0d8; }
 .observacao { min-height:76px; resize:vertical; }
 .acoes { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
 .cancelar,.salvar { min-height:40px; padding:8px 16px; border-radius:8px; font:600 14px var(--font-body); cursor:pointer; }
 .cancelar { border:0; background:transparent; color:var(--text-muted); }
 .salvar { border:0; background:var(--accent); color:#fffaf0; }
 .salvar:disabled { opacity:.45; cursor:not-allowed; }
-@media (max-width:600px) { .acoes { flex-direction:column-reverse; } .cancelar,.salvar { width:100%; min-height:44px; } }
+@media (max-width:600px) { .material { grid-template-columns:minmax(0,1fr) 40px; }.quantidade { grid-column:1; }.remover { grid-column:2; grid-row:1/3; align-self:stretch; height:auto; }.acoes { flex-direction:column-reverse; } .cancelar,.salvar { width:100%; min-height:44px; } }

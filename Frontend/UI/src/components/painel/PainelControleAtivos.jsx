@@ -116,7 +116,7 @@ export function PainelControleAtivos() {
     {modalNovoFuncionarioAberto && <ModalNovoFuncionario funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
     {funcionarioEmEdicao && <ModalEditarFuncionario funcionario={funcionarioEmEdicao} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras} aoFechar={() => definirFuncionarioEmEdicao(null)} aoSalvar={salvarFuncionario} />}
     {modalNovoUsuarioAberto && <ModalNovoUsuario funcionarios={controleAtivos.funcionarios} aoFechar={() => definirModalNovoUsuarioAberto(false)} aoSalvar={apiUsuarios.cadastrar} />}
-    {solicitacaoEmEdicao && <ModalEditarSolicitacao solicitacao={solicitacaoEmEdicao} obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirSolicitacaoEmEdicao(null)} aoSalvar={salvarEdicaoSolicitacao} />}
+    {solicitacaoEmEdicao && <ModalEditarSolicitacao solicitacao={solicitacaoEmEdicao} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirSolicitacaoEmEdicao(null)} aoSalvar={salvarEdicaoSolicitacao} />}
     <ModalHistoricoEquipamento equipamento={equipamentoComHistoricoAberto} historico={equipamentoComHistoricoAberto ? controleAtivos.consultarHistorico(equipamentoComHistoricoAberto) : []} buscarObraPorId={controleAtivos.buscarObraPorId} aoFechar={() => definirEquipamentoComHistoricoAberto(null)} aoImprimir={() => imprimirHistoricoDoEquipamento(equipamentoComHistoricoAberto)} estilos={estilos} />
   </div>;
 }
