@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 import { CampoFormulario } from '../field/Field';
 import { EstruturaModal } from '../modal-shell/ModalShell';
 import styles from './EditarSolicitacaoModal.module.css';
@@ -31,6 +31,11 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
 
   const alterarOrigem = (valor) => { definirObraOrigemId(valor); definirItens([]); };
   const alterarItem = (chave, campo, valor) => definirItens((atuais) => atuais.map((item) => item.chave === chave ? { ...item, [campo]: valor } : item));
+  const alterarQuantidade = (item, diferenca) => {
+    const equipamento = equipamentoPorSerie(item.identificacao);
+    if (!equipamento) return;
+    alterarItem(item.chave, 'quantidade', Math.min(equipamento.limiteEdicao, Math.max(1, Number(item.quantidade) + diferenca)));
+  };
   const adicionarItem = () => definirItens((atuais) => [...atuais, { chave: novaChave(), identificacao: '', quantidade: 1 }]);
   const removerItem = (chave) => definirItens((atuais) => atuais.filter((item) => item.chave !== chave));
   const equipamentoPorSerie = (serie) => equipamentosDisponiveis.find((equipamento) => equipamento.serie === serie);
@@ -57,9 +62,9 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
             const equipamento = equipamentoPorSerie(item.identificacao);
             const seriesUsadas = new Set(itens.filter((outro) => outro.chave !== item.chave).map((outro) => outro.identificacao));
             return <div className={styles.material} key={item.chave}>
-              <label><span>Item {indice + 1}</span><select className={styles.campo} value={item.identificacao} onChange={(evento) => alterarItem(item.chave, 'identificacao', evento.target.value)}><option value="">Selecione um item disponível</option>{equipamentosDisponiveis.filter((opcao) => !seriesUsadas.has(opcao.serie) || opcao.serie === item.identificacao).map((opcao) => <option key={opcao.id} value={opcao.serie}>{opcao.modelo} · Série {opcao.serie} · {opcao.saldoEdicao} disponível</option>)}</select></label>
-              <label className={styles.quantidade}><span>Quantidade disponível: {equipamento?.limiteEdicao || 0}</span><input className={styles.campo} type="number" min="1" max={equipamento?.limiteEdicao || 1} value={item.quantidade} disabled={!equipamento} onChange={(evento) => alterarItem(item.chave, 'quantidade', evento.target.value)} /></label>
-              <button type="button" className={styles.remover} onClick={() => removerItem(item.chave)} aria-label={`Remover item ${indice + 1}`}><Trash2 /></button>
+              <header><strong>Item {indice + 1}</strong><div><span className={styles.saldo}>Disponível: <b>{equipamento?.limiteEdicao || 0}</b></span><button type="button" className={styles.remover} onClick={() => removerItem(item.chave)} aria-label={`Remover item ${indice + 1}`}><Trash2 /></button></div></header>
+              <label><span>Equipamento</span><select className={styles.campo} value={item.identificacao} onChange={(evento) => { alterarItem(item.chave, 'identificacao', evento.target.value); alterarItem(item.chave, 'quantidade', 1); }}><option value="">Selecione um item disponível</option>{equipamentosDisponiveis.filter((opcao) => !seriesUsadas.has(opcao.serie) || opcao.serie === item.identificacao).map((opcao) => <option key={opcao.id} value={opcao.serie}>{opcao.modelo} · Série {opcao.serie} · {opcao.limiteEdicao} disponível</option>)}</select></label>
+              <div className={styles.quantidade}><span>Quantidade solicitada</span><div><button type="button" disabled={!equipamento || Number(item.quantidade) <= 1} onClick={() => alterarQuantidade(item, -1)} aria-label={`Diminuir quantidade do item ${indice + 1}`}><Minus /></button><b>{item.quantidade}</b><button type="button" disabled={!equipamento || Number(item.quantidade) >= equipamento.limiteEdicao} onClick={() => alterarQuantidade(item, 1)} aria-label={`Aumentar quantidade do item ${indice + 1}`}><Plus /></button></div></div>
             </div>;
           })}
           {!itens.length && <p className={styles.semMateriais}>Nenhum item selecionado.</p>}
