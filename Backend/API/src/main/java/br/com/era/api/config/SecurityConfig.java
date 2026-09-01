@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.GET,"/equipamentos/**","/obras/**","/atividades/**","/cautelas/**").authenticated()
                 .requestMatchers(HttpMethod.POST,"/atividades").authenticated()
-                .requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
+                .requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/aprovacao","/atividades/*/rejeicao","/equipamentos/*/movimentacoes").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/materiais/*/compra").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/distribuicao").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
