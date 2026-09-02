@@ -44,7 +44,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   const confirmar = async () => {
     const selecionados = solicitacao.materiais.flatMap((material) => Object.entries(quantidades[material.id] || {}).map(([equipamentoId, quantidade]) => {
       const equipamento = equipamentos.find((item) => String(item.id) === String(equipamentoId));
-      return { origem: localDoEquipamento(equipamento), material: { nome: material.nome, quantidade, identificacao: equipamento.serie, catalogoChave: material.catalogoChave || equipamento.catalogoChave } };
+      return { origem: localDoEquipamento(equipamento), material: { nome: material.nome, quantidade, identificacao: equipamento.serie, catalogoChave: material.catalogoChave || null } };
     }));
     const atendimentos = Object.values(selecionados.reduce((grupos, item) => { (grupos[item.origem] ||= { obraOrigemId: item.origem === 'deposito' ? null : Number(item.origem), materiais: [] }).materiais.push(item.material); return grupos; }, {}));
     definirErro(''); definirSalvando(true);

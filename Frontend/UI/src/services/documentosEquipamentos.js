@@ -206,6 +206,45 @@ export function imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObraPor
   abrirJanelaDeImpressao(`Auditoria da movimentação #${identificador}`, conteudo);
 }
 
+export function imprimirListaComprasSolicitacao(solicitacao, aquisicoes, buscarObraPorId) {
+  const identificador = String(solicitacao.id ?? '').padStart(4, '0');
+  const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId;
+  const obra = obraId ? buscarObraPorId(obraId) : null;
+  const pendentes = aquisicoes.filter(({ pendente }) => pendente > 0);
+  const linhas = pendentes.length
+    ? pendentes.map(({ material, pendente }, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(pendente)}</td><td></td><td></td></tr>`).join('')
+    : '<tr><td colspan="5">Não há materiais pendentes de compra nesta solicitação.</td></tr>';
+  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Lista de compras por solicitação</h1></div><div class="header">
+    <div class="header-row"><span class="label">Solicitação</span><span class="value">#${textoSeguro(identificador)}</span></div>
+    <div class="header-row"><span class="label">Obra</span><span class="value">${textoSeguro(obra?.nome || 'Depósito central')}</span></div>
+    <div class="header-row"><span class="label">Cliente</span><span class="value">${textoSeguro(obra?.cliente)}</span></div>
+    <div class="header-row"><span class="label">Solicitante</span><span class="value">${textoSeguro(solicitacao.solicitante || solicitacao.tecnico)}</span></div>
+    <div class="header-row"><span class="label">Data da solicitação</span><span class="value">${formatarData(solicitacao.dataSolicitacao)}</span></div>
+  </div></div>`;
+  const conteudo = `${cabecalho}<h2>Materiais pendentes de aquisição</h2><table><thead><tr><th>Item</th><th>Material</th><th>Quantidade</th><th>Fornecedor</th><th>Conferência</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Lista gerada em ${textoSeguro(new Date().toLocaleString('pt-BR'))}. Quantidades correspondem ao saldo ainda não adquirido.</p>`;
+  abrirJanelaDeImpressao(`Lista de compras — solicitação #${identificador}`, conteudo);
+}
+
+export function imprimirListaComprasGeral(aquisicoes, buscarObraPorId) {
+  const consolidados = [...aquisicoes.filter(({ pendente }) => pendente > 0).reduce((mapa, item) => {
+    const chave = item.material.catalogoChave || String(item.material.nome || '').trim().toLocaleLowerCase('pt-BR');
+    const obraId = item.solicitacao.obraDestinoId || item.solicitacao.obraOrigemId;
+    const atual = mapa.get(chave) || { nome: item.material.nome, quantidade: 0, solicitacoes: new Set(), obras: new Set() };
+    atual.quantidade += item.pendente;
+    atual.solicitacoes.add(`#${String(item.solicitacao.id).padStart(4, '0')}`);
+    atual.obras.add(obraId ? buscarObraPorId(obraId)?.nome || 'Obra não encontrada' : 'Depósito central');
+    mapa.set(chave, atual);
+    return mapa;
+  }, new Map()).values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  const linhas = consolidados.length
+    ? consolidados.map((item, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(item.nome)}</td><td>${textoSeguro(item.quantidade)}</td><td>${textoSeguro([...item.obras].join(', '))}</td><td>${textoSeguro([...item.solicitacoes].join(', '))}</td><td></td></tr>`).join('')
+    : '<tr><td colspan="6">Não há materiais pendentes de compra.</td></tr>';
+  const totalUnidades = consolidados.reduce((total, item) => total + item.quantidade, 0);
+  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Lista geral de compras</h1></div><div class="header"><div class="header-row"><span class="label">Materiais distintos</span><span class="value">${consolidados.length}</span></div><div class="header-row"><span class="label">Total de unidades</span><span class="value">${totalUnidades}</span></div><div class="header-row"><span class="label">Gerado em</span><span class="value">${textoSeguro(new Date().toLocaleString('pt-BR'))}</span></div></div></div>`;
+  const conteudo = `${cabecalho}<h2>Materiais consolidados pendentes</h2><table><thead><tr><th>Item</th><th>Material</th><th>Quantidade</th><th>Obras</th><th>Solicitações</th><th>Conferência</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Materiais equivalentes foram agrupados e suas quantidades somadas.</p>`;
+  abrirJanelaDeImpressao('Lista geral de compras', conteudo);
+}
+
 export function imprimirHistoricoObra(obra, equipamentos) {
   const equipamentosAtuais = equipamentos.filter(({ obraId }) => obraId === obra.id);
   const equipamentosAnteriores = equipamentos.filter(({ historico }) => historico?.some((movimentacao) => movimentacao.destinoObraId === obra.id || movimentacao.origemObraId === obra.id));

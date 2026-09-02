@@ -60,6 +60,30 @@ export function PainelTecnico({ modoAdministrador = false }) {
     return () => { componenteAtivo = false; };
   }, [usuario.nome]);
 
+  useEffect(() => {
+    let componenteAtivo = true;
+    const atualizarMovimentacoes = async () => {
+      try {
+        const [solicitacoesRecebidas, cautelasRecebidas] = await Promise.all([apiAtividades.listar(), apiCautelas.listar()]);
+        if (!componenteAtivo) return;
+        definirSolicitacoes(solicitacoesRecebidas);
+        definirCautelas(cautelasRecebidas);
+      } catch {
+        // A carga inicial já informa falhas; a sincronização silenciosa tenta novamente no próximo ciclo.
+      }
+    };
+    const aoRetomarPainel = () => { if (document.visibilityState === 'visible') atualizarMovimentacoes(); };
+    const intervalo = window.setInterval(atualizarMovimentacoes, 10_000);
+    window.addEventListener('focus', atualizarMovimentacoes);
+    document.addEventListener('visibilitychange', aoRetomarPainel);
+    return () => {
+      componenteAtivo = false;
+      window.clearInterval(intervalo);
+      window.removeEventListener('focus', atualizarMovimentacoes);
+      document.removeEventListener('visibilitychange', aoRetomarPainel);
+    };
+  }, []);
+
   const obrasAtivas = useMemo(() => obras.filter(({ status }) => status !== 'Concluída'), [obras]);
   const equipamentosDaOrigem = useMemo(() => equipamentos.filter((equipamento) => {
     if (!origem || localizacaoEquipamento(equipamento) !== origem) return false;
@@ -75,6 +99,7 @@ export function PainelTecnico({ modoAdministrador = false }) {
   const nomeLocal = (valor) => valor === 'deposito' ? 'Depósito central' : obras.find(({ id }) => String(id) === String(valor))?.nome || 'Selecione';
   const pendentes = solicitacoes.filter(({ status }) => status === 'Pendente').length;
   const aprovadas = solicitacoes.filter(({ status }) => status === 'Aprovada').length;
+  const recebimentosPendentes = solicitacoes.filter(({ status, obraDestinoId }) => status === 'Em trânsito' && obraDestinoId).length;
   const quantidadeTotal = itens.reduce((total, item) => total + item.quantidade, 0);
   const podeEnviar = ((operacao === 'receber' && destino) || (operacao === 'devolver' && origem)) && itens.length > 0 && !enviando;
   const obraInventario = obras.find(({ id }) => String(id) === obraInventarioId);
@@ -155,7 +180,7 @@ export function PainelTecnico({ modoAdministrador = false }) {
       <nav className={estilos.abas} aria-label="Navegação do técnico">
         <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 size={18} /> Minha obra</button>
         {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight size={18} /> Movimentar</button>}
-        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Histórico {pendentes > 0 && <span>{pendentes}</span>}</button>
+        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Movimentações {pendentes + recebimentosPendentes > 0 && <span>{pendentes + recebimentosPendentes}</span>}</button>
       </nav>
 
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
