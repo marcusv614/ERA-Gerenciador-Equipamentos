@@ -72,6 +72,7 @@
 }
 
 @media (max-width: 600px) {
+  .input { min-height: 44px; }
   .statusBtn { flex: 1 1 calc(50% - 4px); min-height: 44px; }
   .actions { flex-direction: column-reverse; }
   .cancel, .submit { width: 100%; min-height: 44px; }

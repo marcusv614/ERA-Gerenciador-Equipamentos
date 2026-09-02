@@ -202,4 +202,9 @@
   .grid2 {
     grid-template-columns: 1fr;
   }
+  .input, .multiSelectTrigger, .multiSelectOption, .statusBtn { min-height: 44px; }
+  .statusRow { flex-wrap: wrap; }
+  .statusBtn { flex: 1 1 calc(50% - 4px); }
+  .actions { flex-direction: column-reverse; }
+  .cancel, .submit { width: 100%; min-height: 44px; }
 }

@@ -14,4 +14,5 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento,Long> {
     @Query("select e from Equipamento e where lower(e.serie)=lower(:serie)")
     Optional<Equipamento> buscarPorSerieParaAtualizacao(@Param("serie") String serie);
     List<Equipamento> findByObraIsNullOrderByModeloAsc();
+    List<Equipamento> findByObraIdOrderByModeloAscSerieAsc(Long obraId);
 }

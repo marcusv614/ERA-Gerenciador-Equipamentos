@@ -3,7 +3,8 @@ import { AlertCircle, Box, Check, ChevronRight, Minus, Plus, ShoppingCart, Wareh
 import estilos from './SepararEquipamentosModal.module.css';
 
 const localDoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
-const textoBusca = (equipamento) => `${equipamento.modelo} ${equipamento.tipo}`.toLocaleLowerCase('pt-BR');
+const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
+const statusMovimentavel = (status) => ['em estoque', 'em campo', 'disponivel'].includes(normalizar(status));
 
 export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoFechar, aoConfirmar, aoSolicitarCompra }) {
   const [quantidades, definirQuantidades] = useState({});
@@ -14,7 +15,10 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   const candidatos = (material) => equipamentos.filter((equipamento) => {
     const local = localDoEquipamento(equipamento);
     const origemPermitida = origemFixa ? local === origemFixa : local !== String(solicitacao.obraDestinoId);
-    return origemPermitida && (equipamento.quantidadeDisponivel ?? 1) > 0 && textoBusca(equipamento).includes(material.nome.toLocaleLowerCase('pt-BR'));
+    const mesmoCatalogo = material.catalogoChave
+      ? equipamento.catalogoChave === material.catalogoChave
+      : normalizar(equipamento.modelo) === normalizar(material.nome);
+    return origemPermitida && statusMovimentavel(equipamento.status) && (equipamento.quantidadeDisponivel ?? 1) > 0 && mesmoCatalogo;
   });
   const quantidadeEscolhida = (materialId, equipamentoId) => quantidades[materialId]?.[equipamentoId] || 0;
   const reservadoEmOutros = (materialId, equipamentoId) => Object.entries(quantidades).reduce((total, [outroMaterialId, escolhas]) => String(outroMaterialId) === String(materialId) ? total : total + (escolhas[equipamentoId] || 0), 0);
@@ -40,7 +44,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   const confirmar = async () => {
     const selecionados = solicitacao.materiais.flatMap((material) => Object.entries(quantidades[material.id] || {}).map(([equipamentoId, quantidade]) => {
       const equipamento = equipamentos.find((item) => String(item.id) === String(equipamentoId));
-      return { origem: localDoEquipamento(equipamento), material: { nome: material.nome, quantidade, identificacao: equipamento.serie } };
+      return { origem: localDoEquipamento(equipamento), material: { nome: material.nome, quantidade, identificacao: equipamento.serie, catalogoChave: material.catalogoChave || equipamento.catalogoChave } };
     }));
     const atendimentos = Object.values(selecionados.reduce((grupos, item) => { (grupos[item.origem] ||= { obraOrigemId: item.origem === 'deposito' ? null : Number(item.origem), materiais: [] }).materiais.push(item.material); return grupos; }, {}));
     definirErro(''); definirSalvando(true);

@@ -122,6 +122,16 @@ export function imprimirCautelaObra(obra, equipamentos) {
   abrirJanelaDeImpressao(`Inventário — ${obra.nome}`, conteudo);
 }
 
+export function imprimirCautelaHistoricaObra(inventario) {
+  const obra = { nome: inventario.obraNome, cliente: inventario.cliente, cidade: inventario.cidade, inicio: inventario.dataReferencia, responsaveis: inventario.responsaveisTecnicos };
+  const tecnicos = [...new Set((inventario.materiais || []).map(({ tecnico }) => tecnico).filter(Boolean))];
+  const linhas = inventario.materiais?.length
+    ? inventario.materiais.map((item) => `<tr><td>${textoSeguro(item.quantidade || 1)}</td><td>${textoSeguro(item.tipo)}</td><td>${textoSeguro(item.modelo)}</td><td>${textoSeguro(item.serie)}</td><td>${textoSeguro(item.medida)}</td><td>${textoSeguro(item.tecnico)}</td></tr>`).join('')
+    : '<tr><td colspan="6">Nenhum equipamento registrado na obra nesta data.</td></tr>';
+  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Cautela histórica da obra')}<div class="header"><div class="header-row"><span class="label">Data de referência</span><span class="value">${formatarData(inventario.dataReferencia)}</span></div><div class="header-row"><span class="label">Status da obra na data</span><span class="value">${textoSeguro(inventario.status)}</span></div></div><h2>Materiais presentes na data consultada</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Modelo</th><th>Série</th><th>Medida</th><th>Técnico</th></tr></thead><tbody>${linhas}</tbody></table>${ASSINATURAS_CAUTELA}<p class="muted">Documento gerado a partir do histórico imutável do sistema.</p>`;
+  abrirJanelaDeImpressao(`Cautela histórica — ${inventario.obraNome} — ${formatarData(inventario.dataReferencia)}`, conteudo);
+}
+
 export function imprimirRomaneioSeparacao(solicitacao, buscarObraPorId) {
   const identificadorSolicitacao = String(solicitacao.id ?? 'sem identificacao').toUpperCase();
   const materiais = Array.isArray(solicitacao.materiais) ? solicitacao.materiais : [];

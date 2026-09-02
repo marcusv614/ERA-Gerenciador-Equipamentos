@@ -37,6 +37,7 @@ export const apiObras = {
   cadastrar: (dados) => criar(ROTAS_API.obras, dados),
   atualizar: (obraId, dados) => atualizar(ROTAS_API.obra(obraId), dados),
   obterHistorico: (obraId) => obter(ROTAS_API.historicoObra(obraId)),
+  consultarInventarioHistorico: (obraId, data) => obter(ROTAS_API.inventarioHistoricoObra(obraId), { params: { data } }),
 };
 
 export const apiEquipamentos = {
@@ -61,6 +62,7 @@ export const apiAtividades = {
   aprovar: (atividadeId) => criar(ROTAS_API.aprovarAtividade(atividadeId)),
   rejeitar: (atividadeId) => criar(ROTAS_API.rejeitarAtividade(atividadeId)),
   solicitarCompra: (atividadeId, materialId, quantidade) => criar(ROTAS_API.solicitarCompraMaterial(atividadeId, materialId), { quantidade }),
+  registrarAquisicao: (atividadeId, materialId, quantidade) => criar(ROTAS_API.registrarAquisicaoMaterial(atividadeId, materialId), { quantidade }),
   distribuir: (atividadeId, atendimentos) => criar(ROTAS_API.distribuirAtividade(atividadeId), { atendimentos }),
   iniciarTransito: (atividadeId) => criar(ROTAS_API.iniciarTransitoAtividade(atividadeId)),
   concluir: (atividadeId) => criar(ROTAS_API.concluirAtividade(atividadeId)),

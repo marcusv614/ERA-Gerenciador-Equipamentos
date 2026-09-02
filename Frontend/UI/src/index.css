@@ -56,6 +56,17 @@ button {
   font-family: inherit;
 }
 
+button {
+  transition-property: opacity !important;
+  transition-duration: 0.18s !important;
+  transition-timing-function: ease !important;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.78;
+  filter: none !important;
+}
+
 input,
 select,
 textarea {

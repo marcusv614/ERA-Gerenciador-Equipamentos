@@ -5,11 +5,12 @@ import { EstruturaModal } from '../modal-shell/ModalShell';
 import styles from './EditarSolicitacaoModal.module.css';
 
 const normalizar = (valor) => String(valor || '').trim().toLocaleLowerCase('pt-BR');
+const statusMovimentavel = (status) => ['em estoque', 'em campo', 'disponível', 'disponivel'].includes(normalizar(status));
 const agruparPedido = (materiais, equipamentos) => Object.values(materiais.reduce((grupos, material) => {
   const equipamento = equipamentos.find((item) => normalizar(item.serie) === normalizar(material.identificacao));
   const nome = equipamento?.modelo || material.nome;
-  const chave = normalizar(nome);
-  if (!grupos[chave]) grupos[chave] = { chave, nome, quantidade: 0 };
+  const chave = material.catalogoChave || equipamento?.catalogoChave || normalizar(nome);
+  if (!grupos[chave]) grupos[chave] = { chave, nome, quantidade: 0, catalogoChave: material.catalogoChave || equipamento?.catalogoChave };
   grupos[chave].quantidade += material.quantidade;
   return grupos;
 }, {}));
@@ -30,13 +31,13 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
 
   const gruposDisponiveis = useMemo(() => Object.values(equipamentos
     .filter((equipamento) => String(equipamento.obraId || 'deposito') === obraOrigemId)
-    .filter((equipamento) => !String(equipamento.status).toLocaleLowerCase('pt-BR').includes('manuten'))
+    .filter((equipamento) => statusMovimentavel(equipamento.status))
     .reduce((grupos, equipamento) => {
       const saldo = (equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1) + (reservadosNaSolicitacao[normalizar(equipamento.serie)] || 0);
       const limite = equipamento.controleQuantidade === 'LOTE' ? saldo : Math.min(1, saldo);
       if (limite <= 0) return grupos;
-      const chave = normalizar(equipamento.modelo);
-      if (!grupos[chave]) grupos[chave] = { chave, nome: equipamento.modelo, tipo: equipamento.tipo, disponivel: 0, equipamentos: [] };
+      const chave = equipamento.catalogoChave || normalizar(equipamento.modelo);
+      if (!grupos[chave]) grupos[chave] = { chave, nome: equipamento.modelo, tipo: equipamento.tipo, disponivel: 0, equipamentos: [], catalogoChave: equipamento.catalogoChave };
       grupos[chave].disponivel += limite;
       grupos[chave].equipamentos.push({ ...equipamento, limiteEdicao: limite });
       return grupos;
@@ -54,7 +55,7 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
   const adicionarItem = () => {
     const grupo = grupoPorChave(modeloParaAdicionar);
     if (!grupo) return;
-    definirItens((atuais) => [...atuais, { chave: grupo.chave, nome: grupo.nome, quantidade: 1 }]);
+    definirItens((atuais) => [...atuais, { chave: grupo.chave, nome: grupo.nome, quantidade: 1, catalogoChave: grupo.catalogoChave }]);
     definirModeloParaAdicionar('');
   };
 
@@ -66,7 +67,7 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
       if (restante <= 0) return [];
       const quantidade = Math.min(restante, equipamento.limiteEdicao);
       restante -= quantidade;
-      return [{ nome: equipamento.modelo, identificacao: equipamento.serie, quantidade }];
+      return [{ nome: equipamento.modelo, identificacao: equipamento.serie, quantidade, catalogoChave: item.catalogoChave || equipamento.catalogoChave }];
     });
   });
   const itensValidos = itens.length > 0 && itens.every((item) => {

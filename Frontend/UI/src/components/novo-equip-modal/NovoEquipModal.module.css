@@ -91,6 +91,7 @@
 
 @media (max-width: 600px) {
   .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .input { min-height: 44px; }
   .typeRow { flex-wrap: wrap; }
   .typeBtn { flex: 1 1 calc(50% - 4px); min-height: 44px; }
   .actions { flex-direction: column-reverse; }

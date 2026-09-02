@@ -124,7 +124,7 @@ export function PainelTecnico({ modoAdministrador = false }) {
         obraDestinoId: operacao === 'receber' ? Number(destino) : null,
         dataSolicitacao: obterDataAtual(),
         observacao: observacao.trim() || null,
-        materiais: itens.map(({ equipamento, quantidade }) => ({ nome: equipamento.modelo, quantidade, identificacao: equipamento.serie || null })),
+        materiais: itens.map(({ equipamento, quantidade }) => ({ nome: equipamento.modelo, quantidade, identificacao: equipamento.serie || null, catalogoChave: equipamento.catalogoChave || null })),
       });
       definirSolicitacoes((atuais) => [criada, ...atuais]);
       definirEquipamentos((atuais) => atuais.map((equipamento) => {

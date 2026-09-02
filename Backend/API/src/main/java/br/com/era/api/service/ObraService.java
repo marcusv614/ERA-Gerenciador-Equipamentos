@@ -15,12 +15,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 @Service
 public class ObraService {
-    private final ObraRepository repository; private final FuncionarioService funcionarios; private final UsuarioService usuarios;
-    public ObraService(ObraRepository repository,FuncionarioService funcionarios,UsuarioService usuarios){this.repository=repository;this.funcionarios=funcionarios;this.usuarios=usuarios;}
+    private final ObraRepository repository; private final FuncionarioService funcionarios; private final UsuarioService usuarios; private final InventarioHistoricoService inventarioHistorico;
+    public ObraService(ObraRepository repository,FuncionarioService funcionarios,UsuarioService usuarios,InventarioHistoricoService inventarioHistorico){this.repository=repository;this.funcionarios=funcionarios;this.usuarios=usuarios;this.inventarioHistorico=inventarioHistorico;}
     @Transactional(readOnly=true) public List<ObraDto.Resposta> listar(){return repository.findAll().stream().map(this::resposta).toList();}
     @Transactional(readOnly=true) public List<ObraDto.Resposta> listarParaUsuario(String login){Usuario usuario=usuarios.buscarPorLogin(login);if(usuario.getPerfil()!=PerfilUsuario.TECNICO)return listar();return repository.findAll().stream().filter(obra->podeAcessar(usuario,obra)).map(this::resposta).toList();}
-    @Transactional public ObraDto.Resposta cadastrar(ObraDto.Requisicao dados){Obra obra=new Obra();preencher(obra,dados);return resposta(repository.save(obra));}
-    @Transactional public ObraDto.Resposta atualizar(Long id,ObraDto.Requisicao dados){Obra obra=buscar(id);preencher(obra,dados);return resposta(obra);}
+    @Transactional public ObraDto.Resposta cadastrar(ObraDto.Requisicao dados){Obra obra=new Obra();preencher(obra,dados);repository.save(obra);inventarioHistorico.registrar(obra);return resposta(obra);}
+    @Transactional public ObraDto.Resposta atualizar(Long id,ObraDto.Requisicao dados){Obra obra=buscar(id);preencher(obra,dados);inventarioHistorico.registrar(obra);return resposta(obra);}
     @Transactional(readOnly=true) public Obra buscar(Long id){return repository.findById(id).orElseThrow(()->new RecursoNaoEncontradoException("Obra não encontrada."));}
     @Transactional(readOnly=true) public Obra buscarParaUsuario(Long id,String login){Usuario usuario=usuarios.buscarPorLogin(login);Obra obra=buscar(id);if(!podeAcessar(usuario,obra))throw new RecursoNaoEncontradoException("Obra não encontrada.");return obra;}
     public Obra buscarOpcional(Long id){return id==null?null:buscar(id);}
