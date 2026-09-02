@@ -65,7 +65,7 @@ export function TelaAtividades({
       ? buscarObraPorId(solicitacao.obraDestinoId)
       : null;
     const pendente = solicitacao.status === "Pendente";
-    const podeEditar = solicitacao.status === "Pendente";
+    const podeEditar = ["Pendente", "Aprovada"].includes(solicitacao.status);
     const aguardandoDefinicao = solicitacao.materiais.some(
       ({ identificacao }) => !identificacao,
     );
