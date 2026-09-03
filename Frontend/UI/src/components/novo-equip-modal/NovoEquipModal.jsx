@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
-import { tiposEquipamento, iconePorTipoEquipamento } from '../../data/mockData';
-import { Wrench } from 'lucide-react';
+import { tiposEquipamento } from '../../data/mockData';
 import styles from "./NovoEquipModal.module.css";
 
 export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar }) {
@@ -16,9 +15,9 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
     data: "",
   });
   const serieNormalizada = form.serie.trim().toLocaleLowerCase('pt-BR');
-  const serieJaCadastrada = seriesCadastradas.some((serie) =>
-    serie.trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
-  const canSave = form.modelo.trim() && serieNormalizada && !serieJaCadastrada &&
+  const serieJaCadastrada = Boolean(serieNormalizada) && seriesCadastradas.some((serie) =>
+    String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
+  const canSave = form.tipo.trim() && form.modelo.trim() && !serieJaCadastrada &&
     (!form.obraId || form.tecnico.trim());
 
   return (
@@ -29,22 +28,16 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
     >
       <div className={styles.form}>
         <CampoFormulario rotulo="Tipo">
-          <div className={styles.typeRow}>
-            {tiposDisponiveis.map((t) => {
-              const Icon = iconePorTipoEquipamento[t] || Wrench;
-              return (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setForm({ ...form, tipo: t })}
-                  className={`${styles.typeBtn} ${form.tipo === t ? styles.typeBtnActive : ""}`}
-                >
-                  <Icon size={13} />
-                  {t === "Outro" ? "Outro" : t}
-                </button>
-              );
-            })}
-          </div>
+          <input
+            className={styles.input}
+            list="tipos-equipamento-cadastro"
+            placeholder="Selecione ou informe o tipo"
+            value={form.tipo}
+            onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+          />
+          <datalist id="tipos-equipamento-cadastro">
+            {tiposDisponiveis.map((tipo) => <option key={tipo} value={tipo} />)}
+          </datalist>
         </CampoFormulario>
         <CampoFormulario rotulo="Modelo">
           <input
@@ -56,7 +49,7 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
         </CampoFormulario>
         {serieJaCadastrada && <p role="alert">Já existe um equipamento com este número de série.</p>}
 
-        <CampoFormulario rotulo="Número de série">
+        <CampoFormulario rotulo="Número de série (opcional)" dica="Se ficar vazio, o sistema criará uma identificação interna.">
           <input
             className={`${styles.input} ${styles.mono}`}
             placeholder="Ex.: FTB-88213"
@@ -119,6 +112,9 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
             onClick={() =>
               aoSalvar({
                 ...form,
+                tipo: form.tipo.trim(),
+                modelo: form.modelo.trim(),
+                serie: form.serie.trim() || null,
                 obraId: form.obraId || null,
                 tecnico: form.tecnico || null,
                 data: form.data || null,

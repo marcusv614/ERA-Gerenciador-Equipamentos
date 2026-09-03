@@ -16,7 +16,7 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, eh
     <div className={estilos.topbarRight}>
       <button type="button" aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'} onClick={aoAlternarTema} className={estilos.themeButton}>{modoEscuro ? <Sun size={17} /> : <Moon size={17} />}</button>
       <div className={estilos.searchBox}><Search size={14} className={estilos.searchIcon} /><input value={termoBusca} onChange={(evento) => aoBuscar(evento.target.value)} placeholder={textoBusca} className={estilos.searchInput} /></div>
-      <button onClick={aoAbrirNovoFuncionario} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>
+      {ehAdmin && <button onClick={aoAbrirNovoFuncionario} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>}
       {ehAdmin && <button onClick={aoAbrirNovoUsuario} className={estilos.btnGhost}><UserPlus size={15} /> Usuário</button>}
       {ehAdmin && <button onClick={aoAbrirNovoEquipamento} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>}
       {ehAdmin && <button onClick={aoAbrirNovaObra} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>}
