@@ -5,9 +5,12 @@ Painel React para acompanhar equipamentos, obras, técnicos, depósito e movimen
 ## Executar o projeto
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
+
+Para o desenvolvimento local, mantenha a API disponível em `http://localhost:8080/api`
+ou configure outro endereço em `.env`.
 
 Validações disponíveis:
 
@@ -25,25 +28,20 @@ npm run build
 - `src/config/rotasApi.js`: catálogo central de endpoints do backend.
 - `src/services`: integração HTTP e geração dos documentos para impressão/PDF.
 - `src/utils`: datas e regras auxiliares sem dependência da interface.
-- `src/data`: dados simulados e constantes do domínio.
+- `src/data`: constantes de apresentação do domínio, como tipos, status e ícones.
 
-O `PainelControleAtivos` coordena a interface. Regras de cadastro e movimentação ficam em `useControleAtivos`; filtros e buscas ficam em `useFiltrosPainel`. Essa separação mantém os componentes focados em apresentação e facilita a futura conexão com uma API.
-
-## Observação
-
-Por padrão, os dados continuam em memória para permitir o desenvolvimento sem backend. A camada HTTP já está conectada ao hook e pode ser habilitada por ambiente.
+O `PainelControleAtivos` coordena a interface. A integração com a API e a atualização do estado exibido ficam em `useControleAtivos`; filtros e buscas ficam em `useFiltrosPainel`. Os componentes permanecem focados em apresentação.
 
 ## Conexão com a API
 
 Copie `.env.example` para `.env` e configure:
 
 ```env
-VITE_USAR_API=true
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=http://localhost:8080/api
 VITE_API_TIMEOUT=10000
 ```
 
-Com `VITE_USAR_API=false`, a aplicação usa os mocks. Com `true`, a carga inicial e todas as mutações passam pelo Axios. O token, quando existir, deve ser salvo em `localStorage` com a chave `era_token_acesso` e será enviado como Bearer token.
+Todas as cargas e mutações passam pela API. A autenticação usa sessão HTTP com cookie e proteção CSRF; não há armazenamento de token de acesso no navegador.
 
 Endpoints esperados para o backend:
 
@@ -57,5 +55,3 @@ Endpoints esperados para o backend:
 - `GET /deposito/equipamentos`
 
 A lista completa e parametrizada está em `src/config/rotasApi.js`. As respostas podem usar diretamente o payload ou envolvê-lo em `{ "dados": ... }` ou `{ "data": ... }`.
-
-No banco de dados, obras e movimentações devem referenciar funcionários por identificador, não pelo nome. Os nomes ainda são usados nos mocks apenas para manter compatibilidade com a interface atual.

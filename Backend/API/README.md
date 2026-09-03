@@ -15,7 +15,7 @@ O projeto utiliza as camadas `model`, `repository`, `service`, `controller` e `d
 
 ## Banco e execução
 
-Crie o banco `era_erp` no PostgreSQL ou, se tiver Docker, execute `docker compose up -d postgres`. O Flyway executa as migrations de `src/main/resources/db/migration`; o Hibernate apenas valida o schema.
+Crie o banco `era_erp` no PostgreSQL ou, a partir da raiz do repositório, execute `docker compose up -d database`. O Flyway executa as migrations de `src/main/resources/db/migration`; o Hibernate apenas valida o schema.
 
 ```env
 DB_URL=jdbc:postgresql://localhost:5432/era_erp
@@ -37,7 +37,12 @@ Execute com `./mvnw spring-boot:run`. A API fica em `http://localhost:8080/api`,
 - `GET/POST/PATCH /api/atividades`
 - `POST /api/atividades/{id}/aprovacao`
 - `POST /api/atividades/{id}/rejeicao`
+- `POST /api/atividades/{id}/transito`
+- `POST /api/atividades/{id}/conclusao`
+- `GET /api/cautelas`
 - `GET /api/deposito/equipamentos`
 - `GET /api/painel/resumo`
+- `GET/POST /api/auth/*`
+- `GET/POST/PUT/PATCH /api/usuarios/*`
 
-A autenticação será adicionada depois. Nesta etapa o Spring Security deixa os endpoints livres para a integração inicial, mantendo CORS, sessão stateless e CSRF desabilitado para a API REST.
+A autenticação usa sessão HTTP, cookie `JSESSIONID` protegido e token CSRF em cookie separado. O Spring Security restringe os endpoints por perfil (`ADMIN`, `GERENTE`, `ESTOQUE` e `TECNICO`) e invalida sessões de usuários desativados ou bloqueados.

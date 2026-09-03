@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import { EstruturaModal } from '../modal-shell/ModalShell';
 import { CampoFormulario } from '../field/Field';
-import { statusObra } from '../../data/mockData';
+import { statusObra } from '../../data/constantesDominio';
 import { obterDataAtual } from '../../utils/datas';
 import styles from './NovaObraModal.module.css';
 

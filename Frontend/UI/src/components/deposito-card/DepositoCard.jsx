@@ -1,6 +1,6 @@
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { Wrench } from 'lucide-react';
-import { iconePorTipoEquipamento } from '../../data/mockData';
+import { iconePorTipoEquipamento } from '../../data/constantesDominio';
 import styles from './DepositoCard.module.css';
 
 const TILE = {

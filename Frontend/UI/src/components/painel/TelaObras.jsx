@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeftRight, Calendar, CalendarSearch, Download, FileText, LoaderCircle, MapPin, PackageOpen, Printer, Wrench, X } from 'lucide-react';
 import { formatarData, obterDataAtual } from '../../utils/datas';
-import { iconePorTipoEquipamento } from '../../data/mockData';
+import { iconePorTipoEquipamento } from '../../data/constantesDominio';
 import { apiObras } from '../../services/api/servicoAtivosApi';
 import { imprimirCautelaHistoricaObra } from '../../services/documentosEquipamentos';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';

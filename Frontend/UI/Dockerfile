@@ -4,9 +4,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 ARG VITE_API_URL=/api
-ARG VITE_USAR_API=true
 ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_USAR_API=${VITE_USAR_API}
 RUN npm run lint && npm run build
 
 FROM nginx:1.29-bookworm

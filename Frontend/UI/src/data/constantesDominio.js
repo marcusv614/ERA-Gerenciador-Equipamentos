@@ -1,10 +1,5 @@
 import { Cable, Radio, Wrench } from 'lucide-react';
 
-export const obrasIniciais = [];
-export const equipamentosIniciais = [];
-export const funcionariosIniciais = [];
-export const solicitacoesIniciais = [];
-
 export const tiposEquipamento = ['Fluke', 'OTDR', 'Máquina de fusão', 'Rotuladora', 'Outro'];
 export const statusEquipamento = ['Em campo', 'Em estoque', 'Em manutenção', 'Em trânsito'];
 export const statusObra = ['Em andamento', 'Concluída'];

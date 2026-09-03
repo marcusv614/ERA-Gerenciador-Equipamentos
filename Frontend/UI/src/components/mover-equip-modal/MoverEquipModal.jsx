@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
-import { statusEquipamento } from "../../data/mockData";
+import { statusEquipamento } from '../../data/constantesDominio';
 import { obterDataAtual } from '../../utils/datas';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import styles from "./MoverEquipModal.module.css";

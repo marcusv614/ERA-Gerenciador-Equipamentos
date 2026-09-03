@@ -1,25 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  equipamentosIniciais,
-  funcionariosIniciais,
-  obrasIniciais,
-  solicitacoesIniciais,
-} from '../data/mockData';
 import { obterDataAtual } from '../utils/datas';
 import { obterHistoricoEquipamento } from '../utils/historicoEquipamento';
-import { apiHabilitada } from '../services/api/clienteHttp';
 import { apiAtividades, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
 
 export function useControleAtivos() {
-  const [obras, definirObras] = useState(obrasIniciais);
-  const [equipamentos, definirEquipamentos] = useState(equipamentosIniciais);
-  const [funcionarios, definirFuncionarios] = useState(funcionariosIniciais);
-  const [solicitacoes, definirSolicitacoes] = useState(solicitacoesIniciais);
-  const [carregandoDados, definirCarregandoDados] = useState(apiHabilitada);
+  const [obras, definirObras] = useState([]);
+  const [equipamentos, definirEquipamentos] = useState([]);
+  const [funcionarios, definirFuncionarios] = useState([]);
+  const [solicitacoes, definirSolicitacoes] = useState([]);
+  const [carregandoDados, definirCarregandoDados] = useState(true);
   const [erroApi, definirErroApi] = useState(null);
 
   useEffect(() => {
-    if (!apiHabilitada) return undefined;
     let deveAtualizar = true;
     carregarDadosIniciaisApi()
       .then((dados) => {
@@ -56,46 +48,34 @@ export function useControleAtivos() {
     status === 'Ativo' && cargo.toLocaleLowerCase('pt-BR').includes('gerente'))?.nome || null, [funcionarios]);
 
   async function cadastrarObra(dadosNovaObra) {
-    if (apiHabilitada) {
-      try {
-        const obraCadastrada = await apiObras.cadastrar(dadosNovaObra);
-        definirObras((obrasAtuais) => [obraCadastrada, ...obrasAtuais]);
-        definirErroApi(null);
-        return true;
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const obraCadastrada = await apiObras.cadastrar(dadosNovaObra);
+      definirObras((obrasAtuais) => [obraCadastrada, ...obrasAtuais]);
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-    definirObras((obrasAtuais) => [
-      { id: `o${obrasAtuais.length + 1}_${Date.now()}`, ...dadosNovaObra },
-      ...obrasAtuais,
-    ]);
-    return true;
   }
 
   async function atualizarStatusObra(obra, status) {
-    const obraAtualizada = { ...obra, status };
-    if (apiHabilitada) {
-      try {
-        const resposta = await apiObras.atualizar(obra.id, {
-          nome: obra.nome,
-          cliente: obra.cliente,
-          cidade: obra.cidade,
-          inicio: obra.inicio,
-          status,
-          responsaveis: obra.responsaveis || [],
-        });
-        definirObras((atuais) => atuais.map((item) => item.id === obra.id ? resposta : item));
-        definirErroApi(null);
-        return true;
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const resposta = await apiObras.atualizar(obra.id, {
+        nome: obra.nome,
+        cliente: obra.cliente,
+        cidade: obra.cidade,
+        inicio: obra.inicio,
+        status,
+        responsaveis: obra.responsaveis || [],
+      });
+      definirObras((atuais) => atuais.map((item) => item.id === obra.id ? resposta : item));
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-    definirObras((atuais) => atuais.map((item) => item.id === obra.id ? obraAtualizada : item));
-    return true;
   }
 
   async function cadastrarEquipamento(dadosNovoEquipamento) {
@@ -104,29 +84,15 @@ export function useControleAtivos() {
       Boolean(serieNormalizada) && String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
     if (serieJaExiste) return false;
 
-    if (apiHabilitada) {
-      try {
-        const equipamentoCadastrado = await apiEquipamentos.cadastrar(dadosNovoEquipamento);
-        definirEquipamentos((equipamentosAtuais) => [equipamentoCadastrado, ...equipamentosAtuais]);
-        definirErroApi(null);
-        return true;
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const equipamentoCadastrado = await apiEquipamentos.cadastrar(dadosNovoEquipamento);
+      definirEquipamentos((equipamentosAtuais) => [equipamentoCadastrado, ...equipamentosAtuais]);
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-
-    const dataCadastro = dadosNovoEquipamento.data || obterDataAtual();
-    definirEquipamentos((equipamentosAtuais) => [
-      {
-        id: `e${equipamentosAtuais.length + 1}_${Date.now()}`,
-        ...dadosNovoEquipamento,
-        data: dataCadastro,
-        dataEntrada: dataCadastro,
-      },
-      ...equipamentosAtuais,
-    ]);
-    return true;
   }
 
   async function cadastrarFuncionario(dadosNovoFuncionario) {
@@ -137,24 +103,15 @@ export function useControleAtivos() {
       nome.trim().toLocaleLowerCase('pt-BR') === nomeNormalizado);
     if (funcionarioJaExiste) return false;
 
-    if (apiHabilitada) {
-      try {
-        const funcionarioCadastrado = await apiFuncionarios.cadastrar(dadosNovoFuncionario);
-        definirFuncionarios((funcionariosAtuais) => [funcionarioCadastrado, ...funcionariosAtuais]);
-        definirErroApi(null);
-        return true;
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const funcionarioCadastrado = await apiFuncionarios.cadastrar(dadosNovoFuncionario);
+      definirFuncionarios((funcionariosAtuais) => [funcionarioCadastrado, ...funcionariosAtuais]);
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-
-    definirFuncionarios((funcionariosAtuais) => [{
-      id: `f${funcionariosAtuais.length + 1}_${Date.now()}`,
-      ...dadosNovoFuncionario,
-      status: 'Ativo',
-    }, ...funcionariosAtuais]);
-    return true;
   }
 
   async function atualizarFuncionario(funcionarioAtual, dadosAtualizados, obrasIds) {
@@ -168,21 +125,16 @@ export function useControleAtivos() {
           : outrosResponsaveis,
       };
     });
-    if (apiHabilitada) {
-      try {
-        const funcionarioAtualizado = await apiFuncionarios.atualizar(funcionarioAtual.id, { ...dadosAtualizados, obraIds: obrasIds.map(Number) });
-        definirFuncionarios((atuais) => atuais.map((funcionario) => funcionario.id === funcionarioAtual.id ? funcionarioAtualizado : funcionario));
-        definirObras(obrasAtualizadas);
-        definirErroApi(null);
-        return true;
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const funcionarioAtualizado = await apiFuncionarios.atualizar(funcionarioAtual.id, { ...dadosAtualizados, obraIds: obrasIds.map(Number) });
+      definirFuncionarios((atuais) => atuais.map((funcionario) => funcionario.id === funcionarioAtual.id ? funcionarioAtualizado : funcionario));
+      definirObras(obrasAtualizadas);
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-    definirFuncionarios((atuais) => atuais.map((funcionario) => funcionario.id === funcionarioAtual.id ? { ...funcionario, ...dadosAtualizados } : funcionario));
-    definirObras(obrasAtualizadas);
-    return true;
   }
 
   async function movimentarEquipamento(identificador, dadosMovimentacao) {
@@ -199,24 +151,15 @@ export function useControleAtivos() {
       materiais: [{ nome: equipamento.modelo, quantidade: dadosMovimentacao.quantidade || 1, identificacao: null, catalogoChave: equipamento.catalogoChave || null }],
     };
 
-    if (apiHabilitada) {
-      try {
-        const solicitacaoCadastrada = await apiAtividades.cadastrar(novaSolicitacao);
-        definirSolicitacoes((solicitacoesAtuais) => [solicitacaoCadastrada, ...solicitacoesAtuais]);
-        definirErroApi(null);
-        return true;
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const solicitacaoCadastrada = await apiAtividades.cadastrar(novaSolicitacao);
+      definirSolicitacoes((solicitacoesAtuais) => [solicitacaoCadastrada, ...solicitacoesAtuais]);
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-    definirSolicitacoes((solicitacoesAtuais) => [{
-      id: `s${Date.now()}`,
-      tipo: 'Movimentação',
-      status: 'Pendente',
-      ...novaSolicitacao,
-    }, ...solicitacoesAtuais]);
-    return true;
   }
 
   function consultarHistorico(equipamento) {
@@ -282,31 +225,25 @@ export function useControleAtivos() {
   }
 
   async function definirStatusSolicitacao(identificador, status) {
-    let respostaApi = null;
-    if (apiHabilitada) {
-      try {
-        if (status === 'Aprovada') respostaApi = await apiAtividades.aprovar(identificador);
-        if (status === 'Rejeitada') respostaApi = await apiAtividades.rejeitar(identificador);
-        definirErroApi(null);
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      const resposta = status === 'Aprovada'
+        ? await apiAtividades.aprovar(identificador)
+        : await apiAtividades.rejeitar(identificador);
+      definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
+        solicitacao.id === identificador ? resposta : solicitacao));
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
-    definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
-      solicitacao.id === identificador
-        ? (respostaApi || { ...solicitacao, status, dataDecisao: obterDataAtual() })
-        : solicitacao));
-    return true;
   }
 
   async function avancarMovimentacao(identificador, acao) {
     const solicitacaoAtual = solicitacoes.find(({ id }) => id === identificador);
     if (!solicitacaoAtual) return false;
     try {
-      const resposta = apiHabilitada
-        ? await (acao === 'transito' ? apiAtividades.iniciarTransito(identificador) : apiAtividades.concluir(identificador))
-        : { ...solicitacaoAtual, status: acao === 'transito' ? 'Em trânsito' : 'Concluída' };
+      const resposta = await (acao === 'transito' ? apiAtividades.iniciarTransito(identificador) : apiAtividades.concluir(identificador));
       if (acao === 'concluir') sincronizarMovimentacaoAprovada(resposta, solicitacaoAtual);
       definirSolicitacoes((atuais) => atuais.map((solicitacao) => solicitacao.id === identificador ? resposta : solicitacao));
       definirErroApi(null);
@@ -315,14 +252,12 @@ export function useControleAtivos() {
   }
 
   async function editarSolicitacao(identificador, dadosAtualizados) {
-    if (apiHabilitada) {
-      try {
-        await apiAtividades.atualizar(identificador, dadosAtualizados);
-        definirErroApi(null);
-      } catch (erro) {
-        definirErroApi(erro.message);
-        return false;
-      }
+    try {
+      await apiAtividades.atualizar(identificador, dadosAtualizados);
+      definirErroApi(null);
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
     }
     const solicitacaoAnterior = solicitacoes.find((solicitacao) => solicitacao.id === identificador);
     const solicitacaoAtualizada = solicitacaoAnterior ? { ...solicitacaoAnterior, ...dadosAtualizados } : null;
@@ -341,7 +276,6 @@ export function useControleAtivos() {
     equipamentos,
     funcionarios,
     solicitacoes,
-    apiHabilitada,
     carregandoDados,
     erroApi,
     resumoEquipamentos,

@@ -1,6 +1,6 @@
 import { ArrowLeftRight, Download, FileText, MapPin, Wrench } from 'lucide-react';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
-import { iconePorTipoEquipamento, statusEquipamento } from '../../data/mockData';
+import { iconePorTipoEquipamento, statusEquipamento } from '../../data/constantesDominio';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 const classePorTipo = { Fluke: 'tipoFluke', OTDR: 'tipoOtdr', Outro: 'tipoOutro' };

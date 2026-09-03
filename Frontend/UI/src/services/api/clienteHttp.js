@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-export const apiHabilitada = import.meta.env.VITE_USAR_API === 'true';
-
 export const clienteHttp = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
   timeout: Number(import.meta.env.VITE_API_TIMEOUT || 10000),

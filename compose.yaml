@@ -48,7 +48,6 @@ services:
       context: ./Frontend/UI
       args:
         VITE_API_URL: /api
-        VITE_USAR_API: "true"
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8088}:80"
