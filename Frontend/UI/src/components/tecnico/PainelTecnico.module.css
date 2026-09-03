@@ -118,3 +118,5 @@
 .listaObrasEscolha .obraSelecionada>svg:first-child{background:var(--verde);color:white}
 .listaObrasEscolha .obraSelecionada>svg:last-child{color:#347157}
 .pagina[data-theme="dark"] .listaObrasEscolha .obraSelecionada{background:#20372d;border-color:#6da78e;box-shadow:0 0 0 2px rgba(109,167,142,.14)}
+.fluxoSolicitacao{margin:0 0 14px;padding:10px 12px;border-left:3px solid var(--laranja);border-radius:0 9px 9px 0;background:#faf3e8;color:#64675f;font-size:11px;line-height:1.45}
+.pagina[data-theme="dark"] .fluxoSolicitacao{background:#222e28;color:#bac8c1}

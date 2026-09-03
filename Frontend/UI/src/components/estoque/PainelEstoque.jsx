@@ -9,6 +9,7 @@ import { SepararEquipamentosModal } from './SepararEquipamentosModal';
 
 const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificacao }) => identificacao);
 const formatarDataHora = (valor) => valor ? new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
+const rotuloOperacional = (solicitacao) => solicitacao.status === 'Aprovada' ? (possuiSeries(solicitacao) ? 'Pronta para envio' : 'Aguardando separação') : solicitacao.status;
 
 export function PainelEstoque() {
   const { usuario, encerrarSessao } = useAutenticacao();
@@ -116,7 +117,7 @@ export function PainelEstoque() {
     const entradaNaObra = Boolean(solicitacao.obraDestinoId);
     const cautelasDaSolicitacao = cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id);
     return <article className={estilos.card} key={solicitacao.id}>
-      <header><span className={estilos.icone}><PackageCheck /></span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><h2>{entradaNaObra ? 'Envio para obra' : 'Retirada da obra'}</h2></div><b data-status={solicitacao.status}>{solicitacao.status}</b></header>
+      <header><span className={estilos.icone}><PackageCheck /></span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><h2>{entradaNaObra ? 'Envio para obra' : 'Retirada da obra'}</h2></div><b data-status={solicitacao.status}>{rotuloOperacional(solicitacao)}</b></header>
       <div className={estilos.rota}><span>{entradaNaObra ? nomeLocal(solicitacao.obraOrigemId) : nomeLocal(solicitacao.obraOrigemId)}</span><ChevronRight /><span>{entradaNaObra ? nomeLocal(solicitacao.obraDestinoId) : 'Depósito central'}</span></div>
       <div className={estilos.metadados}><p>Solicitado por <strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}{solicitacao.dataDecisao && ` · decisão ${new Date(`${solicitacao.dataDecisao}T12:00:00`).toLocaleDateString('pt-BR')}`}</time></div>
       <ul>{solicitacao.materiais.map((material) => <li key={material.id}>

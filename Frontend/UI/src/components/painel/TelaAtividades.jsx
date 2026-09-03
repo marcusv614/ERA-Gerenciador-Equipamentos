@@ -6,6 +6,7 @@ import {
   FileText,
   Pencil,
   Route,
+  Truck,
   X,
 } from "lucide-react";
 import { formatarData } from "../../utils/datas";
@@ -19,14 +20,20 @@ const CONFIGURACAO_STATUS = [
   },
   {
     status: "Aprovada",
-    titulo: "Solicitações aprovadas",
-    descricao: "Autorizações concedidas para as equipes.",
+    titulo: "Em preparação pelo estoque",
+    descricao: "Solicitações autorizadas que ainda precisam ser separadas e enviadas.",
     classe: "atividadeStatusAprovada",
   },
   {
     status: "Aguardando coleta",
     titulo: "Aguardando coleta",
-    descricao: "Retiradas aprovadas aguardando confirmação do técnico.",
+    descricao: "Retiradas autorizadas aguardando confirmação do estoque.",
+    classe: "atividadeStatusPendente",
+  },
+  {
+    status: "Em trânsito",
+    titulo: "Em trânsito",
+    descricao: "Materiais enviados aguardando confirmação de recebimento.",
     classe: "atividadeStatusPendente",
   },
   {
@@ -72,6 +79,9 @@ export function TelaAtividades({
     const cautelasDaSolicitacao = cautelas.filter(
       ({ solicitacaoId }) => solicitacaoId === solicitacao.id,
     );
+    const rotuloStatus = solicitacao.status === "Aprovada"
+      ? (aguardandoDefinicao ? "Aguardando separação" : "Pronta para envio")
+      : solicitacao.status;
 
     return (
       <article key={solicitacao.id} className={estilos.atividadeCard}>
@@ -85,7 +95,7 @@ export function TelaAtividades({
               <span
                 className={`${estilos.atividadeStatus} ${estilos[classeStatus]}`}
               >
-                {solicitacao.status}
+                {rotuloStatus}
               </span>
             </div>
             <p>
@@ -101,7 +111,7 @@ export function TelaAtividades({
             <span>Origem</span>
             <strong>
               {aguardandoDefinicao
-                ? "A definir pelo gerente"
+                ? "A definir pelo estoque"
                 : obraOrigem?.nome || "Depósito central"}
             </strong>
           </div>
@@ -206,9 +216,9 @@ export function TelaAtividades({
           </span>
         </div>
         <div>
-          <Check size={17} />
+          <Truck size={17} />
           <span>
-            <strong>{contarPorStatus("Aprovada")}</strong> aprovadas
+            <strong>{contarPorStatus("Aprovada")}</strong> em preparação
           </span>
         </div>
         <div>

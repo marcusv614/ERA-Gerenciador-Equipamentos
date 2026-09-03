@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/funcionarios","/equipamentos","/obras").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,"/funcionarios/**").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.PATCH,"/funcionarios/**").hasAnyRole("ADMIN","GERENTE")
-                .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.PATCH,"/equipamentos/**","/obras/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,"/equipamentos/**","/obras/**","/atividades/**","/cautelas/**").authenticated()
                 .requestMatchers(HttpMethod.POST,"/atividades").authenticated()
                 .requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE")

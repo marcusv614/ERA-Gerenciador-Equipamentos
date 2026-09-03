@@ -135,7 +135,7 @@ export function PainelAdmin() {
       {carregando ? <p>Carregando usuários...</p> : <section className={estilos.grade}>
         {usuariosFiltrados.map((item) => <article key={item.id} className={estilos.usuario}>
           <div className={estilos.usuarioTopo}><span><Users /></span><div><strong>{item.nome}</strong><small>{item.login}</small></div><b data-ativo={item.ativo}>{item.ativo ? 'Ativo' : 'Inativo'}</b></div>
-          <dl><div><dt>Perfil</dt><dd>{item.perfil}</dd></div><div><dt>Funcionário</dt><dd>{item.funcionarioId ? `#${item.funcionarioId}` : 'Sem vínculo'}</dd></div><div><dt>Senha</dt><dd>{item.deveAlterarSenha ? 'Troca obrigatória' : 'Definida'}</dd></div></dl>
+          <dl><div><dt>Perfil</dt><dd>{item.perfil}</dd></div><div><dt>Senha</dt><dd>{item.deveAlterarSenha ? 'Troca obrigatória' : 'Definida'}</dd></div></dl>
           <footer><button type="button" onClick={() => definirEditandoUsuario(item)}><Pencil /> Editar</button><button type="button" onClick={() => { definirRedefinindo(item); definirSenhaTemporaria(''); }}><KeyRound /> Redefinir senha</button><button type="button" disabled={item.id === usuario.id} title={item.id === usuario.id ? 'Você não pode desativar sua própria conta' : undefined} className={item.ativo ? estilos.desativar : estilos.reativar} onClick={() => alternarStatus(item)}>{item.ativo ? 'Desativar' : 'Reativar'}</button></footer>
         </article>)}
       </section>}

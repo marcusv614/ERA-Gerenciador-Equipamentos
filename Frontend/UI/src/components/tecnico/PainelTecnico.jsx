@@ -9,7 +9,18 @@ import estilos from './PainelTecnico.module.css';
 
 const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
-const rotulosStatus = { Pendente: 'Aguardando análise', Aprovada: 'Aprovada pelo gerente', 'Aguardando coleta': 'Liberada para retirada', 'Em trânsito': 'Em trânsito', Concluída: 'Recebida', Rejeitada: 'Rejeitada' };
+const rotuloStatus = (solicitacao) => {
+  if (solicitacao.status === 'Aprovada') return solicitacao.materiais.every(({ identificacao }) => identificacao) ? 'Pronta para envio' : 'Aguardando separação no estoque';
+  return { Pendente: 'Aguardando análise', 'Aguardando coleta': 'Aguardando retirada pelo estoque', 'Em trânsito': 'Enviada — confirme ao receber', Concluída: 'Recebimento confirmado', Rejeitada: 'Rejeitada' }[solicitacao.status] || solicitacao.status;
+};
+const descricaoStatus = (solicitacao) => ({
+  Pendente: 'O gerente ainda precisa analisar esta solicitação.',
+  Aprovada: solicitacao.materiais.every(({ identificacao }) => identificacao) ? 'O estoque já separou os itens e ainda precisa confirmar o envio.' : 'O gerente autorizou o pedido; o estoque ainda precisa separar os itens.',
+  'Aguardando coleta': 'A retirada foi autorizada e aguarda a confirmação do estoque.',
+  'Em trânsito': 'O estoque confirmou o envio. Confirme o recebimento somente quando o material chegar à obra.',
+  Concluída: 'O recebimento foi confirmado e o inventário da obra foi atualizado.',
+  Rejeitada: 'A solicitação não foi autorizada pelo gerente.',
+}[solicitacao.status]);
 
 export function PainelTecnico({ modoAdministrador = false }) {
   const { usuario, encerrarSessao } = useAutenticacao();
@@ -93,7 +104,7 @@ export function PainelTecnico({ modoAdministrador = false }) {
   const materiaisDoCatalogo = useMemo(() => catalogoMateriais.filter((material) => {
     const texto = `${material.modelo} ${material.tipo} ${material.medida || ''}`.toLocaleLowerCase('pt-BR');
     return texto.includes(busca.trim().toLocaleLowerCase('pt-BR'));
-  }).map((material) => ({ ...material, id: `catalogo-${material.tipo}-${material.modelo}-${material.medida || 'sem-medida'}`, serie: null, quantidadeDisponivel: 999 })), [catalogoMateriais, busca]);
+  }).map((material) => ({ ...material, id: `catalogo-${material.tipo}-${material.modelo}-${material.medida || 'sem-medida'}`, serie: null })), [catalogoMateriais, busca]);
   const materiaisParaSelecionar = operacao === 'receber' ? materiaisDoCatalogo : equipamentosDaOrigem;
 
   const nomeLocal = (valor) => valor === 'deposito' ? 'Depósito central' : obras.find(({ id }) => String(id) === String(valor))?.nome || 'Selecione';
@@ -113,8 +124,13 @@ export function PainelTecnico({ modoAdministrador = false }) {
   });
 
   const alterarQuantidade = (id, diferenca) => definirItens((atuais) => atuais
-    .map((item) => item.id === id ? { ...item, quantidade: Math.max(0, Math.min(item.quantidade + diferenca, item.equipamento.quantidadeDisponivel ?? 1)) } : item)
+    .map((item) => {
+      if (item.id !== id) return item;
+      const limite = operacao === 'receber' ? Number.MAX_SAFE_INTEGER : (item.equipamento.quantidadeDisponivel ?? 1);
+      return { ...item, quantidade: Math.max(0, Math.min(item.quantidade + diferenca, limite)) };
+    })
     .filter(({ quantidade }) => quantidade > 0));
+  const removerItem = (id) => definirItens((atuais) => atuais.filter((item) => item.id !== id));
 
   const trocarOrigem = (valor) => {
     definirOrigem(valor);
@@ -197,7 +213,7 @@ export function PainelTecnico({ modoAdministrador = false }) {
           {etapaMovimentacao === 3 && <><div className={estilos.tituloSimples}><span className={estilos.selo}>Escolha os materiais</span><h2>{operacao === 'receber' ? 'O que você precisa?' : 'O que deve ser retirado?'}</h2><p>{operacao === 'receber' ? 'Você não precisa saber onde o material está.' : `Mostrando apenas materiais de ${nomeLocal(origem)}.`}</p></div><div className={estilos.busca}><Search size={19} /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material" /></div>
             <div className={estilos.listaMateriais}>{materiaisParaSelecionar.length ? materiaisParaSelecionar.map((equipamento) => {
               const selecionado = itens.some(({ id }) => id === identificadorLocal(equipamento));
-              return <button type="button" key={equipamento.id} className={`${estilos.material} ${selecionado ? estilos.materialSelecionado : ''}`} onClick={() => selecionado ? alterarQuantidade(identificadorLocal(equipamento), -999) : adicionarItem(equipamento)}>
+              return <button type="button" key={equipamento.id} className={`${estilos.material} ${selecionado ? estilos.materialSelecionado : ''}`} onClick={() => selecionado ? removerItem(identificadorLocal(equipamento)) : adicionarItem(equipamento)}>
                 <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{equipamento.serie ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
               </button>;
             }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material encontrado</strong><span>Tente buscar por outro nome.</span></div>}</div><div className={estilos.acoesEtapa}><button onClick={() => definirEtapaMovimentacao(2)}>Voltar</button><button disabled={!itens.length} onClick={() => definirEtapaMovimentacao(4)}>Revisar {quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'} <ChevronRight /></button></div></>}
@@ -206,7 +222,7 @@ export function PainelTecnico({ modoAdministrador = false }) {
         {etapaMovimentacao === 4 && <aside className={estilos.resumoPedido} aria-label="Resumo da movimentação">
           <div className={estilos.resumoTopo}><span><ClipboardList /></span><div><small>Sua movimentação</small><strong>{quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'}</strong></div></div>
           <div className={estilos.miniRota}><span><MapPin />{operacao === 'receber' ? `Entregar em ${nomeLocal(destino)}` : `Retirar de ${nomeLocal(origem)}`}</span></div>
-          <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{equipamento.serie && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><button onClick={() => alterarQuantidade(id, -1)}><Minus /></button><b>{quantidade}</b><button onClick={() => alterarQuantidade(id, 1)} disabled={quantidade >= (equipamento.quantidadeDisponivel ?? 1)}><Plus /></button></div></div>)}</div>
+          <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{equipamento.serie && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><button onClick={() => alterarQuantidade(id, -1)}><Minus /></button><b>{quantidade}</b><button onClick={() => alterarQuantidade(id, 1)} disabled={operacao !== 'receber' && quantidade >= (equipamento.quantidadeDisponivel ?? 1)}><Plus /></button></div></div>)}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
           {!mostrarObservacao ? <button className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
           <button className={estilos.enviar} disabled={!podeEnviar} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao gerente <ChevronRight /></>}</button>
@@ -218,8 +234,9 @@ export function PainelTecnico({ modoAdministrador = false }) {
       {!carregando && aba === 'acompanhar' && <section className={estilos.acompanhamento}>
         <div className={estilos.cabecalhoHistorico}><div><span className={estilos.selo}>Minhas solicitações</span><h2>Acompanhe cada movimentação</h2><p>Atualizações do gerente aparecem aqui.</p></div><div className={estilos.metricas}><span><b>{pendentes}</b> aguardando</span><span><b>{aprovadas}</b> aprovadas</span></div></div>
         <div className={estilos.listaSolicitacoes}>{solicitacoes.length ? solicitacoes.map((solicitacao) => <article key={solicitacao.id} className={estilos.cartaoSolicitacao} data-status={solicitacao.status}>
-          <div className={estilos.statusSolicitacao}><span>{['Pendente', 'Aguardando coleta'].includes(solicitacao.status) ? <Clock3 /> : solicitacao.status === 'Em trânsito' ? <Truck /> : solicitacao.status === 'Rejeitada' ? <X /> : <Check />}</span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><strong>{rotulosStatus[solicitacao.status] || solicitacao.status}</strong></div><time>{new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
+          <div className={estilos.statusSolicitacao}><span>{['Pendente', 'Aguardando coleta'].includes(solicitacao.status) ? <Clock3 /> : solicitacao.status === 'Em trânsito' ? <Truck /> : solicitacao.status === 'Rejeitada' ? <X /> : <Check />}</span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><strong>{rotuloStatus(solicitacao)}</strong></div><time>{new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
           <div className={estilos.trajetoCartao}><span>{solicitacao.obraDestinoId ? `Entrega solicitada para ${nomeLocal(solicitacao.obraDestinoId)}` : 'Retirada solicitada da sua obra'}</span></div>
+          <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao)}</p>
           <div className={estilos.materiaisCartao}>{solicitacao.materiais.map((material) => <span key={`${material.identificacao}-${material.id}`}><b>{material.quantidade}×</b> {material.nome}<small>{material.identificacao}</small></span>)}</div>
           {solicitacao.observacao && <p className={estilos.notaCartao}>“{solicitacao.observacao}”</p>}
           {cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id).map((cautela) => <button key={cautela.id} className={estilos.acaoMovimentacao} onClick={() => imprimirCautelaEmitida(cautela)}><Download /> Cautela</button>)}
