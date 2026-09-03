@@ -120,8 +120,8 @@ export function imprimirHistoricoEquipamento(equipamento, historico, buscarObraP
 export function imprimirCautelaObra(obra, equipamentos) {
   const equipamentosDaObra = equipamentos.filter(({ obraId }) => obraId === obra.id);
   const tecnicos = [...new Set(equipamentosDaObra.map(({ tecnico }) => tecnico).filter(Boolean))];
-  const linhas = equipamentosDaObra.length ? equipamentosDaObra.map((equipamento) => `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(equipamento.tecnico)}</td><td>${formatarData(equipamento.data || equipamento.dataEntrada || equipamento.saida)}</td></tr>`).join('') : '<tr><td colspan="5">Nenhum equipamento cadastrado na obra.</td></tr>';
-  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Relatório de inventário da obra')}<h2>Equipamentos atuais</h2><table><thead><tr><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Retrato do inventário atual. Gerado em ${formatarData(new Date())}</p>`;
+  const linhas = equipamentosDaObra.length ? equipamentosDaObra.map((equipamento) => `<tr><td>${textoSeguro(equipamento.quantidade || 1)}</td><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(equipamento.tecnico)}</td><td>${formatarData(equipamento.data || equipamento.dataEntrada || equipamento.saida)}</td></tr>`).join('') : '<tr><td colspan="6">Nenhum equipamento cadastrado na obra.</td></tr>';
+  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Relatório de inventário da obra')}<h2>Equipamentos atuais</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Retrato do inventário atual. Gerado em ${formatarData(new Date())}</p>`;
   abrirJanelaDeImpressao(`Inventário — ${obra.nome}`, conteudo);
 }
 
@@ -269,8 +269,8 @@ export function imprimirHistoricoObra(obra, equipamentos) {
       ? null
       : ultimaSaida?.dataSaida || ultimaSaida?.dataMovimentacao;
     const tecnicoNaObra = ultimaEntrada?.tecnico || ultimaSaida?.tecnico || equipamento.tecnico;
-    return `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(tecnicoNaObra)}</td><td>${formatarData(entrada)}</td><td>${formatarData(saida)}</td></tr>`;
+    return `<tr><td>${textoSeguro(equipamento.quantidade || 1)}</td><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(tecnicoNaObra)}</td><td>${formatarData(entrada)}</td><td>${formatarData(saida)}</td></tr>`;
   }).join('') : '<tr><td colspan="6">Nenhum histórico de equipamentos registrado para esta obra.</td></tr>';
-  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Histórico da obra')}<h2>Equipamentos que passaram pela obra</h2><table><thead><tr><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th><th>Data de saída</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Gerado em ${formatarData(new Date())}</p>`;
+  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Histórico da obra')}<h2>Equipamentos que passaram pela obra</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th><th>Data de saída</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Gerado em ${formatarData(new Date())}</p>`;
   abrirJanelaDeImpressao(`Histórico da obra — ${obra.nome}`, conteudo);
 }

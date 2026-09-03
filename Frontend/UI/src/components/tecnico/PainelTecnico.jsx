@@ -23,7 +23,7 @@ const descricaoStatus = (solicitacao) => ({
   Rejeitada: 'A solicitação não foi autorizada pelo gerente.',
 }[solicitacao.status]);
 
-export function PainelTecnico({ modoAdministrador = false }) {
+export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaControlado, aoAlternarTema } = {}) {
   const { usuario, encerrarSessao } = useAutenticacao();
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
@@ -43,16 +43,23 @@ export function PainelTecnico({ modoAdministrador = false }) {
   const [operacao, definirOperacao] = useState('');
   const [etapaMovimentacao, definirEtapaMovimentacao] = useState(1);
   const [mostrarObservacao, definirMostrarObservacao] = useState(false);
-  const [temaEscuro, definirTemaEscuro] = useState(() => {
+  const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
     const temaSalvo = localStorage.getItem('era-tema-tecnico');
     return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
   });
+  const temaEscuro = temaControlado ?? temaLocalEscuro;
 
-  const alternarTema = () => definirTemaEscuro((temaAtual) => {
-    const novoTema = !temaAtual;
-    localStorage.setItem('era-tema-tecnico', novoTema ? 'escuro' : 'claro');
-    return novoTema;
-  });
+  const alternarTema = () => {
+    if (aoAlternarTema) {
+      aoAlternarTema();
+      return;
+    }
+    definirTemaLocalEscuro((temaAtual) => {
+      const novoTema = !temaAtual;
+      localStorage.setItem('era-tema-tecnico', novoTema ? 'escuro' : 'claro');
+      return novoTema;
+    });
+  };
 
   useEffect(() => {
     let componenteAtivo = true;

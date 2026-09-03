@@ -12,7 +12,7 @@ const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificac
 const formatarDataHora = (valor) => valor ? new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
 const rotuloOperacional = (solicitacao) => solicitacao.status === 'Aprovada' ? (possuiSeries(solicitacao) ? 'Pronta para envio' : 'Aguardando separação') : solicitacao.status;
 
-export function PainelEstoque() {
+export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema } = {}) {
   const { usuario, encerrarSessao } = useAutenticacao();
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
@@ -26,7 +26,11 @@ export function PainelEstoque() {
   const [aba, definirAba] = useState('atividades');
   const [quantidadesRecebidas, definirQuantidadesRecebidas] = useState({});
   const [identificacoesRecebidas, definirIdentificacoesRecebidas] = useState({});
-  const [temaEscuro, definirTemaEscuro] = useState(() => localStorage.getItem('era-tema-estoque') === 'escuro');
+  const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
+    const temaSalvo = localStorage.getItem('era-tema-estoque');
+    return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  });
+  const temaEscuro = temaControlado ?? temaLocalEscuro;
 
   useEffect(() => {
     let ativo = true;
@@ -68,7 +72,16 @@ export function PainelEstoque() {
   }, {}));
   const agruparPorObra = (lista) => Object.entries(lista.reduce((grupos, solicitacao) => { const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId; const chave = String(obraId || 'deposito'); (grupos[chave] ||= []).push(solicitacao); return grupos; }, {})).sort(([obraA], [obraB]) => nomeLocal(obraA).localeCompare(nomeLocal(obraB), 'pt-BR'));
 
-  const alternarTema = () => definirTemaEscuro((atual) => { localStorage.setItem('era-tema-estoque', atual ? 'claro' : 'escuro'); return !atual; });
+  const alternarTema = () => {
+    if (aoAlternarTema) {
+      aoAlternarTema();
+      return;
+    }
+    definirTemaLocalEscuro((atual) => {
+      localStorage.setItem('era-tema-estoque', atual ? 'claro' : 'escuro');
+      return !atual;
+    });
+  };
   const abrirConfiguracao = (solicitacao) => definirConfigurando(solicitacao);
 
   const solicitarCompra = async (material, faltante) => {

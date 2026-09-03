@@ -1,4 +1,5 @@
-import { ChevronDown, ChevronUp, LogOut, Moon, Plus, Search, Sun, UserPlus } from 'lucide-react';
+import { ChevronDown, ChevronUp, LogOut, Menu, Moon, Plus, Search, Sun, UserPlus, X } from 'lucide-react';
+import { useState } from 'react';
 
 const INFORMACOES_TELA = {
   equipamentos: ['Equipamentos', 'Onde cada instrumento está e com quem', 'Buscar modelo, série, técnico...'],
@@ -10,16 +11,20 @@ const INFORMACOES_TELA = {
 
 export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoUsuario, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos }) {
   const [titulo, subtitulo, textoBusca] = INFORMACOES_TELA[telaAtual];
+  const [acoesAbertas, definirAcoesAbertas] = useState(false);
   return <header className={`${estilos.topbar} ${recolhida ? estilos.topbarCollapsed : ''}`}>
     <div><h1 className={estilos.title}>{titulo}</h1><p className={estilos.subtitle}>{subtitulo}</p></div>
     <button type="button" onClick={aoAlternarRecolhimento} className={estilos.topbarCollapseBtn} aria-label={recolhida ? 'Expandir barra superior' : 'Retrair barra superior'} aria-expanded={!recolhida}>{recolhida ? <ChevronDown size={16} /> : <ChevronUp size={16} />}</button>
     <div className={estilos.topbarRight}>
       <button type="button" aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'} onClick={aoAlternarTema} className={estilos.themeButton}>{modoEscuro ? <Sun size={17} /> : <Moon size={17} />}</button>
       <div className={estilos.searchBox}><Search size={14} className={estilos.searchIcon} /><input value={termoBusca} onChange={(evento) => aoBuscar(evento.target.value)} placeholder={textoBusca} className={estilos.searchInput} /></div>
-      {ehAdmin && <button onClick={aoAbrirNovoFuncionario} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>}
-      {ehAdmin && <button onClick={aoAbrirNovoUsuario} className={estilos.btnGhost}><UserPlus size={15} /> Usuário</button>}
-      {ehAdmin && <button onClick={aoAbrirNovoEquipamento} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>}
-      {ehAdmin && <button onClick={aoAbrirNovaObra} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>}
+      {ehAdmin && <button type="button" className={estilos.mobileActionsToggle} onClick={() => definirAcoesAbertas((abertas) => !abertas)} aria-expanded={acoesAbertas} aria-controls="acoes-rapidas-mobile">{acoesAbertas ? <X size={17} /> : <Menu size={17} />}<span>Ações</span></button>}
+      {ehAdmin && <div id="acoes-rapidas-mobile" className={`${estilos.quickActions} ${acoesAbertas ? estilos.quickActionsOpen : ''}`}>
+        <button onClick={aoAbrirNovoFuncionario} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>
+        <button onClick={aoAbrirNovoUsuario} className={estilos.btnGhost}><UserPlus size={15} /> Usuário</button>
+        <button onClick={aoAbrirNovoEquipamento} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>
+        <button onClick={aoAbrirNovaObra} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>
+      </div>}
       <button onClick={aoSair} className={estilos.btnGhost} aria-label="Sair"><LogOut size={16} /></button>
     </div>
   </header>;

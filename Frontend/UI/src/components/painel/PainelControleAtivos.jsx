@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BarraSuperior } from './BarraSuperior';
 import { MenuLateral } from './MenuLateral';
+import { NavegacaoInferior } from './NavegacaoInferior';
 import { ModalHistoricoEquipamento } from './ModalHistoricoEquipamento';
 import { ResumoEquipamentos } from './ResumoEquipamentos';
 import { TelaEquipamentos } from './TelaEquipamentos';
@@ -24,16 +25,28 @@ import { useFiltrosPainel } from '../../hooks/useFiltrosPainel';
 import { imprimirCautelaEmitida, imprimirCautelaObra, imprimirRomaneioSeparacao, imprimirHistoricoEquipamento, imprimirHistoricoObra } from '../../services/documentosEquipamentos';
 import estilos from '../fibra-track/FibraTrack.module.css';
 
-export function PainelControleAtivos() {
+export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTema } = {}) {
   const { ehAdmin, encerrarSessao } = useAutenticacao();
   const controleAtivos = useControleAtivos();
   const filtros = useFiltrosPainel(controleAtivos);
   const [telaAtual, definirTelaAtual] = useState('equipamentos');
-  const [menuLateralAberto, definirMenuLateralAberto] = useState(true);
-  const [modoEscuro, definirModoEscuro] = useState(() => {
+  const [menuLateralAberto, definirMenuLateralAberto] = useState(() => !window.matchMedia?.('(max-width: 768px)').matches);
+  const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
     const temaSalvo = localStorage.getItem('era-tema-gerente');
     return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
   });
+  const modoEscuro = temaControlado ?? temaLocalEscuro;
+  const alternarTema = () => {
+    if (aoAlternarTema) {
+      aoAlternarTema();
+      return;
+    }
+    definirTemaLocalEscuro((escuro) => {
+      const novoTema = !escuro;
+      localStorage.setItem('era-tema-gerente', novoTema ? 'escuro' : 'claro');
+      return novoTema;
+    });
+  };
   const [barraSuperiorRecolhida, definirBarraSuperiorRecolhida] = useState(false);
   const [modalNovaObraAberto, definirModalNovaObraAberto] = useState(false);
   const [modalNovoEquipamentoAberto, definirModalNovoEquipamentoAberto] = useState(false);
@@ -67,6 +80,7 @@ export function PainelControleAtivos() {
   const selecionarTela = (tela) => {
     definirTelaAtual(tela);
     filtros.definirTermoBusca('');
+    if (window.matchMedia?.('(max-width: 768px)').matches) definirMenuLateralAberto(false);
     if (tela === 'equipamentos') {
       filtros.definirTipoSelecionado('Todos');
       filtros.definirStatusSelecionado('Todos');
@@ -98,7 +112,7 @@ export function PainelControleAtivos() {
       {menuLateralAberto ? <ChevronLeft size={18} strokeWidth={2.2} /> : <ChevronRight size={18} strokeWidth={2.2} />}
     </button>
     <main className={estilos.main}>
-      <BarraSuperior telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} ehAdmin={ehAdmin} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={() => definirModoEscuro((escuro) => { const novoTema=!escuro; localStorage.setItem('era-tema-gerente',novoTema?'escuro':'claro'); return novoTema; })} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoUsuario={() => definirModalNovoUsuarioAberto(true)} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
+      <BarraSuperior telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} ehAdmin={ehAdmin} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={alternarTema} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoUsuario={() => definirModalNovoUsuarioAberto(true)} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
       <div className={estilos.content}>
         {controleAtivos.carregandoDados && <div className={estilos.apiFeedback}>Sincronizando dados com a API...</div>}
         {controleAtivos.erroApi && <div className={`${estilos.apiFeedback} ${estilos.apiFeedbackErro}`} role="alert">Falha na comunicação com a API: {controleAtivos.erroApi}</div>}
@@ -110,6 +124,7 @@ export function PainelControleAtivos() {
         {telaAtual === 'deposito' && <CartaoDeposito equipamentos={filtros.equipamentosDoDeposito} obras={controleAtivos.obras} />}
       </div>
     </main>
+    <NavegacaoInferior telaAtual={telaAtual} totalAtividadesPendentes={totalAtividadesPendentes} aoSelecionarTela={selecionarTela} estilos={estilos} />
     {modalNovaObraAberto && <ModalNovaObra tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirModalNovaObraAberto(false)} aoSalvar={cadastrarObra} />}
     {modalNovoEquipamentoAberto && <ModalNovoEquipamento obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} aoFechar={() => definirModalNovoEquipamentoAberto(false)} aoSalvar={cadastrarEquipamento} />}
     {equipamentoParaMover && <ModalMovimentarEquipamento equipamento={equipamentoParaMover} obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirEquipamentoParaMover(null)} aoSalvar={movimentarEquipamento} />}
