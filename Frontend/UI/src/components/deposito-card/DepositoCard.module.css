@@ -156,6 +156,25 @@
   white-space: nowrap;
 }
 
+.editar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.editar:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
 .empty {
   text-align: center;
   padding: 40px 0;
@@ -169,5 +188,6 @@
   .row { gap: 9px; padding: 10px 8px; }
   .tile { width: 40px; height: 40px; }
   .local { max-width: 92px; font-size: 10.5px; }
+  .editar { width: 40px; height: 40px; flex-basis: 40px; }
   .legend { width: 100%; }
 }

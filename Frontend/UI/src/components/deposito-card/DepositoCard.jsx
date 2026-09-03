@@ -1,5 +1,5 @@
 import { IndicadorStatus } from '../status-badge/StatusBadge';
-import { Wrench } from 'lucide-react';
+import { Pencil, Wrench } from 'lucide-react';
 import { iconePorTipoEquipamento } from '../../data/constantesDominio';
 import styles from './DepositoCard.module.css';
 
@@ -14,7 +14,7 @@ const LEGEND = [
   { key: 'Em manutenção', label: 'manutenção', dot: styles.dotManutencao },
 ];
 
-export function CartaoDeposito({ equipamentos, obras }) {
+export function CartaoDeposito({ equipamentos, obras, podeEditar, aoEditar }) {
   const buscarObraPorId = (identificador) =>
     identificador ? obras.find((obra) => obra.id === identificador) : null;
 
@@ -53,6 +53,7 @@ export function CartaoDeposito({ equipamentos, obras }) {
                 </div>
                 <IndicadorStatus status={equipamento.status} />
                 <div className={styles.local}>{obra ? obra.nome : 'Depósito central'}</div>
+                {podeEditar && <button type="button" className={styles.editar} onClick={() => aoEditar(equipamento)} aria-label={`Editar ${equipamento.modelo}`} title="Editar equipamento"><Pencil size={14} /></button>}
               </div>
             );
           })

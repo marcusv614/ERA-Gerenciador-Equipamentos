@@ -24,5 +24,5 @@ clienteHttp.interceptors.response.use(
 );
 
 export function obterDadosResposta(resposta) {
-  return resposta.data?.dados ?? resposta.data?.data ?? resposta.data;
+  return resposta.data?.dados ?? resposta.data;
 }
