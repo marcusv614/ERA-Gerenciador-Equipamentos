@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { AlertCircle, Box, Check, ChevronRight, Minus, Plus, ShoppingCart, Warehouse, X } from 'lucide-react';
 import estilos from './SepararEquipamentosModal.module.css';
+import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 const localDoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
 const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
@@ -99,7 +100,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
                   const saldo = saldoParaMaterial(material, equipamento);
                   return <div className={`${estilos.equipamento} ${quantidade ? estilos.selecionado : ''}`} key={equipamento.id}>
                     <span className={estilos.icone}><Box /></span>
-                    <div className={estilos.dados}><strong>{equipamento.modelo}</strong><span>{equipamento.serie} · {nomeLocal(localDoEquipamento(equipamento))}</span></div>
+                    <div className={estilos.dados}><strong>{equipamento.modelo}</strong><span>{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? `${equipamento.serie} · ` : ''}{nomeLocal(localDoEquipamento(equipamento))}</span></div>
                     <span className={estilos.saldo}>{saldo}<small> disponíveis</small></span>
                     <div className={estilos.quantidade}>
                       <button onClick={() => alterar(material, equipamento, -1)} disabled={quantidade === 0} aria-label="Diminuir"><Minus /></button>

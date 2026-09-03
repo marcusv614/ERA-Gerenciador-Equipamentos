@@ -2,6 +2,7 @@
 // arquivo gerado pelo Vite antes de o navegador montar o PDF.
 import logoEra from '../assets/ERALTDA.png?inline';
 import { formatarData } from '../utils/datas';
+import { identificacaoVisivel } from '../utils/identificacaoEquipamento';
 
 const ESTILOS_DOCUMENTO = `
   body{font-family:Arial,Helvetica,sans-serif;padding:8px 10px;color:#111;background:#fff}
@@ -30,6 +31,8 @@ function textoSeguro(valor) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+
+const serieDocumento = (serie, tipo) => textoSeguro(identificacaoVisivel(serie, tipo));
 
 function imprimirAposCarregarImagens(janela) {
   const imagens = [...janela.document.images];
@@ -95,7 +98,7 @@ function criarCabecalhoEquipamento(equipamento, buscarObraPorId) {
     <div class="header">
       <div class="header-row"><span class="label">Tipo</span><span class="value">${textoSeguro(equipamento.tipo)}</span></div>
       <div class="header-row"><span class="label">Equipamento</span><span class="value">${textoSeguro(equipamento.modelo)}</span></div>
-      <div class="header-row"><span class="label">Número de série</span><span class="value">${textoSeguro(equipamento.serie)}</span></div>
+      ${identificacaoVisivel(equipamento.serie, equipamento.tipo) ? `<div class="header-row"><span class="label">Número de série</span><span class="value">${serieDocumento(equipamento.serie, equipamento.tipo)}</span></div>` : ''}
       <div class="header-row"><span class="label">Status atual</span><span class="value">${textoSeguro(equipamento.status)}</span></div>
       <div class="header-row"><span class="label">Local atual</span><span class="value">${textoSeguro(localAtual)}</span></div>
       <div class="header-row"><span class="label">Técnico responsável</span><span class="value">${textoSeguro(equipamento.tecnico)}</span></div>
@@ -117,7 +120,7 @@ export function imprimirHistoricoEquipamento(equipamento, historico, buscarObraP
 export function imprimirCautelaObra(obra, equipamentos) {
   const equipamentosDaObra = equipamentos.filter(({ obraId }) => obraId === obra.id);
   const tecnicos = [...new Set(equipamentosDaObra.map(({ tecnico }) => tecnico).filter(Boolean))];
-  const linhas = equipamentosDaObra.length ? equipamentosDaObra.map((equipamento) => `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${textoSeguro(equipamento.serie)}</td><td>${textoSeguro(equipamento.tecnico)}</td><td>${formatarData(equipamento.data || equipamento.dataEntrada || equipamento.saida)}</td></tr>`).join('') : '<tr><td colspan="5">Nenhum equipamento cadastrado na obra.</td></tr>';
+  const linhas = equipamentosDaObra.length ? equipamentosDaObra.map((equipamento) => `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(equipamento.tecnico)}</td><td>${formatarData(equipamento.data || equipamento.dataEntrada || equipamento.saida)}</td></tr>`).join('') : '<tr><td colspan="5">Nenhum equipamento cadastrado na obra.</td></tr>';
   const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Relatório de inventário da obra')}<h2>Equipamentos atuais</h2><table><thead><tr><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Retrato do inventário atual. Gerado em ${formatarData(new Date())}</p>`;
   abrirJanelaDeImpressao(`Inventário — ${obra.nome}`, conteudo);
 }
@@ -126,7 +129,7 @@ export function imprimirCautelaHistoricaObra(inventario) {
   const obra = { nome: inventario.obraNome, cliente: inventario.cliente, cidade: inventario.cidade, inicio: inventario.dataReferencia, responsaveis: inventario.responsaveisTecnicos };
   const tecnicos = [...new Set((inventario.materiais || []).map(({ tecnico }) => tecnico).filter(Boolean))];
   const linhas = inventario.materiais?.length
-    ? inventario.materiais.map((item) => `<tr><td>${textoSeguro(item.quantidade || 1)}</td><td>${textoSeguro(item.tipo)}</td><td>${textoSeguro(item.modelo)}</td><td>${textoSeguro(item.serie)}</td><td>${textoSeguro(item.medida)}</td><td>${textoSeguro(item.tecnico)}</td></tr>`).join('')
+    ? inventario.materiais.map((item) => `<tr><td>${textoSeguro(item.quantidade || 1)}</td><td>${textoSeguro(item.tipo)}</td><td>${textoSeguro(item.modelo)}</td><td>${serieDocumento(item.serie, item.tipo)}</td><td>${textoSeguro(item.medida)}</td><td>${textoSeguro(item.tecnico)}</td></tr>`).join('')
     : '<tr><td colspan="6">Nenhum equipamento registrado na obra nesta data.</td></tr>';
   const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Cautela histórica da obra')}<div class="header"><div class="header-row"><span class="label">Data de referência</span><span class="value">${formatarData(inventario.dataReferencia)}</span></div><div class="header-row"><span class="label">Status da obra na data</span><span class="value">${textoSeguro(inventario.status)}</span></div></div><h2>Materiais presentes na data consultada</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Modelo</th><th>Série</th><th>Medida</th><th>Técnico</th></tr></thead><tbody>${linhas}</tbody></table>${ASSINATURAS_CAUTELA}<p class="muted">Documento gerado a partir do histórico imutável do sistema.</p>`;
   abrirJanelaDeImpressao(`Cautela histórica — ${inventario.obraNome} — ${formatarData(inventario.dataReferencia)}`, conteudo);
@@ -141,7 +144,7 @@ export function imprimirRomaneioSeparacao(solicitacao, buscarObraPorId) {
   const destino = obraDestino?.nome || 'Depósito central';
   const tituloCautela = 'Romaneio de separação';
   const linhas = materiais.length
-    ? materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao)}</td></tr>`).join('')
+    ? materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${serieDocumento(material.identificacao)}</td></tr>`).join('')
     : '<tr><td colspan="3">Nenhum material informado na solicitação.</td></tr>';
   const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${tituloCautela}</h1></div><div class="header">
     <div class="header-row"><span class="label">Solicitação</span><span class="value">${textoSeguro(identificadorSolicitacao)}</span></div>
@@ -160,7 +163,7 @@ export function imprimirRomaneioSeparacao(solicitacao, buscarObraPorId) {
 
 export function imprimirCautelaEmitida(cautela) {
   const titulo = 'Cautela de equipamentos';
-  const linhas = cautela.materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao)}</td></tr>`).join('');
+  const linhas = cautela.materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${serieDocumento(material.identificacao)}</td></tr>`).join('');
   const emitidaEm = new Date(cautela.emitidaEm).toLocaleString('pt-BR');
   const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${titulo}</h1></div><div class="header">
     <div class="header-row"><span class="label">Número</span><span class="value">${textoSeguro(cautela.numero)}</span></div>
@@ -187,7 +190,7 @@ export function imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObraPor
   const tipo = solicitacao.obraDestinoId ? 'Envio para obra' : 'Retirada da obra';
   const materiais = Array.isArray(solicitacao.materiais) ? solicitacao.materiais : [];
   const linhas = materiais.length
-    ? materiais.map((material, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(material.identificacao || 'Não definida')}</td></tr>`).join('')
+    ? materiais.map((material, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${serieDocumento(material.identificacao)}</td></tr>`).join('')
     : '<tr><td colspan="4">Nenhum material registrado.</td></tr>';
   const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Relatório de auditoria da movimentação</h1></div><div class="header">
     <div class="header-row"><span class="label">Solicitação</span><span class="value">#${textoSeguro(identificador)}</span></div>
@@ -266,7 +269,7 @@ export function imprimirHistoricoObra(obra, equipamentos) {
       ? null
       : ultimaSaida?.dataSaida || ultimaSaida?.dataMovimentacao;
     const tecnicoNaObra = ultimaEntrada?.tecnico || ultimaSaida?.tecnico || equipamento.tecnico;
-    return `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${textoSeguro(equipamento.serie)}</td><td>${textoSeguro(tecnicoNaObra)}</td><td>${formatarData(entrada)}</td><td>${formatarData(saida)}</td></tr>`;
+    return `<tr><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(tecnicoNaObra)}</td><td>${formatarData(entrada)}</td><td>${formatarData(saida)}</td></tr>`;
   }).join('') : '<tr><td colspan="6">Nenhum histórico de equipamentos registrado para esta obra.</td></tr>';
   const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Histórico da obra')}<h2>Equipamentos que passaram pela obra</h2><table><thead><tr><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th><th>Data de saída</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Gerado em ${formatarData(new Date())}</p>`;
   abrirJanelaDeImpressao(`Histórico da obra — ${obra.nome}`, conteudo);

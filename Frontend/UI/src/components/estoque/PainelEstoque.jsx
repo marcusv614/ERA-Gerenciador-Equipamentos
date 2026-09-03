@@ -6,6 +6,7 @@ import { imprimirCautelaEmitida, imprimirListaComprasGeral, imprimirListaCompras
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelEstoque.module.css';
 import { SepararEquipamentosModal } from './SepararEquipamentosModal';
+import { ferramentaManual, identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificacao }) => identificacao);
 const formatarDataHora = (valor) => valor ? new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
@@ -91,10 +92,11 @@ export function PainelEstoque() {
     const chave = `${solicitacao.id}-${material.id}`;
     const quantidade = Number(quantidadesRecebidas[chave] || pendenteEntrada);
     const identificacao = String(identificacoesRecebidas[chave] || '').trim();
+    const materialManual = ferramentaManual(material.catalogoChave?.split('|')[0]);
     if (!Number.isInteger(quantidade) || quantidade < 1 || quantidade > pendenteEntrada) {
       definirMensagem({ tipo: 'erro', texto: `Informe uma quantidade entre 1 e ${pendenteEntrada}.` }); return;
     }
-    if (!identificacao) {
+    if (!materialManual && !identificacao) {
       definirMensagem({ tipo: 'erro', texto: `Informe a identificação ou o lote de ${material.nome}.` }); return;
     }
     try {
@@ -124,7 +126,7 @@ export function PainelEstoque() {
         <span>{material.quantidade}×</span>
         <div className={estilos.detalhesMaterial}>
           <strong>{material.nome}</strong>
-          {material.identificacao && <small>Série {material.identificacao}</small>}
+          {identificacaoVisivel(material.identificacao, material.catalogoChave?.split('|')[0]) && <small>Série {material.identificacao}</small>}
           {material.quantidadeCompra > 0 && <div className={estilos.compraAnexada}>
             <ShoppingCart aria-hidden="true" />
             <span><b>Compra solicitada: {material.quantidadeCompra} unidade(s)</b>{material.compraSolicitadaEm && <small>Registrada em {formatarDataHora(material.compraSolicitadaEm)}</small>}</span>
@@ -168,7 +170,7 @@ export function PainelEstoque() {
                 return <section key={chave} className={estilos.aquisicaoItem}>
                   <div className={estilos.aquisicaoItemTitulo}><strong>{material.nome}</strong><small>Compra registrada em {formatarDataHora(material.compraSolicitadaEm)}</small></div>
                   <dl><div><dt>Compra</dt><dd>{material.quantidadeCompra}</dd></div><div><dt>No estoque</dt><dd>{material.quantidadeEntradaEstoque || 0}</dd></div><div><dt>Aguardando</dt><dd>{pendenteEntrada}</dd></div></dl>
-                  {pendenteEntrada > 0 ? <footer className={estilos.entradaAquisicao}><label>Quantidade recebida<input type="number" min="1" max={pendenteEntrada} value={quantidadesRecebidas[chave] ?? pendenteEntrada} onChange={(evento) => definirQuantidadesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label><label>Identificação ou lote<input type="text" maxLength="120" placeholder="Ex.: LOTE-2026-001" value={identificacoesRecebidas[chave] ?? ''} onChange={(evento) => definirIdentificacoesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label><button onClick={() => registrarAquisicao(solicitacao, material, pendenteEntrada)} disabled={!String(identificacoesRecebidas[chave] || '').trim()}><Check /> Dar entrada no estoque</button></footer> : <div className={estilos.aquisicaoConcluida}><Check /> Disponível no estoque desde {formatarDataHora(material.adquiridaEm)}</div>}
+                  {pendenteEntrada > 0 ? <footer className={estilos.entradaAquisicao}><label>Quantidade recebida<input type="number" min="1" max={pendenteEntrada} value={quantidadesRecebidas[chave] ?? pendenteEntrada} onChange={(evento) => definirQuantidadesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label>{!ferramentaManual(material.catalogoChave?.split('|')[0]) && <label>Identificação ou lote<input type="text" maxLength="120" placeholder="Ex.: LOTE-2026-001" value={identificacoesRecebidas[chave] ?? ''} onChange={(evento) => definirIdentificacoesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label>}<button onClick={() => registrarAquisicao(solicitacao, material, pendenteEntrada)} disabled={!ferramentaManual(material.catalogoChave?.split('|')[0]) && !String(identificacoesRecebidas[chave] || '').trim()}><Check /> Dar entrada no estoque</button></footer> : <div className={estilos.aquisicaoConcluida}><Check /> Disponível no estoque desde {formatarDataHora(material.adquiridaEm)}</div>}
                 </section>;
               })}</div>
               <button type="button" className={estilos.exportarSolicitacao} disabled={!possuiPendencia} onClick={() => imprimirListaComprasSolicitacao(solicitacao, itens, buscarObra)}><FileDown /> Lista de compras da solicitação</button>

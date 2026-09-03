@@ -3,6 +3,7 @@ import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
 import { statusEquipamento } from "../../data/mockData";
 import { obterDataAtual } from '../../utils/datas';
+import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import styles from "./MoverEquipModal.module.css";
 
 export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastrados, aoFechar, aoSalvar }) {
@@ -20,7 +21,7 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
   return (
     <EstruturaModal
       titulo="Solicitar movimentação"
-      subtitulo={`${equipamento.modelo} · ${equipamento.serie}`}
+      subtitulo={`${equipamento.modelo}${identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : ''}`}
       aoFechar={aoFechar}
     >
       <div className={styles.form}>

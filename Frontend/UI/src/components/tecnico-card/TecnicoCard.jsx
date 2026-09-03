@@ -3,6 +3,7 @@ import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData } from '../../utils/datas';
 import styles from './TecnicoCard.module.css';
+import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, aoEditar }) {
   const { nome, cargo, email, telefone, status } = funcionario;
@@ -72,7 +73,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
                       <PackageSearch size={13} className={styles.rowIcon} />
                       {e.modelo}
                     </span>
-                    <span className={styles.rowSerie}>{e.serie}</span>
+                    <span className={styles.rowSerie}>{identificacaoVisivel(e.serie, e.tipo) || '—'}</span>
                     <span>
                       <IndicadorStatus status={e.status} />
                     </span>

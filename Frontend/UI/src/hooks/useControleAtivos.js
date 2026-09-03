@@ -75,9 +75,9 @@ export function useControleAtivos() {
   }
 
   async function cadastrarEquipamento(dadosNovoEquipamento) {
-    const serieNormalizada = dadosNovoEquipamento.serie.trim().toLocaleLowerCase('pt-BR');
+    const serieNormalizada = String(dadosNovoEquipamento.serie || '').trim().toLocaleLowerCase('pt-BR');
     const serieJaExiste = equipamentos.some(({ serie }) =>
-      serie.trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
+      Boolean(serieNormalizada) && String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
     if (serieJaExiste) return false;
 
     if (apiHabilitada) {

@@ -5,6 +5,7 @@ import { formatarData, obterDataAtual } from '../../utils/datas';
 import { iconePorTipoEquipamento } from '../../data/mockData';
 import { apiObras } from '../../services/api/servicoAtivosApi';
 import { imprimirCautelaHistoricaObra } from '../../services/documentosEquipamentos';
+import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 const classePorTipo = { Fluke: 'tipoFluke', OTDR: 'tipoOtdr', Outro: 'tipoOutro' };
 
@@ -58,13 +59,13 @@ export function TelaObras({ obras, equipamentos, aoMoverEquipamento, aoImprimirC
         {resultado && <div className={estilos.obraHistoricoResultado}>
           <div className={estilos.obraHistoricoCabecalho}><div><span>Retrato de {formatarData(resultado.dataReferencia)}</span><strong>{resultado.materiais.length} {resultado.materiais.length === 1 ? 'item registrado' : 'itens registrados'}</strong></div><button type="button" onClick={() => imprimirCautelaHistoricaObra(resultado)}><Printer size={16} /> Exportar cautela</button></div>
           <dl className={estilos.obraHistoricoDados}><div><dt>Cliente</dt><dd>{resultado.cliente || '—'}</dd></div><div><dt>Localização</dt><dd>{resultado.cidade || '—'}</dd></div><div><dt>Status da obra</dt><dd>{resultado.status || '—'}</dd></div><div><dt>Responsáveis técnicos</dt><dd>{resultado.responsaveisTecnicos?.join(', ') || '—'}</dd></div></dl>
-          <div className={estilos.obraHistoricoLista}>{resultado.materiais.length ? resultado.materiais.map((item) => <article key={`${item.equipamentoId}-${item.serie}`} className={estilos.obraHistoricoItem}><PackageOpen size={17} /><div><strong>{item.modelo}</strong><span>{item.tipo || 'Equipamento'} · Série {item.serie || '—'}</span></div><b>{item.quantidade || 1} un.</b></article>) : <div className={estilos.obraHistoricoVazio}><PackageOpen size={22} /><span>Nenhum material estava registrado nesta obra.</span></div>}</div>
+          <div className={estilos.obraHistoricoLista}>{resultado.materiais.length ? resultado.materiais.map((item) => <article key={`${item.equipamentoId}-${item.serie}`} className={estilos.obraHistoricoItem}><PackageOpen size={17} /><div><strong>{item.modelo}</strong><span>{item.tipo || 'Equipamento'}{identificacaoVisivel(item.serie, item.tipo) ? ` · Série ${item.serie}` : ''}</span></div><b>{item.quantidade || 1} un.</b></article>) : <div className={estilos.obraHistoricoVazio}><PackageOpen size={22} /><span>Nenhum material estava registrado nesta obra.</span></div>}</div>
         </div>}
       </section>}
 
       {equipamentosDaObra.length > 0 && <div className={estilos.obraEquipList}>{equipamentosDaObra.map((equipamento) => {
         const IconeTipo = iconePorTipoEquipamento[equipamento.tipo] || Wrench;
-        return <div key={equipamento.id} className={estilos.obraEquipRow}><div className={estilos.obraEquipInfo}><div className={`${estilos.obraEquipTile} ${estilos[classePorTipo[equipamento.tipo]] || ''}`}><IconeTipo size={14} /></div><div className={estilos.obraEquipText}><div className={estilos.obraEquipTopRow}><span className={estilos.obraEquipNome}>{equipamento.modelo}</span><span className={estilos.obraEquipMov}>mov. {formatarData(equipamento.saida)}</span></div><div className={estilos.obraEquipSerie}>{equipamento.serie}</div></div></div><button onClick={() => aoMoverEquipamento(equipamento)} className={estilos.obraMoverBtn}><ArrowLeftRight size={11} /> Mover</button></div>;
+        return <div key={equipamento.id} className={estilos.obraEquipRow}><div className={estilos.obraEquipInfo}><div className={`${estilos.obraEquipTile} ${estilos[classePorTipo[equipamento.tipo]] || ''}`}><IconeTipo size={14} /></div><div className={estilos.obraEquipText}><div className={estilos.obraEquipTopRow}><span className={estilos.obraEquipNome}>{equipamento.modelo}</span><span className={estilos.obraEquipMov}>mov. {formatarData(equipamento.saida)}</span></div>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <div className={estilos.obraEquipSerie}>{equipamento.serie}</div>}</div></div><button onClick={() => aoMoverEquipamento(equipamento)} className={estilos.obraMoverBtn}><ArrowLeftRight size={11} /> Mover</button></div>;
       })}</div>}
     </div>;
   })}{obras.length === 0 && <div className={estilos.emptyState}>Nenhuma obra encontrada.</div>}</div>;

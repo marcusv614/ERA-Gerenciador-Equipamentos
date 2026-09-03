@@ -2,6 +2,7 @@ import { useState } from "react";
 import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
 import { tiposEquipamento } from '../../data/mockData';
+import { ferramentaManual } from '../../utils/identificacaoEquipamento';
 import styles from "./NovoEquipModal.module.css";
 
 const NOVA_CATEGORIA = '__nova_categoria__';
@@ -21,6 +22,7 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
   const serieJaCadastrada = Boolean(serieNormalizada) && seriesCadastradas.some((serie) =>
     String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
   const tipoSelecionado = form.tipo === NOVA_CATEGORIA ? novaCategoria.trim() : form.tipo.trim();
+  const tipoSemSerie = ferramentaManual(tipoSelecionado);
   const categoriaJaCadastrada = form.tipo === NOVA_CATEGORIA && tiposDisponiveis.some((tipo) =>
     tipo.toLocaleLowerCase('pt-BR') === novaCategoria.trim().toLocaleLowerCase('pt-BR'));
   const canSave = tipoSelecionado && form.modelo.trim() && !serieJaCadastrada && !categoriaJaCadastrada &&
@@ -64,14 +66,14 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
         </CampoFormulario>
         {serieJaCadastrada && <p role="alert">Já existe um equipamento com este número de série.</p>}
 
-        <CampoFormulario rotulo="Número de série (opcional)" dica="Se ficar vazio, o sistema criará uma identificação interna.">
+        {!tipoSemSerie && <CampoFormulario rotulo="Número de série (opcional)" dica="Se ficar vazio, o sistema criará uma identificação interna.">
           <input
             className={`${styles.input} ${styles.mono}`}
             placeholder="Ex.: FTB-88213"
             value={form.serie}
             onChange={(e) => setForm({ ...form, serie: e.target.value })}
           />
-        </CampoFormulario>
+        </CampoFormulario>}
 
         <div className={styles.grid2}>
           <CampoFormulario rotulo="Localização">
@@ -129,7 +131,7 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
                 ...form,
                 tipo: tipoSelecionado,
                 modelo: form.modelo.trim(),
-                serie: form.serie.trim() || null,
+                serie: tipoSemSerie ? null : form.serie.trim() || null,
                 obraId: form.obraId || null,
                 tecnico: form.tecnico || null,
                 data: form.data || null,
