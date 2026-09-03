@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Boxes, KeyRound, LayoutDashboard, LogOut, Pencil, Search, ShieldCheck, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
+import { Boxes, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiFuncionarios } from '../../services/api/servicoAtivosApi';
@@ -32,6 +32,16 @@ export function PainelAdmin() {
   const [redefinindo, definirRedefinindo] = useState(null);
   const [senhaTemporaria, definirSenhaTemporaria] = useState('');
   const [termoBusca, definirTermoBusca] = useState('');
+  const [modoEscuro, definirModoEscuro] = useState(() => {
+    const temaSalvo = localStorage.getItem('era-tema-admin');
+    return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  });
+
+  const alternarTema = () => definirModoEscuro((atual) => {
+    const novoTema = !atual;
+    localStorage.setItem('era-tema-admin', novoTema ? 'escuro' : 'claro');
+    return novoTema;
+  });
 
   const carregar = async () => {
     definirErro('');
@@ -109,10 +119,11 @@ export function PainelAdmin() {
     } catch (excecao) { definirErro(excecao.message); }
   };
 
-  return <div className={estilos.pagina}>
+  return <div className={estilos.pagina} data-theme={modoEscuro ? 'dark' : 'light'}>
     <header className={estilos.cabecalho}>
       <div className={estilos.identidade}><ShieldCheck /><div><small>Painel do administrador</small><strong>{usuario.nome}</strong></div></div>
       <nav aria-label="Áreas administrativas">{AREAS.map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={area === id ? estilos.ativo : ''} onClick={() => definirArea(id)}><Icone /> {rotulo}</button>)}</nav>
+      <button type="button" className={estilos.tema} onClick={alternarTema} aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'}>{modoEscuro ? <Sun /> : <Moon />}</button>
       <button type="button" className={estilos.sair} onClick={encerrarSessao}><LogOut /> Sair</button>
     </header>
 

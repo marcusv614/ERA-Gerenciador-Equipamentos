@@ -4,6 +4,8 @@ import { CampoFormulario } from "../field/Field";
 import { tiposEquipamento } from '../../data/mockData';
 import styles from "./NovoEquipModal.module.css";
 
+const NOVA_CATEGORIA = '__nova_categoria__';
+
 export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar }) {
   const [form, setForm] = useState({
     tipo: "OTDR",
@@ -14,10 +16,14 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
     tecnico: "",
     data: "",
   });
+  const [novaCategoria, definirNovaCategoria] = useState('');
   const serieNormalizada = form.serie.trim().toLocaleLowerCase('pt-BR');
   const serieJaCadastrada = Boolean(serieNormalizada) && seriesCadastradas.some((serie) =>
     String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
-  const canSave = form.tipo.trim() && form.modelo.trim() && !serieJaCadastrada &&
+  const tipoSelecionado = form.tipo === NOVA_CATEGORIA ? novaCategoria.trim() : form.tipo.trim();
+  const categoriaJaCadastrada = form.tipo === NOVA_CATEGORIA && tiposDisponiveis.some((tipo) =>
+    tipo.toLocaleLowerCase('pt-BR') === novaCategoria.trim().toLocaleLowerCase('pt-BR'));
+  const canSave = tipoSelecionado && form.modelo.trim() && !serieJaCadastrada && !categoriaJaCadastrada &&
     (!form.obraId || form.tecnico.trim());
 
   return (
@@ -28,17 +34,26 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
     >
       <div className={styles.form}>
         <CampoFormulario rotulo="Tipo">
-          <input
+          <select
             className={styles.input}
-            list="tipos-equipamento-cadastro"
-            placeholder="Selecione ou informe o tipo"
             value={form.tipo}
             onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-          />
-          <datalist id="tipos-equipamento-cadastro">
-            {tiposDisponiveis.map((tipo) => <option key={tipo} value={tipo} />)}
-          </datalist>
+          >
+            {tiposDisponiveis.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}
+            <option value={NOVA_CATEGORIA}>Adicionar nova categoria</option>
+          </select>
         </CampoFormulario>
+        {form.tipo === NOVA_CATEGORIA && <CampoFormulario rotulo="Nova categoria" dica="Ela será adicionada às opções após o cadastro do equipamento.">
+          <input
+            className={styles.input}
+            autoFocus
+            maxLength={40}
+            placeholder="Ex.: Power meter"
+            value={novaCategoria}
+            onChange={(e) => definirNovaCategoria(e.target.value)}
+          />
+          {categoriaJaCadastrada && <small className={styles.erro}>Essa categoria já existe. Selecione-a na lista acima.</small>}
+        </CampoFormulario>}
         <CampoFormulario rotulo="Modelo">
           <input
             className={styles.input}
@@ -112,7 +127,7 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
             onClick={() =>
               aoSalvar({
                 ...form,
-                tipo: form.tipo.trim(),
+                tipo: tipoSelecionado,
                 modelo: form.modelo.trim(),
                 serie: form.serie.trim() || null,
                 obraId: form.obraId || null,

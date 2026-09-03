@@ -31,6 +31,11 @@
   font-family: var(--font-mono);
 }
 
+.erro {
+  color: #c34f3d;
+  font-size: 11px;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
