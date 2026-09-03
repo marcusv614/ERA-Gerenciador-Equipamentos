@@ -3,35 +3,42 @@ import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
 import { tiposEquipamento } from '../../data/constantesDominio';
 import { ferramentaManual } from '../../utils/identificacaoEquipamento';
+import { obterDataAtual } from '../../utils/datas';
 import styles from "./NovoEquipModal.module.css";
 
 const NOVA_CATEGORIA = '__nova_categoria__';
 
-export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar }) {
+export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar }) {
+  const editando = Boolean(equipamento);
   const [form, setForm] = useState({
-    tipo: "OTDR",
-    modelo: "",
-    serie: "",
-    status: "Em estoque",
-    obraId: "",
-    tecnico: "",
-    data: "",
+    tipo: equipamento?.tipo || "OTDR",
+    modelo: equipamento?.modelo || "",
+    serie: equipamento?.serie || "",
+    status: equipamento?.status || "Em estoque",
+    obraId: equipamento?.obraId || "",
+    tecnico: equipamento?.tecnico || "",
+    data: equipamento?.dataEntrada || equipamento?.data || obterDataAtual(),
   });
   const [novaCategoria, definirNovaCategoria] = useState('');
   const serieNormalizada = form.serie.trim().toLocaleLowerCase('pt-BR');
+  const serieOriginalNormalizada = String(equipamento?.serie || '').trim().toLocaleLowerCase('pt-BR');
   const serieJaCadastrada = Boolean(serieNormalizada) && seriesCadastradas.some((serie) =>
-    String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
+    String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada) && serieNormalizada !== serieOriginalNormalizada;
   const tipoSelecionado = form.tipo === NOVA_CATEGORIA ? novaCategoria.trim() : form.tipo.trim();
   const tipoSemSerie = ferramentaManual(tipoSelecionado);
   const categoriaJaCadastrada = form.tipo === NOVA_CATEGORIA && tiposDisponiveis.some((tipo) =>
     tipo.toLocaleLowerCase('pt-BR') === novaCategoria.trim().toLocaleLowerCase('pt-BR'));
-  const canSave = tipoSelecionado && form.modelo.trim() && !serieJaCadastrada && !categoriaJaCadastrada &&
-    (!form.obraId || form.tecnico.trim());
+  const tecnicosDisponiveis = equipamento?.tecnico && !tecnicosCadastrados.includes(equipamento.tecnico)
+    ? [equipamento.tecnico, ...tecnicosCadastrados]
+    : tecnicosCadastrados;
+  const obrasDisponiveis = obras.filter(({ id, status }) =>
+    status !== 'Concluída' || String(id) === String(equipamento?.obraId));
+  const canSave = tipoSelecionado && form.modelo.trim() && form.data && !serieJaCadastrada && !categoriaJaCadastrada;
 
   return (
     <EstruturaModal
-      titulo="Novo equipamento"
-      subtitulo="Cadastre um instrumento na frota"
+      titulo={editando ? 'Editar equipamento' : 'Novo equipamento'}
+      subtitulo={editando ? 'Atualize os dados do equipamento' : 'Cadastre um instrumento na frota'}
       aoFechar={aoFechar}
     >
       <div className={styles.form}>
@@ -56,12 +63,13 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
           />
           {categoriaJaCadastrada && <small className={styles.erro}>Essa categoria já existe. Selecione-a na lista acima.</small>}
         </CampoFormulario>}
-        <CampoFormulario rotulo="Modelo">
+        <CampoFormulario rotulo="Nome do equipamento">
           <input
             className={styles.input}
-            placeholder="Ex.: EXFO FTB-1v2"
+            placeholder="Ex.: OTDR EXFO FTB-1v2"
             value={form.modelo}
             onChange={(e) => setForm({ ...form, modelo: e.target.value })}
+            required
           />
         </CampoFormulario>
         {serieJaCadastrada && <p role="alert">Já existe um equipamento com este número de série.</p>}
@@ -90,33 +98,34 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
               }
             >
               <option value="">Depósito central</option>
-              {obras.filter(({ status }) => status !== 'Concluída').map((o) => (
+              {obrasDisponiveis.map((o) => (
                 <option key={o.id} value={o.id}>
                   {o.nome}
                 </option>
               ))}
             </select>
           </CampoFormulario>
-          <CampoFormulario rotulo="Técnico responsável">
+          <CampoFormulario rotulo="Técnico responsável (opcional)" dica={form.obraId ? 'Você pode definir o responsável agora ou posteriormente.' : 'Disponível quando o equipamento estiver localizado em uma obra.'}>
             <select
               className={styles.input}
               value={form.tecnico}
               onChange={(e) => setForm({ ...form, tecnico: e.target.value })}
               disabled={!form.obraId}
             >
-              <option value="">Selecione um funcionário</option>
-              {tecnicosCadastrados.map((nome) => <option key={nome} value={nome}>{nome}</option>)}
+              <option value="">Sem técnico responsável</option>
+              {tecnicosDisponiveis.map((nome) => <option key={nome} value={nome}>{nome}</option>)}
             </select>
           </CampoFormulario>
         </div>
 
-        <CampoFormulario rotulo="Data de entrada (opcional)">
+        <CampoFormulario rotulo="Data de entrada">
           <input
             type="date"
             className={styles.input}
             value={form.data}
-            max={new Date().toLocaleDateString('sv-SE')}
+            max={obterDataAtual()}
             onChange={(e) => setForm({ ...form, data: e.target.value })}
+            required
           />
         </CampoFormulario>
 
@@ -139,7 +148,7 @@ export function ModalNovoEquipamento({ obras, tecnicosCadastrados, seriesCadastr
             }
             className={styles.submit}
           >
-            Adicionar equipamento
+            {editando ? 'Salvar alterações' : 'Adicionar equipamento'}
           </button>
         </div>
       </div>

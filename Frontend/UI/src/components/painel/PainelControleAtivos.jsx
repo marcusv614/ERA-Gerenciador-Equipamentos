@@ -53,6 +53,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   const [modalNovoFuncionarioAberto, definirModalNovoFuncionarioAberto] = useState(false);
   const [modalNovoUsuarioAberto, definirModalNovoUsuarioAberto] = useState(false);
   const [funcionarioEmEdicao, definirFuncionarioEmEdicao] = useState(null);
+  const [equipamentoEmEdicao, definirEquipamentoEmEdicao] = useState(null);
   const [equipamentoParaMover, definirEquipamentoParaMover] = useState(null);
   const [equipamentoComHistoricoAberto, definirEquipamentoComHistoricoAberto] = useState(null);
   const [solicitacaoEmEdicao, definirSolicitacaoEmEdicao] = useState(null);
@@ -65,6 +66,9 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   };
   const cadastrarEquipamento = async (novoEquipamento) => {
     if (await controleAtivos.cadastrarEquipamento(novoEquipamento)) definirModalNovoEquipamentoAberto(false);
+  };
+  const salvarEdicaoEquipamento = async (dadosAtualizados) => {
+    if (await controleAtivos.atualizarEquipamento(equipamentoEmEdicao.id, dadosAtualizados)) definirEquipamentoEmEdicao(null);
   };
   const movimentarEquipamento = async (identificador, movimentacao) => {
     if (await controleAtivos.movimentarEquipamento(identificador, movimentacao)) definirEquipamentoParaMover(null);
@@ -124,7 +128,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
         {controleAtivos.carregandoDados && <div className={estilos.apiFeedback}>Sincronizando dados com a API...</div>}
         {controleAtivos.erroApi && <div className={`${estilos.apiFeedback} ${estilos.apiFeedbackErro}`} role="alert">Falha na comunicação com a API: {controleAtivos.erroApi}</div>}
         {telaAtual === 'deposito' && <ResumoEquipamentos resumo={controleAtivos.resumoEquipamentos} estilos={estilos} />}
-        {telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoMover={definirEquipamentoParaMover} estilos={estilos} />}
+        {telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} podeEditar={ehAdmin} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoEditar={definirEquipamentoEmEdicao} aoMover={definirEquipamentoParaMover} estilos={estilos} />}
         {telaAtual === 'obras' && <TelaObras obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} podeEditarStatus={ehAdmin} aoAlterarStatus={controleAtivos.atualizarStatusObra} aoMoverEquipamento={definirEquipamentoParaMover} aoImprimirCautela={(obra) => imprimirCautelaObra(obra, controleAtivos.equipamentos)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
         {telaAtual === 'funcionarios' && <TelaFuncionarios funcionarios={filtros.funcionariosFiltrados} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} aoEditarFuncionario={definirFuncionarioEmEdicao} estilos={estilos} />}
         {telaAtual === 'atividades' && <TelaAtividades solicitacoes={solicitacoesFiltradas} cautelas={cautelas} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoIniciarTransito={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'transito')} aoConcluir={(identificador) => controleAtivos.avancarMovimentacao(identificador, 'concluir')} aoEditar={definirSolicitacaoEmEdicao} aoExportarRomaneio={(solicitacao) => imprimirRomaneioSeparacao(solicitacao, controleAtivos.buscarObraPorId)} aoExportarCautela={imprimirCautelaEmitida} estilos={estilos} />}
@@ -134,6 +138,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     <NavegacaoInferior telaAtual={telaAtual} totalAtividadesPendentes={totalAtividadesPendentes} aoSelecionarTela={selecionarTela} estilos={estilos} />
     {modalNovaObraAberto && <ModalNovaObra tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirModalNovaObraAberto(false)} aoSalvar={cadastrarObra} />}
     {modalNovoEquipamentoAberto && <ModalNovoEquipamento obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} aoFechar={() => definirModalNovoEquipamentoAberto(false)} aoSalvar={cadastrarEquipamento} />}
+    {equipamentoEmEdicao && <ModalNovoEquipamento equipamento={equipamentoEmEdicao} obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} aoFechar={() => definirEquipamentoEmEdicao(null)} aoSalvar={salvarEdicaoEquipamento} />}
     {equipamentoParaMover && <ModalMovimentarEquipamento equipamento={equipamentoParaMover} obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirEquipamentoParaMover(null)} aoSalvar={movimentarEquipamento} />}
     {modalNovoFuncionarioAberto && <ModalNovoFuncionario funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
     {funcionarioEmEdicao && <ModalEditarFuncionario funcionario={funcionarioEmEdicao} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras} aoFechar={() => definirFuncionarioEmEdicao(null)} aoSalvar={salvarFuncionario} />}

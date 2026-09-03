@@ -95,6 +95,26 @@ export function useControleAtivos() {
     }
   }
 
+  async function atualizarEquipamento(identificador, dadosAtualizados) {
+    const serieNormalizada = String(dadosAtualizados.serie || '').trim().toLocaleLowerCase('pt-BR');
+    const serieJaExiste = equipamentos.some(({ id, serie }) => id !== identificador && Boolean(serieNormalizada) &&
+      String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada);
+    if (serieJaExiste) {
+      definirErroApi('Já existe um equipamento com este número de série.');
+      return false;
+    }
+    try {
+      const equipamentoAtualizado = await apiEquipamentos.atualizar(identificador, dadosAtualizados);
+      definirEquipamentos((atuais) => atuais.map((equipamento) =>
+        equipamento.id === identificador ? equipamentoAtualizado : equipamento));
+      definirErroApi(null);
+      return true;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return false;
+    }
+  }
+
   async function cadastrarFuncionario(dadosNovoFuncionario) {
     const emailNormalizado = dadosNovoFuncionario.email.trim().toLocaleLowerCase('pt-BR');
     const nomeNormalizado = dadosNovoFuncionario.nome.trim().toLocaleLowerCase('pt-BR');
@@ -284,6 +304,7 @@ export function useControleAtivos() {
     cadastrarObra,
     atualizarStatusObra,
     cadastrarEquipamento,
+    atualizarEquipamento,
     cadastrarFuncionario,
     atualizarFuncionario,
     movimentarEquipamento,
