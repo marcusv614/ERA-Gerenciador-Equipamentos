@@ -74,6 +74,30 @@ export function useControleAtivos() {
     return true;
   }
 
+  async function atualizarStatusObra(obra, status) {
+    const obraAtualizada = { ...obra, status };
+    if (apiHabilitada) {
+      try {
+        const resposta = await apiObras.atualizar(obra.id, {
+          nome: obra.nome,
+          cliente: obra.cliente,
+          cidade: obra.cidade,
+          inicio: obra.inicio,
+          status,
+          responsaveis: obra.responsaveis || [],
+        });
+        definirObras((atuais) => atuais.map((item) => item.id === obra.id ? resposta : item));
+        definirErroApi(null);
+        return true;
+      } catch (erro) {
+        definirErroApi(erro.message);
+        return false;
+      }
+    }
+    definirObras((atuais) => atuais.map((item) => item.id === obra.id ? obraAtualizada : item));
+    return true;
+  }
+
   async function cadastrarEquipamento(dadosNovoEquipamento) {
     const serieNormalizada = String(dadosNovoEquipamento.serie || '').trim().toLocaleLowerCase('pt-BR');
     const serieJaExiste = equipamentos.some(({ serie }) =>
@@ -324,6 +348,7 @@ export function useControleAtivos() {
     tecnicosCadastrados,
     buscarObraPorId,
     cadastrarObra,
+    atualizarStatusObra,
     cadastrarEquipamento,
     cadastrarFuncionario,
     atualizarFuncionario,

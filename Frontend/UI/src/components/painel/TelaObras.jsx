@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ArrowLeftRight, Calendar, CalendarSearch, Download, FileText, LoaderCircle, MapPin, PackageOpen, Printer, Wrench, X } from 'lucide-react';
-import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData, obterDataAtual } from '../../utils/datas';
 import { iconePorTipoEquipamento } from '../../data/mockData';
 import { apiObras } from '../../services/api/servicoAtivosApi';
 import { imprimirCautelaHistoricaObra } from '../../services/documentosEquipamentos';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
+import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 
 const classePorTipo = { Fluke: 'tipoFluke', OTDR: 'tipoOtdr', Outro: 'tipoOutro' };
 
@@ -13,12 +13,20 @@ function mensagemDoErro(erro) {
   return erro?.response?.data?.message || erro?.response?.data?.mensagem || erro?.message || 'Não foi possível consultar o inventário desta data.';
 }
 
-export function TelaObras({ obras, equipamentos, aoMoverEquipamento, aoImprimirCautela, aoImprimirHistorico, estilos }) {
+export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStatus, aoMoverEquipamento, aoImprimirCautela, aoImprimirHistorico, estilos }) {
   const [obraAberta, definirObraAberta] = useState(null);
   const [dataConsulta, definirDataConsulta] = useState(obterDataAtual());
   const [resultado, definirResultado] = useState(null);
   const [erro, definirErro] = useState('');
   const [carregando, definirCarregando] = useState(false);
+  const [obraSalvando, definirObraSalvando] = useState(null);
+
+  async function alterarStatus(obra, status) {
+    if (status === obra.status) return;
+    definirObraSalvando(obra.id);
+    await aoAlterarStatus(obra, status);
+    definirObraSalvando(null);
+  }
 
   function alternarConsulta(obraId) {
     definirObraAberta((atual) => atual === obraId ? null : obraId);
@@ -46,7 +54,7 @@ export function TelaObras({ obras, equipamentos, aoMoverEquipamento, aoImprimirC
     const consultaAberta = obraAberta === obra.id;
     return <div key={obra.id} className={estilos.obraCard}>
       <div className={estilos.obraHead}>
-        <div><div className={estilos.obraTitleRow}><h3 className={estilos.obraTitle}>{obra.nome}</h3><IndicadorStatusObra status={obra.status} /></div><div className={estilos.obraMeta}><span className={estilos.obraClient}>{obra.cliente}</span><span className={estilos.obraMetaItem}><MapPin size={11} />{obra.cidade}</span><span className={estilos.obraMetaItem}><Calendar size={11} />{formatarData(obra.inicio)}</span><span>Resp.: {obra.responsaveis?.join(', ') || '—'}</span></div></div>
+        <div><div className={estilos.obraTitleRow}><h3 className={estilos.obraTitle}>{obra.nome}</h3>{podeEditarStatus ? <label className={estilos.obraStatusEditor}><select aria-label={`Status da obra ${obra.nome}`} value={obra.status} disabled={obraSalvando === obra.id} onChange={(evento) => alterarStatus(obra, evento.target.value)}><option value="Em andamento">Em andamento</option><option value="Concluída">Concluída</option></select>{obraSalvando === obra.id && <LoaderCircle className={estilos.girando} size={13} />}</label> : <IndicadorStatusObra status={obra.status} />}</div><div className={estilos.obraMeta}><span className={estilos.obraClient}>{obra.cliente}</span><span className={estilos.obraMetaItem}><MapPin size={11} />{obra.cidade}</span><span className={estilos.obraMetaItem}><Calendar size={11} />{formatarData(obra.inicio)}</span><span>Resp.: {obra.responsaveis?.join(', ') || '—'}</span></div></div>
         <div className={estilos.obraActionsGroup}><span className={estilos.obraCount}>{quantidadeNaObra} {quantidadeNaObra === 1 ? 'unidade' : 'unidades'}</span><div className={estilos.obraExportActions}><button type="button" className={estilos.obraExportBtn} onClick={() => aoImprimirCautela(obra)}><FileText size={13} /> Inventário atual</button><button type="button" className={estilos.obraExportBtnSecondary} onClick={() => aoImprimirHistorico(obra)}><Download size={13} /> Movimentações</button><button type="button" className={`${estilos.obraExportBtnSecondary} ${consultaAberta ? estilos.obraConsultaBtnAtivo : ''}`} onClick={() => alternarConsulta(obra.id)}><CalendarSearch size={13} /> Por data</button></div></div>
       </div>
 

@@ -64,6 +64,14 @@ export function TelaAtividades({
   const contarPorStatus = (status) =>
     solicitacoes.filter((solicitacao) => solicitacao.status === status).length;
 
+  const idSecaoStatus = (status) => `solicitacoes-${status.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-")}`;
+  const irParaStatus = (status) => {
+    const secao = document.getElementById(idSecaoStatus(status));
+    const reduzirMovimento = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    secao?.scrollIntoView({ behavior: reduzirMovimento ? "auto" : "smooth", block: "start" });
+    secao?.focus({ preventScroll: true });
+  };
+
   const renderizarSolicitacao = (solicitacao, classeStatus) => {
     const obraOrigem = solicitacao.obraOrigemId
       ? buscarObraPorId(solicitacao.obraOrigemId)
@@ -209,24 +217,24 @@ export function TelaAtividades({
         className={estilos.atividadesResumo}
         aria-label="Resumo das solicitações"
       >
-        <div>
+        <button type="button" onClick={() => irParaStatus("Pendente")} aria-label="Ir para solicitações pendentes">
           <Clock3 size={17} />
           <span>
             <strong>{contarPorStatus("Pendente")}</strong> pendentes
           </span>
-        </div>
-        <div>
+        </button>
+        <button type="button" onClick={() => irParaStatus("Aprovada")} aria-label="Ir para solicitações em preparação">
           <Truck size={17} />
           <span>
             <strong>{contarPorStatus("Aprovada")}</strong> em preparação
           </span>
-        </div>
-        <div>
+        </button>
+        <button type="button" onClick={() => irParaStatus("Rejeitada")} aria-label="Ir para solicitações rejeitadas">
           <X size={17} />
           <span>
             <strong>{contarPorStatus("Rejeitada")}</strong> rejeitadas
           </span>
-        </div>
+        </button>
       </div>
 
       <div className={estilos.atividadesGrupos}>
@@ -235,7 +243,7 @@ export function TelaAtividades({
             ({ status }) => status === grupo.status,
           );
           return (
-            <section key={grupo.status} className={estilos.atividadeGrupo}>
+            <section id={idSecaoStatus(grupo.status)} key={grupo.status} className={estilos.atividadeGrupo} tabIndex="-1">
               <header className={estilos.atividadeGrupoCabecalho}>
                 <div>
                   <h2>{grupo.titulo}</h2>

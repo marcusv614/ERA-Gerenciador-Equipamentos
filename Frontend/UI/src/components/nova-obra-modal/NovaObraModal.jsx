@@ -8,7 +8,7 @@ import styles from './NovaObraModal.module.css';
 
 export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar }) {
   const [form, setForm] = useState({
-    nome: '', cliente: '', cidade: '', responsaveis: [], inicio: '', status: 'Planejada',
+    nome: '', cliente: '', cidade: '', responsaveis: [], inicio: '', status: 'Em andamento',
   });
   const canSave = form.nome.trim() && form.cliente.trim() && form.cidade.trim() && form.responsaveis.length > 0;
   const alternarResponsavel = (nome) => setForm((dadosAtuais) => ({
