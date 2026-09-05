@@ -5,7 +5,7 @@ import { formatarData } from '../../utils/datas';
 import styles from './TecnicoCard.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
-export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, aoEditar }) {
+export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar }) {
   const { nome, cargo, email, telefone, status } = funcionario;
   const initials = nome
     .split(' ')
@@ -23,8 +23,8 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
         <div className={styles.avatar}>{initials}</div>
         <div className={styles.headerInfo}>
           <div className={styles.name}>{nome}</div>
-          <div className={styles.rowData}>{cargo} · {status}</div>
-          <div className={styles.rowData}>{email} · {telefone}</div>
+          <div className={styles.roleLine}><span>{cargo}</span><b data-status={status}>{status}</b></div>
+          <div className={styles.contactList}><span>{email}</span>{telefone && <span>{telefone}</span>}</div>
           <div className={styles.meta}>
             <span className={styles.pill}>
               {obras.length} {obras.length === 1 ? 'obra' : 'obras'}
@@ -34,22 +34,20 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
             </span>
           </div>
         </div>
-        <button type="button" className={styles.editButton} onClick={() => aoEditar(funcionario)} aria-label={`Editar dados de ${nome}`}><Pencil size={15} /> Editar</button>
+        {podeEditar && <button type="button" className={styles.editButton} onClick={() => aoEditar(funcionario)} aria-label={`Editar dados de ${nome}`}><Pencil size={15} /> Editar</button>}
       </div>
 
-      {obras.length > 0 && (
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>Obras sob responsabilidade</div>
-          <div className={styles.obraList}>
-            {obras.map((o) => (
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>Obras sob responsabilidade</div>
+        {obras.length > 0 ? <div className={styles.obraList}>
+          {obras.map((o) => (
               <div key={o.id} className={styles.obraRow}>
                 <span className={styles.obraNome}>{o.nome}</span>
                 <IndicadorStatusObra status={o.status} />
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+          ))}
+        </div> : <div className={styles.empty}>Nenhuma obra atribuída no momento.</div>}
+      </div>
 
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Materiais registrados com o técnico</div>
@@ -67,20 +65,21 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
               </div>
               {equipamentos.map((e) => {
                 const obra = buscarObraDoEquipamento(e.obraId);
+                const serie = identificacaoVisivel(e.serie, e.tipo);
                 return (
-                  <div key={e.id} className={styles.row}>
-                    <span className={styles.rowModel}>
+                  <div key={e.id} className={`${styles.row} ${!serie ? styles.rowSemSerie : ''}`}>
+                    <span className={styles.rowModel} data-label="Equipamento">
                       <PackageSearch size={13} className={styles.rowIcon} />
                       {e.modelo}
                     </span>
-                    <span className={styles.rowSerie}>{identificacaoVisivel(e.serie, e.tipo) || '—'}</span>
-                    <span>
+                    {serie && <span className={styles.rowSerie} data-label="Série">{serie}</span>}
+                    <span className={styles.rowStatus} data-label="Status">
                       <IndicadorStatus status={e.status} />
                     </span>
-                    <span className={styles.rowLocal}>
+                    <span className={styles.rowLocal} data-label="Local">
                       {obra ? obra.nome : 'Depósito central'}
                     </span>
-                    <span className={styles.rowData}>{(e.saida && formatarData(e.saida)) || '—'}</span>
+                    <span className={styles.rowData} data-label="Retirada">{(e.saida && formatarData(e.saida)) || '—'}</span>
                   </div>
                 );
               })}

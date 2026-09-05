@@ -1,4 +1,7 @@
 .card {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
   border-radius: 14px;
   padding: 18px;
   background: var(--surface);
@@ -12,8 +15,9 @@
 }
 
 .header {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: start;
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -36,7 +40,6 @@
 
 .headerInfo {
   min-width: 0;
-  flex: 1;
 }
 
 .editButton {
@@ -60,6 +63,48 @@
   font-weight: 600;
   font-family: var(--font-display);
   color: var(--text);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.roleLine {
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.roleLine b {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.roleLine b[data-status="Ativo"] {
+  background: rgba(47, 158, 104, .13);
+  color: #27845a;
+}
+
+.contactList {
+  margin-top: 5px;
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.contactList span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .meta {
@@ -112,6 +157,7 @@
 }
 
 .obraNome {
+  min-width: 0;
   font-size: 12.5px;
   font-weight: 500;
   color: var(--text);
@@ -127,6 +173,8 @@
 }
 
 .tableWrap {
+  width: 100%;
+  min-width: 0;
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -170,6 +218,7 @@
 }
 
 .rowModel {
+  grid-column: 1;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -179,22 +228,13 @@
   white-space: nowrap;
 }
 
-@media (max-width: 600px) {
-  .card { padding: 12px; }
-  .avatar { width: 38px; height: 38px; border-radius: 10px; font-size: 13px; }
-  .name { font-size: 15px; }
-  .table { min-width: 420px; }
-  .rowHead, .row { grid-template-columns: minmax(140px, 1.3fr) minmax(80px, 0.7fr) minmax(90px, 0.9fr) minmax(110px, 1fr) minmax(60px, 0.5fr); font-size: 13px; }
-  .section { padding-top: 10px; margin-top: 10px; }
-  .editButton { width: 44px; height: 44px; padding: 0; justify-content: center; font-size: 0; }
-}
-
 .rowIcon {
   flex-shrink: 0;
   color: var(--info);
 }
 
 .rowSerie {
+  grid-column: 2;
   font-family: var(--font-mono);
   color: var(--text-muted);
   font-size: 11.5px;
@@ -204,6 +244,7 @@
 }
 
 .rowLocal {
+  grid-column: 4;
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -211,8 +252,75 @@
 }
 
 .rowData {
-  font-family: var(--font-mono);
-  color: var(--warn);
+  grid-column: 5;
+  color: var(--text-muted);
   font-size: 11.5px;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+}
+
+.rowStatus { grid-column: 3; display: flex; align-items: center; }
+
+@media (max-width: 768px) {
+  .card { padding: 14px; }
+  .header { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; }
+  .avatar { width: 40px; height: 40px; border-radius: 10px; font-size: 13px; }
+  .name { font-size: 15px; }
+  .section { padding-top: 12px; margin-top: 12px; }
+  .sectionTitle { font-family: var(--font-body); font-size: 10.5px; letter-spacing: .045em; }
+  .editButton { width: 40px; height: 40px; padding: 0; justify-content: center; font-size: 0; }
+  .obraRow { align-items: center; flex-direction: row; padding: 10px; }
+  .obraNome { width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .obraRow > span:last-child { flex: 0 0 auto; }
+
+  .tableWrap { overflow: visible; border: 0; border-radius: 0; }
+  .table { min-width: 0; display: grid; gap: 9px; }
+  .rowHead { display: none; }
+  .row {
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+    font-size: 12px;
+  }
+  .row:last-child { border-bottom: 1px solid var(--border); }
+  .row > span {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .row > span::before {
+    content: attr(data-label);
+    color: var(--text-muted);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+  }
+  .rowModel { grid-column: 1 / -1; }
+  .rowSerie { grid-column: 1; }
+  .rowStatus { grid-column: 2; }
+  .rowLocal { grid-column: 1; }
+  .rowData { grid-column: 2; }
+  .rowSemSerie .rowStatus { grid-column: 1 / -1; }
+  .rowModel .rowIcon { display: none; }
+  .rowSerie, .rowLocal { overflow: visible; text-overflow: unset; }
+}
+
+@media (max-width: 420px) {
+  .card { padding: 12px; }
+  .header { grid-template-columns: 38px minmax(0, 1fr); }
+  .avatar { width: 38px; height: 38px; }
+  .editButton { grid-column: 1 / -1; width: 100%; font-size: 12px; }
+  .meta { gap: 6px; }
+  .pill { font-size: 10.5px; }
+  .row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .rowModel { grid-column: 1 / -1; }
 }

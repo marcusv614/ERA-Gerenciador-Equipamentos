@@ -542,6 +542,55 @@
   color: var(--text);
 }
 
+.searchFeedback {
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(var(--era-orange-rgb), 0.28);
+  border-radius: 10px;
+  background: var(--accent-dim);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.searchFeedback span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.searchFeedback span strong {
+  color: var(--text);
+}
+
+.searchFeedback > b {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.searchFeedback button {
+  min-height: 34px;
+  flex: 0 0 auto;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .18s ease;
+}
+
+.searchFeedback button:hover { opacity: .72; }
+.searchFeedbackEmpty { border-color: rgba(190,70,60,.32); background: rgba(190,70,60,.09); }
+.searchFeedbackEmpty > b { color: #b94e43; }
+
 .btnGhost {
   display: flex;
   align-items: center;
@@ -974,6 +1023,7 @@ button.equipCard {
   color: var(--text-muted);
   font-family: var(--font-mono);
   letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
 }
 
 .equipFooter {
@@ -1034,6 +1084,8 @@ button.equipCard {
   gap: 7px;
   font-size: 12px;
   color: var(--text-muted);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .equipTecnico::before {
   content: "";
@@ -1849,10 +1901,42 @@ button.equipCard {
 
   .equipHead {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
     gap: 8px;
     margin-bottom: 10px;
+  }
+
+  .equipHeadActions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    justify-items: stretch;
+    gap: 8px;
+  }
+
+  .equipActions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    gap: 8px;
+  }
+
+  .equipHeadActions > span {
+    max-width: 100%;
+    justify-self: start;
+    white-space: normal;
+  }
+
+  .equipActions .iconBtn {
+    width: 100%;
+    min-width: 0;
   }
 
   .equipIdent {
@@ -2198,7 +2282,8 @@ button.equipCard {
   .topbarCollapsed{padding:10px 12px;border-bottom-color:var(--border)}
   .topbarCollapsed>div:not(.topbarRight),.topbarCollapsed .topbarRight{display:initial}
   .topbarRight{width:100%;display:grid;grid-template-columns:minmax(100px,1fr) 40px 40px;align-items:center;gap:7px;margin:0}
-  .searchBox{grid-column:1;grid-row:1;order:initial;max-width:none;min-height:40px;padding:7px 10px;border-radius:999px;background:var(--surface-2);flex:none}
+  .searchBox{grid-column:1;grid-row:1;order:initial;max-width:none;min-height:40px;padding:7px 10px;border-radius:999px;background:var(--surface-2);flex:none;overflow:hidden}
+  .searchResult{display:none}
   .themeButton{grid-column:2;grid-row:1;width:40px;height:40px;min-width:40px;min-height:40px}
   .mobileActionsToggle{grid-column:1/-1;grid-row:2;display:inline-flex;min-height:40px;padding:0 10px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface-2);color:var(--text);align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:700}
   .topbarRight>.btnGhost:last-child{grid-column:3;grid-row:1;width:40px;min-width:40px;min-height:40px;padding:0;border-radius:50%;flex:none}
@@ -2215,4 +2300,8 @@ button.equipCard {
   .topbar{grid-template-columns:minmax(0,1fr)}.topbar>div:first-child{display:none}
   .topbarRight{grid-template-columns:minmax(0,1fr) 40px 40px}
   .bottomNav small{font-size:8px}.content{padding-inline:10px}
+  .searchFeedback{align-items:flex-start;flex-wrap:wrap;padding:10px}
+  .searchFeedback span{width:100%}
+  .searchFeedback> b{margin-left:0;flex:1 1 auto;padding-top:8px}
+  .searchFeedback button{min-height:40px}
 }

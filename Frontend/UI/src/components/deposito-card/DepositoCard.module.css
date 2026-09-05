@@ -185,9 +185,18 @@
 @media (max-width: 600px) {
   .header { padding: 15px; }
   .scroll { padding: 5px; }
-  .row { gap: 9px; padding: 10px 8px; }
+  .row {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    align-items: center;
+    gap: 7px 9px;
+    padding: 11px 8px;
+  }
   .tile { width: 40px; height: 40px; }
-  .local { max-width: 92px; font-size: 10.5px; }
-  .editar { width: 40px; height: 40px; flex-basis: 40px; }
+  .info { grid-column: 2; min-width: 0; }
+  .model, .serie { white-space: normal; overflow-wrap: anywhere; }
+  .row > span { grid-column: 2; justify-self: start; }
+  .local { grid-column: 2 / -1; max-width: 100%; font-size: 10.5px; white-space: normal; overflow-wrap: anywhere; }
+  .editar { grid-column: 3; grid-row: 1; width: 40px; height: 40px; flex-basis: 40px; }
   .legend { width: 100%; }
 }
