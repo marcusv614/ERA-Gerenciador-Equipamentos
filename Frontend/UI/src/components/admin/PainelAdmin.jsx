@@ -144,7 +144,7 @@ export function PainelAdmin() {
     </main>}
 
     {area === 'gerencia' && <PainelControleAtivos temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
-    {area === 'estoque' && <PainelEstoque temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
+    {area === 'estoque' && <PainelEstoque incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de auditoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
 
     {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}

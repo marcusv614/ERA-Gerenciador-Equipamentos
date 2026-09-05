@@ -12,7 +12,7 @@ const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificac
 const formatarDataHora = (valor) => valor ? new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
 const rotuloOperacional = (solicitacao) => solicitacao.status === 'Aprovada' ? (possuiSeries(solicitacao) ? 'Pronta para envio' : 'Aguardando separação') : solicitacao.status;
 
-export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema } = {}) {
+export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, incorporado = false } = {}) {
   const { usuario, encerrarSessao } = useAutenticacao();
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
@@ -60,6 +60,12 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema } = {
   const aquisicoes = useMemo(() => solicitacoes.flatMap((solicitacao) => solicitacao.materiais
     .filter((material) => material.quantidadeCompra > 0)
     .map((material) => ({ solicitacao, material, pendente: Math.max(0, material.quantidadeCompra - (material.quantidadeAdquirida || 0)), pendenteEntrada: Math.max(0, material.quantidadeCompra - (material.quantidadeEntradaEstoque || 0)) }))), [solicitacoes]);
+  const resumoOperacional = {
+    separar: pendencias.filter((solicitacao) => solicitacao.status === 'Aprovada' && !possuiSeries(solicitacao)).length,
+    enviar: pendencias.filter((solicitacao) => (solicitacao.status === 'Aprovada' && possuiSeries(solicitacao)) || solicitacao.status === 'Aguardando coleta').length,
+    transito: pendencias.filter((solicitacao) => solicitacao.status === 'Em trânsito').length,
+    comprar: aquisicoes.filter(({ pendenteEntrada }) => pendenteEntrada > 0).length,
+  };
   const aquisicoesFiltradas = aquisicoes.filter(({ solicitacao, material }) => {
     const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId;
     if (obraFiltrada !== 'todas' && String(obraId) !== obraFiltrada) return false;
@@ -159,14 +165,20 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema } = {
     </article>;
   };
 
-  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'}>
-    <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button onClick={alternarTema} aria-label="Alternar tema">{temaEscuro ? <Sun /> : <Moon />}</button><button onClick={encerrarSessao} aria-label="Sair"><LogOut /></button></div></header>
-    <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Central de estoque</span><h1>Movimentações</h1><p>Prepare envios, acompanhe aquisições e consulte registros para auditoria.</p></div><aside><strong>{pendencias.length}</strong><small>ações pendentes</small></aside></section>
+  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-incorporado={incorporado}>
+    {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button onClick={alternarTema} aria-label="Alternar tema">{temaEscuro ? <Sun /> : <Moon />}</button><button onClick={encerrarSessao} aria-label="Sair"><LogOut /></button></div></header>}
+    <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Central de estoque</span><h1>Operação de materiais</h1><p>Separe equipamentos, confirme movimentações e acompanhe o que precisa ser adquirido.</p></div></section>
+      <section className={estilos.resumoOperacional} aria-label="Resumo operacional do estoque">
+        <article><Box /><div><strong>{resumoOperacional.separar}</strong><span>Para separar</span></div></article>
+        <article><PackageCheck /><div><strong>{resumoOperacional.enviar}</strong><span>Prontas para envio</span></div></article>
+        <article><Truck /><div><strong>{resumoOperacional.transito}</strong><span>Em trânsito</span></div></article>
+        <article><ShoppingCart /><div><strong>{resumoOperacional.comprar}</strong><span>Compras pendentes</span></div></article>
+      </section>
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}{mensagem.texto}<button onClick={() => definirMensagem(null)}><X /></button></div>}
       <nav className={estilos.abas} aria-label="Áreas do estoque">
-        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /> Atividades <b>{pendencias.length}</b></button>
-        <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /> Registros <b>{concluidas.length}</b></button>
-        <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /> Aquisição de materiais <b>{aquisicoes.filter(({ pendenteEntrada }) => pendenteEntrada > 0).length}</b></button>
+        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Atividades</span><b>{pendencias.length}</b></button>
+        <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /><span>Registros</span><b>{concluidas.length}</b></button>
+        <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /><span>Aquisição de materiais</span><b>{resumoOperacional.comprar}</b></button>
       </nav>
       {!carregando && <section className={estilos.filtros} aria-label="Pesquisa de movimentações"><label><Search /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar número, técnico, material, série ou data..." /></label><label><Building2 /><select value={obraFiltrada} onChange={(evento) => definirObraFiltrada(evento.target.value)}><option value="todas">Todas as obras</option>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label></section>}
       {carregando ? <div className={estilos.carregando}>Carregando estoque...</div> : <>
