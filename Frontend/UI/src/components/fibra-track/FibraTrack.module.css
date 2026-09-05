@@ -1095,6 +1095,17 @@ button.equipCard {
   background: var(--accent);
 }
 
+.equipTitleWrap .equipTecnico {
+  margin-top: 5px;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.equipTitleWrap .equipTecnico::before {
+  margin-top: 5px;
+  flex: 0 0 6px;
+}
+
 .equipActions {
   display: flex;
   align-items: center;
