@@ -166,7 +166,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   };
 
   return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-incorporado={incorporado}>
-    {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button onClick={alternarTema} aria-label="Alternar tema">{temaEscuro ? <Sun /> : <Moon />}</button><button onClick={encerrarSessao} aria-label="Sair"><LogOut /></button></div></header>}
+    {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button type="button" onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun /> : <Moon />}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /></button></div></header>}
     <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Central de estoque</span><h1>Operação de materiais</h1><p>Separe equipamentos, confirme movimentações e acompanhe o que precisa ser adquirido.</p></div></section>
       <section className={estilos.resumoOperacional} aria-label="Resumo operacional do estoque">
         <article><Box /><div><strong>{resumoOperacional.separar}</strong><span>Para separar</span></div></article>

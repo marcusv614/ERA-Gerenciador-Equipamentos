@@ -30,7 +30,7 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, re
         <button onClick={aoAbrirNovoEquipamento} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>
         <button onClick={aoAbrirNovaObra} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>
       </div>}
-      <button onClick={aoSair} className={estilos.btnGhost} aria-label="Sair"><LogOut size={16} /></button>
+      <button type="button" onClick={aoSair} className={estilos.btnGhost} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={16} /></button>
     </div>
   </header>;
 }

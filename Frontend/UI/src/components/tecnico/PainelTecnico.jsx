@@ -196,7 +196,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       <div className={estilos.usuario}>
         <div><small>Olá, técnico</small><strong>{usuario.nome}</strong></div>
         <button type="button" className={estilos.botaoTema} onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun size={18} /> : <Moon size={18} />}</button>
-        <button type="button" onClick={encerrarSessao} aria-label="Sair"><LogOut size={19} /></button>
+        <button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={19} /></button>
       </div>
     </header>}
 

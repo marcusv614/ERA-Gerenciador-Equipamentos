@@ -124,7 +124,7 @@ export function PainelAdmin() {
       <div className={estilos.identidade}><ShieldCheck /><div><small>Painel do administrador</small><strong>{usuario.nome}</strong></div></div>
       <nav aria-label="Áreas administrativas">{AREAS.map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={area === id ? estilos.ativo : ''} onClick={() => definirArea(id)}><Icone /> {rotulo}</button>)}</nav>
       <button type="button" className={estilos.tema} onClick={alternarTema} aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'}>{modoEscuro ? <Sun /> : <Moon />}</button>
-      <button type="button" className={estilos.sair} onClick={encerrarSessao}><LogOut /> Sair</button>
+      <button type="button" className={estilos.sair} onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /> <span>Sair</span></button>
     </header>
 
     {area === 'usuarios' && <main className={estilos.conteudo}>
