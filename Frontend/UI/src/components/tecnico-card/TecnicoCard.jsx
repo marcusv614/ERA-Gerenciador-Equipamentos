@@ -67,15 +67,15 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
                 const obra = buscarObraDoEquipamento(e.obraId);
                 const serie = identificacaoVisivel(e.serie, e.tipo);
                 return (
-                  <div key={e.id} className={`${styles.row} ${!serie ? styles.rowSemSerie : ''}`}>
+                  <div key={e.id} className={styles.row}>
                     <span className={styles.rowModel} data-label="Equipamento">
                       <PackageSearch size={13} className={styles.rowIcon} />
                       {e.modelo}
                     </span>
-                    {serie && <span className={styles.rowSerie} data-label="Série">{serie}</span>}
-                    <span className={styles.rowStatus} data-label="Status">
+                    <span className={styles.rowStatus}>
                       <IndicadorStatus status={e.status} />
                     </span>
+                    {serie && <span className={styles.rowSerie} data-label="Série">{serie}</span>}
                     <span className={styles.rowLocal} data-label="Local">
                       {obra ? obra.nome : 'Depósito central'}
                     </span>
