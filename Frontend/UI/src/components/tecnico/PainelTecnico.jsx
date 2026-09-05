@@ -190,21 +190,25 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     }
   };
 
-  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'}>
-    <header className={estilos.cabecalho}>
+  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-administrador={modoAdministrador}>
+    {!modoAdministrador && <header className={estilos.cabecalho}>
       <div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>campo</span></div>
       <div className={estilos.usuario}>
         <div><small>Olá, técnico</small><strong>{usuario.nome}</strong></div>
         <button type="button" className={estilos.botaoTema} onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun size={18} /> : <Moon size={18} />}</button>
         <button type="button" onClick={encerrarSessao} aria-label="Sair"><LogOut size={19} /></button>
       </div>
-    </header>
+    </header>}
 
     <main className={estilos.conteudo}>
+      <section className={estilos.introducao}>
+        <div><span className={estilos.selo}>Área do técnico</span><h1>Trabalho de campo</h1><p>Consulte sua obra, solicite materiais e acompanhe cada movimentação.</p></div>
+        {!modoAdministrador && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} {recebimentosPendentes === 1 ? 'recebimento aguarda' : 'recebimentos aguardam'} confirmação</strong><small>Confirme somente após o material chegar.</small></span><ChevronRight /></button>}
+      </section>
       <nav className={estilos.abas} aria-label="Navegação do técnico">
-        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 size={18} /> Minha obra</button>
-        {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight size={18} /> Movimentar</button>}
-        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList size={18} /> Movimentações {pendentes + recebimentosPendentes > 0 && <span>{pendentes + recebimentosPendentes}</span>}</button>
+        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 /><span><strong>Minha obra</strong><small>Materiais atuais</small></span></button>
+        {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Movimentar</strong><small>Solicitar ou retirar</small></span></button>}
+        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Movimentações</strong><small>Acompanhar pedidos</small></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
       </nav>
 
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button onClick={() => definirMensagem(null)}><X size={16} /></button></div>}

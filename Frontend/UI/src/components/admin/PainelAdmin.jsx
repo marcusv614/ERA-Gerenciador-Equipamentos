@@ -14,7 +14,7 @@ const AREAS = [
   { id: 'usuarios', rotulo: 'Administração', icone: ShieldCheck },
   { id: 'gerencia', rotulo: 'Gerência', icone: LayoutDashboard },
   { id: 'estoque', rotulo: 'Estoque', icone: Warehouse },
-  { id: 'tecnico', rotulo: 'Visão técnica', icone: Wrench },
+  { id: 'tecnico', rotulo: 'Técnico', icone: Wrench },
 ];
 
 const normalizarBusca = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
