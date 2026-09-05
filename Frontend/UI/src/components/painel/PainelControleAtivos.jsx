@@ -15,8 +15,6 @@ import { ModalNovoEquipamento } from '../novo-equip-modal/NovoEquipModal';
 import { ModalMovimentarEquipamento } from '../mover-equip-modal/MoverEquipModal';
 import { ModalNovoFuncionario } from '../novo-funcionario-modal/NovoFuncionarioModal';
 import { ModalEditarFuncionario } from '../editar-funcionario-modal/EditarFuncionarioModal';
-import { ModalNovoUsuario } from '../novo-usuario-modal/NovoUsuarioModal';
-import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiCautelas } from '../../services/api/servicoAtivosApi';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { ModalEditarSolicitacao } from '../editar-solicitacao-modal/EditarSolicitacaoModal';
@@ -51,7 +49,6 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   const [modalNovaObraAberto, definirModalNovaObraAberto] = useState(false);
   const [modalNovoEquipamentoAberto, definirModalNovoEquipamentoAberto] = useState(false);
   const [modalNovoFuncionarioAberto, definirModalNovoFuncionarioAberto] = useState(false);
-  const [modalNovoUsuarioAberto, definirModalNovoUsuarioAberto] = useState(false);
   const [funcionarioEmEdicao, definirFuncionarioEmEdicao] = useState(null);
   const [equipamentoEmEdicao, definirEquipamentoEmEdicao] = useState(null);
   const [equipamentoParaMover, definirEquipamentoParaMover] = useState(null);
@@ -125,7 +122,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
       {menuLateralAberto ? <ChevronLeft size={18} strokeWidth={2.2} /> : <ChevronRight size={18} strokeWidth={2.2} />}
     </button>
     <main className={estilos.main}>
-      <BarraSuperior telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} resultadoBusca={resultadosPorTela[telaAtual]} ehAdmin={ehAdmin} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={alternarTema} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoUsuario={() => definirModalNovoUsuarioAberto(true)} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
+      <BarraSuperior telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} resultadoBusca={resultadosPorTela[telaAtual]} ehAdmin={ehAdmin} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={alternarTema} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
       <div className={estilos.content}>
         {controleAtivos.carregandoDados && <div className={estilos.apiFeedback}>Sincronizando dados com a API...</div>}
         {controleAtivos.erroApi && <div className={`${estilos.apiFeedback} ${estilos.apiFeedbackErro}`} role="alert">Falha na comunicação com a API: {controleAtivos.erroApi}</div>}
@@ -145,7 +142,6 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     {equipamentoParaMover && <ModalMovimentarEquipamento equipamento={equipamentoParaMover} obras={controleAtivos.obras} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirEquipamentoParaMover(null)} aoSalvar={movimentarEquipamento} />}
     {modalNovoFuncionarioAberto && <ModalNovoFuncionario funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
     {funcionarioEmEdicao && <ModalEditarFuncionario funcionario={funcionarioEmEdicao} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras} aoFechar={() => definirFuncionarioEmEdicao(null)} aoSalvar={salvarFuncionario} />}
-    {modalNovoUsuarioAberto && <ModalNovoUsuario funcionarios={controleAtivos.funcionarios} aoFechar={() => definirModalNovoUsuarioAberto(false)} aoSalvar={apiUsuarios.cadastrar} />}
     {solicitacaoEmEdicao && <ModalEditarSolicitacao solicitacao={solicitacaoEmEdicao} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirSolicitacaoEmEdicao(null)} aoSalvar={salvarEdicaoSolicitacao} />}
     <ModalHistoricoEquipamento equipamento={equipamentoComHistoricoAberto} historico={equipamentoComHistoricoAberto ? controleAtivos.consultarHistorico(equipamentoComHistoricoAberto) : []} buscarObraPorId={controleAtivos.buscarObraPorId} aoFechar={() => definirEquipamentoComHistoricoAberto(null)} aoImprimir={() => imprimirHistoricoDoEquipamento(equipamentoComHistoricoAberto)} estilos={estilos} />
   </div>;

@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, LogOut, Menu, Moon, Plus, Search, Sun, UserPlus, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, LogOut, Menu, Moon, Plus, Search, Sun, X } from 'lucide-react';
 import { useState } from 'react';
 
 const INFORMACOES_TELA = {
@@ -9,7 +9,7 @@ const INFORMACOES_TELA = {
   deposito: ['Depósito', 'Itens fora de campo — estoque, manutenção e trânsito', 'Buscar item, série...'],
 };
 
-export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoUsuario, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos }) {
+export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos }) {
   const [titulo, subtitulo, textoBusca] = INFORMACOES_TELA[telaAtual];
   const [acoesAbertas, definirAcoesAbertas] = useState(false);
   const buscaAtiva = Boolean(termoBusca.trim());
@@ -27,7 +27,6 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, re
       {ehAdmin && <button type="button" className={estilos.mobileActionsToggle} onClick={() => definirAcoesAbertas((abertas) => !abertas)} aria-expanded={acoesAbertas} aria-controls="acoes-rapidas-mobile">{acoesAbertas ? <X size={17} /> : <Menu size={17} />}<span>Ações</span></button>}
       {ehAdmin && <div id="acoes-rapidas-mobile" className={`${estilos.quickActions} ${acoesAbertas ? estilos.quickActionsOpen : ''}`}>
         <button onClick={aoAbrirNovoFuncionario} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>
-        <button onClick={aoAbrirNovoUsuario} className={estilos.btnGhost}><UserPlus size={15} /> Usuário</button>
         <button onClick={aoAbrirNovoEquipamento} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>
         <button onClick={aoAbrirNovaObra} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>
       </div>}

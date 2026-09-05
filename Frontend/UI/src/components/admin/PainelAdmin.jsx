@@ -128,7 +128,7 @@ export function PainelAdmin() {
     </header>
 
     {area === 'usuarios' && <main className={estilos.conteudo}>
-      <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle quem pode acessar o ERA.</p></div><button type="button" onClick={() => definirCriandoUsuario(true)}><UserPlus /> Criar usuário</button></section>
+      <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle acessos.</p></div><button type="button" onClick={() => definirCriandoUsuario(true)}><UserPlus /> Criar usuário</button></section>
       <div className={estilos.pesquisa}><Search aria-hidden="true" /><input type="search" value={termoBusca} onChange={(evento) => definirTermoBusca(evento.target.value)} placeholder="Pesquisar por nome, login, perfil ou funcionário" aria-label="Pesquisar usuários" /><span>{usuariosFiltrados.length} {usuariosFiltrados.length === 1 ? 'resultado' : 'resultados'}</span></div>
       {mensagem && <p className={estilos.sucesso}>{mensagem}</p>}
       {erro && <p className={estilos.erro} role="alert">{erro}</p>}

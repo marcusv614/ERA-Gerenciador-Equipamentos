@@ -2295,11 +2295,12 @@ button.equipCard {
   .topbarRight{width:100%;display:grid;grid-template-columns:minmax(100px,1fr) 40px 40px;align-items:center;gap:7px;margin:0}
   .searchBox{grid-column:1;grid-row:1;order:initial;max-width:none;min-height:40px;padding:7px 10px;border-radius:999px;background:var(--surface-2);flex:none;overflow:hidden}
   .searchResult{display:none}
-  .themeButton{grid-column:2;grid-row:1;width:40px;height:40px;min-width:40px;min-height:40px}
-  .mobileActionsToggle{grid-column:1/-1;grid-row:2;display:inline-flex;min-height:40px;padding:0 10px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface-2);color:var(--text);align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:700}
-  .topbarRight>.btnGhost:last-child{grid-column:3;grid-row:1;width:40px;min-width:40px;min-height:40px;padding:0;border-radius:50%;flex:none}
+  .themeButton{grid-column:2;grid-row:1;width:40px;height:40px;min-width:40px;min-height:40px;background:var(--surface-2);border-color:var(--border-strong);color:var(--text)}
+  .mobileActionsToggle{grid-column:1/-1;grid-row:2;display:inline-flex;min-height:40px;padding:0 10px;border:1px solid #ee9d3e;border-radius:999px;background:#ee9d3e;color:#17201c;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:800}
+  .topbarRight>.btnGhost:last-child{grid-column:3;grid-row:1;width:40px;min-width:40px;min-height:40px;padding:0;border-radius:50%;flex:none;background:var(--surface-2);border-color:var(--border-strong);color:var(--text)}
   .quickActions{display:none;grid-column:1/-1;grid-row:3;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:4px 0 2px}
-  .quickActionsOpen{display:grid}.quickActions .btnGhost,.quickActions .btnPrimary{width:100%;min-height:42px;flex:none;justify-content:center;font-size:12px}
+  .quickActionsOpen{display:grid}.quickActions .btnGhost,.quickActions .btnPrimary{width:100%;min-height:42px;flex:none;justify-content:center;border-color:var(--border-strong);background:var(--surface-2);color:var(--text);font-size:12px}
+  .root[data-theme="dark"] .themeButton,.root[data-theme="dark"] .topbarRight>.btnGhost:last-child,.root[data-theme="dark"] .quickActions .btnGhost,.root[data-theme="dark"] .quickActions .btnPrimary{border-color:#202d27;background:#202d27;color:#fff}
   .content{padding:14px 14px 24px}
   .bottomNav{position:fixed;z-index:100;left:0;right:0;bottom:0;height:calc(66px + env(safe-area-inset-bottom));padding:5px 6px env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -8px 28px rgba(15,31,25,.12)}
   .bottomNav button{position:relative;min-width:0;height:56px;padding:5px 2px;border:0;border-radius:12px;background:transparent;color:var(--text-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:opacity .18s ease,background .18s ease,color .18s ease}
