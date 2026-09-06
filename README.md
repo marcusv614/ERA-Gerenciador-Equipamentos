@@ -60,8 +60,8 @@ O override ativa cookies de sessão `Secure`, preserva o protocolo HTTPS encamin
 O arquivo `compose.production.yaml` executa banco, API e interface na VPS. As imagens privadas da API e da interface são publicadas no GitHub Container Registry pelo workflow `publish-production-images.yml`. O Traefik existente descobre somente o container da interface e publica a aplicação com HTTPS; a API e o PostgreSQL permanecem acessíveis apenas pela rede interna do projeto.
 
 1. Crie o registro DNS `A` de `tools.eraltda.com.br` apontando para o IPv4 público da VPS.
-2. No Docker Manager da Hostinger, cadastre uma credencial para `ghcr.io` usando um token GitHub com permissão somente `read:packages`.
-3. Escolha **Compose manualmente**, informe o nome `era-erp`, cole o conteúdo de `compose.production.yaml` e configure as variáveis de `.env.production.example` com senhas próprias.
+2. Confirme que as imagens da API e da interface estão públicas no GitHub Container Registry.
+3. Escolha **Compose manualmente**, informe o nome `era-tools-manager`, cole o conteúdo de `compose.production.yaml` e configure as variáveis de `.env.production.example` com senhas próprias. O Compose não fixa o nome internamente, permitindo que o Docker Manager aplique seu identificador de projeto.
 4. Valide e inicie o projeto pelo Docker Manager. Para implantação direta por terminal, copie `.env.production.example` para `.env`, substitua as senhas, execute `chmod 600 .env` e então:
 
 ```bash
