@@ -45,6 +45,7 @@ export const apiEquipamentos = {
   listarCatalogo: () => obter(`${ROTAS_API.equipamentos}/catalogo`),
   cadastrar: async (dados) => normalizarEquipamento(await criar(ROTAS_API.equipamentos, dados)),
   atualizar: async (equipamentoId, dados) => normalizarEquipamento(await atualizar(ROTAS_API.equipamento(equipamentoId), dados)),
+  excluir: async (equipamentoId) => clienteHttp.delete(ROTAS_API.equipamento(equipamentoId)),
   movimentar: async (equipamentoId, dados) => normalizarEquipamento(await criar(ROTAS_API.movimentacoesEquipamento(equipamentoId), dados)),
   obterHistorico: (equipamentoId) => obter(ROTAS_API.historicoEquipamento(equipamentoId)),
 };

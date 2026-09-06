@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 @Service
@@ -22,7 +23,32 @@ public class EquipamentoService {
     @Transactional(readOnly=true) public List<EquipamentoDto.ItemCatalogo> listarCatalogo(){return repository.findAll().stream().map(e->new EquipamentoDto.ItemCatalogo(e.getTipo(),e.getModelo(),e.getMedida(),CatalogoChave.criar(e.getTipo(),e.getModelo(),e.getMedida()))).distinct().sorted(Comparator.comparing(EquipamentoDto.ItemCatalogo::modelo,String.CASE_INSENSITIVE_ORDER)).toList();}
     @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listarDeposito(){return repository.findByObraIsNullOrderByModeloAsc().stream().map(this::resposta).toList();}
     @Transactional public EquipamentoDto.Resposta cadastrar(EquipamentoDto.Requisicao d){String serie=serieInformada(d.serie())?d.serie().trim():gerarIdentificacaoInterna();if(repository.existsBySerieIgnoreCase(serie))throw new RegraNegocioException("Já existe equipamento com esta série.");Equipamento e=new Equipamento();e.setTipo(d.tipo());e.setModelo(d.modelo());e.setSerie(serie);e.setStatus(d.status());e.setMedida(d.medida());e.setQuantidade(d.quantidade()==null?1:d.quantidade());e.setControleQuantidade(d.controleQuantidade()==null?(e.getQuantidade()>1?"LOTE":"INDIVIDUAL"):d.controleQuantidade());e.setObservacoes(d.observacoes());e.setObra(obras.buscarOpcional(d.obraId()));e.setTecnico(d.tecnico()==null||d.tecnico().isBlank()?null:funcionarios.buscarPorNome(d.tecnico()));LocalDate entrada=d.dataEntrada()!=null?d.dataEntrada():(d.data()!=null?d.data():LocalDate.now());e.setDataEntrada(entrada);e.setDataSaida(d.dataSaida());repository.save(e);if(e.getObra()!=null)inventarioHistorico.registrar(e.getObra());return resposta(e);}
-    @Transactional public EquipamentoDto.Resposta atualizar(Long id,EquipamentoDto.Requisicao d){Equipamento e=buscar(id);Obra obraAnterior=e.getObra();String serie=serieInformada(d.serie())?d.serie().trim():e.getSerie();repository.findBySerieIgnoreCase(serie).filter(outro->!outro.getId().equals(id)).ifPresent(outro->{throw new RegraNegocioException("Já existe equipamento com esta série.");});e.setTipo(d.tipo());e.setModelo(d.modelo());e.setSerie(serie);e.setStatus(d.status());e.setObra(obras.buscarOpcional(d.obraId()));e.setTecnico(d.tecnico()==null||d.tecnico().isBlank()?null:funcionarios.buscarPorNome(d.tecnico()));LocalDate entrada=d.dataEntrada()!=null?d.dataEntrada():d.data();if(entrada!=null)e.setDataEntrada(entrada);if(d.dataSaida()!=null)e.setDataSaida(d.dataSaida());Equipamento atualizado=repository.save(e);registrarObrasAfetadas(obraAnterior,atualizado.getObra());return resposta(atualizado);}
+    @Transactional public EquipamentoDto.Resposta atualizar(Long id,EquipamentoDto.Requisicao d){
+        Equipamento e=buscar(id);
+        validarCamposControladosPelaMovimentacao(e,d);
+        String serie=serieInformada(d.serie())?d.serie().trim():e.getSerie();
+        repository.findBySerieIgnoreCase(serie).filter(outro->!outro.getId().equals(id)).ifPresent(outro->{throw new RegraNegocioException("Já existe equipamento com esta série.");});
+        e.setTipo(d.tipo().trim());
+        e.setModelo(d.modelo().trim());
+        e.setSerie(serie);
+        if(d.medida()!=null)e.setMedida(d.medida());
+        if(d.observacoes()!=null)e.setObservacoes(d.observacoes());
+        if(d.quantidade()!=null){
+            if(d.quantidade()<e.getQuantidadeReservada())throw new RegraNegocioException("A quantidade não pode ser menor que as unidades já reservadas.");
+            e.setQuantidade(d.quantidade());
+        }
+        if(d.controleQuantidade()!=null){
+            String controle=d.controleQuantidade().trim().toUpperCase();
+            if(!Set.of("INDIVIDUAL","LOTE").contains(controle))throw new RegraNegocioException("Controle de quantidade inválido.");
+            if("INDIVIDUAL".equals(controle)&&e.getQuantidade()!=1)throw new RegraNegocioException("Ativos individuais precisam ter quantidade igual a 1.");
+            e.setControleQuantidade(controle);
+        }
+        LocalDate entrada=d.dataEntrada()!=null?d.dataEntrada():d.data();
+        if(entrada!=null)e.setDataEntrada(entrada);
+        if(d.dataSaida()!=null)e.setDataSaida(d.dataSaida());
+        return resposta(repository.save(e));
+    }
+    @Transactional public void excluir(Long id){Equipamento equipamento=buscar(id);if(equipamento.getQuantidadeReservada()>0)throw new RegraNegocioException("O equipamento possui unidades reservadas e não pode ser excluído.");if(movimentacoes.existsByEquipamentoId(id))throw new RegraNegocioException("Equipamentos com histórico de movimentação não podem ser excluídos.");Obra obra=equipamento.getObra();repository.delete(equipamento);repository.flush();if(obra!=null)inventarioHistorico.registrar(obra);}
     @Transactional public EquipamentoDto.Resposta movimentar(Long id,MovimentacaoDto.Requisicao d){Equipamento e=buscar(id);Obra origem=e.getObra();Obra destino=obras.buscarOpcional(d.obraId());Funcionario tecnico=d.tecnico()==null||d.tecnico().isBlank()?null:funcionarios.buscarPorNome(d.tecnico());Movimentacao m=novaMovimentacao(e,null,origem,destino,tecnico,d.status(),e.getQuantidade(),d.dataMovimentacao());movimentacoes.save(m);aplicarDestino(e,destino,tecnico,d.status(),d.dataMovimentacao());registrarObrasAfetadas(origem,destino);return resposta(e);}
     @Transactional public Equipamento registrarEntradaCompra(String nome,String catalogoChave,int quantidade,String identificacao,Long solicitacaoId){String serie=serieInformada(identificacao)?identificacao.trim():gerarIdentificacaoInterna();if(repository.existsBySerieIgnoreCase(serie))throw new RegraNegocioException("Já existe um equipamento ou lote com esta identificação.");Equipamento referencia=repository.findAll().stream().filter(item->CatalogoChave.criar(item.getTipo(),item.getModelo(),item.getMedida()).equals(catalogoChave)).findFirst().orElseThrow(()->new RegraNegocioException("O material não existe no catálogo cadastrado pelo administrador."));Equipamento e=new Equipamento();e.setTipo(referencia.getTipo());e.setModelo(referencia.getModelo());e.setSerie(serie);e.setStatus("Em estoque");e.setMedida(referencia.getMedida());e.setQuantidade(quantidade);e.setQuantidadeReservada(0);e.setControleQuantidade("LOTE");e.setObservacoes("Adquirido para a solicitação #"+solicitacaoId);e.setDataEntrada(LocalDate.now());return repository.save(e);}
     @Transactional(readOnly=true) public List<MovimentacaoDto.Resposta> historico(Long id){buscar(id);return movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(id).stream().map(this::respostaMovimentacao).toList();}
@@ -38,6 +64,12 @@ public class EquipamentoService {
     private MovimentacaoDto.Resposta respostaMovimentacaoRestrita(Movimentacao m,Set<Long> permitidas){Long origem=m.getObraOrigem()!=null&&permitidas.contains(m.getObraOrigem().getId())?m.getObraOrigem().getId():null;Long destino=m.getObraDestino()!=null&&permitidas.contains(m.getObraDestino().getId())?m.getObraDestino().getId():null;String origemNome=origem==null?"Local restrito":m.getObraOrigem().getNome();String destinoNome=destino==null?"Local restrito":m.getObraDestino().getNome();return new MovimentacaoDto.Resposta(m.getId(),m.getEquipamento().getId(),m.getSolicitacao()==null?null:m.getSolicitacao().getId(),origem,destino,origemNome,destinoNome,m.getTecnico()==null?null:m.getTecnico().getNome(),m.getStatus(),m.getQuantidade(),m.getDataMovimentacao(),m.getDataMovimentacao(),m.getDataMovimentacao());}
     private boolean obraPermitida(Movimentacao movimentacao,Set<Long> permitidas){Long origem=movimentacao.getObraOrigem()==null?null:movimentacao.getObraOrigem().getId();Long destino=movimentacao.getObraDestino()==null?null:movimentacao.getObraDestino().getId();return permitidas.contains(origem)||permitidas.contains(destino);}
     private boolean serieInformada(String serie){return serie!=null&&!serie.isBlank();}
+    private void validarCamposControladosPelaMovimentacao(Equipamento equipamento,EquipamentoDto.Requisicao dados){
+        Long obraAtual=equipamento.getObra()==null?null:equipamento.getObra().getId();
+        String tecnicoAtual=equipamento.getTecnico()==null?null:equipamento.getTecnico().getNome();
+        boolean tecnicoAlterado=tecnicoAtual==null?dados.tecnico()!=null&&!dados.tecnico().isBlank():dados.tecnico()==null||!tecnicoAtual.equalsIgnoreCase(dados.tecnico().trim());
+        if(!Objects.equals(obraAtual,dados.obraId())||tecnicoAlterado||!equipamento.getStatus().equalsIgnoreCase(dados.status().trim()))throw new RegraNegocioException("Localização, responsável e status só podem ser alterados pelo fluxo de movimentação.");
+    }
     private String gerarIdentificacaoInterna(){String identificacao;do{identificacao="ERA-"+UUID.randomUUID().toString().substring(0,8).toUpperCase();}while(repository.existsBySerieIgnoreCase(identificacao));return identificacao;}
     private void registrarObrasAfetadas(Obra origem,Obra destino){if(origem!=null)inventarioHistorico.registrar(origem);if(destino!=null&&(origem==null||!destino.getId().equals(origem.getId())))inventarioHistorico.registrar(destino);}
 }

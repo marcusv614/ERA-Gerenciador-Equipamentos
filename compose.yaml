@@ -32,6 +32,8 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:?Defina ADMIN_INITIAL_PASSWORD no arquivo .env}
       SESSION_COOKIE_SECURE: "false"
       SESSION_TIMEOUT: ${SESSION_TIMEOUT:-30m}
+      TZ: ${APP_TIMEZONE:-America/Manaus}
+      JAVA_TOOL_OPTIONS: -Duser.timezone=${APP_TIMEZONE:-America/Manaus}
     depends_on:
       database:
         condition: service_healthy

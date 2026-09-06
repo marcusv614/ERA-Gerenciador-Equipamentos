@@ -9,6 +9,8 @@ FROM eclipse-temurin:21-jre-jammy
 RUN groupadd --system era && useradd --system --gid era --no-create-home era
 WORKDIR /app
 COPY --from=build /workspace/target/*.jar app.jar
+ENV TZ=America/Manaus
+ENV JAVA_TOOL_OPTIONS="-Duser.timezone=America/Manaus"
 USER era
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

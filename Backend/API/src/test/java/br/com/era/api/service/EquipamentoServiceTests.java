@@ -1,7 +1,9 @@
 package br.com.era.api.service;
 
 import br.com.era.api.dto.EquipamentoDto;
+import br.com.era.api.exception.RegraNegocioException;
 import br.com.era.api.model.Equipamento;
+import br.com.era.api.model.Obra;
 import br.com.era.api.repository.EquipamentoRepository;
 import br.com.era.api.repository.MovimentacaoRepository;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,5 +55,66 @@ class EquipamentoServiceTests {
         assertEquals("FLUKE", resposta.tipo());
         assertEquals(dataEntrada, resposta.dataEntrada());
         assertEquals(null, resposta.tecnico());
+    }
+
+    @Test
+    void deveImpedirAlteracaoDiretaDeLocalizacaoForaDoFluxoDeMovimentacao() {
+        EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+        MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
+        Obra origem = mock(Obra.class);
+        when(origem.getId()).thenReturn(2L);
+        Equipamento equipamento = new Equipamento();
+        equipamento.setTipo("OTDR");
+        equipamento.setModelo("Equipamento");
+        equipamento.setSerie("SERIE-2");
+        equipamento.setStatus("Em campo");
+        equipamento.setObra(origem);
+        when(equipamentos.findById(2L)).thenReturn(Optional.of(equipamento));
+
+        EquipamentoService service = new EquipamentoService(
+                equipamentos,
+                movimentacoes,
+                mock(ObraService.class),
+                mock(FuncionarioService.class),
+                mock(UsuarioService.class),
+                mock(InventarioHistoricoService.class));
+
+        RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(2L,
+                new EquipamentoDto.Requisicao("OTDR", "Equipamento", "SERIE-2", "Em campo", 3L, null,
+                        LocalDate.now(), null, null, null, null, null, null)));
+
+        assertEquals("Localização, responsável e status só podem ser alterados pelo fluxo de movimentação.", erro.getMessage());
+    }
+
+    @Test
+    void deveExcluirEquipamentoSemReservasOuHistorico() {
+        EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+        MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
+        Equipamento equipamento = new Equipamento();
+        when(equipamentos.findById(3L)).thenReturn(Optional.of(equipamento));
+        when(movimentacoes.existsByEquipamentoId(3L)).thenReturn(false);
+        EquipamentoService service = new EquipamentoService(equipamentos, movimentacoes, mock(ObraService.class),
+                mock(FuncionarioService.class), mock(UsuarioService.class), mock(InventarioHistoricoService.class));
+
+        service.excluir(3L);
+
+        verify(equipamentos).delete(equipamento);
+        verify(equipamentos).flush();
+    }
+
+    @Test
+    void devePreservarEquipamentoComHistoricoDeMovimentacao() {
+        EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+        MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
+        Equipamento equipamento = new Equipamento();
+        when(equipamentos.findById(4L)).thenReturn(Optional.of(equipamento));
+        when(movimentacoes.existsByEquipamentoId(4L)).thenReturn(true);
+        EquipamentoService service = new EquipamentoService(equipamentos, movimentacoes, mock(ObraService.class),
+                mock(FuncionarioService.class), mock(UsuarioService.class), mock(InventarioHistoricoService.class));
+
+        RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.excluir(4L));
+
+        assertEquals("Equipamentos com histórico de movimentação não podem ser excluídos.", erro.getMessage());
+        verify(equipamentos, never()).delete(equipamento);
     }
 }

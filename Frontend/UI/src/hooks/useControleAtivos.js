@@ -115,6 +115,18 @@ export function useControleAtivos() {
     }
   }
 
+  async function excluirEquipamento(identificador) {
+    try {
+      await apiEquipamentos.excluir(identificador);
+      definirEquipamentos((atuais) => atuais.filter(({ id }) => id !== identificador));
+      definirErroApi(null);
+      return { sucesso: true };
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return { sucesso: false, mensagem: erro.message };
+    }
+  }
+
   async function cadastrarFuncionario(dadosNovoFuncionario) {
     const emailNormalizado = dadosNovoFuncionario.email.trim().toLocaleLowerCase('pt-BR');
     const nomeNormalizado = dadosNovoFuncionario.nome.trim().toLocaleLowerCase('pt-BR');
@@ -168,7 +180,7 @@ export function useControleAtivos() {
       obraDestinoId: dadosMovimentacao.obraId ?? null,
       dataSolicitacao: dadosMovimentacao.dataMovimentacao || obterDataAtual(),
       observacao: `Movimentação solicitada pelo gerente. Status desejado: ${dadosMovimentacao.status}.`,
-      materiais: [{ nome: equipamento.modelo, quantidade: dadosMovimentacao.quantidade || 1, identificacao: null, catalogoChave: equipamento.catalogoChave || null }],
+      materiais: [{ nome: equipamento.modelo, quantidade: dadosMovimentacao.quantidade || 1, identificacao: equipamento.serie, catalogoChave: equipamento.catalogoChave || null }],
     };
 
     try {
@@ -308,6 +320,7 @@ export function useControleAtivos() {
     cadastrarFuncionario,
     atualizarFuncionario,
     movimentarEquipamento,
+    excluirEquipamento,
     consultarHistorico,
     definirStatusSolicitacao,
     avancarMovimentacao,

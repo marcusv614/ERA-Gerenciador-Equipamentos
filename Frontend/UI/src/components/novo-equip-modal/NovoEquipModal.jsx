@@ -8,7 +8,7 @@ import styles from "./NovoEquipModal.module.css";
 
 const NOVA_CATEGORIA = '__nova_categoria__';
 
-export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar }) {
+export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar, aoExcluir }) {
   const editando = Boolean(equipamento);
   const [form, setForm] = useState({
     tipo: equipamento?.tipo || "OTDR",
@@ -20,6 +20,9 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
     data: equipamento?.dataEntrada || equipamento?.data || obterDataAtual(),
   });
   const [novaCategoria, definirNovaCategoria] = useState('');
+  const [confirmandoExclusao, definirConfirmandoExclusao] = useState(false);
+  const [excluindo, definirExcluindo] = useState(false);
+  const [erroExclusao, definirErroExclusao] = useState('');
   const serieNormalizada = form.serie.trim().toLocaleLowerCase('pt-BR');
   const serieOriginalNormalizada = String(equipamento?.serie || '').trim().toLocaleLowerCase('pt-BR');
   const serieJaCadastrada = Boolean(serieNormalizada) && seriesCadastradas.some((serie) =>
@@ -34,6 +37,13 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
   const obrasDisponiveis = obras.filter(({ id, status }) =>
     status !== 'Concluída' || String(id) === String(equipamento?.obraId));
   const canSave = tipoSelecionado && form.modelo.trim() && form.data && !serieJaCadastrada && !categoriaJaCadastrada;
+  const excluirRegistro = async () => {
+    definirExcluindo(true);
+    definirErroExclusao('');
+    const resultado = await aoExcluir();
+    if (!resultado.sucesso) definirErroExclusao(resultado.mensagem || 'Não foi possível excluir o equipamento.');
+    definirExcluindo(false);
+  };
 
   return (
     <EstruturaModal
@@ -84,10 +94,11 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
         </CampoFormulario>}
 
         <div className={styles.grid2}>
-          <CampoFormulario rotulo="Localização">
+          <CampoFormulario rotulo="Localização" dica={editando ? 'Para alterar a localização, use a ação “Mover” e acompanhe aprovação, separação e recebimento.' : null}>
             <select
               className={styles.input}
               value={form.obraId}
+              disabled={editando}
               onChange={(e) =>
                 setForm({
                   ...form,
@@ -105,12 +116,12 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
               ))}
             </select>
           </CampoFormulario>
-          <CampoFormulario rotulo="Técnico responsável (opcional)" dica={form.obraId ? 'Você pode definir o responsável agora ou posteriormente.' : 'Disponível quando o equipamento estiver localizado em uma obra.'}>
+          <CampoFormulario rotulo="Técnico responsável (opcional)" dica={editando ? 'O responsável acompanha a movimentação do equipamento.' : form.obraId ? 'Você pode definir o responsável agora ou posteriormente.' : 'Disponível quando o equipamento estiver localizado em uma obra.'}>
             <select
               className={styles.input}
               value={form.tecnico}
               onChange={(e) => setForm({ ...form, tecnico: e.target.value })}
-              disabled={!form.obraId}
+              disabled={editando || !form.obraId}
             >
               <option value="">Sem técnico responsável</option>
               {tecnicosDisponiveis.map((nome) => <option key={nome} value={nome}>{nome}</option>)}
@@ -129,7 +140,15 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
           />
         </CampoFormulario>
 
+        {editando && confirmandoExclusao && <div className={styles.confirmacaoExclusao} role="alertdialog" aria-label="Confirmar exclusão do equipamento">
+          <div><strong>Excluir este registro?</strong><span>Essa ação é definitiva. Equipamentos com movimentações registradas não podem ser excluídos.</span></div>
+          {erroExclusao && <p>{erroExclusao}</p>}
+          <div><button type="button" onClick={() => { definirConfirmandoExclusao(false); definirErroExclusao(''); }} disabled={excluindo}>Manter registro</button><button type="button" onClick={excluirRegistro} disabled={excluindo}>{excluindo ? 'Excluindo...' : 'Excluir definitivamente'}</button></div>
+        </div>}
+
         <div className={styles.actions}>
+          {editando && !confirmandoExclusao && <button type="button" onClick={() => definirConfirmandoExclusao(true)} className={styles.delete}>Excluir registro</button>}
+          <span className={styles.actionsSpacer} />
           <button onClick={aoFechar} className={styles.cancel}>
             Cancelar
           </button>

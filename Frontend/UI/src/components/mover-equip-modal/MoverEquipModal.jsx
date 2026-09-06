@@ -14,6 +14,8 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
   const [quantidade, definirQuantidade] = useState(1);
   const quantidadeDisponivel = equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1;
   const controlaLote = equipamento.controleQuantidade === 'LOTE' || quantidadeDisponivel > 1;
+  const destinoAtual = equipamento.obraId == null ? '' : String(equipamento.obraId);
+  const destinoInalterado = String(obraId) === destinoAtual;
   const statusPermitidos = obraId
     ? statusEquipamento.filter((opcao) => ['Em campo', 'Em trânsito'].includes(opcao))
     : statusEquipamento.filter((opcao) => ['Em estoque', 'Em manutenção'].includes(opcao));
@@ -25,7 +27,7 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
       aoFechar={aoFechar}
     >
       <div className={styles.form}>
-        <CampoFormulario rotulo="Novo destino">
+        <CampoFormulario rotulo="Novo destino" dica={destinoInalterado ? 'Escolha um local diferente da localização atual.' : null}>
           <select
             className={styles.input}
             value={obraId}
@@ -95,7 +97,7 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
         <div className={styles.actions}>
           <button onClick={aoFechar} className={styles.cancel}>Cancelar</button>
           <button
-            disabled={!dataMovimentacao || quantidade < 1 || quantidade > quantidadeDisponivel || (Boolean(obraId) && !tecnico.trim())}
+            disabled={destinoInalterado || !dataMovimentacao || quantidade < 1 || quantidade > quantidadeDisponivel || (Boolean(obraId) && !tecnico.trim())}
             onClick={() =>
               aoSalvar(equipamento.id, {
                 obraId: obraId || null,

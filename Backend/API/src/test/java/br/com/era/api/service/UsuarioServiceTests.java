@@ -121,4 +121,14 @@ class UsuarioServiceTests {
 
         assertTrue(erro.getMessage().contains("último administrador"));
     }
+
+    @Test
+    void deveValidarSenhaDoAdministradorInicial() {
+        when(repository.existsByLoginIgnoreCase("admin")).thenReturn(false);
+
+        RegraNegocioException erro = assertThrows(RegraNegocioException.class,
+                () -> service.criarAdminInicial("Administrador", "admin", "1234567"));
+
+        assertTrue(erro.getMessage().contains("8 caracteres"));
+    }
 }

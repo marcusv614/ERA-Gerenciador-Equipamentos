@@ -14,6 +14,7 @@ public class EquipamentoController {
     @GetMapping("/catalogo") public List<EquipamentoDto.ItemCatalogo> listarCatalogo(){return service.listarCatalogo();}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public EquipamentoDto.Resposta cadastrar(@Valid @RequestBody EquipamentoDto.Requisicao dados){return service.cadastrar(dados);}
     @PatchMapping("/{id}") public EquipamentoDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody EquipamentoDto.Requisicao dados){return service.atualizar(id,dados);}
+    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) public void excluir(@PathVariable Long id){service.excluir(id);}
     @PostMapping("/{id}/movimentacoes") @ResponseStatus(HttpStatus.CREATED) public EquipamentoDto.Resposta movimentar(@PathVariable Long id,@Valid @RequestBody MovimentacaoDto.Requisicao dados){return service.movimentar(id,dados);}
     @GetMapping("/{id}/historico") public List<MovimentacaoDto.Resposta> historico(@PathVariable Long id,Authentication autenticacao){return service.historicoParaUsuario(id,autenticacao.getName());}
 }

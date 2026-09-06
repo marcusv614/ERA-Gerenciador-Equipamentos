@@ -43,6 +43,37 @@
   margin-top: 8px;
 }
 
+.actionsSpacer { flex: 1; }
+
+.delete {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b94737;
+  background: rgba(185, 71, 55, 0.08);
+  border: 1px solid rgba(185, 71, 55, 0.28);
+  cursor: pointer;
+}
+
+.confirmacaoExclusao {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid rgba(185, 71, 55, 0.35);
+  border-radius: 10px;
+  background: rgba(185, 71, 55, 0.08);
+}
+.confirmacaoExclusao > div:first-child { display: grid; gap: 3px; }
+.confirmacaoExclusao strong { color: var(--text); font-size: 13px; }
+.confirmacaoExclusao span { color: var(--text-muted); font-size: 11px; line-height: 1.45; }
+.confirmacaoExclusao p { margin: 0; color: #c34f3d; font-size: 11px; }
+.confirmacaoExclusao > div:last-child { display: flex; justify-content: flex-end; gap: 8px; }
+.confirmacaoExclusao button { min-height: 36px; padding: 0 12px; border-radius: 8px; cursor: pointer; }
+.confirmacaoExclusao button:first-child { border: 1px solid var(--border-strong); color: var(--text-muted); background: var(--surface-2); }
+.confirmacaoExclusao button:last-child { border: 1px solid #a93c2e; color: #fff; background: #b94737; font-weight: 700; }
+.confirmacaoExclusao button:disabled { opacity: .5; cursor: not-allowed; }
+
 .cancel {
   padding: 8px 16px;
   border-radius: 8px;
@@ -75,6 +106,9 @@
 @media (max-width: 600px) {
   .grid2 { grid-template-columns: minmax(0, 1fr); }
   .input { min-height: 44px; }
-  .actions { flex-direction: column-reverse; }
-  .cancel, .submit { width: 100%; min-height: 44px; }
+  .actions { flex-direction: column; }
+  .actionsSpacer { display: none; }
+  .delete, .cancel, .submit { width: 100%; min-height: 44px; }
+  .confirmacaoExclusao > div:last-child { flex-direction: column; }
+  .confirmacaoExclusao button { width: 100%; min-height: 44px; }
 }
