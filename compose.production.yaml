@@ -25,8 +25,8 @@ services:
     networks: [era_network]
 
   api:
-    build:
-      context: ./Backend/API
+    image: ${API_IMAGE:-ghcr.io/marcusv614/era-gerenciador-equipamentos-api:latest}
+    pull_policy: always
     restart: unless-stopped
     environment:
       DB_URL: jdbc:postgresql://database:5432/${POSTGRES_DB:-era_erp}
@@ -58,10 +58,8 @@ services:
     networks: [era_network]
 
   ui:
-    build:
-      context: ./Frontend/UI
-      args:
-        VITE_API_URL: /api
+    image: ${UI_IMAGE:-ghcr.io/marcusv614/era-gerenciador-equipamentos-ui:latest}
+    pull_policy: always
     restart: unless-stopped
     depends_on:
       api:
