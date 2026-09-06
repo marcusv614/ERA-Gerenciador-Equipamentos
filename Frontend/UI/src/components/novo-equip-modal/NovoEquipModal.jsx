@@ -8,7 +8,7 @@ import styles from "./NovoEquipModal.module.css";
 
 const NOVA_CATEGORIA = '__nova_categoria__';
 
-export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar, aoExcluir }) {
+export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar, aoArquivar }) {
   const editando = Boolean(equipamento);
   const [form, setForm] = useState({
     tipo: equipamento?.tipo || "OTDR",
@@ -40,8 +40,8 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
   const excluirRegistro = async () => {
     definirExcluindo(true);
     definirErroExclusao('');
-    const resultado = await aoExcluir();
-    if (!resultado.sucesso) definirErroExclusao(resultado.mensagem || 'Não foi possível excluir o equipamento.');
+    const resultado = await aoArquivar(!equipamento.arquivado);
+    if (!resultado.sucesso) definirErroExclusao(resultado.mensagem || 'Não foi possível alterar o arquivamento.');
     definirExcluindo(false);
   };
 
@@ -140,20 +140,20 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
           />
         </CampoFormulario>
 
-        {editando && confirmandoExclusao && <div className={styles.confirmacaoExclusao} role="alertdialog" aria-label="Confirmar exclusão do equipamento">
-          <div><strong>Excluir este registro?</strong><span>Essa ação é definitiva. Equipamentos com movimentações registradas não podem ser excluídos.</span></div>
+        {editando && confirmandoExclusao && <div className={styles.confirmacaoExclusao} role="alertdialog" aria-label="Confirmar arquivamento do equipamento">
+          <div><strong>{equipamento.arquivado?'Restaurar registro?':'Arquivar registro?'}</strong><span>O histórico será preservado. Ferramentas arquivadas não aparecem nos fluxos operacionais.</span></div>
           {erroExclusao && <p>{erroExclusao}</p>}
-          <div><button type="button" onClick={() => { definirConfirmandoExclusao(false); definirErroExclusao(''); }} disabled={excluindo}>Manter registro</button><button type="button" onClick={excluirRegistro} disabled={excluindo}>{excluindo ? 'Excluindo...' : 'Excluir definitivamente'}</button></div>
+          <div><button type="button" onClick={() => { definirConfirmandoExclusao(false); definirErroExclusao(''); }} disabled={excluindo}>Cancelar</button><button type="button" onClick={excluirRegistro} disabled={excluindo}>{excluindo ? 'Salvando...' : equipamento.arquivado?'Restaurar':'Arquivar'}</button></div>
         </div>}
 
         <div className={styles.actions}>
-          {editando && !confirmandoExclusao && <button type="button" onClick={() => definirConfirmandoExclusao(true)} className={styles.delete}>Excluir registro</button>}
+          {editando && !confirmandoExclusao && <button type="button" onClick={() => definirConfirmandoExclusao(true)} className={styles.delete}>{equipamento.arquivado?'Restaurar registro':'Arquivar registro'}</button>}
           <span className={styles.actionsSpacer} />
           <button onClick={aoFechar} className={styles.cancel}>
             Cancelar
           </button>
           <button
-            disabled={!canSave}
+            disabled={!canSave||equipamento?.arquivado}
             onClick={() =>
               aoSalvar({
                 ...form,

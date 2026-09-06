@@ -69,7 +69,7 @@ export function PainelAdmin() {
     return () => { ativo = false; };
   }, []);
 
-  const funcionariosSemAcesso = useMemo(() => funcionarios.filter((funcionario) =>
+  const funcionariosSemAcesso = useMemo(() => funcionarios.filter((funcionario) => !funcionario.arquivado &&
     !usuarios.some((item) => item.funcionarioId === funcionario.id)), [funcionarios, usuarios]);
   const usuariosFiltrados = useMemo(() => {
     const termo = normalizarBusca(termoBusca.trim());
@@ -148,7 +148,7 @@ export function PainelAdmin() {
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de auditoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
 
     {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}
-    {editandoUsuario && <ModalNovoUsuario usuario={editandoUsuario} funcionarios={funcionarios.filter((funcionario) => !usuarios.some((item) => item.id !== editandoUsuario.id && item.funcionarioId === funcionario.id))} aoFechar={() => definirEditandoUsuario(null)} aoSalvar={editarUsuario} />}
+    {editandoUsuario && <ModalNovoUsuario usuario={editandoUsuario} funcionarios={funcionarios.filter((funcionario) => !funcionario.arquivado && !usuarios.some((item) => item.id !== editandoUsuario.id && item.funcionarioId === funcionario.id))} aoFechar={() => definirEditandoUsuario(null)} aoSalvar={editarUsuario} />}
     {redefinindo && <EstruturaModal titulo="Redefinir senha" subtitulo={`Crie uma senha temporária para ${redefinindo.nome}`} aoFechar={() => definirRedefinindo(null)}><div className={estilos.redefinir}><label>Senha temporária <input type="password" autoComplete="new-password" value={senhaTemporaria} onChange={(evento) => definirSenhaTemporaria(evento.target.value)} minLength={8} maxLength={128} /></label><small>Mínimo de 8 caracteres e não pode conter o login.</small><div><button type="button" onClick={() => definirRedefinindo(null)}>Cancelar</button><button type="button" disabled={senhaTemporaria.length < 8} onClick={redefinirSenha}>Redefinir senha</button></div></div></EstruturaModal>}
   </div>;
 }

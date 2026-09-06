@@ -15,4 +15,6 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento,Long> {
     Optional<Equipamento> buscarPorSerieParaAtualizacao(@Param("serie") String serie);
     List<Equipamento> findByObraIsNullOrderByModeloAsc();
     List<Equipamento> findByObraIdOrderByModeloAscSerieAsc(Long obraId);
+    boolean existsByTecnicoIdAndArquivadoFalse(Long tecnicoId);
+    boolean existsByObraIdAndArquivadoFalse(Long obraId);
 }

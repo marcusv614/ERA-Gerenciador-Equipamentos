@@ -168,6 +168,7 @@
   gap: 8px;
   margin-top: 8px;
 }
+.actionsSpacer{flex:1}.archive{padding:8px 12px;border:1px solid rgba(185,71,55,.28);border-radius:8px;background:rgba(185,71,55,.08);color:#b94737;font-size:13px;font-weight:700;cursor:pointer}
 
 .cancel {
   padding: 8px 16px;
@@ -206,5 +207,5 @@
   .statusRow { flex-wrap: wrap; }
   .statusBtn { flex: 1 1 calc(50% - 4px); }
   .actions { flex-direction: column-reverse; }
-  .cancel, .submit { width: 100%; min-height: 44px; }
+  .actionsSpacer{display:none}.archive, .cancel, .submit { width: 100%; min-height: 44px; }
 }

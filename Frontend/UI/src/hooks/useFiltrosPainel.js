@@ -19,6 +19,7 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
         equipamento.medida,
         equipamento.observacoes,
         equipamento.tecnico,
+        equipamento.arquivado ? 'arquivado inativo' : 'ativo',
       ].some((valor) => valor?.toLocaleLowerCase('pt-BR').includes(termoNormalizado));
 
       return correspondeAoTipo && correspondeAoStatus && correspondeABusca;
@@ -34,6 +35,7 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
       obra.cidade,
       obra.responsaveis?.join(' '),
       obra.status,
+      obra.arquivado ? 'arquivada inativa' : 'ativa',
     ].some((valor) => valor?.toLocaleLowerCase('pt-BR').includes(termoNormalizado)));
   }, [obras, termoBusca]);
 
@@ -46,13 +48,14 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
       funcionario.email,
       funcionario.telefone,
       funcionario.status,
+      funcionario.arquivado ? 'arquivado inativo' : 'ativo',
     ].some((valor) => valor?.toLocaleLowerCase('pt-BR').includes(termoNormalizado)));
   }, [funcionarios, termoBusca]);
 
   const equipamentosDoDeposito = useMemo(() => {
     const termoNormalizado = termoBusca.trim().toLocaleLowerCase('pt-BR');
     return equipamentos.filter((equipamento) =>
-      equipamento.obraId === null && (
+      !equipamento.arquivado && equipamento.obraId === null && (
         !termoNormalizado ||
         equipamento.modelo.toLocaleLowerCase('pt-BR').includes(termoNormalizado) ||
         equipamento.serie.toLocaleLowerCase('pt-BR').includes(termoNormalizado)

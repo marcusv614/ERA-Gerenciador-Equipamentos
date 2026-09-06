@@ -37,7 +37,7 @@ public class UsuarioService implements UserDetailsService {
         if(dados.funcionarioId()!=null&&repository.existsByFuncionarioId(dados.funcionarioId()))throw new RegraNegocioException("Este funcionário já possui um usuário vinculado.");
         validarSenha(login,dados.senhaTemporaria());
         Usuario usuario=new Usuario();usuario.setNome(dados.nome().trim());usuario.setLogin(login);usuario.setSenhaHash(encoder.encode(dados.senhaTemporaria()));usuario.setPerfil(dados.perfil());usuario.setDeveAlterarSenha(true);
-        if(dados.funcionarioId()!=null){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário não encontrado."));usuario.setFuncionario(funcionario);}
+        if(dados.funcionarioId()!=null){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).filter(f->!f.isArquivado()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário ativo não encontrado."));usuario.setFuncionario(funcionario);}
         return resposta(repository.save(usuario));
     }
     @Transactional public UsuarioDto.Resposta atualizar(Long id,UsuarioDto.Atualizacao dados){
@@ -47,7 +47,7 @@ public class UsuarioService implements UserDetailsService {
         if(dados.funcionarioId()!=null&&repository.existsByFuncionarioIdAndIdNot(dados.funcionarioId(),id))throw new RegraNegocioException("Este funcionário já possui um usuário vinculado.");
         if(usuario.isAtivo()&&usuario.getPerfil()==PerfilUsuario.ADMIN&&dados.perfil()!=PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ter o perfil alterado.");
         usuario.setNome(dados.nome().trim());usuario.setLogin(login);usuario.setPerfil(dados.perfil());
-        if(dados.perfil()==PerfilUsuario.TECNICO){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário não encontrado."));usuario.setFuncionario(funcionario);}else usuario.setFuncionario(null);
+        if(dados.perfil()==PerfilUsuario.TECNICO){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).filter(f->!f.isArquivado()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário ativo não encontrado."));usuario.setFuncionario(funcionario);}else usuario.setFuncionario(null);
         if(dados.senhaTemporaria()!=null){validarSenha(login,dados.senhaTemporaria());usuario.setSenhaHash(encoder.encode(dados.senhaTemporaria()));usuario.setDeveAlterarSenha(true);usuario.setTentativasFalhas(0);usuario.setBloqueadoAte(null);}
         return resposta(usuario);
     }

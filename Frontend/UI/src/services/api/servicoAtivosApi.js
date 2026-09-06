@@ -36,6 +36,7 @@ export const apiObras = {
   listar: () => obter(ROTAS_API.obras),
   cadastrar: (dados) => criar(ROTAS_API.obras, dados),
   atualizar: (obraId, dados) => atualizar(ROTAS_API.obra(obraId), dados),
+  definirArquivamento: (id, arquivado) => atualizar(ROTAS_API.arquivamentoObra(id), { arquivado }),
   obterHistorico: (obraId) => obter(ROTAS_API.historicoObra(obraId)),
   consultarInventarioHistorico: (obraId, data) => obter(ROTAS_API.inventarioHistoricoObra(obraId), { params: { data } }),
 };
@@ -45,6 +46,7 @@ export const apiEquipamentos = {
   listarCatalogo: () => obter(`${ROTAS_API.equipamentos}/catalogo`),
   cadastrar: async (dados) => normalizarEquipamento(await criar(ROTAS_API.equipamentos, dados)),
   atualizar: async (equipamentoId, dados) => normalizarEquipamento(await atualizar(ROTAS_API.equipamento(equipamentoId), dados)),
+  definirArquivamento: async (id, arquivado) => normalizarEquipamento(await atualizar(ROTAS_API.arquivamentoEquipamento(id), { arquivado })),
   excluir: async (equipamentoId) => clienteHttp.delete(ROTAS_API.equipamento(equipamentoId)),
   movimentar: async (equipamentoId, dados) => normalizarEquipamento(await criar(ROTAS_API.movimentacoesEquipamento(equipamentoId), dados)),
   obterHistorico: (equipamentoId) => obter(ROTAS_API.historicoEquipamento(equipamentoId)),
@@ -54,6 +56,7 @@ export const apiFuncionarios = {
   listar: () => obter(ROTAS_API.funcionarios),
   cadastrar: (dados) => criar(ROTAS_API.funcionarios, dados),
   atualizar: (funcionarioId, dados) => atualizar(ROTAS_API.funcionario(funcionarioId), dados),
+  definirArquivamento: (id, arquivado) => atualizar(ROTAS_API.arquivamentoFuncionario(id), { arquivado }),
 };
 
 export const apiAtividades = {

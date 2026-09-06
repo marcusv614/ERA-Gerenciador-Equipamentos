@@ -4,7 +4,7 @@ import { CampoFormulario } from '../field/Field';
 import { EstruturaModal } from '../modal-shell/ModalShell';
 import styles from '../nova-obra-modal/NovaObraModal.module.css';
 
-export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFechar, aoSalvar }) {
+export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFechar, aoSalvar, aoArquivar }) {
   const obrasAtuais = useMemo(() => obras
     .filter(({ responsaveis }) => responsaveis?.includes(funcionario.nome))
     .map(({ id }) => String(id)), [funcionario.nome, obras]);
@@ -18,6 +18,7 @@ export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFec
   });
   const [salvando, definirSalvando] = useState(false);
   const [erro, definirErro] = useState('');
+  const [arquivando, definirArquivando] = useState(false);
   const emailNormalizado = formulario.email.trim().toLocaleLowerCase('pt-BR');
   const duplicado = funcionarios.some(({ id, email, nome }) => id !== funcionario.id && (
     email.trim().toLocaleLowerCase('pt-BR') === emailNormalizado ||
@@ -59,7 +60,7 @@ export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFec
       </CampoFormulario>
       {duplicado && <p role="alert">Já existe outro funcionário com este nome ou e-mail.</p>}
       {erro && <p role="alert">{erro}</p>}
-      <div className={styles.actions}><button type="button" onClick={aoFechar} className={styles.cancel}>Cancelar</button><button type="button" disabled={!podeSalvar} onClick={salvar} className={styles.submit}>{salvando ? 'Salvando...' : 'Salvar alterações'}</button></div>
+      <div className={styles.actions}><button type="button" className={styles.archive} disabled={arquivando} onClick={async()=>{if(!window.confirm(`${funcionario.arquivado?'Restaurar':'Arquivar'} “${funcionario.nome}”?`))return;definirArquivando(true);const r=await aoArquivar(funcionario.id,!funcionario.arquivado);if(r.sucesso)aoFechar();else definirErro(r.mensagem);definirArquivando(false);}}>{arquivando?'Salvando...':funcionario.arquivado?'Restaurar registro':'Arquivar registro'}</button><span className={styles.actionsSpacer}/><button type="button" onClick={aoFechar} className={styles.cancel}>Cancelar</button><button type="button" disabled={!podeSalvar||funcionario.arquivado} onClick={salvar} className={styles.submit}>{salvando ? 'Salvando...' : 'Salvar alterações'}</button></div>
     </div>
   </EstruturaModal>;
 }

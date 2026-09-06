@@ -75,6 +75,10 @@ docker compose -f compose.production.yaml ps
 
 Antes de cada atualização, gere um backup externo do PostgreSQL. Nunca use `docker compose down -v` em produção, pois essa opção remove o volume do banco.
 
+### Início oficial da base
+
+A migration `V26__limpar_dados_para_inicio_oficial.sql` remove uma única vez os registros de demonstração e reinicia seus identificadores. Na primeira inicialização dessa versão, o backend recria somente o administrador definido por `ADMIN_INITIAL_NAME`, `ADMIN_INITIAL_LOGIN` e `ADMIN_INITIAL_PASSWORD`. Depois que a V26 for registrada pelo Flyway, reiniciar ou atualizar a aplicação não apagará os dados reais cadastrados posteriormente.
+
 ## Serviços
 
 - `ui`: build React servido por Nginx, que encaminha `/api` para a API.

@@ -19,6 +19,7 @@ public class ObraController {
     @GetMapping public List<ObraDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public ObraDto.Resposta cadastrar(@Valid @RequestBody ObraDto.Requisicao dados){return service.cadastrar(dados);}
     @PatchMapping("/{id}") public ObraDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody ObraDto.Requisicao dados){return service.atualizar(id,dados);}
+    @PatchMapping("/{id}/arquivamento") public ObraDto.Resposta arquivar(@PathVariable Long id,@Valid @RequestBody br.com.era.api.dto.ArquivamentoDto.Requisicao d,Authentication auth){return service.definirArquivamento(id,d.arquivado(),auth.getName());}
     @GetMapping("/{id}/historico") public List<MovimentacaoDto.Resposta> historico(@PathVariable Long id,Authentication autenticacao){service.buscarParaUsuario(id,autenticacao.getName());return equipamentos.restringirHistoricoParaUsuario(movimentacoes.findByObraOrigemIdOrObraDestinoIdOrderByDataMovimentacaoAscIdAsc(id,id),autenticacao.getName());}
     @GetMapping("/{id}/inventario-historico") public InventarioHistoricoDto.Resposta inventarioHistorico(@PathVariable Long id,@RequestParam LocalDate data,Authentication autenticacao){return inventarioHistorico.consultar(service.buscarParaUsuario(id,autenticacao.getName()),data);}
 }

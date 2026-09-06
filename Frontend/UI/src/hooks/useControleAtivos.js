@@ -31,21 +31,21 @@ export function useControleAtivos() {
     obras.find((obra) => obra.id === identificador);
 
   const resumoEquipamentos = useMemo(() => ({
-    total: equipamentos.length,
-    emCampo: equipamentos.filter(({ status }) => status === 'Em campo').length,
-    emEstoque: equipamentos.filter(({ status }) => status === 'Em estoque').length,
-    emManutencao: equipamentos.filter(({ status }) => status === 'Em manutenção').length,
-    emTransito: equipamentos.filter(({ status }) => status === 'Em trânsito').length,
+    total: equipamentos.filter(({ arquivado }) => !arquivado).length,
+    emCampo: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em campo').length,
+    emEstoque: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em estoque').length,
+    emManutencao: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em manutenção').length,
+    emTransito: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em trânsito').length,
   }), [equipamentos]);
 
   const tecnicosCadastrados = useMemo(() => funcionarios
-    .filter(({ status, cargo }) => status === 'Ativo' && !cargo.toLocaleLowerCase('pt-BR').includes('gerente'))
+    .filter(({ status, cargo, arquivado }) => !arquivado && status === 'Ativo' && !cargo.toLocaleLowerCase('pt-BR').includes('gerente'))
     .map(({ nome }) => nome)
     .sort((primeiroNome, segundoNome) => primeiroNome.localeCompare(segundoNome, 'pt-BR')),
   [funcionarios]);
 
-  const gerenteAtual = useMemo(() => funcionarios.find(({ cargo, status }) =>
-    status === 'Ativo' && cargo.toLocaleLowerCase('pt-BR').includes('gerente'))?.nome || null, [funcionarios]);
+  const gerenteAtual = useMemo(() => funcionarios.find(({ cargo, status, arquivado }) =>
+    !arquivado && status === 'Ativo' && cargo.toLocaleLowerCase('pt-BR').includes('gerente'))?.nome || null, [funcionarios]);
 
   async function cadastrarObra(dadosNovaObra) {
     try {
@@ -126,6 +126,9 @@ export function useControleAtivos() {
       return { sucesso: false, mensagem: erro.message };
     }
   }
+  async function arquivarEquipamento(id, arquivado) { try { const resposta=await apiEquipamentos.definirArquivamento(id,arquivado);definirEquipamentos((lista)=>lista.map((x)=>x.id===id?resposta:x));definirErroApi(null);return {sucesso:true}; } catch(erro){definirErroApi(erro.message);return {sucesso:false,mensagem:erro.message};} }
+  async function arquivarObra(id, arquivado) { try { const resposta=await apiObras.definirArquivamento(id,arquivado);definirObras((lista)=>lista.map((x)=>x.id===id?resposta:x));definirErroApi(null);return true; } catch(erro){definirErroApi(erro.message);return false;} }
+  async function arquivarFuncionario(id, arquivado) { try { const resposta=await apiFuncionarios.definirArquivamento(id,arquivado);definirFuncionarios((lista)=>lista.map((x)=>x.id===id?resposta:x));definirErroApi(null);return {sucesso:true}; } catch(erro){definirErroApi(erro.message);return {sucesso:false,mensagem:erro.message};} }
 
   async function cadastrarFuncionario(dadosNovoFuncionario) {
     const emailNormalizado = dadosNovoFuncionario.email.trim().toLocaleLowerCase('pt-BR');
@@ -321,6 +324,9 @@ export function useControleAtivos() {
     atualizarFuncionario,
     movimentarEquipamento,
     excluirEquipamento,
+    arquivarEquipamento,
+    arquivarObra,
+    arquivarFuncionario,
     consultarHistorico,
     definirStatusSolicitacao,
     avancarMovimentacao,

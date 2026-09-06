@@ -1667,6 +1667,7 @@ button.equipCard {
 }
 
 /* Técnicos view */
+.registrosAgrupados,.registroGrupo{display:grid;gap:16px;min-width:0}.registroGrupo+ .registroGrupo{padding-top:20px;border-top:1px solid var(--border)}.registroGrupo>header{display:flex;align-items:center;justify-content:space-between;gap:10px}.registroGrupo>header strong{color:var(--text);font-size:14px}.registroGrupo>header b{min-width:28px;height:28px;padding:0 8px;display:grid;place-items:center;border:1px solid var(--border);border-radius:999px;background:var(--surface-2);color:var(--text-muted);font-size:11px}.registroArquivado{opacity:.76;border-style:dashed}.seloArquivado{display:inline-flex;padding:4px 9px;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface-2);color:var(--text-muted);font-size:10px;font-weight:800}.obraArchiveBtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:32px;padding:0 10px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);color:var(--text-muted);font-size:10px;font-weight:700;cursor:pointer;transition:opacity .18s}.obraArchiveBtn:hover{opacity:.72}
 .tecnicoGrid {
   display: grid;
   grid-template-columns: 1fr; /* sempre coluna única: um card abaixo do outro */
