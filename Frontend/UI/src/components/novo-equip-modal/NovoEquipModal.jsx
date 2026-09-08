@@ -1,12 +1,11 @@
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
 import { tiposEquipamento } from '../../data/constantesDominio';
 import { ferramentaManual } from '../../utils/identificacaoEquipamento';
 import { obterDataAtual } from '../../utils/datas';
 import styles from "./NovoEquipModal.module.css";
-
-const NOVA_CATEGORIA = '__nova_categoria__';
 
 export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadastrados, seriesCadastradas, tiposDisponiveis = tiposEquipamento, aoFechar, aoSalvar, aoArquivar }) {
   const editando = Boolean(equipamento);
@@ -20,7 +19,8 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
     data: equipamento?.dataEntrada || equipamento?.data || obterDataAtual(),
   });
   const [novaCategoria, definirNovaCategoria] = useState('');
-  const [adicionandoCategoria, definirAdicionandoCategoria] = useState(false);
+  const [categoriaAdicionada, definirCategoriaAdicionada] = useState('');
+  const [modalNovaCategoriaAberto, definirModalNovaCategoriaAberto] = useState(false);
   const [confirmandoExclusao, definirConfirmandoExclusao] = useState(false);
   const [excluindo, definirExcluindo] = useState(false);
   const [erroExclusao, definirErroExclusao] = useState('');
@@ -28,16 +28,30 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
   const serieOriginalNormalizada = String(equipamento?.serie || '').trim().toLocaleLowerCase('pt-BR');
   const serieJaCadastrada = Boolean(serieNormalizada) && seriesCadastradas.some((serie) =>
     String(serie || '').trim().toLocaleLowerCase('pt-BR') === serieNormalizada) && serieNormalizada !== serieOriginalNormalizada;
-  const tipoSelecionado = adicionandoCategoria ? novaCategoria.trim() : form.tipo.trim();
+  const tipoSelecionado = form.tipo.trim();
   const tipoSemSerie = ferramentaManual(tipoSelecionado);
-  const categoriaJaCadastrada = adicionandoCategoria && tiposDisponiveis.some((tipo) =>
+  const categoriaJaCadastrada = tiposDisponiveis.some((tipo) =>
     tipo.toLocaleLowerCase('pt-BR') === novaCategoria.trim().toLocaleLowerCase('pt-BR'));
+  const categoriasExibidas = categoriaAdicionada && !tiposDisponiveis.includes(categoriaAdicionada)
+    ? [...tiposDisponiveis, categoriaAdicionada]
+    : tiposDisponiveis;
   const tecnicosDisponiveis = equipamento?.tecnico && !tecnicosCadastrados.includes(equipamento.tecnico)
     ? [equipamento.tecnico, ...tecnicosCadastrados]
     : tecnicosCadastrados;
   const obrasDisponiveis = obras.filter(({ id, status }) =>
     status !== 'Concluída' || String(id) === String(equipamento?.obraId));
   const canSave = tipoSelecionado && form.modelo.trim() && form.data && !serieJaCadastrada && !categoriaJaCadastrada;
+  const fecharModalNovaCategoria = () => {
+    definirModalNovaCategoriaAberto(false);
+    definirNovaCategoria('');
+  };
+  const adicionarNovaCategoria = () => {
+    const categoria = novaCategoria.trim();
+    if (!categoria || categoriaJaCadastrada) return;
+    definirCategoriaAdicionada(categoria);
+    setForm((dadosAtuais) => ({ ...dadosAtuais, tipo: categoria }));
+    fecharModalNovaCategoria();
+  };
   const excluirRegistro = async () => {
     definirExcluindo(true);
     definirErroExclusao('');
@@ -46,7 +60,7 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
     definirExcluindo(false);
   };
 
-  return (
+  return <>
     <EstruturaModal
       titulo={editando ? 'Editar equipamento' : 'Novo equipamento'}
       subtitulo={editando ? 'Atualize os dados do equipamento' : 'Cadastre um instrumento na frota'}
@@ -57,33 +71,15 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
           <select
             className={styles.input}
             value={form.tipo}
-            onChange={(e) => {
-              const tipo = e.target.value;
-              definirAdicionandoCategoria(tipo === NOVA_CATEGORIA);
-              if (tipo !== NOVA_CATEGORIA) definirNovaCategoria('');
-              setForm((dadosAtuais) => ({ ...dadosAtuais, tipo }));
-            }}
-            aria-controls="campo-nova-categoria"
-            aria-expanded={adicionandoCategoria}
+            onChange={(e) => setForm((dadosAtuais) => ({ ...dadosAtuais, tipo: e.target.value }))}
           >
-            {tiposDisponiveis.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}
-            <option value={NOVA_CATEGORIA}>Adicionar nova categoria</option>
+            {categoriasExibidas.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}
           </select>
         </CampoFormulario>
-        {adicionandoCategoria && <div id="campo-nova-categoria" className={styles.novaCategoria}>
-          <CampoFormulario rotulo="Nome da nova categoria" dica="A categoria será registrada ao adicionar o primeiro equipamento.">
-            <input
-              className={styles.input}
-              autoFocus
-              maxLength={40}
-              placeholder="Ex.: Power meter"
-              value={novaCategoria}
-              onChange={(e) => definirNovaCategoria(e.target.value)}
-              required
-            />
-            {categoriaJaCadastrada && <small className={styles.erro}>Essa categoria já existe. Selecione-a na lista acima.</small>}
-          </CampoFormulario>
-        </div>}
+        <button type="button" className={styles.adicionarCategoria} onClick={() => definirModalNovaCategoriaAberto(true)}>
+          <Plus size={15} aria-hidden="true" />
+          Adicionar nova categoria
+        </button>
         <CampoFormulario rotulo="Nome do equipamento">
           <input
             className={styles.input}
@@ -183,5 +179,25 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
         </div>
       </div>
     </EstruturaModal>
-  );
+    {modalNovaCategoriaAberto && <EstruturaModal titulo="Nova categoria" subtitulo="Informe o nome da categoria de equipamento" aoFechar={fecharModalNovaCategoria}>
+      <div className={styles.formNovaCategoria}>
+        <CampoFormulario rotulo="Nome da categoria">
+          <input
+            className={styles.input}
+            autoFocus
+            maxLength={40}
+            placeholder="Ex.: Power meter"
+            value={novaCategoria}
+            onChange={(e) => definirNovaCategoria(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') adicionarNovaCategoria(); }}
+            required
+          />
+          {categoriaJaCadastrada && <small className={styles.erro}>Essa categoria já existe. Selecione-a na lista principal.</small>}
+        </CampoFormulario>
+        <button type="button" className={styles.confirmarCategoria} disabled={!novaCategoria.trim() || categoriaJaCadastrada} onClick={adicionarNovaCategoria}>
+          Adicionar
+        </button>
+      </div>
+    </EstruturaModal>}
+  </>;
 }
