@@ -36,6 +36,14 @@
   font-size: 11px;
 }
 
+.novaCategoria {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 48%, var(--border-strong));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
