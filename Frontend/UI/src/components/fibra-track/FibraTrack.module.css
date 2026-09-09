@@ -1121,6 +1121,33 @@ button.equipCard {
   margin-left: auto;
 }
 
+.equipQuantidade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.equipQuantidade > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.equipQuantidade small {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.equipQuantidade strong {
+  color: var(--text);
+  font: 700 16px/1.2 var(--font-display);
+}
+
 .iconBtn {
   width: 34px;
   height: 34px;
@@ -1137,6 +1164,17 @@ button.equipCard {
   background: var(--surface-2);
   color: var(--text);
   border-color: var(--border);
+}
+
+.equipEditBtn {
+  width: auto;
+  gap: 5px;
+  padding-inline: 9px;
+}
+
+.equipEditBtn span {
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .equipCardExpanded {
@@ -1949,6 +1987,10 @@ button.equipCard {
   .equipActions .iconBtn {
     width: 100%;
     min-width: 0;
+  }
+
+  .equipQuantidade {
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
   }
 
   .equipIdent {
