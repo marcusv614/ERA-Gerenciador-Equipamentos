@@ -17,6 +17,7 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
     obraId: equipamento?.obraId || "",
     tecnico: equipamento?.tecnico || "",
     data: equipamento?.dataEntrada || equipamento?.data || obterDataAtual(),
+    quantidade: String(equipamento?.quantidade ?? 1),
   });
   const [novaCategoria, definirNovaCategoria] = useState('');
   const [categoriaAdicionada, definirCategoriaAdicionada] = useState('');
@@ -40,7 +41,10 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
     : tecnicosCadastrados;
   const obrasDisponiveis = obras.filter(({ id, status }) =>
     status !== 'Concluída' || String(id) === String(equipamento?.obraId));
-  const canSave = tipoSelecionado && form.modelo.trim() && form.data && !serieJaCadastrada && !categoriaJaCadastrada;
+  const quantidade = Number(form.quantidade);
+  const quantidadeMinima = Math.max(1, Number(equipamento?.quantidadeReservada || 0));
+  const quantidadeValida = Number.isInteger(quantidade) && quantidade >= quantidadeMinima;
+  const canSave = tipoSelecionado && form.modelo.trim() && form.data && quantidadeValida && !serieJaCadastrada && !categoriaJaCadastrada;
   const fecharModalNovaCategoria = () => {
     definirModalNovaCategoriaAberto(false);
     definirNovaCategoria('');
@@ -88,6 +92,24 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
             onChange={(e) => setForm({ ...form, modelo: e.target.value })}
             required
           />
+        </CampoFormulario>
+        <CampoFormulario
+          rotulo="Quantidade de itens"
+          dica={equipamento?.quantidadeReservada > 0
+            ? `${equipamento.quantidadeReservada} unidade(s) reservada(s). A quantidade não pode ser menor que esse valor.`
+            : 'Informe quantas unidades deste equipamento existem neste registro.'}
+        >
+          <input
+            type="number"
+            className={styles.input}
+            min={quantidadeMinima}
+            step="1"
+            inputMode="numeric"
+            value={form.quantidade}
+            onChange={(e) => setForm((dadosAtuais) => ({ ...dadosAtuais, quantidade: e.target.value }))}
+            required
+          />
+          {!quantidadeValida && <small className={styles.erro}>Informe um número inteiro igual ou maior que {quantidadeMinima}.</small>}
         </CampoFormulario>
         {serieJaCadastrada && <p role="alert">Já existe um equipamento com este número de série.</p>}
 
@@ -170,6 +192,8 @@ export function ModalNovoEquipamento({ equipamento = null, obras, tecnicosCadast
                 obraId: form.obraId || null,
                 tecnico: form.tecnico || null,
                 data: form.data || null,
+                quantidade,
+                controleQuantidade: quantidade > 1 ? 'LOTE' : 'INDIVIDUAL',
               })
             }
             className={styles.submit}

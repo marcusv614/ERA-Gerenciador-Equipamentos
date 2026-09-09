@@ -87,6 +87,57 @@ class EquipamentoServiceTests {
     }
 
     @Test
+    void deveAtualizarQuantidadeEConverterRegistroParaLote() {
+        EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+        MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
+        Equipamento equipamento = new Equipamento();
+        equipamento.setTipo("Ferramenta manual");
+        equipamento.setModelo("Alicate");
+        equipamento.setSerie("ERA-LOTE-1");
+        equipamento.setStatus("Em estoque");
+        equipamento.setQuantidade(1);
+        equipamento.setControleQuantidade("INDIVIDUAL");
+        when(equipamentos.findById(5L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.findBySerieIgnoreCase("ERA-LOTE-1")).thenReturn(Optional.empty());
+        when(equipamentos.save(equipamento)).thenReturn(equipamento);
+        when(movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(null)).thenReturn(List.of());
+        EquipamentoService service = new EquipamentoService(equipamentos, movimentacoes, mock(ObraService.class),
+                mock(FuncionarioService.class), mock(UsuarioService.class), mock(InventarioHistoricoService.class));
+
+        EquipamentoDto.Resposta resposta = service.atualizar(5L, new EquipamentoDto.Requisicao(
+                "Ferramenta manual", "Alicate", "ERA-LOTE-1", "Em estoque", null, null,
+                LocalDate.now(), null, null, null, 8, null, null));
+
+        assertEquals(8, resposta.quantidade());
+        assertEquals("LOTE", resposta.controleQuantidade());
+    }
+
+    @Test
+    void deveImpedirQuantidadeMenorQueUnidadesReservadas() {
+        EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+        Equipamento equipamento = new Equipamento();
+        equipamento.setTipo("Ferramenta manual");
+        equipamento.setModelo("Alicate");
+        equipamento.setSerie("ERA-LOTE-2");
+        equipamento.setStatus("Em estoque");
+        equipamento.setQuantidade(10);
+        equipamento.setQuantidadeReservada(4);
+        equipamento.setControleQuantidade("LOTE");
+        when(equipamentos.findById(6L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.findBySerieIgnoreCase("ERA-LOTE-2")).thenReturn(Optional.empty());
+        EquipamentoService service = new EquipamentoService(equipamentos, mock(MovimentacaoRepository.class),
+                mock(ObraService.class), mock(FuncionarioService.class), mock(UsuarioService.class),
+                mock(InventarioHistoricoService.class));
+
+        RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(6L,
+                new EquipamentoDto.Requisicao("Ferramenta manual", "Alicate", "ERA-LOTE-2", "Em estoque",
+                        null, null, LocalDate.now(), null, null, null, 3, null, "LOTE")));
+
+        assertEquals("A quantidade não pode ser menor que as unidades já reservadas.", erro.getMessage());
+        verify(equipamentos, never()).save(equipamento);
+    }
+
+    @Test
     void deveExcluirEquipamentoSemReservasOuHistorico() {
         EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
         MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
