@@ -21,6 +21,31 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsuarioServiceTests {
+    @Test
+    void trocaObrigatoriaDispensaRepetirSenhaTemporaria() {
+        Usuario usuario = new Usuario(); usuario.setLogin("tecnico"); usuario.setSenhaHash("hash-antigo"); usuario.setDeveAlterarSenha(true);
+        when(repository.findByLoginIgnoreCase("tecnico")).thenReturn(Optional.of(usuario));
+        when(encoder.encode("NovaSenha#123")).thenReturn("hash-novo");
+        service.alterarSenha("tecnico", new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaSenha#123"));
+        assertEquals("hash-novo",usuario.getSenhaHash());
+        org.junit.jupiter.api.Assertions.assertFalse(usuario.isDeveAlterarSenha());
+        org.junit.jupiter.api.Assertions.assertNotNull(usuario.getSenhaAlteradaEm());
+    }
+    @Test
+    void trocaNormalContinuaExigindoSenhaAtual() {
+        Usuario usuario = new Usuario(); usuario.setLogin("tecnico"); usuario.setSenhaHash("hash-antigo"); usuario.setDeveAlterarSenha(false);
+        when(repository.findByLoginIgnoreCase("tecnico")).thenReturn(Optional.of(usuario));
+        assertThrows(RegraNegocioException.class,()->service.alterarSenha("tecnico",new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaSenha#123")));
+        assertEquals("hash-antigo",usuario.getSenhaHash());
+    }
+    @Test
+    void trocaObrigatoriaRejeitaReutilizarSenhaTemporaria() {
+        Usuario usuario = new Usuario(); usuario.setLogin("tecnico"); usuario.setSenhaHash("hash-antigo"); usuario.setDeveAlterarSenha(true);
+        when(repository.findByLoginIgnoreCase("tecnico")).thenReturn(Optional.of(usuario));
+        when(encoder.matches("Temporaria#123","hash-antigo")).thenReturn(true);
+        assertThrows(RegraNegocioException.class,()->service.alterarSenha("tecnico",new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"Temporaria#123")));
+        assertTrue(usuario.isDeveAlterarSenha());
+    }
     private final UsuarioRepository repository = mock(UsuarioRepository.class);
     private final FuncionarioRepository funcionarios = mock(FuncionarioRepository.class);
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);

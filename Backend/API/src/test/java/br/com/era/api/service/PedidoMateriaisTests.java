@@ -1,0 +1,165 @@
+package br.com.era.api.service;
+
+import br.com.era.api.dto.SolicitacaoDto;
+import br.com.era.api.exception.RegraNegocioException;
+import br.com.era.api.model.*;
+import br.com.era.api.repository.*;
+import org.junit.jupiter.api.Test;
+import java.time.LocalDate;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class PedidoMateriaisTests {
+    @Test void outroTecnicoNaoPodeConfirmarRecebimento() {
+        Solicitacao s=pedido("Em trânsito");s.setObraDestino(new Obra());
+        org.springframework.test.util.ReflectionTestUtils.setField(tecnico,"id",20L);
+        Funcionario outro=new Funcionario();org.springframework.test.util.ReflectionTestUtils.setField(outro,"id",99L);
+        Usuario usuario=new Usuario();usuario.setPerfil(PerfilUsuario.TECNICO);usuario.setFuncionario(outro);
+        when(usuarios.buscarPorLogin("outro")).thenReturn(usuario);
+        assertThrows(RegraNegocioException.class,()->service.concluir(1L,"outro"));
+        assertEquals("Em trânsito",s.getStatus());verifyNoInteractions(movimentacoes);
+    }
+    @Test void gerenciaEstoqueEAdminNaoConfirmamEntregaNaObra() {
+        Solicitacao s=pedido("Em trânsito");s.setObraDestino(new Obra());
+        for(PerfilUsuario perfil:List.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.ESTOQUE)) {
+            Usuario usuario=new Usuario();usuario.setPerfil(perfil);when(usuarios.buscarPorLogin("operador")).thenReturn(usuario);
+            assertThrows(RegraNegocioException.class,()->service.concluir(1L,"operador"));
+            assertEquals("Em trânsito",s.getStatus());
+        }
+        verifyNoInteractions(movimentacoes);
+    }
+    final SolicitacaoRepository pedidos = mock(SolicitacaoRepository.class);
+    final EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+    final UsuarioService usuarios = mock(UsuarioService.class);
+    final ObraService obras = mock(ObraService.class);
+    final CautelaService cautelas = mock(CautelaService.class);
+    final MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
+    final EquipamentoService equipamentoService = mock(EquipamentoService.class);
+    final Funcionario tecnico = new Funcionario();
+    final SolicitacaoService service = new SolicitacaoService(pedidos,equipamentos,movimentacoes,obras,mock(FuncionarioService.class),equipamentoService,usuarios,cautelas,mock(InventarioHistoricoService.class));
+
+    PedidoMateriaisTests() {
+        tecnico.setNome("Tecnico");
+        Usuario usuario = new Usuario(); usuario.setPerfil(PerfilUsuario.TECNICO); usuario.setFuncionario(tecnico);
+        when(usuarios.buscarPorLogin("tecnico")).thenReturn(usuario);
+        when(obras.idsPermitidos("tecnico")).thenReturn(Set.of());
+        when(pedidos.save(any())).thenAnswer(i->i.getArgument(0));
+        Equipamento e = new Equipamento(); e.setTipo("Manual");e.setModelo("Alicate");e.setQuantidade(0);
+        when(equipamentos.findAll()).thenReturn(List.of(e));
+    }
+    SolicitacaoDto.Requisicao dados(String nome,int quantidade,String serie,String chave) {
+        return new SolicitacaoDto.Requisicao(null,"Tecnico",null,1L,LocalDate.now(),null,List.of(new SolicitacaoDto.MaterialRequisicao(nome,quantidade,serie,chave)));
+    }
+    Solicitacao pedido(String status) {
+        Solicitacao s=new Solicitacao();s.setTipo("Movimentação");s.setStatus(status);s.setTecnico(tecnico);s.setSolicitante(tecnico);
+        when(pedidos.buscarParaAtualizacao(1L)).thenReturn(Optional.of(s));return s;
+    }
+    @Test void aceitaQuantidadeAcimaDoEstoqueSemReservar() {
+        var resposta=service.cadastrar(dados("Nome adulterado",5000,null,"manual|alicate|"),"tecnico");
+        assertEquals("Alicate",resposta.materiais().getFirst().nome());
+        assertEquals(5000,resposta.materiais().getFirst().quantidade());
+        assertEquals("Pendente",resposta.status());
+        verify(equipamentos,never()).buscarPorSerieParaAtualizacao(any());
+    }
+    @Test void rejeitaMaterialInventado() {
+        assertThrows(RegraNegocioException.class,()->service.cadastrar(dados("Inventado",1,null,"manual|inventado|"),"tecnico"));
+        verify(pedidos,never()).save(any());
+    }
+    @Test void exigeChaveMesmoComNomeExistente() {
+        assertThrows(RegraNegocioException.class,()->service.cadastrar(dados("Alicate",1,null,null),"tecnico"));
+    }
+    @Test void tecnicoNaoPodeDefinirSerieNoPedido() {
+        assertThrows(RegraNegocioException.class,()->service.cadastrar(dados("Alicate",1,"SERIE","manual|alicate|"),"tecnico"));
+    }
+    @Test void rejeitaMaterialArquivado() {
+        Equipamento e=new Equipamento();e.setTipo("Manual");e.setModelo("Alicate");e.definirArquivamento(true,"admin");
+        when(equipamentos.findAll()).thenReturn(List.of(e));
+        assertThrows(RegraNegocioException.class,()->service.cadastrar(dados("Alicate",1,null,"manual|alicate|"),"tecnico"));
+    }
+    @Test void aprovaUmaUnicaVez() {
+        Solicitacao s=pedido("Pendente");s.setObraDestino(new Obra());
+        assertEquals("Aprovada",service.aprovar(1L,"gerente").status());
+        assertThrows(RegraNegocioException.class,()->service.aprovar(1L,"gerente"));
+        assertThrows(RegraNegocioException.class,()->service.rejeitar(1L));
+    }
+    @Test void rejeitaUmaUnicaVez() {
+        pedido("Pendente");assertEquals("Rejeitada",service.rejeitar(1L).status());
+        assertThrows(RegraNegocioException.class,()->service.rejeitar(1L));
+    }
+    @Test void naoEnviaAntesDaSeparacao() {
+        Solicitacao s=pedido("Aprovada");s.setObraDestino(new Obra());s.substituirMateriais(List.of(new MaterialSolicitado("Alicate",2,null,"manual|alicate|")));
+        Usuario estoque=new Usuario();estoque.setPerfil(PerfilUsuario.ESTOQUE);when(usuarios.buscarPorLogin("estoque")).thenReturn(estoque);
+        assertThrows(RegraNegocioException.class,()->service.iniciarTransito(1L,"estoque"));
+        verifyNoInteractions(cautelas);
+    }
+    @Test void tecnicoNaoEnviaMaterial() {
+        pedido("Aprovada");assertThrows(RegraNegocioException.class,()->service.iniciarTransito(1L,"tecnico"));
+    }
+    @Test void compraExigeAprovacao() {
+        pedido("Pendente");assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,1));
+        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,1,null));
+    }
+    @Test void distribuicaoExigeAprovacao() {
+        pedido("Pendente");assertThrows(RegraNegocioException.class,()->service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of())));
+    }
+    @Test void fluxoCompletoReservaEnviaEConfirmaUmaUnicaVez() {
+        Solicitacao s=pedido("Pendente");
+        Obra obra=new Obra();
+        org.springframework.test.util.ReflectionTestUtils.setField(obra,"id",10L);
+        org.springframework.test.util.ReflectionTestUtils.setField(tecnico,"id",20L);
+        org.springframework.test.util.ReflectionTestUtils.setField(s,"id",1L);
+        s.setObraDestino(obra);
+        s.substituirMateriais(List.of(new MaterialSolicitado("Alicate",1,null,"manual|alicate|")));
+        Equipamento e=new Equipamento();e.setTipo("Manual");e.setModelo("Alicate");e.setSerie("SERIE");e.setStatus("Em estoque");
+        org.springframework.test.util.ReflectionTestUtils.setField(e,"id",30L);
+        when(equipamentos.buscarPorSerieParaAtualizacao("SERIE")).thenReturn(Optional.of(e));
+        Movimentacao movimento=new Movimentacao();movimento.setEquipamento(e);
+        when(equipamentoService.novaMovimentacao(any(),any(),any(),any(),any(),any(),anyInt(),any())).thenReturn(movimento);
+        Usuario estoque=new Usuario();estoque.setPerfil(PerfilUsuario.ESTOQUE);when(usuarios.buscarPorLogin("estoque")).thenReturn(estoque);
+        assertEquals("Aprovada",service.aprovar(1L,"estoque").status());
+        var atendimento=new SolicitacaoDto.AtendimentoOrigem(null,List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",1,"SERIE","manual|alicate|")));
+        service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of(atendimento)));
+        assertEquals(1,e.getQuantidadeReservada());
+        assertThrows(RegraNegocioException.class,()->service.concluir(1L,"tecnico"));
+        assertEquals("Em trânsito",service.iniciarTransito(1L,"estoque").status());
+        assertThrows(RegraNegocioException.class,()->service.iniciarTransito(1L,"estoque"));
+        assertEquals("Concluída",service.concluir(1L,"tecnico").status());
+        assertEquals(0,e.getQuantidadeReservada());
+        assertThrows(RegraNegocioException.class,()->service.concluir(1L,"tecnico"));
+        verify(movimentacoes,times(1)).save(movimento);
+        verify(cautelas,times(1)).emitir(s,"estoque");
+    }
+    MaterialSolicitado materialComId(Solicitacao s) {
+        MaterialSolicitado m=new MaterialSolicitado("Alicate",10,null,"manual|alicate|");
+        org.springframework.test.util.ReflectionTestUtils.setField(m,"id",2L);
+        s.substituirMateriais(List.of(m));return m;
+    }
+    @Test void compraEEntradaRespeitamSaldos() {
+        Solicitacao s=pedido("Aprovada");MaterialSolicitado m=materialComId(s);
+        assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,11));
+        service.solicitarCompra(1L,2L,5);
+        service.registrarAquisicao(1L,2L,3,null);
+        assertEquals(3,m.getQuantidadeEntradaEstoque());
+        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,3,null));
+        assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,2));
+        assertEquals(3,m.getQuantidadeEntradaEstoque());
+    }
+    @Test void distribuicaoNaoPodeAlterarQuantidadeSolicitada() {
+        Solicitacao s=pedido("Aprovada");materialComId(s);
+        var atendimento=new SolicitacaoDto.AtendimentoOrigem(null,List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",9,"SERIE","manual|alicate|")));
+        assertThrows(RegraNegocioException.class,()->service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of(atendimento))));
+        verify(equipamentos,never()).buscarPorSerieParaAtualizacao(any());
+    }
+    @Test void distribuicaoNaoPodeSairDoProprioDestino() {
+        Solicitacao s=pedido("Aprovada");materialComId(s);Obra destino=new Obra();
+        org.springframework.test.util.ReflectionTestUtils.setField(destino,"id",5L);s.setObraDestino(destino);
+        var atendimento=new SolicitacaoDto.AtendimentoOrigem(5L,List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",10,"SERIE","manual|alicate|")));
+        assertThrows(RegraNegocioException.class,()->service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of(atendimento))));
+    }
+    @Test void distribuicaoRejeitaSomaQueEstouraInteiro() {
+        Solicitacao s=pedido("Aprovada");materialComId(s);
+        var m=new SolicitacaoDto.MaterialRequisicao("Alicate",Integer.MAX_VALUE,"SERIE","manual|alicate|");
+        assertThrows(RegraNegocioException.class,()->service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of(new SolicitacaoDto.AtendimentoOrigem(null,List.of(m,m))))));
+    }
+}

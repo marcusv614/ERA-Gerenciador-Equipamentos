@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, History, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, Truck, X } from 'lucide-react';
+import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, History, LogOut, MapPin, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, Truck, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
@@ -127,13 +127,12 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     return [...atuais, { id, equipamento, quantidade: 1 }];
   });
 
-  const alterarQuantidade = (id, diferenca) => definirItens((atuais) => atuais
-    .map((item) => {
-      if (item.id !== id) return item;
-      const limite = operacao === 'receber' ? Number.MAX_SAFE_INTEGER : (item.equipamento.quantidadeDisponivel ?? 1);
-      return { ...item, quantidade: Math.max(0, Math.min(item.quantidade + diferenca, limite)) };
-    })
-    .filter(({ quantidade }) => quantidade > 0));
+  const definirQuantidade = (id, valor) => definirItens((atuais) => atuais.map((item) => {
+    if (item.id !== id) return item;
+    const quantidade = Number(valor);
+    const limite = operacao === 'receber' ? 2147483647 : (item.equipamento.quantidadeDisponivel ?? 1);
+    return Number.isInteger(quantidade) && quantidade > 0 && quantidade <= limite ? { ...item, quantidade } : item;
+  }));
   const removerItem = (id) => definirItens((atuais) => atuais.filter((item) => item.id !== id));
 
   const trocarOrigem = (valor) => {
@@ -221,17 +220,31 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
 
           {etapaMovimentacao === 3 && <><div className={estilos.tituloSimples}><span className={estilos.selo}>Escolha os materiais</span><h2>{operacao === 'receber' ? 'O que você precisa?' : 'O que deve ser retirado?'}</h2><p>{operacao === 'receber' ? 'Você não precisa saber onde o material está.' : `Mostrando apenas materiais de ${nomeLocal(origem)}.`}</p></div><div className={estilos.busca}><Search size={19} /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material" /></div>
             <div className={estilos.listaMateriais}>{materiaisParaSelecionar.length ? materiaisParaSelecionar.map((equipamento) => {
-              const selecionado = itens.some(({ id }) => id === identificadorLocal(equipamento));
-              return <button type="button" key={equipamento.id} className={`${estilos.material} ${selecionado ? estilos.materialSelecionado : ''}`} onClick={() => selecionado ? removerItem(identificadorLocal(equipamento)) : adicionarItem(equipamento)}>
+              const id = identificadorLocal(equipamento);
+              const quantidade = itens.find((item) => item.id === id)?.quantidade || 0;
+              const selecionado = quantidade > 0;
+              const limite = operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1);
+              return <div key={equipamento.id} className={`${estilos.material} ${selecionado ? estilos.materialSelecionado : ''}`}>
+                <button type="button" className={estilos.selecionarMaterial} aria-pressed={selecionado} onClick={() => selecionado ? removerItem(id) : adicionarItem(equipamento)}>
                 <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
-              </button>;
+                </button>
+                <div className={estilos.quantidade} role="group" aria-label={`Quantidade de ${equipamento.modelo}`}>
+                  <input type="number" aria-label={`Quantidade de ${equipamento.modelo}`} min="0" max={limite} step="1" value={quantidade} onChange={(evento) => {
+                    const valor = Number(evento.target.value);
+                    if (!Number.isInteger(valor) || valor < 0 || valor > limite) return;
+                    if (valor === 0) removerItem(id);
+                    else if (selecionado) definirQuantidade(id, valor);
+                    else definirItens((atuais) => [...atuais, { id, equipamento, quantidade: valor }]);
+                  }} />
+                </div>
+              </div>;
             }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material encontrado</strong><span>Tente buscar por outro nome.</span></div>}</div><div className={estilos.acoesEtapa}><button onClick={() => definirEtapaMovimentacao(2)}>Voltar</button><button disabled={!itens.length} onClick={() => definirEtapaMovimentacao(4)}>Revisar {quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'} <ChevronRight /></button></div></>}
         </section>}
 
         {etapaMovimentacao === 4 && <aside className={estilos.resumoPedido} aria-label="Resumo da movimentação">
           <div className={estilos.resumoTopo}><span><ClipboardList /></span><div><small>Sua movimentação</small><strong>{quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'}</strong></div></div>
           <div className={estilos.miniRota}><span><MapPin />{operacao === 'receber' ? `Entregar em ${nomeLocal(destino)}` : `Retirar de ${nomeLocal(origem)}`}</span></div>
-          <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><button onClick={() => alterarQuantidade(id, -1)}><Minus /></button><b>{quantidade}</b><button onClick={() => alterarQuantidade(id, 1)} disabled={operacao !== 'receber' && quantidade >= (equipamento.quantidadeDisponivel ?? 1)}><Plus /></button></div></div>)}</div>
+          <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><input type="number" aria-label={`Quantidade de ${equipamento.modelo}`} min="1" max={operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1)} step="1" value={quantidade} onChange={(evento) => definirQuantidade(id, evento.target.value)} /></div></div>)}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
           {!mostrarObservacao ? <button className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
           <button className={estilos.enviar} disabled={!podeEnviar} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao gerente <ChevronRight /></>}</button>

@@ -14,9 +14,13 @@ clienteHttp.interceptors.response.use(
   (resposta) => resposta,
   (erro) => {
     if (erro.response?.status === 401 && !String(erro.config?.url || '').includes('/auth/')) window.dispatchEvent(new Event('era:sessao-expirada'));
-    const erroNormalizado = new Error(
-      erro.response?.data?.mensagem || erro.response?.data?.message || erro.message || 'Não foi possível comunicar com a API.',
-    );
+    const status = erro.response?.status;
+    const mensagem = status >= 500
+      ? 'Não foi possível concluir a operação. Tente novamente. Se persistir, contate o suporte.'
+      : erro.response?.data?.mensagem || (erro.code === 'ECONNABORTED'
+        ? 'O servidor demorou para responder. Confira o pedido antes de tentar novamente.'
+        : 'Não foi possível comunicar com a API. Verifique sua conexão e tente novamente.');
+    const erroNormalizado = new Error(mensagem);
     erroNormalizado.status = erro.response?.status;
     erroNormalizado.dados = erro.response?.data;
     return Promise.reject(erroNormalizado);

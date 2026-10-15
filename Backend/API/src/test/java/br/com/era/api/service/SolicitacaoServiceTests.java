@@ -46,7 +46,7 @@ class SolicitacaoServiceTests {
         Usuario administrador = new Usuario();
         administrador.setPerfil(PerfilUsuario.ADMIN);
 
-        when(solicitacoes.findById(14L)).thenReturn(Optional.of(solicitacao));
+        when(solicitacoes.buscarParaAtualizacao(14L)).thenReturn(Optional.of(solicitacao));
         when(usuarios.buscarPorLogin("admin")).thenReturn(administrador);
 
         SolicitacaoService service = novoService(solicitacoes, usuarios);

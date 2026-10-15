@@ -22,6 +22,7 @@ export function ModalNovoUsuario({ funcionarios, usuario, aoFechar, aoSalvar }) 
 
   return <EstruturaModal titulo={editando ? 'Editar usuário' : 'Novo usuário'} subtitulo={editando ? 'Atualize o acesso, a atribuição e, se necessário, a senha' : 'Conceda acesso ao painel e defina as permissões'} aoFechar={aoFechar}><div className={styles.form}>
     {dados.perfil === 'TECNICO' && <CampoFormulario rotulo="Técnico cadastrado"><select className={styles.input} value={dados.funcionarioId} onChange={(evento) => selecionarFuncionario(evento.target.value)}><option value="">Selecione o técnico</option>{funcionarios.map((funcionario) => <option key={funcionario.id} value={funcionario.id}>{funcionario.nome}</option>)}</select></CampoFormulario>}
+    {dados.perfil === 'TECNICO' && !funcionarios.length && <p role="status">Nenhum técnico disponível para vincular. Cadastre um funcionário na Gerência ou, se ele já possui usuário, use Editar ou Redefinir senha na Administração.</p>}
     <CampoFormulario rotulo="Nome exibido"><input className={styles.input} value={dados.nome} onChange={(evento) => alterar('nome', evento.target.value)} /></CampoFormulario>
     <CampoFormulario rotulo="Login"><input autoComplete="off" className={styles.input} value={dados.login} onChange={(evento) => alterar('login', evento.target.value)} /></CampoFormulario>
     <div className={styles.grid2}>

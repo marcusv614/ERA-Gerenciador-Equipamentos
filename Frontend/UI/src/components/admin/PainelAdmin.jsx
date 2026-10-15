@@ -44,19 +44,23 @@ export function PainelAdmin() {
   });
 
   const carregar = async () => {
+    definirCarregando(true);
     definirErro('');
     try {
       const [usuariosRecebidos, funcionariosRecebidos] = await Promise.all([apiUsuarios.listar(), apiFuncionarios.listar()]);
       definirUsuarios(usuariosRecebidos);
       definirFuncionarios(funcionariosRecebidos);
+      return true;
     } catch (excecao) {
       definirErro(excecao.message);
+      return false;
     } finally {
       definirCarregando(false);
     }
   };
 
   useEffect(() => {
+    if (area !== 'usuarios') return;
     let ativo = true;
     Promise.all([apiUsuarios.listar(), apiFuncionarios.listar()])
       .then(([usuariosRecebidos, funcionariosRecebidos]) => {
@@ -67,7 +71,11 @@ export function PainelAdmin() {
       .catch((excecao) => { if (ativo) definirErro(excecao.message); })
       .finally(() => { if (ativo) definirCarregando(false); });
     return () => { ativo = false; };
-  }, []);
+  }, [area]);
+
+  const abrirNovoUsuario = async () => {
+    if (await carregar()) definirCriandoUsuario(true);
+  };
 
   const funcionariosSemAcesso = useMemo(() => funcionarios.filter((funcionario) => !funcionario.arquivado &&
     !usuarios.some((item) => item.funcionarioId === funcionario.id)), [funcionarios, usuarios]);
@@ -122,13 +130,13 @@ export function PainelAdmin() {
   return <div className={estilos.pagina} data-theme={modoEscuro ? 'dark' : 'light'}>
     <header className={estilos.cabecalho}>
       <div className={estilos.identidade}><ShieldCheck /><div><small>Painel do administrador</small><strong>{usuario.nome}</strong></div></div>
-      <nav aria-label="Áreas administrativas">{AREAS.map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={area === id ? estilos.ativo : ''} onClick={() => definirArea(id)}><Icone /> {rotulo}</button>)}</nav>
+      <nav aria-label="Áreas administrativas">{AREAS.map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={area === id ? estilos.ativo : ''} onClick={() => { if (id !== area && id === 'usuarios') definirCarregando(true); definirArea(id); }}><Icone /> {rotulo}</button>)}</nav>
       <button type="button" className={estilos.tema} onClick={alternarTema} aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'}>{modoEscuro ? <Sun /> : <Moon />}</button>
       <button type="button" className={estilos.sair} onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /> <span>Sair</span></button>
     </header>
 
     {area === 'usuarios' && <main className={estilos.conteudo}>
-      <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle acessos.</p></div><button type="button" onClick={() => definirCriandoUsuario(true)}><UserPlus /> Criar usuário</button></section>
+      <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle acessos.</p></div><button type="button" disabled={carregando} onClick={abrirNovoUsuario}><UserPlus /> Criar usuário</button></section>
       <div className={estilos.pesquisa}><Search aria-hidden="true" /><input type="search" value={termoBusca} onChange={(evento) => definirTermoBusca(evento.target.value)} placeholder="Pesquisar por nome, login, perfil ou funcionário" aria-label="Pesquisar usuários" /><span>{usuariosFiltrados.length} {usuariosFiltrados.length === 1 ? 'resultado' : 'resultados'}</span></div>
       {mensagem && <p className={estilos.sucesso}>{mensagem}</p>}
       {erro && <p className={estilos.erro} role="alert">{erro}</p>}

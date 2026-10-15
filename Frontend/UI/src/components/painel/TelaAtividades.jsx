@@ -1,271 +1,84 @@
-import {
-  ArrowRight,
-  Check,
-  Clock3,
-  Download,
-  FileText,
-  Pencil,
-  Route,
-  Truck,
-  X,
-} from "lucide-react";
-import { formatarData } from "../../utils/datas";
+import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, ChevronRight, ClipboardList, UserRound, X } from 'lucide-react';
+import { formatarData } from '../../utils/datas';
+import { DetalhesSolicitacao } from './DetalhesSolicitacao';
+import css from './TelaAtividades.module.css';
 
-const CONFIGURACAO_STATUS = [
-  {
-    status: "Pendente",
-    titulo: "Solicitações pendentes",
-    descricao: "Aguardando sua análise e decisão.",
-    classe: "atividadeStatusPendente",
-  },
-  {
-    status: "Aprovada",
-    titulo: "Em preparação pelo estoque",
-    descricao: "Solicitações autorizadas que ainda precisam ser separadas e enviadas.",
-    classe: "atividadeStatusAprovada",
-  },
-  {
-    status: "Aguardando coleta",
-    titulo: "Aguardando coleta",
-    descricao: "Retiradas autorizadas aguardando confirmação do estoque.",
-    classe: "atividadeStatusPendente",
-  },
-  {
-    status: "Em trânsito",
-    titulo: "Em trânsito",
-    descricao: "Materiais enviados aguardando confirmação de recebimento.",
-    classe: "atividadeStatusPendente",
-  },
-  {
-    status: "Concluída",
-    titulo: "Movimentações concluídas",
-    descricao: "Recebimento confirmado e estoque atualizado.",
-    classe: "atividadeStatusAprovada",
-  },
-  {
-    status: "Rejeitada",
-    titulo: "Solicitações rejeitadas",
-    descricao: "Pedidos que não foram autorizados.",
-    classe: "atividadeStatusRejeitada",
-  },
-];
-
-export function TelaAtividades({
-  solicitacoes,
-  cautelas,
-  buscarObraPorId,
-  aoAprovar,
-  aoRejeitar,
-  aoEditar,
-  aoExportarRomaneio,
-  aoExportarCautela,
-  estilos,
-}) {
-  const contarPorStatus = (status) =>
-    solicitacoes.filter((solicitacao) => solicitacao.status === status).length;
-
-  const idSecaoStatus = (status) => `solicitacoes-${status.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-")}`;
-  const irParaStatus = (status) => {
-    const secao = document.getElementById(idSecaoStatus(status));
-    const reduzirMovimento = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    secao?.scrollIntoView({ behavior: reduzirMovimento ? "auto" : "smooth", block: "start" });
-    secao?.focus({ preventScroll: true });
-  };
-
-  const renderizarSolicitacao = (solicitacao, classeStatus) => {
-    const obraOrigem = solicitacao.obraOrigemId
-      ? buscarObraPorId(solicitacao.obraOrigemId)
-      : null;
-    const obraDestino = solicitacao.obraDestinoId
-      ? buscarObraPorId(solicitacao.obraDestinoId)
-      : null;
-    const pendente = solicitacao.status === "Pendente";
-    const podeEditar = ["Pendente", "Aprovada"].includes(solicitacao.status);
-    const aguardandoDefinicao = solicitacao.materiais.some(
-      ({ identificacao }) => !identificacao,
-    );
-    const cautelasDaSolicitacao = cautelas.filter(
-      ({ solicitacaoId }) => solicitacaoId === solicitacao.id,
-    );
-    const rotuloStatus = solicitacao.status === "Aprovada"
-      ? (aguardandoDefinicao ? "Aguardando separação" : "Pronta para envio")
-      : solicitacao.status;
-
-    return (
-      <article key={solicitacao.id} className={estilos.atividadeCard}>
-        <header className={estilos.atividadeCabecalho}>
-          <div className={estilos.atividadeIcone}>
-            <Route size={19} />
-          </div>
-          <div className={estilos.atividadeTitulo}>
-            <div>
-              <h2>{solicitacao.tipo} de material</h2>
-              <span
-                className={`${estilos.atividadeStatus} ${estilos[classeStatus]}`}
-              >
-                {rotuloStatus}
-              </span>
-            </div>
-            <p>
-              Solicitada por{" "}
-              <strong>{solicitacao.solicitante || solicitacao.tecnico}</strong>{" "}
-              em {formatarData(solicitacao.dataSolicitacao)}
-            </p>
-          </div>
-        </header>
-
-        <div className={estilos.atividadeRota}>
-          <div>
-            <span>Origem</span>
-            <strong>
-              {aguardandoDefinicao
-                ? "A definir pelo estoque"
-                : obraOrigem?.nome || "Depósito central"}
-            </strong>
-          </div>
-          <ArrowRight size={18} aria-hidden="true" />
-          <div>
-            <span>Destino</span>
-            <strong>{obraDestino?.nome || "Depósito central"}</strong>
-          </div>
-        </div>
-
-        <div className={estilos.atividadeMateriais}>
-          <h3>Materiais solicitados</h3>
-          <ul>
-            {solicitacao.materiais.map((material) => (
-              <li key={material.id}>
-                <span className={estilos.materialQuantidade}>
-                  {material.quantidade}x
-                </span>
-                <span>
-                  {material.nome}
-                  {material.identificacao && (
-                    <small>{material.identificacao}</small>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {solicitacao.observacao && (
-          <p className={estilos.atividadeObservacao}>
-            {solicitacao.observacao}
-          </p>
-        )}
-
-        <footer className={estilos.atividadeAcoes}>
-          <div className={estilos.atividadeAcoesDocumento}>
-            {podeEditar && (
-              <button
-                type="button"
-                onClick={() => aoEditar(solicitacao)}
-                className={estilos.atividadeEditar}
-              >
-                <Pencil size={15} /> Editar solicitação
-              </button>
-            )}
-            {solicitacao.status === "Aprovada" && !aguardandoDefinicao && (
-              <button
-                type="button"
-                onClick={() => aoExportarRomaneio(solicitacao)}
-                className={estilos.atividadeEditar}
-              >
-                <FileText size={15} /> Romaneio
-              </button>
-            )}
-            {cautelasDaSolicitacao.map((cautela) => (
-              <button
-                type="button"
-                key={cautela.id}
-                onClick={() => aoExportarCautela(cautela)}
-                className={estilos.atividadeEditar}
-              >
-                <Download size={15} /> Cautela
-              </button>
-            ))}
-          </div>
-          <div className={estilos.atividadeAcoesDecisao}>
-            {pendente && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => aoRejeitar(solicitacao.id)}
-                  className={estilos.atividadeRejeitar}
-                >
-                  <X size={15} /> Rejeitar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => aoAprovar(solicitacao.id)}
-                  className={estilos.atividadeAprovar}
-                >
-                  <Check size={15} /> Aprovar
-                </button>
-              </>
-            )}
-          </div>
-        </footer>
-      </article>
-    );
-  };
-
-  return (
-    <section className={estilos.atividadesTela}>
-      <div
-        className={estilos.atividadesResumo}
-        aria-label="Resumo das solicitações"
-      >
-        <button type="button" onClick={() => irParaStatus("Pendente")} aria-label="Ir para solicitações pendentes">
-          <Clock3 size={17} />
-          <span>
-            <strong>{contarPorStatus("Pendente")}</strong> pendentes
-          </span>
-        </button>
-        <button type="button" onClick={() => irParaStatus("Aprovada")} aria-label="Ir para solicitações em preparação">
-          <Truck size={17} />
-          <span>
-            <strong>{contarPorStatus("Aprovada")}</strong> em preparação
-          </span>
-        </button>
-        <button type="button" onClick={() => irParaStatus("Rejeitada")} aria-label="Ir para solicitações rejeitadas">
-          <X size={17} />
-          <span>
-            <strong>{contarPorStatus("Rejeitada")}</strong> rejeitadas
-          </span>
-        </button>
-      </div>
-
-      <div className={estilos.atividadesGrupos}>
-        {CONFIGURACAO_STATUS.map((grupo) => {
-          const solicitacoesDoGrupo = solicitacoes.filter(
-            ({ status }) => status === grupo.status,
-          );
-          return (
-            <section id={idSecaoStatus(grupo.status)} key={grupo.status} className={estilos.atividadeGrupo} tabIndex="-1">
-              <header className={estilos.atividadeGrupoCabecalho}>
-                <div>
-                  <h2>{grupo.titulo}</h2>
-                  <p>{grupo.descricao}</p>
-                </div>
-                <span>{solicitacoesDoGrupo.length}</span>
-              </header>
-              {solicitacoesDoGrupo.length > 0 ? (
-                <div className={estilos.atividadesLista}>
-                  {solicitacoesDoGrupo.map((solicitacao) =>
-                    renderizarSolicitacao(solicitacao, grupo.classe),
-                  )}
-                </div>
-              ) : (
-                <div className={estilos.atividadeGrupoVazio}>
-                  Nenhuma solicitação nesta categoria.
-                </div>
-              )}
-            </section>
-          );
-        })}
-      </div>
+function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
+  const janela = useRef(null);
+  useEffect(() => {
+    const anterior = document.activeElement;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    janela.current?.focus();
+    const teclado = (evento) => {
+      if (evento.key === 'Escape') { evento.preventDefault(); aoFechar(); }
+      if (evento.key !== 'Tab') return;
+      const botoes = [...janela.current.querySelectorAll('button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]')];
+      const primeiro = botoes[0]; const ultimo = botoes.at(-1);
+      if (evento.shiftKey && (document.activeElement === primeiro || document.activeElement === janela.current)) {
+        evento.preventDefault(); ultimo?.focus();
+      } else if (!evento.shiftKey && document.activeElement === ultimo) { evento.preventDefault(); primeiro?.focus(); }
+    };
+    document.addEventListener('keydown', teclado);
+    return () => { document.body.style.overflow = overflow; document.removeEventListener('keydown', teclado); anterior?.focus(); };
+  }, [aoFechar]);
+  return <div className={css.overlay} onClick={(e) => { if (e.target === e.currentTarget) aoFechar(); }}>
+    <section ref={janela} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-solicitacao" className={css.janela}>
+      <header className={css.janelaCabecalho}><div><span>Detalhes do pedido</span><h2 id="titulo-solicitacao">Solicitação #{solicitacao.id}</h2><p>{solicitacao.tecnico} · {formatarData(solicitacao.dataSolicitacao)}</p></div><button type="button" aria-label="Fechar solicitação" onClick={aoFechar}><X size={21} /></button></header>
+      <div className={css.janelaConteudo}>{children}</div>
     </section>
-  );
+  </div>;
+}
+
+export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, cautelas, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarCautela, estilos }) {
+  const [tecnicoAberto, definirTecnicoAberto] = useState(null);
+  const [selecionadaId, selecionar] = useState(null);
+  const [processando, definirProcessando] = useState(false);
+  const [erro, definirErro] = useState('');
+  const emProcessamento = useRef(false);
+  const [fechar] = useState(() => () => selecionar(null));
+  const selecionada = todasSolicitacoes.find(({ id }) => id === selecionadaId);
+  const nomes = [...new Set([...tecnicos, ...todasSolicitacoes.map(({ tecnico }) => tecnico)].filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const termo = termoBusca.trim().toLocaleLowerCase('pt-BR');
+  const grupos = nomes.map((nome) => ({ nome, pedidos: solicitacoes.filter(({ tecnico }) => tecnico === nome).sort((a, b) => String(b.dataSolicitacao).localeCompare(String(a.dataSolicitacao)) || b.id - a.id) }))
+    .filter(({ nome, pedidos }) => !termo || pedidos.length || nome.toLocaleLowerCase('pt-BR').includes(termo));
+  const decidir = async (acao, id) => {
+    if (emProcessamento.current) return;
+    emProcessamento.current = true; definirProcessando(true); definirErro('');
+    try {
+      if (await acao(id)) selecionar((atual) => atual === id ? null : atual);
+      else definirErro('Não foi possível atualizar a solicitação. Confira a conexão e tente novamente.');
+    } catch (e) { definirErro(e.message || 'Não foi possível atualizar a solicitação.'); }
+    finally { emProcessamento.current = false; definirProcessando(false); }
+  };
+  const nomeObra = (pedido) => buscarObraPorId(pedido.obraDestinoId || pedido.obraOrigemId)?.nome || 'Obra não disponível';
+  return <section className={css.painel} aria-label="Solicitações por técnico">
+    <header className={css.cabecalho}><div><h2>Solicitações por técnico</h2><p>Selecione um técnico para consultar e analisar seus pedidos.</p></div><span>{solicitacoes.length} solicitações</span></header>
+    <div className={css.tecnicos}>{grupos.map(({ nome, pedidos }, indice) => {
+      const aberto = tecnicoAberto === nome;
+      const pendentes = pedidos.filter(({ status }) => status === 'Pendente').length;
+      const painelId = `pedidos-tecnico-${indice}`;
+      return <section key={nome} className={css.tecnico}>
+        <button type="button" className={css.tecnicoBotao} aria-expanded={aberto} aria-controls={painelId} onClick={() => definirTecnicoAberto(aberto ? null : nome)}>
+          <span className={css.avatar}><UserRound size={20} /></span><span className={css.tecnicoNome}><strong>{nome}</strong><small>{pedidos.length} {pedidos.length === 1 ? 'solicitação' : 'solicitações'}</small></span>
+          {pendentes > 0 && <span className={css.pendentes}>{pendentes} {pendentes === 1 ? 'pendente' : 'pendentes'}</span>}<ChevronDown size={19} className={aberto ? css.expandido : ''} />
+        </button>
+        {aberto && <div id={painelId} className={css.lista} role="region" aria-label={`Solicitações de ${nome}`} tabIndex={0}>
+          {pedidos.length ? <><div className={css.colunas} aria-hidden="true"><span>Solicitação / data</span><span>Obra</span><span>Status</span><span /></div>
+            {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.pedido} onClick={() => { definirErro(''); selecionar(pedido.id); }} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${pedido.status}`}>
+              <span className={css.identificador}><strong>#{String(pedido.id).padStart(4, '0')}</strong><small>{formatarData(pedido.dataSolicitacao)}</small></span>
+              <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
+              <span className={css.status} data-status={pedido.status}>{pedido.status === 'Aprovada' ? 'Em preparação' : pedido.status}</span><ChevronRight size={16} />
+            </button>)}
+          </> : <div className={css.vazio}><ClipboardList size={24} /><p>Nenhuma solicitação deste técnico{termo ? ' para esta busca' : ''}.</p></div>}
+        </div>}
+      </section>;
+    })}{!grupos.length && <div className={css.vazio}><ClipboardList size={28} /><p>{termo ? 'Nenhum técnico ou pedido encontrado para esta busca.' : 'Nenhum técnico cadastrado ou solicitação recebida.'}</p></div>}</div>
+    {selecionada && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
+      {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
+      <DetalhesSolicitacao solicitacao={selecionada} cautelas={cautelas} buscarObraPorId={buscarObraPorId} estilos={estilos} processando={processando}
+        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarCautela={aoExportarCautela} />
+    </JanelaSolicitacao>}
+  </section>;
 }

@@ -24,6 +24,10 @@ import java.util.UUID;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(org.springframework.dao.ConcurrencyFailureException.class)
+    ResponseEntity<Map<String,Object>> tratarConcorrencia(Exception e,HttpServletRequest r){return resposta(HttpStatus.CONFLICT,"O pedido foi alterado por outra operação. Atualize a página e tente novamente.",Map.of(),r,null);}
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    ResponseEntity<Map<String,Object>> tratarFormato(Exception e,HttpServletRequest r){return resposta(HttpStatus.UNSUPPORTED_MEDIA_TYPE,"Formato não suportado. Envie os dados em JSON.",Map.of(),r,null);}
     private static final Logger LOGGER=LoggerFactory.getLogger(ApiExceptionHandler.class);
     @ExceptionHandler(RecursoNaoEncontradoException.class) ResponseEntity<Map<String,Object>> tratarNaoEncontrado(RecursoNaoEncontradoException e,HttpServletRequest r){return resposta(HttpStatus.NOT_FOUND,e.getMessage(),Map.of(),r,null);}
     @ExceptionHandler(RegraNegocioException.class) ResponseEntity<Map<String,Object>> tratarRegra(RegraNegocioException e,HttpServletRequest r){return resposta(HttpStatus.CONFLICT,e.getMessage(),Map.of(),r,null);}
