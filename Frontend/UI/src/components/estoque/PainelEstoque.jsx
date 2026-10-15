@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Building2, CalendarDays, Check, ChevronRight, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, X } from 'lucide-react';
+import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiCautelas, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { imprimirCautelaEmitida, imprimirListaComprasGeral, imprimirListaComprasSolicitacao, imprimirRomaneioSeparacao, imprimirRelatorioAuditoriaSolicitacao } from '../../services/documentosEquipamentos';
@@ -44,6 +44,25 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     return () => { ativo = false; };
   }, []);
   const buscarObra = (id) => obras.find((obra) => String(obra.id) === String(id));
+
+  useEffect(() => {
+    let ativo = true;
+    let atualizando = false;
+    const atualizar = async () => {
+      if (document.visibilityState === 'hidden' || atualizando) return;
+      atualizando = true;
+      try {
+        const [pedidos, itens, documentos] = await Promise.all([apiAtividades.listar(), apiEquipamentos.listar(), apiCautelas.listar()]);
+        if (ativo) { definirSolicitacoes(pedidos); definirEquipamentos(itens); definirCautelas(documentos); }
+      } catch {
+        // A próxima atualização tenta novamente sem interromper a separação.
+      } finally { atualizando = false; }
+    };
+    const intervalo = window.setInterval(atualizar, 10000);
+    window.addEventListener('focus', atualizar);
+    document.addEventListener('visibilitychange', atualizar);
+    return () => { ativo = false; window.clearInterval(intervalo); window.removeEventListener('focus', atualizar); document.removeEventListener('visibilitychange', atualizar); };
+  }, []);
   const nomeLocal = (id) => id == null || id === 'deposito' ? 'Depósito central' : buscarObra(id)?.nome || 'Obra';
   const pendencias = useMemo(() => solicitacoes.filter(({ status }) => ['Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status)), [solicitacoes]);
   const concluidas = useMemo(() => solicitacoes.filter(({ status }) => ['Concluída', 'Rejeitada'].includes(status)), [solicitacoes]);
@@ -60,12 +79,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const aquisicoes = useMemo(() => solicitacoes.flatMap((solicitacao) => solicitacao.materiais
     .filter((material) => material.quantidadeCompra > 0)
     .map((material) => ({ solicitacao, material, pendente: Math.max(0, material.quantidadeCompra - (material.quantidadeAdquirida || 0)), pendenteEntrada: Math.max(0, material.quantidadeCompra - (material.quantidadeEntradaEstoque || 0)) }))), [solicitacoes]);
-  const resumoOperacional = {
-    separar: pendencias.filter((solicitacao) => solicitacao.status === 'Aprovada' && !possuiSeries(solicitacao)).length,
-    enviar: pendencias.filter((solicitacao) => (solicitacao.status === 'Aprovada' && possuiSeries(solicitacao)) || solicitacao.status === 'Aguardando coleta').length,
-    transito: pendencias.filter((solicitacao) => solicitacao.status === 'Em trânsito').length,
-    comprar: aquisicoes.filter(({ pendenteEntrada }) => pendenteEntrada > 0).length,
-  };
+  const comprasPendentes = aquisicoes.filter(({ pendenteEntrada }) => pendenteEntrada > 0).length;
   const aquisicoesFiltradas = aquisicoes.filter(({ solicitacao, material }) => {
     const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId;
     if (obraFiltrada !== 'todas' && String(obraId) !== obraFiltrada) return false;
@@ -136,15 +150,24 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
 
   const renderizarCard = (solicitacao) => {
     const entradaNaObra = Boolean(solicitacao.obraDestinoId);
+    const separado = possuiSeries(solicitacao);
+    const origem = nomeLocal(solicitacao.obraOrigemId);
+    const destino = nomeLocal(solicitacao.obraDestinoId);
+    const tarefa = ['Concluída', 'Rejeitada'].includes(solicitacao.status) ? `Movimentação ${solicitacao.status.toLocaleLowerCase('pt-BR')}: ${origem} → ${destino}.`
+      : !separado ? `Separe os materiais para ${destino}. Escolha os equipamentos para definir o local de coleta.`
+      : solicitacao.status === 'Em trânsito' ? `Em transporte: ${origem} → ${destino}. Aguardando recebimento${entradaNaObra ? ` de ${solicitacao.tecnico}` : ' no depósito'}.`
+      : solicitacao.obraOrigemId != null ? `Buscar ${solicitacao.materiais.map((m) => `${m.quantidade}× ${m.nome}`).join(', ')} em ${origem} e entregar em ${destino}.`
+      : `Retirar os materiais no depósito e entregar em ${destino}.`;
     const cautelasDaSolicitacao = cautelas.filter(({ solicitacaoId }) => solicitacaoId === solicitacao.id);
     return <article className={estilos.card} key={solicitacao.id}>
       <header><span className={estilos.icone}><PackageCheck /></span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><h2>{entradaNaObra ? 'Envio para obra' : 'Retirada da obra'}</h2></div><b data-status={solicitacao.status}>{rotuloOperacional(solicitacao)}</b></header>
-      <div className={estilos.rota}><span>{entradaNaObra ? nomeLocal(solicitacao.obraOrigemId) : nomeLocal(solicitacao.obraOrigemId)}</span><ChevronRight /><span>{entradaNaObra ? nomeLocal(solicitacao.obraDestinoId) : 'Depósito central'}</span></div>
+      <p className={estilos.instrucaoEntrega}>{tarefa}</p>
       <div className={estilos.metadados}><p>Solicitado por <strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}{solicitacao.dataDecisao && ` · decisão ${new Date(`${solicitacao.dataDecisao}T12:00:00`).toLocaleDateString('pt-BR')}`}</time></div>
       <ul>{solicitacao.materiais.map((material) => <li key={material.id}>
         <span>{material.quantidade}×</span>
         <div className={estilos.detalhesMaterial}>
           <strong>{material.nome}</strong>
+          <small>{!material.identificacao ? "Equipamento ainda não selecionado" : solicitacao.status === "Em trânsito" ? `Em transporte: ${origem} → ${destino}` : solicitacao.status === "Concluída" ? `Recebido em ${destino}` : `Local de coleta: ${origem}`}</small>
           {identificacaoVisivel(material.identificacao, material.catalogoChave?.split('|')[0]) && <small>Série {material.identificacao}</small>}
           {material.quantidadeCompra > 0 && <div className={estilos.compraAnexada}>
             <ShoppingCart aria-hidden="true" />
@@ -156,9 +179,9 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
         <button onClick={() => imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObra)}><FileText /> Relatório PDF</button>
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button onClick={() => imprimirRomaneioSeparacao(solicitacao, buscarObra)}><FileDown /> Romaneio da separação</button>}
         {cautelasDaSolicitacao.map((cautela) => <button key={cautela.id} onClick={() => imprimirCautelaEmitida(cautela)}><FileDown /> Cautela</button>)}
-        {solicitacao.status === 'Aprovada' && !possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => abrirConfiguracao(solicitacao)}><Box /> Definir equipamentos</button>}
-        {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => avancar(solicitacao, 'enviar')}><Truck /> Confirmar envio</button>}
-        {solicitacao.status === 'Aguardando coleta' && <button className={estilos.primario} onClick={() => avancar(solicitacao, 'enviar')}><Truck /> Confirmar retirada</button>}
+        {solicitacao.status === 'Aprovada' && !possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => abrirConfiguracao(solicitacao)}><Box /> Separar material</button>}
+        {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => avancar(solicitacao, 'enviar')}><Truck /> Confirmar coleta e iniciar transporte</button>}
+        {solicitacao.status === 'Aguardando coleta' && <button className={estilos.primario} onClick={() => avancar(solicitacao, 'enviar')}><Truck /> Confirmar coleta e iniciar transporte</button>}
         {solicitacao.status === 'Em trânsito' && !entradaNaObra && <button className={estilos.primario} onClick={() => avancar(solicitacao, 'receber')}><Warehouse /> Confirmar no estoque</button>}
         {solicitacao.status === 'Em trânsito' && entradaNaObra && <span className={estilos.aviso}>Aguardando recebimento na obra.</span>}
       </footer>
@@ -167,22 +190,16 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
 
   return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-incorporado={incorporado}>
     {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button type="button" onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun /> : <Moon />}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /></button></div></header>}
-    <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Central de estoque</span><h1>Operação de materiais</h1><p>Separe equipamentos, confirme movimentações e acompanhe o que precisa ser adquirido.</p></div></section>
-      <section className={estilos.resumoOperacional} aria-label="Resumo operacional do estoque">
-        <article><Box /><div><strong>{resumoOperacional.separar}</strong><span>Para separar</span></div></article>
-        <article><PackageCheck /><div><strong>{resumoOperacional.enviar}</strong><span>Prontas para envio</span></div></article>
-        <article><Truck /><div><strong>{resumoOperacional.transito}</strong><span>Em trânsito</span></div></article>
-        <article><ShoppingCart /><div><strong>{resumoOperacional.comprar}</strong><span>Compras pendentes</span></div></article>
-      </section>
+    <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Central de estoque</span><h1>Operação de materiais</h1><p>Receba as requisições, separe os materiais e confirme a saída para entrega.</p></div></section>
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}{mensagem.texto}<button onClick={() => definirMensagem(null)}><X /></button></div>}
       <nav className={estilos.abas} aria-label="Áreas do estoque">
-        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Atividades</span><b>{pendencias.length}</b></button>
+        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Requisições</span><b>{pendencias.length}</b></button>
         <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /><span>Registros</span><b>{concluidas.length}</b></button>
-        <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /><span>Aquisição de materiais</span><b>{resumoOperacional.comprar}</b></button>
+        <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /><span>Aquisição de materiais</span><b>{comprasPendentes}</b></button>
       </nav>
       {!carregando && <section className={estilos.filtros} aria-label="Pesquisa de movimentações"><label><Search /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar número, técnico, material, série ou data..." /></label><label><Building2 /><select value={obraFiltrada} onChange={(evento) => definirObraFiltrada(evento.target.value)}><option value="todas">Todas as obras</option>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label></section>}
       {carregando ? <div className={estilos.carregando}>Carregando estoque...</div> : <>
-        {aba === 'atividades' && <section className={estilos.secao}><div className={estilos.tituloSecao}><Truck /><div><h2>Atividades</h2><p>Tarefas do estoque organizadas pela obra atendida.</p></div></div>{pendenciasFiltradas.length ? agruparPorObra(pendenciasFiltradas).map(([obraId, itens]) => <div className={estilos.grupoObra} key={obraId}><header><Building2 /><div><strong>{nomeLocal(obraId)}</strong><small>{itens.length} {itens.length === 1 ? 'movimentação' : 'movimentações'}</small></div></header><div className={estilos.grade}>{itens.map(renderizarCard)}</div></div>) : <div className={estilos.vazio}><Check /><strong>Nenhuma atividade</strong><span>Não há tarefas correspondentes aos filtros.</span></div>}</section>}
+        {aba === 'atividades' && <section className={estilos.secao}><div className={estilos.tituloSecao}><Truck /><div><h2>Requisições</h2><p>Tarefas do estoque organizadas pela obra atendida.</p></div></div>{pendenciasFiltradas.length ? agruparPorObra(pendenciasFiltradas).map(([obraId, itens]) => <div className={estilos.grupoObra} key={obraId}><header><Building2 /><div><strong>{nomeLocal(obraId)}</strong><small>{itens.length} {itens.length === 1 ? 'movimentação' : 'movimentações'}</small></div></header><div className={estilos.grade}>{itens.map(renderizarCard)}</div></div>) : <div className={estilos.vazio}><Check /><strong>Nenhuma atividade</strong><span>Não há tarefas correspondentes aos filtros.</span></div>}</section>}
         {aba === 'registros' && <section className={estilos.secao}><div className={estilos.tituloSecao}><ClipboardList /><div><h2>Registros</h2><p>Histórico permanente de movimentações concluídas ou rejeitadas.</p></div></div>{concluidasFiltradas.length ? agruparPorObra(concluidasFiltradas).map(([obraId, itens]) => <div className={estilos.grupoObra} key={obraId}><header><Building2 /><div><strong>{nomeLocal(obraId)}</strong><small>{itens.length} registros</small></div></header><div className={estilos.grade}>{itens.map(renderizarCard)}</div></div>) : <div className={estilos.vazio}><ClipboardList /><strong>Nenhum registro encontrado</strong><span>Altere a pesquisa ou o filtro de obra.</span></div>}</section>}
         {aba === 'aquisicoes' && <section className={estilos.secao}>
           <div className={`${estilos.tituloSecao} ${estilos.tituloAquisicoes}`}><PackagePlus /><div><h2>Aquisição de materiais</h2><p>Itens solicitados para compra, vinculados às obras e solicitações de origem.</p></div><button type="button" disabled={!aquisicoes.some(({ pendente }) => pendente > 0)} onClick={() => imprimirListaComprasGeral(aquisicoes, buscarObra)}><FileDown /> Lista geral de compras</button></div>

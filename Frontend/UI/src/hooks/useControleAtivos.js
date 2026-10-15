@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { localizarEquipamentos } from '../utils/localizacaoEquipamentos';
 import { obterDataAtual } from '../utils/datas';
 import { obterHistoricoEquipamento } from '../utils/historicoEquipamento';
 import { apiAtividades, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
@@ -30,13 +31,34 @@ export function useControleAtivos() {
   const buscarObraPorId = (identificador) =>
     obras.find((obra) => obra.id === identificador);
 
+  useEffect(() => {
+    let ativo = true;
+    let atualizando = false;
+    const atualizar = async () => {
+      if (document.visibilityState === 'hidden' || atualizando) return;
+      atualizando = true;
+      try {
+        const [itens, pedidos] = await Promise.all([apiEquipamentos.listar(), apiAtividades.listar()]);
+        if (ativo) { definirEquipamentos(itens); definirSolicitacoes(pedidos); }
+      } catch {
+        // Mantém os dados atuais e tenta novamente ao retomar o painel.
+      } finally { atualizando = false; }
+    };
+    const intervalo = window.setInterval(atualizar, 10000);
+    window.addEventListener('focus', atualizar);
+    document.addEventListener('visibilitychange', atualizar);
+    return () => { ativo = false; window.clearInterval(intervalo); window.removeEventListener('focus', atualizar); document.removeEventListener('visibilitychange', atualizar); };
+  }, []);
+
+  const equipamentosLocalizados = useMemo(() => localizarEquipamentos(equipamentos, solicitacoes), [equipamentos, solicitacoes]);
+
   const resumoEquipamentos = useMemo(() => ({
     total: equipamentos.filter(({ arquivado }) => !arquivado).length,
-    emCampo: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em campo').length,
-    emEstoque: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em estoque').length,
-    emManutencao: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em manutenção').length,
-    emTransito: equipamentos.filter(({ status, arquivado }) => !arquivado && status === 'Em trânsito').length,
-  }), [equipamentos]);
+    emCampo: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em campo').length,
+    emEstoque: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em estoque').length,
+    emManutencao: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em manutenção').length,
+    emTransito: equipamentosLocalizados.filter(({ status, quantidadeEmTransito, arquivado }) => !arquivado && (quantidadeEmTransito > 0 || status === 'Em trânsito')).length,
+  }), [equipamentos, equipamentosLocalizados]);
 
   const tecnicosCadastrados = useMemo(() => funcionarios
     .filter(({ status, cargo, arquivado }) => !arquivado && status === 'Ativo' && !cargo.toLocaleLowerCase('pt-BR').includes('gerente'))
@@ -308,7 +330,7 @@ export function useControleAtivos() {
 
   return {
     obras,
-    equipamentos,
+    equipamentos: equipamentosLocalizados,
     funcionarios,
     solicitacoes,
     carregandoDados,

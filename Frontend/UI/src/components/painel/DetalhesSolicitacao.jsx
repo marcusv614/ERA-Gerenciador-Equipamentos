@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   Check,
   Download,
   FileText,
@@ -102,21 +101,7 @@ export function DetalhesSolicitacao({
           </div>
         </header>
 
-        <div className={estilos.atividadeRota}>
-          <div>
-            <span>Origem</span>
-            <strong>
-              {aguardandoDefinicao
-                ? "A definir pelo estoque"
-                : obraOrigem?.nome || "Depósito central"}
-            </strong>
-          </div>
-          <ArrowRight size={18} aria-hidden="true" />
-          <div>
-            <span>Destino</span>
-            <strong>{obraDestino?.nome || "Depósito central"}</strong>
-          </div>
-        </div>
+        <p className={estilos.atividadeObservacao}>Destino: <strong>{obraDestino?.nome || "Depósito central"}</strong></p>
 
         <div className={estilos.atividadeMateriais}>
           <h3>Materiais solicitados</h3>
@@ -128,6 +113,7 @@ export function DetalhesSolicitacao({
                 </span>
                 <span>
                   {material.nome}
+                  <small>{!material.identificacao ? 'Equipamento ainda não selecionado' : solicitacao.status === 'Concluída' ? `Recebido em ${obraDestino?.nome || 'Depósito central'}` : solicitacao.status === 'Em trânsito' ? `Em transporte: ${obraOrigem?.nome || 'Depósito central'} → ${obraDestino?.nome || 'Depósito central'}` : `Local de coleta: ${obraOrigem?.nome || 'Depósito central'}`}</small>
                   {material.identificacao && (
                     <small>{material.identificacao}</small>
                   )}

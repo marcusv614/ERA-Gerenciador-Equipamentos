@@ -1,3 +1,4 @@
+import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { useState } from 'react';
 import { Archive, ArchiveRestore, ArrowLeftRight, Calendar, CalendarSearch, Download, FileText, LoaderCircle, MapPin, PackageOpen, Printer, Wrench, X } from 'lucide-react';
 import { formatarData, obterDataAtual } from '../../utils/datas';
@@ -51,7 +52,7 @@ export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStat
   const grupos=[{titulo:'Obras ativas',itens:obras.filter((o)=>!o.arquivado)},{titulo:'Obras arquivadas',itens:obras.filter((o)=>o.arquivado)}];
   return <div className={estilos.registrosAgrupados}>{grupos.map((grupo)=>grupo.itens.length>0&&<section key={grupo.titulo} className={estilos.registroGrupo}><header><strong>{grupo.titulo}</strong><b>{grupo.itens.length}</b></header><div className={estilos.obraList}>{grupo.itens.map((obra) => {
     const equipamentosDaObra = equipamentos.filter(({ obraId, arquivado }) => !arquivado&&obraId === obra.id);
-    const quantidadeNaObra = equipamentosDaObra.reduce((total, equipamento) => total + Number(equipamento.quantidade || 1), 0);
+    const quantidadeNaObra = equipamentosDaObra.reduce((total, equipamento) => total + Number(equipamento.quantidadeNaOrigem ?? equipamento.quantidade ?? 1), 0);
     const consultaAberta = obraAberta === obra.id;
     return <div key={obra.id} className={`${estilos.obraCard} ${obra.arquivado?estilos.registroArquivado:''}`}>
       <div className={estilos.obraHead}>
@@ -75,7 +76,7 @@ export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStat
 
       {equipamentosDaObra.length > 0 && <div className={estilos.obraEquipList}>{equipamentosDaObra.map((equipamento) => {
         const IconeTipo = iconePorTipoEquipamento[equipamento.tipo] || Wrench;
-        return <div key={equipamento.id} className={estilos.obraEquipRow}><div className={estilos.obraEquipInfo}><div className={`${estilos.obraEquipTile} ${estilos[classePorTipo[equipamento.tipo]] || ''}`}><IconeTipo size={14} /></div><div className={estilos.obraEquipText}><div className={estilos.obraEquipTopRow}><span className={estilos.obraEquipNome}>{equipamento.modelo}</span><span className={estilos.obraEquipMov}>mov. {formatarData(equipamento.saida)}</span></div>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <div className={estilos.obraEquipSerie}>{equipamento.serie}</div>}</div></div><span className={estilos.obraEquipQuantidade}><small>Quantidade</small><strong>{equipamento.quantidade || 1} <i>un.</i></strong></span><button onClick={() => aoMoverEquipamento(equipamento)} className={estilos.obraMoverBtn}><ArrowLeftRight size={11} /> Mover</button></div>;
+        return <div key={equipamento.id} className={estilos.obraEquipRow}><div className={estilos.obraEquipInfo}><div className={`${estilos.obraEquipTile} ${estilos[classePorTipo[equipamento.tipo]] || ''}`}><IconeTipo size={14} /></div><div className={estilos.obraEquipText}><div className={estilos.obraEquipTopRow}><span className={estilos.obraEquipNome}>{equipamento.modelo}</span><span className={estilos.obraEquipMov}>{descreverLocalizacao(equipamento, (id) => obras.find((obra) => obra.id === id))}</span><span className={estilos.obraEquipMov}>mov. {formatarData(equipamento.saida)}</span></div>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <div className={estilos.obraEquipSerie}>{equipamento.serie}</div>}</div></div><span className={estilos.obraEquipQuantidade}><small>Na obra</small><strong>{equipamento.quantidadeNaOrigem ?? equipamento.quantidade ?? 1} <i>un.</i></strong></span><button disabled={(equipamento.quantidadeDisponivel ?? 1) <= 0} onClick={() => aoMoverEquipamento(equipamento)} className={estilos.obraMoverBtn}><ArrowLeftRight size={11} /> Mover</button></div>;
       })}</div>}
     </div>;
   })}</div></section>)}{obras.length === 0 && <div className={estilos.emptyState}>Nenhuma obra encontrada.</div>}</div>;

@@ -1,4 +1,5 @@
 import { ArrowLeftRight, Download, FileText, MapPin, Pencil, Wrench } from 'lucide-react';
+import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { iconePorTipoEquipamento, statusEquipamento } from '../../data/constantesDominio';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
@@ -19,7 +20,7 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
     <div className={estilos.registrosAgrupados}>{grupos.map((grupo) => grupo.itens.length > 0 && <section key={grupo.titulo} className={estilos.registroGrupo}><header><strong>{grupo.titulo}</strong><b>{grupo.itens.length}</b></header><div className={estilos.equipGrid}>
       {grupo.itens.map((equipamento) => {
         const IconeTipo = iconePorTipoEquipamento[equipamento.tipo] || Wrench;
-        const obra = equipamento.obraId ? buscarObraPorId(equipamento.obraId) : null;
+
         return <div key={equipamento.id} className={`${estilos.equipCard} ${equipamento.arquivado ? estilos.registroArquivado : ''}`}>
           <div className={estilos.equipHead}><div className={estilos.equipIdent}><div className={`${estilos.equipIconBox} ${estilos[classePorTipo[equipamento.tipo]] || ''}`}><IconeTipo size={16} /></div><div className={estilos.equipTitleWrap}><div className={estilos.equipModel}>{equipamento.modelo}</div>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <div className={estilos.equipSerie}>{equipamento.serie}</div>}<div className={estilos.equipTecnico}>{equipamento.tipo}{equipamento.medida ? ` · ${equipamento.medida}` : ''}{equipamento.observacoes ? ` · ${equipamento.observacoes}` : ''}</div></div></div>
             <div className={estilos.equipHeadActions}>{equipamento.arquivado ? <span className={estilos.seloArquivado}>Arquivado</span> : <IndicadorStatus status={equipamento.status} />}<div className={estilos.equipActions}>{podeEditar && <button onClick={() => aoEditar(equipamento)} className={`${estilos.iconBtn} ${estilos.equipEditBtn}`} title="Editar equipamento"><Pencil size={14} /><span>Editar</span></button>}<button onClick={() => aoAbrirHistorico(equipamento)} className={estilos.iconBtn} title="Histórico"><FileText size={14} /></button><button onClick={() => aoImprimirHistorico(equipamento)} className={estilos.iconBtn} title="Exportar PDF"><Download size={14} /></button></div></div>
@@ -29,7 +30,7 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
             <span><small>Disponível</small><strong>{equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1}</strong></span>
             {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
           </div>
-          <div className={estilos.equipFooter}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{obra ? obra.nome : 'Depósito central'}</span></div>{!equipamento.arquivado && <button onClick={() => aoMover(equipamento)} className={estilos.moverBtn}><ArrowLeftRight size={11} /> Mover</button>}</div>
+          <div className={estilos.equipFooter}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}</span></div>{!equipamento.arquivado && equipamento.quantidadeDisponivel > 0 && <button onClick={() => aoMover(equipamento)} className={estilos.moverBtn}><ArrowLeftRight size={11} /> Mover</button>}</div>
           {equipamento.tecnico && <div className={estilos.equipTecnico}>Com {equipamento.tecnico}</div>}
         </div>;
       })}</div></section>)}
