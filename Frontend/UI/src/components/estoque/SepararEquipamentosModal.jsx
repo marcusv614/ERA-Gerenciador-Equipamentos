@@ -57,10 +57,10 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   return <div className={estilos.fundo} onMouseDown={(evento) => evento.target === evento.currentTarget && aoFechar()}>
     <section className={estilos.modal} role="dialog" aria-modal="true" aria-labelledby="titulo-separacao">
       <aside className={estilos.resumo}>
-        <div className={estilos.marca}><Warehouse /><span>Separação</span></div>
+        <div className={estilos.marca}><Warehouse /><span>Atendimento</span></div>
         <div className={estilos.numero}>Solicitação #{String(solicitacao.id).padStart(4, '0')}</div>
         <h2>{solicitacao.tecnico}</h2>
-        <p>O sistema busca automaticamente o material no depósito e nas demais obras.</p>
+        <p>Veja o que existe no depósito, o que precisa ser buscado em outra obra e o que deve ser comprado.</p>
 
         <div className={estilos.rota}>
           <div><small>Origens</small><strong>{origensSelecionadas.size || 'A definir'}</strong></div>
@@ -77,7 +77,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
 
       <main className={estilos.conteudo}>
         <header>
-          <div><span>Materiais solicitados</span><h1 id="titulo-separacao">Defina o que vai sair</h1></div>
+          <div><span>Materiais solicitados</span><h1 id="titulo-separacao">Ver disponibilidade</h1></div>
           <button className={estilos.fechar} onClick={aoFechar} aria-label="Fechar"><X /></button>
         </header>
 
@@ -123,8 +123,8 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
         </div>
 
         <footer>
-          <span className={erro ? estilos.erro : ''}>{erro ? <><AlertCircle /> {erro}</> : completo ? <><Check /> Tudo pronto para reservar</> : `Faltam ${totais - totalSeparado} unidade(s) para concluir`}</span>
-          <div><button className={estilos.cancelar} onClick={aoFechar} disabled={salvando}>Cancelar</button><button className={estilos.confirmar} disabled={!completo || salvando} onClick={confirmar}>{salvando ? 'Reservando...' : 'Confirmar separação'}</button></div>
+          <span className={erro ? estilos.erro : ''}>{erro ? <><AlertCircle /> {erro}</> : completo ? <><Check /> Tudo pronto para atender</> : `Faltam ${totais - totalSeparado} unidade(s) para concluir`}</span>
+          <div><button className={estilos.cancelar} onClick={aoFechar} disabled={salvando}>Cancelar</button><button className={estilos.confirmar} disabled={!completo || salvando} onClick={confirmar}>{salvando ? 'Confirmando...' : 'Confirmar materiais'}</button></div>
         </footer>
       </main>
     </section>

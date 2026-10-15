@@ -7,45 +7,14 @@ import {
   X,
 } from "lucide-react";
 import { formatarData } from "../../utils/datas";
+import { obterEtapaSolicitacao } from "../../utils/statusSolicitacao";
 
-const CONFIGURACAO_STATUS = [
-  {
-    status: "Pendente",
-    titulo: "Solicitações pendentes",
-    descricao: "Aguardando sua análise e decisão.",
-    classe: "atividadeStatusPendente",
-  },
-  {
-    status: "Aprovada",
-    titulo: "Em preparação pelo estoque",
-    descricao: "Solicitações autorizadas que ainda precisam ser separadas e enviadas.",
-    classe: "atividadeStatusAprovada",
-  },
-  {
-    status: "Aguardando coleta",
-    titulo: "Aguardando coleta",
-    descricao: "Retiradas autorizadas aguardando confirmação do estoque.",
-    classe: "atividadeStatusPendente",
-  },
-  {
-    status: "Em trânsito",
-    titulo: "Em trânsito",
-    descricao: "Materiais enviados aguardando confirmação de recebimento.",
-    classe: "atividadeStatusPendente",
-  },
-  {
-    status: "Concluída",
-    titulo: "Movimentações concluídas",
-    descricao: "Recebimento confirmado e estoque atualizado.",
-    classe: "atividadeStatusAprovada",
-  },
-  {
-    status: "Rejeitada",
-    titulo: "Solicitações rejeitadas",
-    descricao: "Pedidos que não foram autorizados.",
-    classe: "atividadeStatusRejeitada",
-  },
-];
+const CLASSE_POR_ETAPA = {
+  pendente: "atividadeStatusPendente",
+  aceita: "atividadeStatusAprovada",
+  finalizada: "atividadeStatusAprovada",
+  rejeitada: "atividadeStatusRejeitada",
+};
 
 export function DetalhesSolicitacao({
   solicitacao,
@@ -74,9 +43,7 @@ export function DetalhesSolicitacao({
     const cautelasDaSolicitacao = cautelas.filter(
       ({ solicitacaoId }) => solicitacaoId === solicitacao.id,
     );
-    const rotuloStatus = solicitacao.status === "Aprovada"
-      ? (aguardandoDefinicao ? "Aguardando separação" : "Pronta para envio")
-      : solicitacao.status;
+    const etapa = obterEtapaSolicitacao(solicitacao.status);
 
     return (
       <article key={solicitacao.id} className={estilos.atividadeCard}>
@@ -90,7 +57,7 @@ export function DetalhesSolicitacao({
               <span
                 className={`${estilos.atividadeStatus} ${estilos[classeStatus]}`}
               >
-                {rotuloStatus}
+                {etapa.rotulo}
               </span>
             </div>
             <p>
@@ -180,7 +147,7 @@ export function DetalhesSolicitacao({
                   onClick={() => aoAprovar(solicitacao.id)}
                   className={estilos.atividadeAprovar}
                 >
-                  <Check size={15} /> Aprovar
+                  <Check size={15} /> Aceitar
                 </button>
               </>
             )}
@@ -190,6 +157,6 @@ export function DetalhesSolicitacao({
     );
   };
 
-  const configuracao = CONFIGURACAO_STATUS.find(({ status }) => status === solicitacao.status);
-  return renderizarSolicitacao(solicitacao, configuracao?.classe || "atividadeStatusPendente");
+  const etapa = obterEtapaSolicitacao(solicitacao.status);
+  return renderizarSolicitacao(solicitacao, CLASSE_POR_ETAPA[etapa.chave] || "atividadeStatusPendente");
 }

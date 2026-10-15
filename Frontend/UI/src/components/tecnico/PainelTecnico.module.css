@@ -794,10 +794,9 @@
   border-radius: 13px;
   background: var(--campo-raised);
 }
-.cartaoSolicitacao[data-status='Aprovada'],
-.cartaoSolicitacao[data-status='Concluída'] { border-top-color: var(--campo-success); }
-.cartaoSolicitacao[data-status='Rejeitada'] { border-top-color: var(--campo-danger); }
-.cartaoSolicitacao[data-status='Em trânsito'] { border-top-color: var(--campo-info); }
+.cartaoSolicitacao[data-etapa='aceita'] { border-top-color: var(--campo-info); }
+.cartaoSolicitacao[data-etapa='finalizada'] { border-top-color: var(--campo-success); }
+.cartaoSolicitacao[data-etapa='rejeitada'] { border-top-color: var(--campo-danger); }
 .statusSolicitacao {
   min-width: 0;
   display: grid;
@@ -814,16 +813,15 @@
   display: grid;
   place-items: center;
 }
-.cartaoSolicitacao[data-status='Aprovada'] .statusSolicitacao > span,
-.cartaoSolicitacao[data-status='Concluída'] .statusSolicitacao > span {
+.cartaoSolicitacao[data-etapa='finalizada'] .statusSolicitacao > span {
   background: var(--campo-success-soft);
   color: var(--campo-success);
 }
-.cartaoSolicitacao[data-status='Rejeitada'] .statusSolicitacao > span {
+.cartaoSolicitacao[data-etapa='rejeitada'] .statusSolicitacao > span {
   background: var(--campo-danger-soft);
   color: var(--campo-danger);
 }
-.cartaoSolicitacao[data-status='Em trânsito'] .statusSolicitacao > span {
+.cartaoSolicitacao[data-etapa='aceita'] .statusSolicitacao > span {
   background: var(--campo-info-soft);
   color: var(--campo-info);
 }

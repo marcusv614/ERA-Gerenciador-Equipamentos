@@ -17,6 +17,8 @@
   --stock-danger-soft: #f9e8e5;
   --stock-success: #246b4e;
   --stock-success-soft: #e2f1e8;
+  --stock-info: #356e96;
+  --stock-info-soft: #e0edf6;
   --stock-shadow: 0 14px 34px rgba(33, 47, 39, .07);
   min-height: 100vh;
   background: var(--stock-bg);
@@ -44,6 +46,8 @@
   --stock-danger-soft: #3b2422;
   --stock-success: #9fdbbc;
   --stock-success-soft: #244335;
+  --stock-info: #8ab8d8;
+  --stock-info-soft: #233746;
   --stock-shadow: 0 16px 40px rgba(0, 0, 0, .2);
 }
 
@@ -467,13 +471,17 @@
   text-align: center;
   overflow-wrap: anywhere;
 }
-.card > header > b[data-status='Concluída'] {
+.card > header > b[data-etapa='finalizada'] {
   background: var(--stock-success-soft);
   color: var(--stock-success);
 }
-.card > header > b[data-status='Rejeitada'] {
+.card > header > b[data-etapa='rejeitada'] {
   background: var(--stock-danger-soft);
   color: var(--stock-danger);
+}
+.card > header > b[data-etapa='aceita'] {
+  background: var(--stock-info-soft);
+  color: var(--stock-info);
 }
 .rota {
   min-width: 0;
