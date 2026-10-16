@@ -66,13 +66,11 @@ export const apiAtividades = {
   aprovar: (atividadeId) => criar(ROTAS_API.aprovarAtividade(atividadeId)),
   rejeitar: (atividadeId) => criar(ROTAS_API.rejeitarAtividade(atividadeId)),
   solicitarCompra: (atividadeId, materialId, quantidade) => criar(ROTAS_API.solicitarCompraMaterial(atividadeId, materialId), { quantidade }),
-  registrarAquisicao: (atividadeId, materialId, quantidade, identificacao) => criar(ROTAS_API.registrarAquisicaoMaterial(atividadeId, materialId), { quantidade, identificacao }),
+  registrarAquisicao: (atividadeId, materialId, quantidade, numeroNota, identificacao) => criar(ROTAS_API.registrarAquisicaoMaterial(atividadeId, materialId), { quantidade, numeroNota, identificacao }),
   distribuir: (atividadeId, atendimentos) => criar(ROTAS_API.distribuirAtividade(atividadeId), { atendimentos }),
   iniciarTransito: (atividadeId) => criar(ROTAS_API.iniciarTransitoAtividade(atividadeId)),
   concluir: (atividadeId) => criar(ROTAS_API.concluirAtividade(atividadeId)),
 };
-export const apiCautelas = { listar: (solicitacaoId) => obter(ROTAS_API.cautelas, { params: solicitacaoId ? { solicitacaoId } : {} }) };
-
 export const apiDeposito = { listar: () => obter(ROTAS_API.deposito) };
 export const apiPainel = { obterResumo: () => obter(ROTAS_API.resumo) };
 

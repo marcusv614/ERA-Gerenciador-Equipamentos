@@ -49,7 +49,7 @@ export function CartaoDeposito({ equipamentos, obras, podeEditar, aoEditar }) {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.model}>{equipamento.modelo}</div>
-                  <div className={styles.serie}>{equipamento.tipo} · {equipamento.medida || equipamento.serie} · {equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1} disponíveis{equipamento.quantidadeReservada > 0 ? ` · ${equipamento.quantidadeReservada} reservadas` : ''}</div>
+                  <div className={styles.serie}>{equipamento.tipo} · {equipamento.medida || equipamento.serie} · {equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1} disponíveis{equipamento.quantidadeReservada > 0 ? ` · ${equipamento.quantidadeReservada} reservadas` : ''}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</div>
                 </div>
                 <IndicadorStatus status={equipamento.status} />
                 <div className={styles.local}>{obra ? obra.nome : 'Depósito central'}</div>

@@ -4,7 +4,7 @@ import { Archive, ArchiveRestore, ArrowLeftRight, Calendar, CalendarSearch, Down
 import { formatarData, obterDataAtual } from '../../utils/datas';
 import { iconePorTipoEquipamento } from '../../data/constantesDominio';
 import { apiObras } from '../../services/api/servicoAtivosApi';
-import { imprimirCautelaHistoricaObra } from '../../services/documentosEquipamentos';
+import { imprimirInventarioHistoricoObra } from '../../services/documentosEquipamentos';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 
@@ -14,7 +14,7 @@ function mensagemDoErro(erro) {
   return erro?.response?.data?.message || erro?.response?.data?.mensagem || erro?.message || 'Não foi possível consultar o inventário desta data.';
 }
 
-export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStatus, aoArquivar, aoMoverEquipamento, aoImprimirCautela, aoImprimirHistorico, estilos }) {
+export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStatus, aoArquivar, aoMoverEquipamento, aoImprimirInventario, aoImprimirHistorico, estilos }) {
   const [obraAberta, definirObraAberta] = useState(null);
   const [dataConsulta, definirDataConsulta] = useState(obterDataAtual());
   const [resultado, definirResultado] = useState(null);
@@ -57,7 +57,7 @@ export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStat
     return <div key={obra.id} className={`${estilos.obraCard} ${obra.arquivado?estilos.registroArquivado:''}`}>
       <div className={estilos.obraHead}>
         <div><div className={estilos.obraTitleRow}><h3 className={estilos.obraTitle}>{obra.nome}</h3>{obra.arquivado?<span className={estilos.seloArquivado}>Arquivada</span>:podeEditarStatus ? <label className={estilos.obraStatusEditor}><select aria-label={`Status da obra ${obra.nome}`} value={obra.status} disabled={obraSalvando === obra.id} onChange={(evento) => alterarStatus(obra, evento.target.value)}><option value="Em andamento">Em andamento</option><option value="Concluída">Concluída</option></select>{obraSalvando === obra.id && <LoaderCircle className={estilos.girando} size={13} />}</label> : <IndicadorStatusObra status={obra.status} />}</div><div className={estilos.obraMeta}><span className={estilos.obraClient}>{obra.cliente}</span><span className={estilos.obraMetaItem}><MapPin size={11} />{obra.cidade}</span><span className={estilos.obraMetaItem}><Calendar size={11} />{formatarData(obra.inicio)}</span><span>Resp.: {obra.responsaveis?.join(', ') || '—'}</span></div></div>
-        <div className={estilos.obraActionsGroup}><span className={estilos.obraCount}>{quantidadeNaObra} {quantidadeNaObra === 1 ? 'unidade' : 'unidades'}</span><div className={estilos.obraExportActions}><button type="button" className={estilos.obraExportBtn} onClick={() => aoImprimirCautela(obra)}><FileText size={13} /> Inventário atual</button><button type="button" className={estilos.obraExportBtnSecondary} onClick={() => aoImprimirHistorico(obra)}><Download size={13} /> Movimentações</button><button type="button" className={`${estilos.obraExportBtnSecondary} ${consultaAberta ? estilos.obraConsultaBtnAtivo : ''}`} onClick={() => alternarConsulta(obra.id)}><CalendarSearch size={13} /> Por data</button>{podeEditarStatus&&<button type="button" className={estilos.obraArchiveBtn} onClick={()=>window.confirm(`${obra.arquivado?'Restaurar':'Arquivar'} a obra “${obra.nome}”?`)&&aoArquivar(obra.id,!obra.arquivado)}>{obra.arquivado?<ArchiveRestore size={13}/>:<Archive size={13}/>} {obra.arquivado?'Restaurar':'Arquivar'}</button>}</div></div>
+        <div className={estilos.obraActionsGroup}><span className={estilos.obraCount}>{quantidadeNaObra} {quantidadeNaObra === 1 ? 'unidade' : 'unidades'}</span><div className={estilos.obraExportActions}><button type="button" className={estilos.obraExportBtn} onClick={() => aoImprimirInventario(obra)}><FileText size={13} /> Inventário atual</button><button type="button" className={estilos.obraExportBtnSecondary} onClick={() => aoImprimirHistorico(obra)}><Download size={13} /> Movimentações</button><button type="button" className={`${estilos.obraExportBtnSecondary} ${consultaAberta ? estilos.obraConsultaBtnAtivo : ''}`} onClick={() => alternarConsulta(obra.id)}><CalendarSearch size={13} /> Por data</button>{podeEditarStatus&&<button type="button" className={estilos.obraArchiveBtn} onClick={()=>window.confirm(`${obra.arquivado?'Restaurar':'Arquivar'} a obra “${obra.nome}”?`)&&aoArquivar(obra.id,!obra.arquivado)}>{obra.arquivado?<ArchiveRestore size={13}/>:<Archive size={13}/>} {obra.arquivado?'Restaurar':'Arquivar'}</button>}</div></div>
       </div>
 
       {consultaAberta && <section className={estilos.obraConsultaHistorica} aria-label={`Inventário histórico de ${obra.nome}`}>
@@ -68,7 +68,7 @@ export function TelaObras({ obras, equipamentos, podeEditarStatus, aoAlterarStat
         </div>
         {erro && <p className={estilos.obraConsultaErro}>{erro}</p>}
         {resultado && <div className={estilos.obraHistoricoResultado}>
-          <div className={estilos.obraHistoricoCabecalho}><div><span>Retrato de {formatarData(resultado.dataReferencia)}</span><strong>{resultado.materiais.reduce((total, item) => total + Number(item.quantidade || 1), 0)} unidades em {resultado.materiais.length} {resultado.materiais.length === 1 ? 'registro' : 'registros'}</strong></div><button type="button" onClick={() => imprimirCautelaHistoricaObra(resultado)}><Printer size={16} /> Exportar cautela</button></div>
+          <div className={estilos.obraHistoricoCabecalho}><div><span>Retrato de {formatarData(resultado.dataReferencia)}</span><strong>{resultado.materiais.reduce((total, item) => total + Number(item.quantidade || 1), 0)} unidades em {resultado.materiais.length} {resultado.materiais.length === 1 ? 'registro' : 'registros'}</strong></div><button type="button" onClick={() => imprimirInventarioHistoricoObra(resultado)}><Printer size={16} /> Exportar inventário</button></div>
           <dl className={estilos.obraHistoricoDados}><div><dt>Cliente</dt><dd>{resultado.cliente || '—'}</dd></div><div><dt>Localização</dt><dd>{resultado.cidade || '—'}</dd></div><div><dt>Status da obra</dt><dd>{resultado.status || '—'}</dd></div><div><dt>Responsáveis técnicos</dt><dd>{resultado.responsaveisTecnicos?.join(', ') || '—'}</dd></div></dl>
           <div className={estilos.obraHistoricoLista}>{resultado.materiais.length ? resultado.materiais.map((item) => <article key={`${item.equipamentoId}-${item.serie}`} className={estilos.obraHistoricoItem}><PackageOpen size={17} /><div><strong>{item.modelo}</strong><span>{item.tipo || 'Equipamento'}{identificacaoVisivel(item.serie, item.tipo) ? ` · Série ${item.serie}` : ''}</span></div><b>{item.quantidade || 1} un.</b></article>) : <div className={estilos.obraHistoricoVazio}><PackageOpen size={22} /><span>Nenhum material estava registrado nesta obra.</span></div>}</div>
         </div>}

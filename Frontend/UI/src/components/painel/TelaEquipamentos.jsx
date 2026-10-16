@@ -30,7 +30,7 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
             <span><small>Disponível</small><strong>{equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1}</strong></span>
             {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
           </div>
-          <div className={estilos.equipFooter}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}</span></div>{!equipamento.arquivado && equipamento.quantidadeDisponivel > 0 && <button onClick={() => aoMover(equipamento)} className={estilos.moverBtn}><ArrowLeftRight size={11} /> Mover</button>}</div>
+          <div className={estilos.equipFooter}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</span></div>{!equipamento.arquivado && equipamento.quantidadeDisponivel > 0 && <button onClick={() => aoMover(equipamento)} className={estilos.moverBtn}><ArrowLeftRight size={11} /> Mover</button>}</div>
           {equipamento.tecnico && <div className={estilos.equipTecnico}>Com {equipamento.tecnico}</div>}
         </div>;
       })}</div></section>)}

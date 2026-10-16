@@ -42,6 +42,28 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
     return { ...atuais, [material.id]: porMaterial };
   });
 
+  const definirQuantidade = (material, equipamento, valor) => definirQuantidades((atuais) => {
+    const porMaterial = { ...(atuais[material.id] || {}) };
+    const outros = Object.entries(porMaterial).reduce((soma, [id, quantidade]) => String(id) === String(equipamento.id) ? soma : soma + quantidade, 0);
+    const maximo = Math.min(saldoParaMaterial(material, equipamento), material.quantidade - outros);
+    const proxima = Math.max(0, Math.min(maximo, Number.isFinite(Number(valor)) ? Math.trunc(Number(valor)) : 0));
+    if (proxima) porMaterial[equipamento.id] = proxima; else delete porMaterial[equipamento.id];
+    return { ...atuais, [material.id]: porMaterial };
+  });
+
+  const preencherTudo = (material) => {
+    let restante = material.quantidade;
+    const escolhas = {};
+    candidatos(material).forEach((equipamento) => {
+      if (!restante) return;
+      const disponivel = saldoParaMaterial(material, equipamento);
+      const quantidade = Math.min(disponivel, restante);
+      if (quantidade > 0) escolhas[equipamento.id] = quantidade;
+      restante -= quantidade;
+    });
+    definirQuantidades((atuais) => ({ ...atuais, [material.id]: escolhas }));
+  };
+
   const confirmar = async () => {
     const selecionados = solicitacao.materiais.flatMap((material) => Object.entries(quantidades[material.id] || {}).map(([equipamentoId, quantidade]) => {
       const equipamento = equipamentos.find((item) => String(item.id) === String(equipamentoId));
@@ -90,7 +112,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
             return <section className={estilos.material} key={material.id}>
               <header>
                 <div><h3>{material.nome}</h3><span>{disponivel} disponível(is) em todas as localizações</span></div>
-                <strong className={separado === material.quantidade ? estilos.pronto : ''}>{separado} / {material.quantidade}</strong>
+                <div className={estilos.acoesMaterial}><button type="button" onClick={() => preencherTudo(material)} disabled={!disponivel || separado === material.quantidade}>Preencher tudo</button><strong className={separado === material.quantidade ? estilos.pronto : ''}>{separado} / {material.quantidade}</strong></div>
               </header>
 
               {opcoes.length > 0 && <div className={estilos.lista}>
@@ -104,7 +126,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
                     <span className={estilos.saldo}>{saldo}<small> disponíveis</small></span>
                     <div className={estilos.quantidade}>
                       <button onClick={() => alterar(material, equipamento, -1)} disabled={quantidade === 0} aria-label="Diminuir"><Minus /></button>
-                      <output>{quantidade}</output>
+                      <input type="number" min="0" max={Math.min(saldo, material.quantidade - (separado - quantidade))} value={quantidade} onFocus={(evento) => evento.target.select()} onChange={(evento) => definirQuantidade(material, equipamento, evento.target.value)} aria-label={`Quantidade de ${equipamento.modelo} a separar`} />
                       <button onClick={() => alterar(material, equipamento, 1)} disabled={totalMaterialAtingido || quantidade >= saldo} aria-label="Aumentar"><Plus /></button>
                     </div>
                   </div>;

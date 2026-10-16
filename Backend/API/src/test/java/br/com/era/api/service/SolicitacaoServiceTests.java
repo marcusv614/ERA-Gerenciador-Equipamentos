@@ -31,7 +31,6 @@ class SolicitacaoServiceTests {
                 mock(FuncionarioService.class),
                 mock(EquipamentoService.class),
                 usuarios,
-                mock(CautelaService.class),
                 mock(InventarioHistoricoService.class));
     }
 

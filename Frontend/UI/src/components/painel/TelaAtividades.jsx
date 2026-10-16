@@ -57,7 +57,7 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
   </div>;
 }
 
-export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, cautelas, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarCautela, estilos }) {
+export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, estilos }) {
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
   const [dataFiltro, definirDataFiltro] = useState('');
@@ -169,8 +169,8 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
       </div>}
     {selecionada && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
-      <DetalhesSolicitacao solicitacao={selecionada} cautelas={cautelas} buscarObraPorId={buscarObraPorId} estilos={estilos} processando={processando}
-        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarCautela={aoExportarCautela} />
+      <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} estilos={estilos} processando={processando}
+        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} />
     </JanelaSolicitacao>}
   </section>;
 }

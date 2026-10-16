@@ -1,6 +1,5 @@
 import {
   Check,
-  Download,
   FileText,
   Pencil,
   Route,
@@ -19,13 +18,11 @@ const CLASSE_POR_ETAPA = {
 export function DetalhesSolicitacao({
   solicitacao,
   processando,
-  cautelas,
   buscarObraPorId,
   aoAprovar,
   aoRejeitar,
   aoEditar,
   aoExportarRomaneio,
-  aoExportarCautela,
   estilos,
 }) {
   const renderizarSolicitacao = (solicitacao, classeStatus) => {
@@ -39,9 +36,6 @@ export function DetalhesSolicitacao({
     const podeEditar = ["Pendente", "Aprovada"].includes(solicitacao.status);
     const aguardandoDefinicao = solicitacao.materiais.some(
       ({ identificacao }) => !identificacao,
-    );
-    const cautelasDaSolicitacao = cautelas.filter(
-      ({ solicitacaoId }) => solicitacaoId === solicitacao.id,
     );
     const etapa = obterEtapaSolicitacao(solicitacao.status);
 
@@ -118,17 +112,6 @@ export function DetalhesSolicitacao({
                 <FileText size={15} /> Romaneio
               </button>
             )}
-            {cautelasDaSolicitacao.map((cautela) => (
-              <button
-                disabled={processando}
-                type="button"
-                key={cautela.id}
-                onClick={() => aoExportarCautela(cautela)}
-                className={estilos.atividadeEditar}
-              >
-                <Download size={15} /> Cautela
-              </button>
-            ))}
           </div>
           <div className={estilos.atividadeAcoesDecisao}>
             {pendente && (

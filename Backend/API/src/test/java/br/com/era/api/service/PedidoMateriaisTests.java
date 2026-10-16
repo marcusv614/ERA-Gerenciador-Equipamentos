@@ -33,11 +33,10 @@ class PedidoMateriaisTests {
     final EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
     final UsuarioService usuarios = mock(UsuarioService.class);
     final ObraService obras = mock(ObraService.class);
-    final CautelaService cautelas = mock(CautelaService.class);
     final MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
     final EquipamentoService equipamentoService = mock(EquipamentoService.class);
     final Funcionario tecnico = new Funcionario();
-    final SolicitacaoService service = new SolicitacaoService(pedidos,equipamentos,movimentacoes,obras,mock(FuncionarioService.class),equipamentoService,usuarios,cautelas,mock(InventarioHistoricoService.class));
+    final SolicitacaoService service = new SolicitacaoService(pedidos,equipamentos,movimentacoes,obras,mock(FuncionarioService.class),equipamentoService,usuarios,mock(InventarioHistoricoService.class));
 
     PedidoMateriaisTests() {
         tecnico.setNome("Tecnico");
@@ -79,8 +78,8 @@ class PedidoMateriaisTests {
     }
     @Test void aprovaUmaUnicaVez() {
         Solicitacao s=pedido("Pendente");s.setObraDestino(new Obra());
-        assertEquals("Aprovada",service.aprovar(1L,"gerente").status());
-        assertThrows(RegraNegocioException.class,()->service.aprovar(1L,"gerente"));
+        assertEquals("Aprovada",service.aprovar(1L).status());
+        assertThrows(RegraNegocioException.class,()->service.aprovar(1L));
         assertThrows(RegraNegocioException.class,()->service.rejeitar(1L));
     }
     @Test void rejeitaUmaUnicaVez() {
@@ -91,14 +90,13 @@ class PedidoMateriaisTests {
         Solicitacao s=pedido("Aprovada");s.setObraDestino(new Obra());s.substituirMateriais(List.of(new MaterialSolicitado("Alicate",2,null,"manual|alicate|")));
         Usuario estoque=new Usuario();estoque.setPerfil(PerfilUsuario.ESTOQUE);when(usuarios.buscarPorLogin("estoque")).thenReturn(estoque);
         assertThrows(RegraNegocioException.class,()->service.iniciarTransito(1L,"estoque"));
-        verifyNoInteractions(cautelas);
     }
     @Test void tecnicoNaoEnviaMaterial() {
         pedido("Aprovada");assertThrows(RegraNegocioException.class,()->service.iniciarTransito(1L,"tecnico"));
     }
     @Test void compraExigeAprovacao() {
         pedido("Pendente");assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,1));
-        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,1,null));
+        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,1,"NF-1",null));
     }
     @Test void distribuicaoExigeAprovacao() {
         pedido("Pendente");assertThrows(RegraNegocioException.class,()->service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of())));
@@ -117,7 +115,7 @@ class PedidoMateriaisTests {
         Movimentacao movimento=new Movimentacao();movimento.setEquipamento(e);
         when(equipamentoService.novaMovimentacao(any(),any(),any(),any(),any(),any(),anyInt(),any())).thenReturn(movimento);
         Usuario estoque=new Usuario();estoque.setPerfil(PerfilUsuario.ESTOQUE);when(usuarios.buscarPorLogin("estoque")).thenReturn(estoque);
-        assertEquals("Aprovada",service.aprovar(1L,"estoque").status());
+        assertEquals("Aprovada",service.aprovar(1L).status());
         var atendimento=new SolicitacaoDto.AtendimentoOrigem(null,List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",1,"SERIE","manual|alicate|")));
         service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of(atendimento)));
         assertEquals(1,e.getQuantidadeReservada());
@@ -128,7 +126,6 @@ class PedidoMateriaisTests {
         assertEquals(0,e.getQuantidadeReservada());
         assertThrows(RegraNegocioException.class,()->service.concluir(1L,"tecnico"));
         verify(movimentacoes,times(1)).save(movimento);
-        verify(cautelas,times(1)).emitir(s,"estoque");
     }
     MaterialSolicitado materialComId(Solicitacao s) {
         MaterialSolicitado m=new MaterialSolicitado("Alicate",10,null,"manual|alicate|");
@@ -139,9 +136,9 @@ class PedidoMateriaisTests {
         Solicitacao s=pedido("Aprovada");MaterialSolicitado m=materialComId(s);
         assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,11));
         service.solicitarCompra(1L,2L,5);
-        service.registrarAquisicao(1L,2L,3,null);
+        service.registrarAquisicao(1L,2L,3,"NF-123",null);
         assertEquals(3,m.getQuantidadeEntradaEstoque());
-        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,3,null));
+        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,3,"NF-123",null));
         assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,2));
         assertEquals(3,m.getQuantidadeEntradaEstoque());
     }

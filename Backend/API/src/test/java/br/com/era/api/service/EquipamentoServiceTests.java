@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -167,5 +168,26 @@ class EquipamentoServiceTests {
 
         assertEquals("Equipamentos com histórico de movimentação não podem ser excluídos.", erro.getMessage());
         verify(equipamentos, never()).delete(equipamento);
+    }
+
+    @Test
+    void deveRegistrarNotaFiscalNaEntradaDeCompra() {
+        EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
+        Equipamento referencia = new Equipamento();
+        referencia.setTipo("OTDR");
+        referencia.setModelo("Equipamento");
+        referencia.setMedida("unidade");
+        when(equipamentos.findAll()).thenReturn(List.of(referencia));
+        when(equipamentos.save(any(Equipamento.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
+        EquipamentoService service = new EquipamentoService(equipamentos, mock(MovimentacaoRepository.class),
+                mock(ObraService.class), mock(FuncionarioService.class), mock(UsuarioService.class),
+                mock(InventarioHistoricoService.class));
+
+        Equipamento criado = service.registrarEntradaCompra("Equipamento", "otdr|equipamento|unidade", 2,
+                "NF-12345", "SN-9988", 14L);
+
+        assertEquals("NF-12345", criado.getNotaFiscal());
+        assertEquals("SN-9988", criado.getSerie());
+        assertEquals(2, criado.getQuantidade());
     }
 }

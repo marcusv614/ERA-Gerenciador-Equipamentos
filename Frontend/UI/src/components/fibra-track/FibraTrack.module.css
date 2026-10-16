@@ -1921,7 +1921,6 @@ button.equipCard {
 .atividadeAcoes { margin-top:15px; padding-top:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--border); }
 .atividadeAcoes > div { display:flex; flex-wrap:wrap; gap:7px; }
 .atividadeAcoes button { min-height:36px; padding:7px 11px; display:inline-flex; align-items:center; justify-content:center; gap:5px; border-radius:8px; font-size:11.5px; font-weight:600; cursor:pointer; }
-.atividadeCautela { border:1px solid var(--border-strong); background:var(--surface-2); color:var(--text); }
 .atividadeEditar { border:1px solid var(--border); background:transparent; color:var(--text-muted); }
 .atividadeRejeitar { border:1px solid rgba(209,84,84,.25); background:rgba(209,84,84,.08); color:#c44444; }
 .atividadeAprovar { border:1px solid #087747; background:#168a55; color:#fff; opacity:1; box-shadow:0 5px 14px rgba(22,138,85,.22); }

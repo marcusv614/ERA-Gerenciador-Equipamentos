@@ -15,15 +15,13 @@ const agruparPedido = (materiais, equipamentos) => Object.values(materiais.reduc
   return grupos;
 }, {}));
 
-export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecnicosCadastrados, aoFechar, aoSalvar }) {
+export function ModalEditarSolicitacao({ solicitacao, equipamentos, tecnicosCadastrados, aoFechar, aoSalvar }) {
   const [tecnico, definirTecnico] = useState(solicitacao.tecnico);
-  const [obraOrigemId, definirObraOrigemId] = useState(solicitacao.obraOrigemId == null ? 'deposito' : String(solicitacao.obraOrigemId));
-  const [obraDestinoId, definirObraDestinoId] = useState(solicitacao.obraDestinoId == null ? 'deposito' : String(solicitacao.obraDestinoId));
+  const obraOrigemId = solicitacao.obraOrigemId == null ? 'deposito' : String(solicitacao.obraOrigemId);
+  const obraDestinoId = solicitacao.obraDestinoId == null ? 'deposito' : String(solicitacao.obraDestinoId);
   const [itens, definirItens] = useState(() => agruparPedido(solicitacao.materiais, equipamentos));
   const [modeloParaAdicionar, definirModeloParaAdicionar] = useState('');
   const [observacao, definirObservacao] = useState(solicitacao.observacao || '');
-  const obrasDisponiveis = obras.filter(({ status }) => status !== 'Concluída');
-
   const reservadosNaSolicitacao = useMemo(() => solicitacao.materiais.reduce((totais, material) => {
     if (material.identificacao) totais[normalizar(material.identificacao)] = (totais[normalizar(material.identificacao)] || 0) + material.quantidade;
     return totais;
@@ -49,7 +47,6 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
 
   const grupoPorChave = (chave) => gruposDisponiveis.find((grupo) => grupo.chave === chave);
   const opcoesParaAdicionar = gruposDisponiveis.filter((grupo) => !itens.some((item) => item.chave === grupo.chave));
-  const alterarOrigem = (valor) => { definirObraOrigemId(valor); definirItens(agruparPedido(solicitacao.materiais, equipamentos)); definirModeloParaAdicionar(''); };
   const alterarQuantidade = (item, diferenca) => definirItens((atuais) => atuais.map((atual) => {
     if (atual.chave !== item.chave) return atual;
     const limite = pedidoParaObra ? Number.MAX_SAFE_INTEGER : (grupoPorChave(item.chave)?.disponivel || 1);
@@ -89,8 +86,6 @@ export function ModalEditarSolicitacao({ solicitacao, obras, equipamentos, tecni
     <div className={styles.formulario}>
       <div className={styles.dadosGerais}>
         <CampoFormulario rotulo="Técnico solicitante"><select className={styles.campo} value={tecnico} onChange={(evento) => definirTecnico(evento.target.value)}>{tecnicosCadastrados.map((nome) => <option key={nome}>{nome}</option>)}</select></CampoFormulario>
-        <CampoFormulario rotulo="Obra de origem"><select className={styles.campo} value={obraOrigemId} onChange={(evento) => alterarOrigem(evento.target.value)}><option value="deposito">Depósito central</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></CampoFormulario>
-        <CampoFormulario rotulo="Obra de destino"><select className={styles.campo} value={obraDestinoId} onChange={(evento) => definirObraDestinoId(evento.target.value)}><option value="deposito">Depósito central</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></CampoFormulario>
       </div>
 
       <section className={styles.secaoMateriais}>

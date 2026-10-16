@@ -32,5 +32,4 @@ export const ROTAS_API = {
   distribuirAtividade: (atividadeId) => `/atividades/${atividadeId}/distribuicao`,
   iniciarTransitoAtividade: (atividadeId) => `/atividades/${atividadeId}/transito`,
   concluirAtividade: (atividadeId) => `/atividades/${atividadeId}/conclusao`,
-  cautelas: '/cautelas',
 };

@@ -18,6 +18,7 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
         equipamento.tipo,
         equipamento.medida,
         equipamento.observacoes,
+        equipamento.notaFiscal,
         equipamento.tecnico,
         equipamento.arquivado ? 'arquivado inativo' : 'ativo',
       ].some((valor) => valor?.toLocaleLowerCase('pt-BR').includes(termoNormalizado));
@@ -58,7 +59,8 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
       !equipamento.arquivado && equipamento.obraId === null && (
         !termoNormalizado ||
         equipamento.modelo.toLocaleLowerCase('pt-BR').includes(termoNormalizado) ||
-        equipamento.serie.toLocaleLowerCase('pt-BR').includes(termoNormalizado)
+        equipamento.serie.toLocaleLowerCase('pt-BR').includes(termoNormalizado) ||
+        equipamento.notaFiscal?.toLocaleLowerCase('pt-BR').includes(termoNormalizado)
       ));
   }, [equipamentos, termoBusca]);
 

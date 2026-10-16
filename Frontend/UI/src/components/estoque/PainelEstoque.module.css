@@ -749,10 +749,20 @@
   border-radius: 12px;
   background: var(--stock-soft);
   display: grid;
-  grid-template-columns: minmax(120px, .55fr) minmax(180px, 1fr) auto;
+  grid-template-columns: repeat(2, minmax(150px, 1fr)) auto;
   align-items: end;
   gap: 9px;
 }
+.entradaAquisicao > p {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--stock-text);
+  font-size: 9px;
+}
+.entradaAquisicao > p span { color: var(--stock-muted); font-size: 8px; }
 .entradaAquisicao label {
   min-width: 0;
   color: var(--stock-muted);
@@ -790,6 +800,7 @@
   cursor: pointer;
 }
 .entradaAquisicao button svg { width: 14px; height: 14px; }
+.entradaAquisicao button:disabled { opacity: .45; cursor: not-allowed; }
 .aquisicaoConcluida {
   margin-top: 3px;
   padding: 10px;
@@ -909,6 +920,7 @@
   .aquisicaoItemTitulo { flex-direction: column; gap: 3px; }
   .aquisicaoItemTitulo small { max-width: none; text-align: left; }
   .entradaAquisicao { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .entradaAquisicao > p { grid-column: 1/-1; }
   .entradaAquisicao button { grid-column: 1/-1; min-height: 44px; }
   .exportarSolicitacao { min-height: 44px; }
 }
