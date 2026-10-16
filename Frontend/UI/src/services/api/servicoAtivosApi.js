@@ -52,6 +52,11 @@ export const apiEquipamentos = {
   obterHistorico: (equipamentoId) => obter(ROTAS_API.historicoEquipamento(equipamentoId)),
 };
 
+export const apiCategoriasEquipamento = {
+  listar: () => obter(ROTAS_API.categoriasEquipamento),
+  cadastrar: (dados) => criar(ROTAS_API.categoriasEquipamento, dados),
+};
+
 export const apiFuncionarios = {
   listar: () => obter(ROTAS_API.funcionarios),
   cadastrar: (dados) => criar(ROTAS_API.funcionarios, dados),
@@ -75,8 +80,8 @@ export const apiDeposito = { listar: () => obter(ROTAS_API.deposito) };
 export const apiPainel = { obterResumo: () => obter(ROTAS_API.resumo) };
 
 export async function carregarDadosIniciaisApi() {
-  const [obras, equipamentos, funcionarios, solicitacoes] = await Promise.all([
-    apiObras.listar(), apiEquipamentos.listar(), apiFuncionarios.listar(), apiAtividades.listar(),
+  const [obras, equipamentos, funcionarios, solicitacoes, categoriasEquipamento] = await Promise.all([
+    apiObras.listar(), apiEquipamentos.listar(), apiFuncionarios.listar(), apiAtividades.listar(), apiCategoriasEquipamento.listar(),
   ]);
-  return { obras, equipamentos, funcionarios, solicitacoes };
+  return { obras, equipamentos, funcionarios, solicitacoes, categoriasEquipamento };
 }

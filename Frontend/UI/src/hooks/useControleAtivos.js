@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { localizarEquipamentos } from '../utils/localizacaoEquipamentos';
 import { obterDataAtual } from '../utils/datas';
 import { obterHistoricoEquipamento } from '../utils/historicoEquipamento';
-import { apiAtividades, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
+import { apiAtividades, apiCategoriasEquipamento, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
 
 export function useControleAtivos() {
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
   const [funcionarios, definirFuncionarios] = useState([]);
   const [solicitacoes, definirSolicitacoes] = useState([]);
+  const [categoriasEquipamento, definirCategoriasEquipamento] = useState([]);
   const [carregandoDados, definirCarregandoDados] = useState(true);
   const [erroApi, definirErroApi] = useState(null);
 
@@ -21,6 +22,7 @@ export function useControleAtivos() {
         if (Array.isArray(dados.equipamentos)) definirEquipamentos(dados.equipamentos);
         if (Array.isArray(dados.funcionarios)) definirFuncionarios(dados.funcionarios);
         if (Array.isArray(dados.solicitacoes)) definirSolicitacoes(dados.solicitacoes);
+        if (Array.isArray(dados.categoriasEquipamento)) definirCategoriasEquipamento(dados.categoriasEquipamento);
         definirErroApi(null);
       })
       .catch((erro) => { if (deveAtualizar) definirErroApi(erro.message); })
@@ -114,6 +116,18 @@ export function useControleAtivos() {
     } catch (erro) {
       definirErroApi(erro.message);
       return false;
+    }
+  }
+
+  async function cadastrarCategoriaEquipamento(dadosNovaCategoria) {
+    try {
+      const categoriaCadastrada = await apiCategoriasEquipamento.cadastrar(dadosNovaCategoria);
+      definirCategoriasEquipamento((categoriasAtuais) => [...categoriasAtuais, categoriaCadastrada]);
+      definirErroApi(null);
+      return categoriaCadastrada;
+    } catch (erro) {
+      definirErroApi(erro.message);
+      return null;
     }
   }
 
@@ -333,6 +347,7 @@ export function useControleAtivos() {
     equipamentos: equipamentosLocalizados,
     funcionarios,
     solicitacoes,
+    categoriasEquipamento,
     carregandoDados,
     erroApi,
     resumoEquipamentos,
@@ -341,6 +356,7 @@ export function useControleAtivos() {
     cadastrarObra,
     atualizarStatusObra,
     cadastrarEquipamento,
+    cadastrarCategoriaEquipamento,
     atualizarEquipamento,
     cadastrarFuncionario,
     atualizarFuncionario,

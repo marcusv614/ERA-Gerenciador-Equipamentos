@@ -132,15 +132,18 @@ class PedidoMateriaisTests {
         org.springframework.test.util.ReflectionTestUtils.setField(m,"id",2L);
         s.substituirMateriais(List.of(m));return m;
     }
-    @Test void compraEEntradaRespeitamSaldos() {
-        Solicitacao s=pedido("Aprovada");MaterialSolicitado m=materialComId(s);
+    @Test void compraAceitaEntradasParciaisComNotasDiferentes() {
+        Solicitacao s=pedido("Aprovada");org.springframework.test.util.ReflectionTestUtils.setField(s,"id",1L);MaterialSolicitado m=materialComId(s);
         assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,11));
         service.solicitarCompra(1L,2L,5);
         service.registrarAquisicao(1L,2L,3,"NF-123",null);
         assertEquals(3,m.getQuantidadeEntradaEstoque());
-        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,3,"NF-123",null));
-        assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,2));
-        assertEquals(3,m.getQuantidadeEntradaEstoque());
+        service.registrarAquisicao(1L,2L,2,"NF-456",null);
+        assertEquals(5,m.getQuantidadeEntradaEstoque());
+        verify(equipamentoService).registrarEntradaCompra("Alicate","manual|alicate|",3,"NF-123",null,1L);
+        verify(equipamentoService).registrarEntradaCompra("Alicate","manual|alicate|",2,"NF-456",null,1L);
+        assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,1,"NF-789",null));
+        assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,4));
     }
     @Test void distribuicaoNaoPodeAlterarQuantidadeSolicitada() {
         Solicitacao s=pedido("Aprovada");materialComId(s);

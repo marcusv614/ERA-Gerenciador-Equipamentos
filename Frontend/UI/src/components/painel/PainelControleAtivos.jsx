@@ -105,8 +105,13 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
         .join(' ').toLocaleLowerCase('pt-BR').includes(termoAtividades);
     })
     : controleAtivos.solicitacoes;
-  const tiposEquipamentoDisponiveis = [...new Set(controleAtivos.equipamentos.filter(({arquivado})=>!arquivado).map(({ tipo }) => tipo).filter(Boolean))]
+  const nomesCategoriasCadastradas = controleAtivos.categoriasEquipamento.map(({ nome }) => nome);
+  const categoriasHistoricas = controleAtivos.equipamentos
+    .filter(({ arquivado }) => !arquivado)
+    .map(({ tipo }) => tipo)
+    .filter((tipo) => tipo && !nomesCategoriasCadastradas.includes(tipo))
     .sort((primeiro, segundo) => primeiro.localeCompare(segundo, 'pt-BR'));
+  const tiposEquipamentoDisponiveis = [...nomesCategoriasCadastradas, ...new Set(categoriasHistoricas)];
   const resultadosPorTela = {
     equipamentos: filtros.equipamentosFiltrados.length,
     obras: filtros.obrasFiltradas.length,
@@ -138,8 +143,8 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     </main>
     <NavegacaoInferior telaAtual={telaAtual} totalAtividadesPendentes={totalAtividadesPendentes} aoSelecionarTela={selecionarTela} estilos={estilos} />
     {modalNovaObraAberto && <ModalNovaObra tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirModalNovaObraAberto(false)} aoSalvar={cadastrarObra} />}
-    {ehAdmin && modalNovoEquipamentoAberto && <ModalNovoEquipamento obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} aoFechar={() => definirModalNovoEquipamentoAberto(false)} aoSalvar={cadastrarEquipamento} />}
-    {ehAdmin && equipamentoEmEdicao && <ModalNovoEquipamento equipamento={equipamentoEmEdicao} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis.includes(equipamentoEmEdicao.tipo)?tiposEquipamentoDisponiveis:[equipamentoEmEdicao.tipo,...tiposEquipamentoDisponiveis]} aoFechar={() => definirEquipamentoEmEdicao(null)} aoSalvar={salvarEdicaoEquipamento} aoArquivar={arquivarEquipamento} />}
+    {ehAdmin && modalNovoEquipamentoAberto && <ModalNovoEquipamento obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} categoriasDisponiveis={controleAtivos.categoriasEquipamento} aoCriarCategoria={controleAtivos.cadastrarCategoriaEquipamento} aoFechar={() => definirModalNovoEquipamentoAberto(false)} aoSalvar={cadastrarEquipamento} />}
+    {ehAdmin && equipamentoEmEdicao && <ModalNovoEquipamento equipamento={equipamentoEmEdicao} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis.includes(equipamentoEmEdicao.tipo)?tiposEquipamentoDisponiveis:[equipamentoEmEdicao.tipo,...tiposEquipamentoDisponiveis]} categoriasDisponiveis={controleAtivos.categoriasEquipamento} aoCriarCategoria={controleAtivos.cadastrarCategoriaEquipamento} aoFechar={() => definirEquipamentoEmEdicao(null)} aoSalvar={salvarEdicaoEquipamento} aoArquivar={arquivarEquipamento} />}
     {equipamentoParaMover && <ModalMovimentarEquipamento equipamento={equipamentoParaMover} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirEquipamentoParaMover(null)} aoSalvar={movimentarEquipamento} />}
     {modalNovoFuncionarioAberto && <ModalNovoFuncionario funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
     {funcionarioEmEdicao && <ModalEditarFuncionario funcionario={funcionarioEmEdicao} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} aoFechar={() => definirFuncionarioEmEdicao(null)} aoSalvar={salvarFuncionario} aoArquivar={controleAtivos.arquivarFuncionario} />}

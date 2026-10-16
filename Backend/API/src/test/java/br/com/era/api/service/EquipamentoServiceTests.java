@@ -47,7 +47,7 @@ class EquipamentoServiceTests {
         LocalDate dataEntrada = LocalDate.of(2026, 9, 3);
         EquipamentoDto.Requisicao dados = new EquipamentoDto.Requisicao(
                 "FLUKE", "Nome atualizado", "SERIE-1", "Em estoque", null, null,
-                dataEntrada, null, null, null, 1, null, "INDIVIDUAL");
+                dataEntrada, null, null, null, 1, null, "INDIVIDUAL", null, null, null, null);
 
         EquipamentoDto.Resposta resposta = service.atualizar(1L, dados);
 
@@ -82,7 +82,7 @@ class EquipamentoServiceTests {
 
         RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(2L,
                 new EquipamentoDto.Requisicao("OTDR", "Equipamento", "SERIE-2", "Em campo", 3L, null,
-                        LocalDate.now(), null, null, null, null, null, null)));
+                        LocalDate.now(), null, null, null, null, null, null, null, null, null, null)));
 
         assertEquals("Localização, responsável e status só podem ser alterados pelo fluxo de movimentação.", erro.getMessage());
     }
@@ -107,7 +107,7 @@ class EquipamentoServiceTests {
 
         EquipamentoDto.Resposta resposta = service.atualizar(5L, new EquipamentoDto.Requisicao(
                 "Ferramenta manual", "Alicate", "ERA-LOTE-1", "Em estoque", null, null,
-                LocalDate.now(), null, null, null, 8, null, null));
+                LocalDate.now(), null, null, null, 8, null, null, null, null, null, null));
 
         assertEquals(8, resposta.quantidade());
         assertEquals("LOTE", resposta.controleQuantidade());
@@ -132,7 +132,7 @@ class EquipamentoServiceTests {
 
         RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(6L,
                 new EquipamentoDto.Requisicao("Ferramenta manual", "Alicate", "ERA-LOTE-2", "Em estoque",
-                        null, null, LocalDate.now(), null, null, null, 3, null, "LOTE")));
+                        null, null, LocalDate.now(), null, null, null, 3, null, "LOTE", null, null, null, null)));
 
         assertEquals("A quantidade não pode ser menor que as unidades já reservadas.", erro.getMessage());
         verify(equipamentos, never()).save(equipamento);

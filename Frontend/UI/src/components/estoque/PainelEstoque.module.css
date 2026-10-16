@@ -390,7 +390,7 @@
 .exportarSolicitacao svg { width: 15px; height: 15px; }
 .tituloAquisicoes > button:disabled,
 .exportarSolicitacao:disabled,
-.entradaAquisicao button:disabled { opacity: .46; cursor: not-allowed; }
+.entradaAquisicao > button:disabled { opacity: .46; cursor: not-allowed; }
 
 .grupoObra + .grupoObra { margin-top: 28px; }
 .grupoObra > header {
@@ -626,7 +626,7 @@
   color: var(--stock-raised);
 }
 .pagina[data-theme='dark'] .card > footer .primario,
-.pagina[data-theme='dark'] .entradaAquisicao button {
+.pagina[data-theme='dark'] .entradaAquisicao > button {
   border-color: #ee9d3e;
   background: #ee9d3e;
   color: #1b241f;
@@ -749,7 +749,7 @@
   border-radius: 12px;
   background: var(--stock-soft);
   display: grid;
-  grid-template-columns: repeat(2, minmax(150px, 1fr)) auto;
+  grid-template-columns: minmax(105px, .55fr) repeat(2, minmax(150px, 1fr));
   align-items: end;
   gap: 9px;
 }
@@ -784,7 +784,26 @@
   color: var(--stock-text);
   font-size: 10px;
 }
-.entradaAquisicao button {
+.campoQuantidadeCompra {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px;
+}
+.campoQuantidadeCompra button {
+  min-width: 48px;
+  height: 40px;
+  padding: 0 9px;
+  border: 1px solid var(--stock-border-strong);
+  border-radius: 9px;
+  background: var(--stock-raised);
+  color: var(--stock-text);
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+.entradaAquisicao > button {
+  grid-column: 1 / -1;
   min-height: 40px;
   padding: 0 12px;
   border: 1px solid var(--stock-green);
@@ -799,8 +818,8 @@
   font-weight: 850;
   cursor: pointer;
 }
-.entradaAquisicao button svg { width: 14px; height: 14px; }
-.entradaAquisicao button:disabled { opacity: .45; cursor: not-allowed; }
+.entradaAquisicao > button svg { width: 14px; height: 14px; }
+.entradaAquisicao > button:disabled { opacity: .45; cursor: not-allowed; }
 .aquisicaoConcluida {
   margin-top: 3px;
   padding: 10px;
@@ -921,7 +940,8 @@
   .aquisicaoItemTitulo small { max-width: none; text-align: left; }
   .entradaAquisicao { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .entradaAquisicao > p { grid-column: 1/-1; }
-  .entradaAquisicao button { grid-column: 1/-1; min-height: 44px; }
+  .entradaAquisicao > label:first-of-type { grid-column: 1/-1; }
+  .entradaAquisicao > button { grid-column: 1/-1; min-height: 44px; }
   .exportarSolicitacao { min-height: 44px; }
 }
 
@@ -947,16 +967,18 @@
   .card > footer button { flex-basis: 100%; }
   .aquisicao { padding: 14px; }
   .entradaAquisicao { grid-template-columns: 1fr; }
-  .entradaAquisicao button { grid-column: auto; }
+  .entradaAquisicao > label:first-of-type,
+  .entradaAquisicao > p,
+  .entradaAquisicao > button { grid-column: auto; }
 }
 .instrucaoEntrega {
-  margin: 14px 0;
-  padding: 14px;
-  border: 1px solid var(--stock-border);
-  border-radius: 10px;
+  margin: 0 16px 4px;
+  padding: 9px 11px;
+  border-radius: 9px;
   background: var(--stock-soft-green);
-  color: var(--stock-text);
-  font-size: 13px;
-  line-height: 1.6;
+  color: var(--stock-green);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }

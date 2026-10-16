@@ -1,23 +1,48 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, History, LogOut, MapPin, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
+import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelTecnico.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
-import { obterEtapaSolicitacao, pertenceEtapaSolicitacao } from '../../utils/statusSolicitacao';
+import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 
 const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
+const normalizarChave = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase('pt-BR');
+const chaveMaterial = (equipamento) => equipamento.catalogoChave || [equipamento.tipo, equipamento.modelo, equipamento.medida].map(normalizarChave).join('|');
+const agruparEquipamentos = (lista, prefixo = 'material') => Object.values(lista.reduce((grupos, equipamento) => {
+  const chave = chaveMaterial(equipamento);
+  if (!grupos[chave]) grupos[chave] = {
+    ...equipamento,
+    id: `${prefixo}-${chave}`,
+    serie: null,
+    quantidade: 0,
+    quantidadeDisponivel: 0,
+    quantidadeReservada: 0,
+    registros: [],
+  };
+  grupos[chave].quantidade += equipamento.quantidade || 1;
+  grupos[chave].quantidadeDisponivel += equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1;
+  grupos[chave].quantidadeReservada += equipamento.quantidadeReservada || 0;
+  grupos[chave].registros.push(equipamento);
+  return grupos;
+}, {})).sort((a, b) => a.modelo.localeCompare(b.modelo, 'pt-BR'));
+const agruparMateriaisPedido = (materiais) => Object.values(materiais.reduce((grupos, material) => {
+  const chave = material.catalogoChave || normalizarChave(material.nome);
+  if (!grupos[chave]) grupos[chave] = { chave, nome: material.nome, quantidade: 0 };
+  grupos[chave].quantidade += material.quantidade || 0;
+  return grupos;
+}, {}));
 const rotuloStatus = (solicitacao) => obterEtapaSolicitacao(solicitacao.status).rotulo;
 const descricaoStatus = (solicitacao) => ({
-  Pendente: 'Aguardando o gerente aceitar ou rejeitar sua solicitação.',
-  Aprovada: 'Solicitação aceita. O estoque está verificando onde encontrar cada material.',
-  'Aguardando coleta': 'Solicitação aceita. O estoque está buscando os materiais solicitados.',
-  'Em trânsito': solicitacao.obraDestinoId ? 'O estoque confirmou a entrega. Confirme abaixo quando receber.' : 'O estoque está concluindo o recebimento dos materiais.',
-  Concluída: 'Solicitação finalizada e inventário atualizado.',
-  Rejeitada: 'Solicitação rejeitada pelo gerente.',
+  Pendente: 'Aguarde o gerente.',
+  Aprovada: 'O estoque está preparando.',
+  'Aguardando coleta': 'O estoque está preparando.',
+  'Em trânsito': solicitacao.obraDestinoId ? 'Recebeu? Confirme abaixo.' : 'O estoque está recebendo.',
+  Concluída: 'Finalizado.',
+  Rejeitada: 'Não aprovado.',
 }[solicitacao.status]);
 const iconeEtapa = (status) => {
   const etapa = obterEtapaSolicitacao(status).chave;
@@ -38,8 +63,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
   const [busca, definirBusca] = useState('');
   const [itens, definirItens] = useState([]);
   const [observacao, definirObservacao] = useState('');
-  const [aba, definirAba] = useState('materiais');
-  const [obraInventarioId, definirObraInventarioId] = useState('');
+  const [aba, definirAba] = useState(modoAdministrador ? 'acompanhar' : 'solicitar');
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
   const [mensagem, definirMensagem] = useState(null);
@@ -73,8 +97,6 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
         definirEquipamentos(equipamentosRecebidos);
         definirCatalogoMateriais(catalogoRecebido);
         definirSolicitacoes(solicitacoesRecebidas);
-        const obraDoTecnico = obrasRecebidas.find(({ responsaveis }) => responsaveis?.some((nome) => nome.toLocaleLowerCase('pt-BR') === usuario.nome.toLocaleLowerCase('pt-BR')));
-        definirObraInventarioId(String(obraDoTecnico?.id || obrasRecebidas[0]?.id || ''));
       })
       .catch((erro) => { if (componenteAtivo) definirMensagem({ tipo: 'erro', texto: erro.message }); })
       .finally(() => { if (componenteAtivo) definirCarregando(false); });
@@ -85,9 +107,10 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     let componenteAtivo = true;
     const atualizarMovimentacoes = async () => {
       try {
-        const solicitacoesRecebidas = await apiAtividades.listar();
+        const [solicitacoesRecebidas, equipamentosRecebidos] = await Promise.all([apiAtividades.listar(), apiEquipamentos.listar()]);
         if (!componenteAtivo) return;
         definirSolicitacoes(solicitacoesRecebidas);
+        definirEquipamentos(equipamentosRecebidos);
       } catch {
         // A carga inicial já informa falhas; a sincronização silenciosa tenta novamente no próximo ciclo.
       }
@@ -105,11 +128,11 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
   }, []);
 
   const obrasAtivas = useMemo(() => obras.filter(({ status }) => status !== 'Concluída'), [obras]);
-  const equipamentosDaOrigem = useMemo(() => equipamentos.filter((equipamento) => {
+  const equipamentosDaOrigem = useMemo(() => agruparEquipamentos(equipamentos.filter((equipamento) => {
     if (!origem || localizacaoEquipamento(equipamento) !== origem) return false;
     const texto = `${equipamento.modelo} ${equipamento.tipo} ${equipamento.serie} ${equipamento.medida || ''}`.toLocaleLowerCase('pt-BR');
     return texto.includes(busca.trim().toLocaleLowerCase('pt-BR')) && (equipamento.quantidadeDisponivel ?? 1) > 0;
-  }), [equipamentos, origem, busca]);
+  }), `obra-${origem}`), [equipamentos, origem, busca]);
   const materiaisDoCatalogo = useMemo(() => catalogoMateriais.filter((material) => {
     const texto = `${material.modelo} ${material.tipo} ${material.medida || ''}`.toLocaleLowerCase('pt-BR');
     return texto.includes(busca.trim().toLocaleLowerCase('pt-BR'));
@@ -118,14 +141,13 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
 
   const nomeLocal = (valor) => valor === 'deposito' ? 'Depósito central' : obras.find(({ id }) => String(id) === String(valor))?.nome || 'Selecione';
   const pendentes = solicitacoes.filter(({ status }) => status === 'Pendente').length;
-  const aceitas = solicitacoes.filter(({ status }) => pertenceEtapaSolicitacao(status, 'aceita')).length;
   const recebimentosPendentes = solicitacoes.filter(({ status, obraDestinoId }) => status === 'Em trânsito' && obraDestinoId).length;
   const quantidadeTotal = itens.reduce((total, item) => total + item.quantidade, 0);
   const podeEnviar = ((operacao === 'receber' && destino) || (operacao === 'devolver' && origem)) && itens.length > 0 && !enviando;
-  const obraInventario = obras.find(({ id }) => String(id) === obraInventarioId);
-  const materiaisAtuaisDaObra = equipamentos.filter(({ obraId }) => String(obraId) === obraInventarioId);
-  const materiaisQuePassaramNaObra = equipamentos.filter((equipamento) => String(equipamento.obraId) !== obraInventarioId && equipamento.historico?.some(({ origemObraId, destinoObraId }) => String(origemObraId) === obraInventarioId || String(destinoObraId) === obraInventarioId));
-
+  const obrasComMateriais = obras.map((obra) => ({
+    obra,
+    materiais: agruparEquipamentos(equipamentos.filter(({ obraId }) => String(obraId) === String(obra.id)), `obra-${obra.id}`),
+  }));
   const adicionarItem = (equipamento) => definirItens((atuais) => {
     const id = identificadorLocal(equipamento);
     if (atuais.some((item) => item.id === id)) return atuais;
@@ -167,6 +189,16 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     definirEnviando(true);
     definirMensagem(null);
     try {
+      const materiais = itens.flatMap(({ equipamento, quantidade }) => {
+        if (operacao === 'receber') return [{ nome: equipamento.modelo, quantidade, identificacao: null, catalogoChave: equipamento.catalogoChave || null }];
+        let restante = quantidade;
+        return (equipamento.registros || [equipamento]).flatMap((registro) => {
+          if (restante <= 0) return [];
+          const quantidadeRegistro = Math.min(restante, registro.quantidadeDisponivel ?? registro.quantidade ?? 1);
+          restante -= quantidadeRegistro;
+          return quantidadeRegistro > 0 ? [{ nome: registro.modelo, quantidade: quantidadeRegistro, identificacao: registro.serie, catalogoChave: registro.catalogoChave || equipamento.catalogoChave || null }] : [];
+        });
+      });
       const criada = await apiAtividades.cadastrar({
         solicitante: usuario.nome,
         tecnico: usuario.nome,
@@ -174,13 +206,10 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
         obraDestinoId: operacao === 'receber' ? Number(destino) : null,
         dataSolicitacao: obterDataAtual(),
         observacao: observacao.trim() || null,
-        materiais: itens.map(({ equipamento, quantidade }) => ({ nome: equipamento.modelo, quantidade, identificacao: equipamento.serie || null, catalogoChave: equipamento.catalogoChave || null })),
+        materiais,
       });
       definirSolicitacoes((atuais) => [criada, ...atuais]);
-      definirEquipamentos((atuais) => atuais.map((equipamento) => {
-        const item = itens.find(({ equipamento: selecionado }) => selecionado.id === equipamento.id);
-        return item ? { ...equipamento, quantidadeReservada: (equipamento.quantidadeReservada || 0) + item.quantidade, quantidadeDisponivel: equipamento.quantidadeDisponivel - item.quantidade } : equipamento;
-      }));
+      apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
       definirItens([]); definirObservacao(''); definirBusca(''); definirOperacao(''); definirEtapaMovimentacao(1); definirMostrarObservacao(false);
       definirMensagem({ tipo: 'sucesso', texto: 'Solicitação enviada para análise do gerente.' });
       definirAba('acompanhar');
@@ -203,13 +232,13 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
 
     <main className={estilos.conteudo}>
       <section className={estilos.introducao}>
-        <div><span className={estilos.selo}>Área do técnico</span><h1>Trabalho de campo</h1><p>Faça suas solicitações e confirme quando receber os materiais.</p></div>
-        {!modoAdministrador && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} {recebimentosPendentes === 1 ? 'recebimento aguarda' : 'recebimentos aguardam'} confirmação</strong><small>Confirme somente após o material chegar.</small></span><ChevronRight /></button>}
+        <div><span className={estilos.selo}>Área do técnico</span><h1>{modoAdministrador ? 'Pedidos do técnico' : 'O que você precisa?'}</h1></div>
+        {!modoAdministrador && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>Material entregue</small></span><ChevronRight /></button>}
       </section>
       <nav className={estilos.abas} aria-label="Navegação do técnico">
-        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Building2 /><span><strong>Minha obra</strong><small>Materiais atuais</small></span></button>
-        {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Solicitar</strong><small>Novo pedido</small></span></button>}
-        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Solicitações</strong><small>Acompanhar pedidos</small></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
+        {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Novo pedido</strong></span></button>}
+        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Box /><span><strong>Materiais</strong></span></button>
+        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Meus pedidos</strong></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
       </nav>
 
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
@@ -259,27 +288,22 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       </div>}
 
       {!carregando && aba === 'acompanhar' && <section className={estilos.acompanhamento}>
-        <div className={estilos.cabecalhoHistorico}><div><span className={estilos.selo}>Minhas solicitações</span><h2>Acompanhe seus pedidos</h2><p>Veja se foram aceitos e confirme quando receber.</p></div><div className={estilos.metricas}><span><b>{pendentes}</b> pendentes</span><span><b>{aceitas}</b> aceitas</span></div></div>
+        <div className={estilos.cabecalhoHistorico}><div><h2>Meus pedidos</h2></div></div>
         <div className={estilos.listaSolicitacoes}>{solicitacoes.length ? solicitacoes.map((solicitacao) => <article key={solicitacao.id} className={estilos.cartaoSolicitacao} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>
           <div className={estilos.statusSolicitacao}><span>{iconeEtapa(solicitacao.status)}</span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><strong>{rotuloStatus(solicitacao)}</strong></div><time>{new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
-          <div className={estilos.trajetoCartao}><span>{solicitacao.obraDestinoId ? `Entrega solicitada para ${nomeLocal(solicitacao.obraDestinoId)}` : 'Retirada solicitada da sua obra'}</span></div>
           <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao)}</p>
-          <div className={estilos.materiaisCartao}>{solicitacao.materiais.map((material) => <span key={`${material.identificacao}-${material.id}`}><b>{material.quantidade}×</b> {material.nome}<small>{material.identificacao}</small></span>)}</div>
-          {solicitacao.observacao && <p className={estilos.notaCartao}>“{solicitacao.observacao}”</p>}
+          <strong className={estilos.destinoSolicitacao}>{solicitacao.obraDestinoId ? nomeLocal(solicitacao.obraDestinoId) : 'Retirada da obra'}</strong>
+          <div className={estilos.materiaisCartao}>{agruparMateriaisPedido(solicitacao.materiais).map((material) => <span key={material.chave}><b>{material.quantidade}×</b> {material.nome}</span>)}</div>
           {!modoAdministrador && solicitacao.status === 'Em trânsito' && solicitacao.obraDestinoId && <button className={estilos.acaoMovimentacao} onClick={() => confirmarRecebimento(solicitacao)}><PackageCheck /> Confirmar que recebi</button>}
-        </article>) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3><p>Seu primeiro pedido aparecerá aqui.</p><button onClick={() => definirAba('solicitar')}>Criar solicitação</button></div>}</div>
+        </article>) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3>{!modoAdministrador && <button onClick={() => definirAba('solicitar')}>Criar solicitação</button>}</div>}</div>
       </section>}
 
-      {!carregando && aba === 'materiais' && <section className={estilos.inventarioObra}>
-        <div className={estilos.topoInventario}>
-          <div><span className={estilos.selo}>Visão do campo</span><h2>Minha obra</h2><p>Consulte os materiais atuais e o histórico da obra.</p></div>
-          <label><span>Qual obra?</span><select value={obraInventarioId} onChange={(evento) => definirObraInventarioId(evento.target.value)}>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
-        </div>
-        {obraInventario && <div className={estilos.faixaObra}><div className={estilos.iconeObra}><Building2 /></div><div><small>Obra escolhida</small><strong>{obraInventario.nome}</strong><span><MapPin /> {obraInventario.cidade} · {obraInventario.cliente}</span></div></div>}
-        <div className={estilos.blocosInventario}>
-          <div className={estilos.blocoInventario}><div className={estilos.tituloInventario}><span className={estilos.agora}><PackageCheck /></span><div><h3>Está na obra agora</h3><p>{materiaisAtuaisDaObra.length} {materiaisAtuaisDaObra.length === 1 ? 'material' : 'materiais'}</p></div></div><div className={estilos.tabelaMateriais}>{materiaisAtuaisDaObra.length ? materiaisAtuaisDaObra.map((equipamento) => <div key={equipamento.id} className={estilos.linhaMaterial}><span className={estilos.miniIcone}><Box /></span><div><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · Série ${equipamento.serie}` : ''}</small></div><span className={estilos.quantidadeMaterial}><b>{equipamento.quantidade || 1}</b><small>unid.</small></span></div>) : <div className={estilos.listaVazia}><PackageCheck /><strong>Nenhum material nesta obra</strong><span>Materiais recebidos aparecerão aqui.</span></div>}</div></div>
-          <div className={estilos.blocoInventario}><div className={estilos.tituloInventario}><span className={estilos.passado}><History /></span><div><h3>Já passou por esta obra</h3><p>Materiais que já saíram daqui</p></div></div><div className={estilos.tabelaMateriais}>{materiaisQuePassaramNaObra.length ? materiaisQuePassaramNaObra.map((equipamento) => { const ultima = equipamento.historico.filter(({ origemObraId, destinoObraId }) => String(origemObraId) === obraInventarioId || String(destinoObraId) === obraInventarioId).at(-1); const dataRegistro = ultima?.dataMovimentacao || ultima?.dataSaida || ultima?.dataEntrada; return <div key={equipamento.id} className={estilos.linhaMaterial}><span className={estilos.miniIcone}><History /></span><div><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · Série ${equipamento.serie}` : ''}</small>{dataRegistro && <em>Último registro: {new Date(`${dataRegistro}T12:00:00`).toLocaleDateString('pt-BR')}</em>}</div><span className={estilos.statusSaiu}>Já saiu</span></div>; }) : <div className={estilos.listaVazia}><History /><strong>Nenhum material anterior</strong><span>O histórico desta obra ainda está vazio.</span></div>}</div></div>
-        </div>
+      {!carregando && aba === 'materiais' && <section className={estilos.materiaisObras}>
+        <header><h2>Materiais nas minhas obras</h2></header>
+        <div className={estilos.listaObrasMateriais}>{obrasComMateriais.length ? obrasComMateriais.map(({ obra, materiais }) => <article key={obra.id} className={estilos.obraMateriais}>
+          <header><span><Building2 /></span><strong>{obra.nome}</strong><b>{materiais.reduce((total, material) => total + (material.quantidade || 1), 0)}</b></header>
+          {materiais.length ? <ul>{materiais.map((material) => <li key={material.id}><div><strong>{material.modelo}</strong>{material.medida && <small>{material.medida}</small>}</div><b>{material.quantidade || 1}</b></li>)}</ul> : <p>Nenhum material nesta obra.</p>}
+        </article>) : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra vinculada</strong><span>Fale com o gerente.</span></div>}</div>
       </section>}
     </main>
   </div>;

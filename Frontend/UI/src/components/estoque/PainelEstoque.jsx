@@ -6,12 +6,18 @@ import { imprimirListaComprasGeral, imprimirListaComprasSolicitacao, imprimirRom
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelEstoque.module.css';
 import { SepararEquipamentosModal } from './SepararEquipamentosModal';
-import { ferramentaManual, identificacaoVisivel } from '../../utils/identificacaoEquipamento';
+import { tipoSemNumeroSerie } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 
 const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificacao }) => identificacao);
-const formatarDataHora = (valor) => valor ? new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
 const rotuloOperacional = (solicitacao) => obterEtapaSolicitacao(solicitacao.status).rotulo;
+const agruparMateriaisPedido = (materiais) => Object.values(materiais.reduce((grupos, material) => {
+  const chave = material.catalogoChave || String(material.nome || '').trim().toLocaleLowerCase('pt-BR');
+  if (!grupos[chave]) grupos[chave] = { chave, nome: material.nome, quantidade: 0, quantidadeCompra: 0 };
+  grupos[chave].quantidade += material.quantidade || 0;
+  grupos[chave].quantidadeCompra += material.quantidadeCompra || 0;
+  return grupos;
+}, {}));
 
 export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, incorporado = false } = {}) {
   const { usuario, encerrarSessao } = useAutenticacao();
@@ -24,6 +30,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const [busca, definirBusca] = useState('');
   const [obraFiltrada, definirObraFiltrada] = useState('todas');
   const [aba, definirAba] = useState('atividades');
+  const [quantidadesRecebidas, definirQuantidadesRecebidas] = useState({});
   const [notasFiscaisRecebidas, definirNotasFiscaisRecebidas] = useState({});
   const [identificacoesRecebidas, definirIdentificacoesRecebidas] = useState({});
   const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
@@ -90,8 +97,6 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     (grupos[item.solicitacao.id] ||= { solicitacao: item.solicitacao, itens: [] }).itens.push(item);
     return grupos;
   }, {}));
-  const agruparPorObra = (lista) => Object.entries(lista.reduce((grupos, solicitacao) => { const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId; const chave = String(obraId || 'deposito'); (grupos[chave] ||= []).push(solicitacao); return grupos; }, {})).sort(([obraA], [obraB]) => nomeLocal(obraA).localeCompare(nomeLocal(obraB), 'pt-BR'));
-
   const alternarTema = () => {
     if (aoAlternarTema) {
       aoAlternarTema();
@@ -123,14 +128,17 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
 
   const registrarAquisicao = async (solicitacao, material, pendenteEntrada) => {
     const chave = `${solicitacao.id}-${material.id}`;
-    const quantidade = pendenteEntrada;
+    const materialSemSerie = tipoSemNumeroSerie(material.catalogoChave?.split('|')[0]);
+    const quantidade = Number(quantidadesRecebidas[chave] ?? 1);
     const numeroNota = String(notasFiscaisRecebidas[chave] || '').trim();
     const identificacao = String(identificacoesRecebidas[chave] || '').trim();
-    const materialManual = ferramentaManual(material.catalogoChave?.split('|')[0]);
+    if (!Number.isInteger(quantidade) || quantidade < 1 || quantidade > pendenteEntrada) {
+      definirMensagem({ tipo: 'erro', texto: `Informe uma quantidade entre 1 e ${pendenteEntrada}.` }); return;
+    }
     if (!numeroNota) {
       definirMensagem({ tipo: 'erro', texto: 'Informe o número da nota fiscal.' }); return;
     }
-    if (!materialManual && !identificacao) {
+    if (!materialSemSerie && !identificacao) {
       definirMensagem({ tipo: 'erro', texto: `Informe o número de série de ${material.nome}.` }); return;
     }
     try {
@@ -138,9 +146,10 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       const equipamentosAtualizados = await apiEquipamentos.listar();
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
       definirEquipamentos(equipamentosAtualizados);
+      definirQuantidadesRecebidas((atuais) => { const novas = { ...atuais }; delete novas[chave]; return novas; });
       definirNotasFiscaisRecebidas((atuais) => { const novas = { ...atuais }; delete novas[chave]; return novas; });
       definirIdentificacoesRecebidas((atuais) => { const novas = { ...atuais }; delete novas[chave]; return novas; });
-      definirMensagem({ tipo: 'sucesso', texto: `${quantidade} unidade(s) de ${material.nome} deram entrada pela nota ${numeroNota} e já podem ser separadas na aba Aceitas.` });
+      definirMensagem({ tipo: 'sucesso', texto: `${quantidade} unidade(s) registrada(s) na nota ${numeroNota}.` });
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
   };
 
@@ -160,27 +169,22 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const renderizarCard = (solicitacao) => {
     const entradaNaObra = Boolean(solicitacao.obraDestinoId);
     const separado = possuiSeries(solicitacao);
-    const origem = nomeLocal(solicitacao.obraOrigemId);
-    const destino = nomeLocal(solicitacao.obraDestinoId);
-    const tarefa = solicitacao.status === 'Concluída' ? `Atendimento finalizado: ${origem} → ${destino}.`
-      : solicitacao.status === 'Rejeitada' ? 'Solicitação rejeitada pelo gerente. Nenhuma ação necessária.'
-      : solicitacao.status === 'Em trânsito' ? (entradaNaObra ? `Entrega confirmada. Aguardando ${solicitacao.tecnico} confirmar o recebimento.` : `Material a caminho do depósito. Confirme o recebimento para finalizar.`)
-      : !separado ? `Verifique o que existe no depósito e nas obras. Se faltar algum item, encaminhe para compra.`
-      : solicitacao.obraOrigemId != null ? `Materiais localizados em ${origem}. Confirme quando concluir a entrega em ${destino}.`
-      : `Materiais disponíveis no depósito. Confirme quando concluir a entrega em ${destino}.`;
+    const tarefa = solicitacao.status === 'Concluída' ? 'Finalizado'
+      : solicitacao.status === 'Rejeitada' ? 'Sem ação necessária'
+      : solicitacao.status === 'Em trânsito' ? (entradaNaObra ? `Aguardando confirmação de ${solicitacao.tecnico}` : 'Confirme o recebimento')
+      : !separado ? 'Localize, separe ou encaminhe para compra'
+      : 'Confirme a entrega';
     return <article className={estilos.card} key={solicitacao.id}>
-      <header><span className={estilos.icone}><PackageCheck /></span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><h2>{entradaNaObra ? 'Entrega para obra' : 'Recebimento no estoque'}</h2></div><b data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{rotuloOperacional(solicitacao)}</b></header>
+      <header><span className={estilos.icone}><PackageCheck /></span><div><small>Pedido #{String(solicitacao.id).padStart(4, '0')}</small><h2>{nomeLocal(solicitacao.obraDestinoId || solicitacao.obraOrigemId)}</h2></div><b data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{rotuloOperacional(solicitacao)}</b></header>
       <p className={estilos.instrucaoEntrega}>{tarefa}</p>
-      <div className={estilos.metadados}><p>Solicitado por <strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}{solicitacao.dataDecisao && ` · decisão ${new Date(`${solicitacao.dataDecisao}T12:00:00`).toLocaleDateString('pt-BR')}`}</time></div>
-      <ul>{solicitacao.materiais.map((material) => <li key={material.id}>
+      <div className={estilos.metadados}><p><strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
+      <ul>{agruparMateriaisPedido(solicitacao.materiais).map((material) => <li key={material.chave}>
         <span>{material.quantidade}×</span>
         <div className={estilos.detalhesMaterial}>
           <strong>{material.nome}</strong>
-          <small>{!material.identificacao ? "Equipamento ainda não selecionado" : solicitacao.status === "Em trânsito" ? `Em transporte: ${origem} → ${destino}` : solicitacao.status === "Concluída" ? `Recebido em ${destino}` : `Local de coleta: ${origem}`}</small>
-          {identificacaoVisivel(material.identificacao, material.catalogoChave?.split('|')[0]) && <small>Série {material.identificacao}</small>}
           {material.quantidadeCompra > 0 && <div className={estilos.compraAnexada}>
             <ShoppingCart aria-hidden="true" />
-            <span><b>Compra solicitada: {material.quantidadeCompra} unidade(s)</b>{material.compraSolicitadaEm && <small>Registrada em {formatarDataHora(material.compraSolicitadaEm)}</small>}</span>
+            <span><b>{material.quantidadeCompra} para compra</b></span>
           </div>}
         </div>
       </li>)}</ul>
@@ -198,29 +202,37 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
 
   return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-incorporado={incorporado}>
     {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button type="button" onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun /> : <Moon />}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /></button></div></header>}
-    <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Central de estoque</span><h1>Atendimento das solicitações</h1><p>Veja onde há material, encaminhe faltas para compra e confirme as entregas.</p></div></section>
+    <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Operação</span><h1>Estoque</h1></div></section>
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}{mensagem.texto}<button onClick={() => definirMensagem(null)}><X /></button></div>}
       <nav className={estilos.abas} aria-label="Áreas do estoque">
-        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Aceitas</span><b>{pendencias.length}</b></button>
-        <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /><span>Registros</span><b>{concluidas.length}</b></button>
+        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Pedidos</span><b>{pendencias.length}</b></button>
         <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /><span>Compras</span><b>{comprasPendentes}</b></button>
+        <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /><span>Histórico</span><b>{concluidas.length}</b></button>
       </nav>
       {!carregando && <section className={estilos.filtros} aria-label="Pesquisa de movimentações"><label><Search /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar número, técnico, material, série ou data..." /></label><label><Building2 /><select value={obraFiltrada} onChange={(evento) => definirObraFiltrada(evento.target.value)}><option value="todas">Todas as obras</option>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label></section>}
       {carregando ? <div className={estilos.carregando}>Carregando estoque...</div> : <>
-        {aba === 'atividades' && <section className={estilos.secao}><div className={estilos.tituloSecao}><Truck /><div><h2>Solicitações aceitas</h2><p>Verifique a disponibilidade e confirme cada entrega ou recebimento.</p></div></div>{pendenciasFiltradas.length ? agruparPorObra(pendenciasFiltradas).map(([obraId, itens]) => <div className={estilos.grupoObra} key={obraId}><header><Building2 /><div><strong>{nomeLocal(obraId)}</strong><small>{itens.length} {itens.length === 1 ? 'solicitação' : 'solicitações'}</small></div></header><div className={estilos.grade}>{itens.map(renderizarCard)}</div></div>) : <div className={estilos.vazio}><Check /><strong>Nenhuma solicitação aceita</strong><span>Não há tarefas correspondentes aos filtros.</span></div>}</section>}
-        {aba === 'registros' && <section className={estilos.secao}><div className={estilos.tituloSecao}><ClipboardList /><div><h2>Registros</h2><p>Histórico de solicitações finalizadas ou rejeitadas.</p></div></div>{concluidasFiltradas.length ? agruparPorObra(concluidasFiltradas).map(([obraId, itens]) => <div className={estilos.grupoObra} key={obraId}><header><Building2 /><div><strong>{nomeLocal(obraId)}</strong><small>{itens.length} registros</small></div></header><div className={estilos.grade}>{itens.map(renderizarCard)}</div></div>) : <div className={estilos.vazio}><ClipboardList /><strong>Nenhum registro encontrado</strong><span>Altere a pesquisa ou o filtro de obra.</span></div>}</section>}
+        {aba === 'atividades' && <section className={estilos.secao}>{pendenciasFiltradas.length ? <div className={estilos.grade}>{pendenciasFiltradas.map(renderizarCard)}</div> : <div className={estilos.vazio}><Check /><strong>Nenhum pedido para atender</strong></div>}</section>}
+        {aba === 'registros' && <section className={estilos.secao}>{concluidasFiltradas.length ? <div className={estilos.grade}>{concluidasFiltradas.map(renderizarCard)}</div> : <div className={estilos.vazio}><ClipboardList /><strong>Nenhum registro encontrado</strong></div>}</section>}
         {aba === 'aquisicoes' && <section className={estilos.secao}>
-          <div className={`${estilos.tituloSecao} ${estilos.tituloAquisicoes}`}><PackagePlus /><div><h2>Compras</h2><p>Materiais que não foram encontrados no estoque nem em outra obra.</p></div><button type="button" disabled={!aquisicoes.some(({ pendente }) => pendente > 0)} onClick={() => imprimirListaComprasGeral(aquisicoes, buscarObra)}><FileDown /> Lista geral de compras</button></div>
+          <div className={`${estilos.tituloSecao} ${estilos.tituloAquisicoes}`}><PackagePlus /><div><h2>Compras</h2><p>Registre cada entrega separadamente.</p></div><button type="button" disabled={!aquisicoes.some(({ pendente }) => pendente > 0)} onClick={() => imprimirListaComprasGeral(aquisicoes, buscarObra)}><FileDown /> Lista de compras</button></div>
           <div className={estilos.gradeAquisicoes}>{aquisicoesPorSolicitacao.length ? aquisicoesPorSolicitacao.map(({ solicitacao, itens }) => {
             const possuiPendencia = itens.some(({ pendenteEntrada }) => pendenteEntrada > 0);
             return <article className={estilos.aquisicao} key={solicitacao.id} data-concluida={!possuiPendencia}>
               <header><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><h3>{nomeLocal(solicitacao.obraDestinoId || solicitacao.obraOrigemId)}</h3></div><b>{possuiPendencia ? 'Pendente' : 'Adquirido'}</b></header>
               <div className={estilos.aquisicaoItens}>{itens.map(({ material, pendenteEntrada }) => {
                 const chave = `${solicitacao.id}-${material.id}`;
+                const materialSemSerie = tipoSemNumeroSerie(material.catalogoChave?.split('|')[0]);
+                const quantidadeEntrada = quantidadesRecebidas[chave] ?? '1';
                 return <section key={chave} className={estilos.aquisicaoItem}>
-                  <div className={estilos.aquisicaoItemTitulo}><strong>{material.nome}</strong><small>Compra registrada em {formatarDataHora(material.compraSolicitadaEm)}</small></div>
-                  <dl><div><dt>Compra</dt><dd>{material.quantidadeCompra}</dd></div><div><dt>No estoque</dt><dd>{material.quantidadeEntradaEstoque || 0}</dd></div><div><dt>Aguardando</dt><dd>{pendenteEntrada}</dd></div></dl>
-                  {pendenteEntrada > 0 ? <footer className={estilos.entradaAquisicao}><p><strong>{pendenteEntrada} {pendenteEntrada === 1 ? 'unidade será adicionada' : 'unidades serão adicionadas'}</strong><span>A entrada será feita para todo o saldo aguardando.</span></p><label>Número da nota fiscal<input type="text" maxLength="120" placeholder="Ex.: NF-12345" value={notasFiscaisRecebidas[chave] ?? ''} onChange={(evento) => definirNotasFiscaisRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label><label>Número de série do item {!ferramentaManual(material.catalogoChave?.split('|')[0]) ? '' : '(se houver)'}<input type="text" maxLength="120" placeholder="Ex.: SN-123456" value={identificacoesRecebidas[chave] ?? ''} onChange={(evento) => definirIdentificacoesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label><button onClick={() => registrarAquisicao(solicitacao, material, pendenteEntrada)} disabled={!String(notasFiscaisRecebidas[chave] || '').trim() || (!ferramentaManual(material.catalogoChave?.split('|')[0]) && !String(identificacoesRecebidas[chave] || '').trim())}><Check /> Adicionar ao estoque</button></footer> : <div className={estilos.aquisicaoConcluida}><Check /> Disponível no estoque desde {formatarDataHora(material.adquiridaEm)}</div>}
+                  <div className={estilos.aquisicaoItemTitulo}><strong>{material.nome}</strong><small>Faltam {pendenteEntrada}</small></div>
+                  <dl><div><dt>Pedido</dt><dd>{material.quantidadeCompra}</dd></div><div><dt>Recebido</dt><dd>{material.quantidadeEntradaEstoque || 0}</dd></div><div><dt>Falta</dt><dd>{pendenteEntrada}</dd></div></dl>
+                  {pendenteEntrada > 0 ? <footer className={estilos.entradaAquisicao}>
+                    <p><strong>Registrar uma entrega</strong><span>Pode ser apenas parte do pedido e ter uma nota diferente.</span></p>
+                    <label>Quantidade<div className={estilos.campoQuantidadeCompra}><input type="number" inputMode="numeric" min="1" max={pendenteEntrada} step="1" placeholder="0" value={quantidadeEntrada} onChange={(evento) => definirQuantidadesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /><button type="button" onClick={() => definirQuantidadesRecebidas((atuais) => ({ ...atuais, [chave]: String(pendenteEntrada) }))}>Tudo</button></div></label>
+                    <label>Nota fiscal<input type="text" maxLength="120" placeholder="Ex.: NF-12345" value={notasFiscaisRecebidas[chave] ?? ''} onChange={(evento) => definirNotasFiscaisRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label>
+                    {!materialSemSerie && <label>Número de série<input type="text" maxLength="120" placeholder="Ex.: SN-123456" value={identificacoesRecebidas[chave] ?? ''} onChange={(evento) => definirIdentificacoesRecebidas((atuais) => ({ ...atuais, [chave]: evento.target.value }))} /></label>}
+                    <button onClick={() => registrarAquisicao(solicitacao, material, pendenteEntrada)} disabled={!Number.isInteger(Number(quantidadeEntrada)) || Number(quantidadeEntrada) < 1 || Number(quantidadeEntrada) > pendenteEntrada || !String(notasFiscaisRecebidas[chave] || '').trim() || (!materialSemSerie && !String(identificacoesRecebidas[chave] || '').trim())}><Check /> Registrar entrada</button>
+                  </footer> : <div className={estilos.aquisicaoConcluida}><Check /> Compra recebida</div>}
                 </section>;
               })}</div>
               <button type="button" className={estilos.exportarSolicitacao} disabled={!possuiPendencia} onClick={() => imprimirListaComprasSolicitacao(solicitacao, itens, buscarObra)}><FileDown /> Lista de compras da solicitação</button>

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { AlertCircle, Box, Check, ChevronRight, Minus, Plus, ShoppingCart, Warehouse, X } from 'lucide-react';
 import estilos from './SepararEquipamentosModal.module.css';
-import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 const localDoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
 const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
@@ -21,35 +20,41 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
       : normalizar(equipamento.modelo) === normalizar(material.nome);
     return origemPermitida && statusMovimentavel(equipamento.status) && (equipamento.quantidadeDisponivel ?? 1) > 0 && mesmoCatalogo;
   });
+  const gruposCandidatos = (material) => Object.values(candidatos(material).reduce((grupos, equipamento) => {
+    const local = localDoEquipamento(equipamento);
+    if (!grupos[local]) grupos[local] = { chave: local, local, equipamentos: [] };
+    grupos[local].equipamentos.push(equipamento);
+    return grupos;
+  }, {})).sort((a, b) => nomeLocal(a.local).localeCompare(nomeLocal(b.local), 'pt-BR'));
   const quantidadeEscolhida = (materialId, equipamentoId) => quantidades[materialId]?.[equipamentoId] || 0;
-  const reservadoEmOutros = (materialId, equipamentoId) => Object.entries(quantidades).reduce((total, [outroMaterialId, escolhas]) => String(outroMaterialId) === String(materialId) ? total : total + (escolhas[equipamentoId] || 0), 0);
-  const saldoParaMaterial = (material, equipamento) => Math.max(0, (equipamento.quantidadeDisponivel ?? 1) - reservadoEmOutros(material.id, equipamento.id));
+  const reservadoEmOutros = (materialId, equipamentoId, estado = quantidades) => Object.entries(estado).reduce((total, [outroMaterialId, escolhas]) => String(outroMaterialId) === String(materialId) ? total : total + (escolhas[equipamentoId] || 0), 0);
+  const saldoParaMaterial = (material, equipamento, estado = quantidades) => Math.max(0, (equipamento.quantidadeDisponivel ?? 1) - reservadoEmOutros(material.id, equipamento.id, estado));
   const totalEscolhido = (material) => Object.values(quantidades[material.id] || {}).reduce((total, quantidade) => total + quantidade, 0);
   const totalDisponivel = (material) => candidatos(material).reduce((total, equipamento) => total + saldoParaMaterial(material, equipamento), 0);
+  const quantidadeEscolhidaGrupo = (material, grupo) => grupo.equipamentos.reduce((total, equipamento) => total + quantidadeEscolhida(material.id, equipamento.id), 0);
+  const saldoGrupo = (material, grupo) => grupo.equipamentos.reduce((total, equipamento) => total + saldoParaMaterial(material, equipamento), 0);
 
   const totais = useMemo(() => solicitacao.materiais.reduce((soma, material) => soma + material.quantidade, 0), [solicitacao]);
   const totalSeparado = solicitacao.materiais.reduce((soma, material) => soma + totalEscolhido(material), 0);
   const completo = solicitacao.materiais.every((material) => totalEscolhido(material) === material.quantidade);
   const origensSelecionadas = new Set(Object.values(quantidades).flatMap((escolhas) => Object.keys(escolhas)).map((id) => equipamentos.find((item) => String(item.id) === String(id))).filter(Boolean).map(localDoEquipamento));
 
-  const alterar = (material, equipamento, diferenca) => definirQuantidades((atuais) => {
+  const definirQuantidadeGrupo = (material, grupo, valor) => definirQuantidades((atuais) => {
     const porMaterial = { ...(atuais[material.id] || {}) };
-    const atual = porMaterial[equipamento.id] || 0;
-    const outros = Object.entries(porMaterial).reduce((soma, [id, quantidade]) => String(id) === String(equipamento.id) ? soma : soma + quantidade, 0);
-    const maximo = Math.min(saldoParaMaterial(material, equipamento), material.quantidade - outros);
-    const proxima = Math.max(0, Math.min(maximo, atual + diferenca));
-    if (proxima) porMaterial[equipamento.id] = proxima; else delete porMaterial[equipamento.id];
+    const idsGrupo = new Set(grupo.equipamentos.map(({ id }) => String(id)));
+    const outros = Object.entries(porMaterial).reduce((soma, [id, quantidade]) => idsGrupo.has(String(id)) ? soma : soma + quantidade, 0);
+    grupo.equipamentos.forEach(({ id }) => delete porMaterial[id]);
+    const maximoDisponivel = grupo.equipamentos.reduce((soma, equipamento) => soma + saldoParaMaterial(material, equipamento, atuais), 0);
+    let restante = Math.max(0, Math.min(maximoDisponivel, material.quantidade - outros, Number.isFinite(Number(valor)) ? Math.trunc(Number(valor)) : 0));
+    grupo.equipamentos.forEach((equipamento) => {
+      if (!restante) return;
+      const quantidade = Math.min(restante, saldoParaMaterial(material, equipamento, atuais));
+      if (quantidade > 0) porMaterial[equipamento.id] = quantidade;
+      restante -= quantidade;
+    });
     return { ...atuais, [material.id]: porMaterial };
   });
-
-  const definirQuantidade = (material, equipamento, valor) => definirQuantidades((atuais) => {
-    const porMaterial = { ...(atuais[material.id] || {}) };
-    const outros = Object.entries(porMaterial).reduce((soma, [id, quantidade]) => String(id) === String(equipamento.id) ? soma : soma + quantidade, 0);
-    const maximo = Math.min(saldoParaMaterial(material, equipamento), material.quantidade - outros);
-    const proxima = Math.max(0, Math.min(maximo, Number.isFinite(Number(valor)) ? Math.trunc(Number(valor)) : 0));
-    if (proxima) porMaterial[equipamento.id] = proxima; else delete porMaterial[equipamento.id];
-    return { ...atuais, [material.id]: porMaterial };
-  });
+  const alterarGrupo = (material, grupo, diferenca) => definirQuantidadeGrupo(material, grupo, quantidadeEscolhidaGrupo(material, grupo) + diferenca);
 
   const preencherTudo = (material) => {
     let restante = material.quantidade;
@@ -105,7 +110,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
 
         <div className={estilos.materiais}>
           {solicitacao.materiais.map((material) => {
-            const opcoes = candidatos(material);
+            const opcoes = gruposCandidatos(material);
             const disponivel = totalDisponivel(material);
             const separado = totalEscolhido(material);
             const faltante = Math.max(0, material.quantidade - disponivel);
@@ -116,18 +121,18 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
               </header>
 
               {opcoes.length > 0 && <div className={estilos.lista}>
-                {opcoes.map((equipamento) => {
-                  const quantidade = quantidadeEscolhida(material.id, equipamento.id);
+                {opcoes.map((grupo) => {
+                  const quantidade = quantidadeEscolhidaGrupo(material, grupo);
                   const totalMaterialAtingido = separado >= material.quantidade;
-                  const saldo = saldoParaMaterial(material, equipamento);
-                  return <div className={`${estilos.equipamento} ${quantidade ? estilos.selecionado : ''}`} key={equipamento.id}>
+                  const saldo = saldoGrupo(material, grupo);
+                  return <div className={`${estilos.equipamento} ${quantidade ? estilos.selecionado : ''}`} key={grupo.chave}>
                     <span className={estilos.icone}><Box /></span>
-                    <div className={estilos.dados}><strong>{equipamento.modelo}</strong><span>{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? `${equipamento.serie} · ` : ''}{nomeLocal(localDoEquipamento(equipamento))}</span></div>
+                    <div className={estilos.dados}><strong>{material.nome}</strong><span>{nomeLocal(grupo.local)}</span></div>
                     <span className={estilos.saldo}>{saldo}<small> disponíveis</small></span>
                     <div className={estilos.quantidade}>
-                      <button onClick={() => alterar(material, equipamento, -1)} disabled={quantidade === 0} aria-label="Diminuir"><Minus /></button>
-                      <input type="number" min="0" max={Math.min(saldo, material.quantidade - (separado - quantidade))} value={quantidade} onFocus={(evento) => evento.target.select()} onChange={(evento) => definirQuantidade(material, equipamento, evento.target.value)} aria-label={`Quantidade de ${equipamento.modelo} a separar`} />
-                      <button onClick={() => alterar(material, equipamento, 1)} disabled={totalMaterialAtingido || quantidade >= saldo} aria-label="Aumentar"><Plus /></button>
+                      <button onClick={() => alterarGrupo(material, grupo, -1)} disabled={quantidade === 0} aria-label="Diminuir"><Minus /></button>
+                      <input type="number" min="0" max={Math.min(saldo, material.quantidade - (separado - quantidade))} value={quantidade} onFocus={(evento) => evento.target.select()} onChange={(evento) => definirQuantidadeGrupo(material, grupo, evento.target.value)} aria-label={`Quantidade de ${material.nome} a separar em ${nomeLocal(grupo.local)}`} />
+                      <button onClick={() => alterarGrupo(material, grupo, 1)} disabled={totalMaterialAtingido || quantidade >= saldo} aria-label="Aumentar"><Plus /></button>
                     </div>
                   </div>;
                 })}

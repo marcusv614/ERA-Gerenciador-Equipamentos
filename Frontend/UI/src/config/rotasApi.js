@@ -15,6 +15,7 @@ export const ROTAS_API = {
   historicoObra: (obraId) => `/obras/${obraId}/historico`,
   inventarioHistoricoObra: (obraId) => `/obras/${obraId}/inventario-historico`,
   equipamentos: '/equipamentos',
+  categoriasEquipamento: '/categorias-equipamento',
   equipamento: (equipamentoId) => `/equipamentos/${equipamentoId}`,
   arquivamentoEquipamento: (id) => `/equipamentos/${id}/arquivamento`,
   movimentacoesEquipamento: (equipamentoId) => `/equipamentos/${equipamentoId}/movimentacoes`,

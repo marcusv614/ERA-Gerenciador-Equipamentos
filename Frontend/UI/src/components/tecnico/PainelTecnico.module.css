@@ -340,6 +340,7 @@
 .formulario,
 .resumoPedido,
 .acompanhamento,
+.materiaisObras,
 .inventarioObra {
   min-width: 0;
   border: 1px solid var(--campo-border);
@@ -740,6 +741,78 @@
 .seguranca svg { width: 12px; flex: 0 0 auto; }
 .voltarRevisao { width: 100%; margin-top: 8px; }
 
+.materiaisObras { padding: clamp(20px, 4vw, 32px); }
+.materiaisObras > header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--campo-border);
+}
+.materiaisObras > header h2 {
+  margin: 0;
+  font: 750 23px/1.2 var(--font-display);
+}
+.listaObrasMateriais {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.obraMateriais {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--campo-border);
+  border-radius: 13px;
+  background: var(--campo-raised);
+}
+.obraMateriais > header {
+  min-height: 54px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--campo-border);
+  background: var(--campo-soft-green);
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+.obraMateriais > header > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--campo-green-soft);
+  color: var(--campo-green);
+  display: grid;
+  place-items: center;
+}
+.obraMateriais > header svg { width: 16px; }
+.obraMateriais > header strong { min-width: 0; font-size: 11px; overflow-wrap: anywhere; }
+.obraMateriais > header b {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--campo-raised);
+  color: var(--campo-green);
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+}
+.obraMateriais ul { margin: 0; padding: 5px 13px; list-style: none; }
+.obraMateriais li {
+  min-width: 0;
+  min-height: 48px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--campo-border);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.obraMateriais li:last-child { border-bottom: 0; }
+.obraMateriais li > div { min-width: 0; display: flex; flex-direction: column; }
+.obraMateriais li strong { font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+.obraMateriais li small { margin-top: 2px; color: var(--campo-muted); font-size: 8px; overflow-wrap: anywhere; }
+.obraMateriais li > b { color: var(--campo-green); font: 800 16px var(--font-display); }
+.obraMateriais > p { margin: 0; padding: 20px 14px; color: var(--campo-muted); font-size: 9px; text-align: center; }
+
 .acompanhamento,
 .inventarioObra { padding: clamp(20px, 4vw, 32px); }
 .cabecalhoHistorico,
@@ -851,14 +924,21 @@
 }
 .trajetoCartao span { font-size: 9px; font-weight: 750; line-height: 1.4; overflow-wrap: anywhere; }
 .fluxoSolicitacao {
-  margin: 0 0 11px;
-  padding: 9px 10px;
-  border-left: 3px solid var(--campo-orange);
-  border-radius: 0 8px 8px 0;
+  margin: 13px 0 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
   background: var(--campo-orange-soft);
-  color: var(--campo-muted);
-  font-size: 9px;
+  color: var(--campo-orange-dark);
+  font-size: 10px;
+  font-weight: 800;
   line-height: 1.45;
+}
+.destinoSolicitacao {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 .materiaisCartao { min-width: 0; display: flex; flex-wrap: wrap; gap: 5px; }
 .materiaisCartao > span {
@@ -1083,6 +1163,7 @@
   .resumoPedido { position: static; }
   .listaMateriais,
   .listaSolicitacoes,
+  .listaObrasMateriais,
   .blocosInventario { grid-template-columns: 1fr; }
 }
 
@@ -1144,10 +1225,12 @@
   .formulario,
   .resumoPedido,
   .acompanhamento,
+  .materiaisObras,
   .inventarioObra { border-radius: 15px; box-shadow: none; }
   .formulario,
   .resumoPedido,
   .acompanhamento,
+  .materiaisObras,
   .inventarioObra { padding: 15px; }
   .operacoes h2,
   .escolhaObra > h2,
