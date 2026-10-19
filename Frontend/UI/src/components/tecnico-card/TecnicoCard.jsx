@@ -1,11 +1,11 @@
-import { PackageSearch, Pencil } from 'lucide-react';
+import { ClipboardCheck, PackageSearch, Pencil } from 'lucide-react';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData } from '../../utils/datas';
 import styles from './TecnicoCard.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
-export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar }) {
+export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar, aoAuditar }) {
   const { nome, cargo, email, telefone, status } = funcionario;
   const initials = nome
     .split(' ')
@@ -87,6 +87,11 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
           </div>
         )}
       </div>
+      {aoAuditar && <section className={styles.section}>
+        <div className={styles.sectionTitle}>Auditorias dos materiais</div>
+        <p className={styles.auditHint}>{equipamentos.filter((e) => e.auditavel).length} registro(s) marcado(s) como auditável. Gere a ficha de vistoria e registre depois as condições encontradas.</p>
+        <button type="button" className={styles.auditButton} onClick={() => aoAuditar(funcionario)}><ClipboardCheck size={16} aria-hidden="true" /> Gerenciar auditorias</button>
+      </section>}
     </div>
   );
 }

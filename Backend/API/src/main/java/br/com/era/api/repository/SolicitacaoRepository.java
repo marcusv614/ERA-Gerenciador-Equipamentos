@@ -8,6 +8,7 @@ import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import java.util.List;
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao,Long> {
+    List<Solicitacao> findByStatus(String status);
     List<Solicitacao> findByTecnicoIdOrderByCriadoEmDesc(Long tecnicoId);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Solicitacao s where s.id=:id")

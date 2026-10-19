@@ -115,6 +115,7 @@ export function ModalNovoEquipamento({
     notaFiscal: equipamento?.notaFiscal || '',
     dataCompra: equipamento?.dataCompra || '',
     observacoes: equipamento?.observacoes || '',
+    auditavel: equipamento?.auditavel ?? false,
   });
   const [novaCategoria, definirNovaCategoria] = useState('');
   const [categoriaCriada, definirCategoriaCriada] = useState(null);
@@ -372,6 +373,10 @@ export function ModalNovoEquipamento({
           </div>
         </details>
 
+        <label className={styles.auditavel}>
+          <input type="checkbox" checked={form.auditavel} onChange={(evento) => setForm({ ...form, auditavel: evento.target.checked })} />
+          <span><strong>Auditável</strong><small>Inclui este item nas vistorias de conservação dos materiais sob responsabilidade dos técnicos. Marque para ferramentas e equipamentos duráveis; deixe desmarcado para consumíveis.</small><b>{form.auditavel ? 'Participa das auditorias dos técnicos' : 'Não participa das auditorias dos técnicos'}</b></span>
+        </label>
         <CampoFormulario rotulo="Observações (opcional)" dica="Estado de conservação, informação ausente ou outro detalhe útil.">
           <textarea className={`${styles.input} ${styles.textarea}`} rows="3" maxLength="4000" placeholder="Ex.: Ferramenta antiga, marca ilegível." value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} />
         </CampoFormulario>

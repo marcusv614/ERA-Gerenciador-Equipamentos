@@ -80,6 +80,14 @@ export const apiAtividades = {
   },
   concluir: (atividadeId) => avisarAposSucesso(criar(ROTAS_API.concluirAtividade(atividadeId)), 'Recebimento confirmado. Solicitação finalizada.'),
 };
+export const apiAuditoriasTecnico = {
+  listarTodas: () => obter('/auditorias'),
+  listar: (tecnicoId) => obter(ROTAS_API.auditoriasTecnico(tecnicoId)),
+  materiais: (tecnicoId) => obter(ROTAS_API.materiaisAuditoriaTecnico(tecnicoId)),
+  consultar: (tecnicoId, id) => obter(ROTAS_API.auditoriaTecnico(tecnicoId, id)),
+  criar: (tecnicoId, equipamentoIds) => avisarAposSucesso(criar(ROTAS_API.auditoriasTecnico(tecnicoId), { equipamentoIds }), 'Ficha de auditoria criada. Você já pode exportar o PDF.'),
+  registrar: (tecnicoId, id, dados) => avisarAposSucesso(atualizar(ROTAS_API.auditoriaTecnico(tecnicoId, id), dados), dados.concluir ? 'Auditoria concluída e registrada no histórico.' : 'Rascunho da auditoria salvo.'),
+};
 export const apiDeposito = { listar: () => obter(ROTAS_API.deposito) };
 export const apiPainel = { obterResumo: () => obter(ROTAS_API.resumo) };
 

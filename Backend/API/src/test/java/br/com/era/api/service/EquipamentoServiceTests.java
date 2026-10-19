@@ -47,7 +47,7 @@ class EquipamentoServiceTests {
         LocalDate dataEntrada = LocalDate.of(2026, 9, 3);
         EquipamentoDto.Requisicao dados = new EquipamentoDto.Requisicao(
                 "FLUKE", "Nome atualizado", "SERIE-1", "Em estoque", null, null,
-                dataEntrada, null, null, null, 1, null, "INDIVIDUAL", null, null, null, null);
+                dataEntrada, null, null, null, 1, null, "INDIVIDUAL", null, null, null, null, true);
 
         EquipamentoDto.Resposta resposta = service.atualizar(1L, dados);
 
@@ -56,6 +56,7 @@ class EquipamentoServiceTests {
         assertEquals("FLUKE", resposta.tipo());
         assertEquals(dataEntrada, resposta.dataEntrada());
         assertEquals(null, resposta.tecnico());
+        assertEquals(true, resposta.auditavel());
     }
 
     @Test
@@ -82,7 +83,7 @@ class EquipamentoServiceTests {
 
         RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(2L,
                 new EquipamentoDto.Requisicao("OTDR", "Equipamento", "SERIE-2", "Em campo", 3L, null,
-                        LocalDate.now(), null, null, null, null, null, null, null, null, null, null)));
+                        LocalDate.now(), null, null, null, null, null, null, null, null, null, null, null)));
 
         assertEquals("Localização, responsável e status só podem ser alterados pelo fluxo de movimentação.", erro.getMessage());
     }
@@ -107,7 +108,7 @@ class EquipamentoServiceTests {
 
         EquipamentoDto.Resposta resposta = service.atualizar(5L, new EquipamentoDto.Requisicao(
                 "Ferramenta manual", "Alicate", "ERA-LOTE-1", "Em estoque", null, null,
-                LocalDate.now(), null, null, null, 8, null, null, null, null, null, null));
+                LocalDate.now(), null, null, null, 8, null, null, null, null, null, null, null));
 
         assertEquals(8, resposta.quantidade());
         assertEquals("LOTE", resposta.controleQuantidade());
@@ -132,7 +133,7 @@ class EquipamentoServiceTests {
 
         RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.atualizar(6L,
                 new EquipamentoDto.Requisicao("Ferramenta manual", "Alicate", "ERA-LOTE-2", "Em estoque",
-                        null, null, LocalDate.now(), null, null, null, 3, null, "LOTE", null, null, null, null)));
+                        null, null, LocalDate.now(), null, null, null, 3, null, "LOTE", null, null, null, null, null)));
 
         assertEquals("A quantidade não pode ser menor que as unidades já reservadas.", erro.getMessage());
         verify(equipamentos, never()).save(equipamento);
@@ -177,6 +178,7 @@ class EquipamentoServiceTests {
         referencia.setTipo("OTDR");
         referencia.setModelo("Equipamento");
         referencia.setMedida("unidade");
+        referencia.setAuditavel(true);
         when(equipamentos.findAll()).thenReturn(List.of(referencia));
         when(equipamentos.save(any(Equipamento.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
         EquipamentoService service = new EquipamentoService(equipamentos, mock(MovimentacaoRepository.class),
@@ -189,5 +191,16 @@ class EquipamentoServiceTests {
         assertEquals("NF-12345", criado.getNotaFiscal());
         assertEquals("SN-9988", criado.getSerie());
         assertEquals(2, criado.getQuantidade());
+        assertEquals(true, criado.isAuditavel());
+    }
+    @Test void marcaAuditavelNoCadastroEPreservaAoDividirLote() {
+        EquipamentoRepository repository=mock(EquipamentoRepository.class);
+        when(repository.save(any(Equipamento.class))).thenAnswer(i->i.getArgument(0));
+        EquipamentoService service=new EquipamentoService(repository,mock(MovimentacaoRepository.class),mock(ObraService.class),mock(FuncionarioService.class),mock(UsuarioService.class),mock(InventarioHistoricoService.class));
+        var dados=new EquipamentoDto.Requisicao("Ferramentas","Escada","ESC-1","Em estoque",null,null,LocalDate.now(),null,null,null,3,null,"LOTE",null,null,null,null,true);
+        assertEquals(true,service.cadastrar(dados).auditavel());
+        Equipamento origem=new Equipamento();origem.setTipo("Ferramentas");origem.setModelo("Escada");origem.setSerie("ESC-1");origem.setAuditavel(true);
+        var derivado=service.criarLoteDerivado(origem,1,null,null,"Em estoque",LocalDate.now(),1L);
+        assertEquals(true,derivado.isAuditavel());
     }
 }

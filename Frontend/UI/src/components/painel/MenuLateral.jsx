@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, Boxes, Building2, ChevronDown, ChevronRight, UserRound, Users, Warehouse } from 'lucide-react';
+import { Activity, Boxes, Building2, ChevronDown, ChevronRight, ClipboardCheck, UserRound, Users, Warehouse } from 'lucide-react';
 import logoEra from '../../assets/ERALTDA.png';
 
 export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
@@ -35,6 +35,7 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
             {funcionarios.map((funcionario) => <button key={funcionario.id} onClick={() => { aoSelecionarTela('funcionarios'); aoSelecionarBusca(funcionario.nome); }} className={estilos.navSubItem}><UserRound size={13} /><span>{funcionario.nome}</span></button>)}
           </div>}
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('atividades'); }} className={`${estilos.navItem} ${telaAtual === 'atividades' ? estilos.navItemActive : ''}`}><Activity size={16} /> Atividades {totalAtividadesPendentes > 0 && <span className={estilos.navBadge}>{totalAtividadesPendentes}</span>}</button>
+          <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('auditorias'); }} className={`${estilos.navItem} ${telaAtual === 'auditorias' ? estilos.navItemActive : ''}`}><ClipboardCheck size={16} /> Auditorias</button>
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('deposito'); }} className={`${estilos.navItem} ${telaAtual === 'deposito' ? estilos.navItemActive : ''}`}><Warehouse size={16} /> Depósito</button>
         </nav>
         <div className={estilos.profileWrap}><div className={estilos.profile}><div className={estilos.avatar}>GE</div><div className={estilos.profileText}><div className={estilos.profileName}>Gerente ERA</div><div className={estilos.profileRole}>Gestão de ativos</div></div></div></div>

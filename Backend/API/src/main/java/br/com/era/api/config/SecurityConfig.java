@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")
                 .requestMatchers("/painel/**").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers("/deposito/**").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
+                .requestMatchers("/funcionarios/*/auditorias","/funcionarios/*/auditorias/**").hasAnyRole("ADMIN","GERENTE")
+                .requestMatchers(HttpMethod.GET,"/auditorias").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.POST,"/funcionarios","/equipamentos","/obras","/categorias-equipamento").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,"/funcionarios/**").hasAnyRole("ADMIN","GERENTE")
                 .requestMatchers(HttpMethod.PATCH,"/funcionarios/**").hasRole("ADMIN")

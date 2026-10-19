@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 public interface EquipamentoRepository extends JpaRepository<Equipamento,Long> {
+    List<Equipamento> findByTecnicoIdAndAuditavelTrueAndArquivadoFalseOrderByModeloAscSerieAsc(Long tecnicoId);
     boolean existsBySerieIgnoreCase(String serie);
     Optional<Equipamento> findBySerieIgnoreCase(String serie);
     @Lock(LockModeType.PESSIMISTIC_WRITE)

@@ -1,10 +1,11 @@
-import { Activity, Boxes, Building2, Users, Warehouse } from 'lucide-react';
+import { Activity, Boxes, Building2, ClipboardCheck, Users, Warehouse } from 'lucide-react';
 
 const ITENS = [
   { id: 'equipamentos', rotulo: 'Equipamentos', icone: Boxes },
   { id: 'obras', rotulo: 'Obras', icone: Building2 },
   { id: 'atividades', rotulo: 'Atividades', icone: Activity },
   { id: 'funcionarios', rotulo: 'Equipe', icone: Users },
+  { id: 'auditorias', rotulo: 'Auditorias', icone: ClipboardCheck },
   { id: 'deposito', rotulo: 'Depósito', icone: Warehouse },
 ];
 

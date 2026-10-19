@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 @Entity @Table(name="equipamentos")
 public class Equipamento {
+    @Column(nullable=false) private boolean auditavel=false;
+    public boolean isAuditavel(){return auditavel;} public void setAuditavel(boolean v){auditavel=v;}
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @Column(nullable=false,length=40) private String tipo; @Column(nullable=false,length=180) private String modelo; @Column(nullable=false,unique=true,length=120) private String serie; @Column(nullable=false,length=40) private String status;
     @Column(length=100) private String medida; @Column(nullable=false) private Integer quantidade=1; @Column(name="quantidade_reservada",nullable=false) private Integer quantidadeReservada=0; @Column(name="controle_quantidade",nullable=false,length=20) private String controleQuantidade="INDIVIDUAL"; @Column(columnDefinition="text") private String observacoes; @Column(name="nota_fiscal",length=120) private String notaFiscal; @Column(length=180) private String fornecedor; @Column(name="data_compra") private LocalDate dataCompra;

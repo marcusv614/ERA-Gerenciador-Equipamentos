@@ -1,6 +1,6 @@
 import { CartaoTecnico } from '../tecnico-card/TecnicoCard';
 
-export function TelaFuncionarios({ funcionarios, obras, equipamentos, podeEditar, aoEditarFuncionario, estilos }) {
+export function TelaFuncionarios({ funcionarios, obras, equipamentos, podeEditar, aoEditarFuncionario, aoAuditarFuncionario, estilos }) {
   const grupos=[{titulo:'Funcionários ativos',itens:funcionarios.filter((f)=>f.status==='Ativo'&&!f.arquivado)},{titulo:'Funcionários inativos',itens:funcionarios.filter((f)=>f.status!=='Ativo'||f.arquivado)}];
   return <div className={estilos.registrosAgrupados}>{grupos.map((grupo)=>grupo.itens.length>0&&<section key={grupo.titulo} className={estilos.registroGrupo}><header><strong>{grupo.titulo}</strong><b>{grupo.itens.length}</b></header><div className={estilos.tecnicoGrid}>
     {grupo.itens.map((funcionario) => <CartaoTecnico
@@ -11,6 +11,7 @@ export function TelaFuncionarios({ funcionarios, obras, equipamentos, podeEditar
       todasAsObras={obras}
       podeEditar={podeEditar}
       aoEditar={aoEditarFuncionario}
+      aoAuditar={aoAuditarFuncionario}
     />)}</div></section>)}
     {funcionarios.length === 0 && <div className={estilos.emptyState}>Nenhum funcionário encontrado.</div>}
   </div>;

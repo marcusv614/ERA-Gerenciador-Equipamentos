@@ -11,6 +11,8 @@ const ESTILOS_DOCUMENTO = `
   .label{display:block;font-size:7px;color:#666;text-transform:uppercase;letter-spacing:.03em;line-height:1.1}.value{font-size:9px;font-weight:600;color:#111;line-height:1.2}
   table{width:100%;border-collapse:collapse;margin-top:7px;table-layout:auto}th,td{padding:5px 4px;border:1px solid #d9d9d9;text-align:left;vertical-align:top;font-size:9px;word-break:break-word}th{background:#f3f3f3}
   .muted{color:#666;font-size:9px}
+  .vistoria-icone{vertical-align:middle;display:inline-block;margin-right:3px}.vistoria-tabela td{height:32px}.vistoria-estado{min-width:58px;text-align:center;white-space:nowrap}.vistoria-caixa{display:inline-block;width:15px;height:15px;border:1px solid #222;text-align:center;line-height:15px;font-size:13px;margin-bottom:4px}
+  .vistoria-final{break-inside:avoid}.vistoria-observacoes{min-height:90px;padding:8px;border:1px solid #999;font-size:10px;white-space:pre-wrap;overflow-wrap:anywhere}.vistoria-assinaturas{display:flex;gap:40px;margin-top:55px;margin-bottom:15px}.vistoria-assinaturas>div{flex:1;border-top:1px solid #222;padding-top:6px;text-align:center}.vistoria-assinaturas span,.vistoria-assinaturas small{display:block;font-size:11px;margin-top:4px}
 `;
 function textoSeguro(valor) {
   return String(valor ?? '—')
@@ -62,6 +64,14 @@ function abrirJanelaDeImpressao(titulo, conteudo) {
 }
 
 const modelos = criarModelosDocumentos(logoEra);
+export function imprimirVistoriaTecnico(...argumentos) {
+  const { titulo, conteudo } = modelos.vistoriaTecnico(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
+}
+export function imprimirRelatorioVistorias(...argumentos) {
+  const { titulo, conteudo } = modelos.relatorioVistorias(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
+}
 
 export function imprimirHistoricoEquipamento(...argumentos) {
   const { titulo, conteudo } = modelos.historicoEquipamento(...argumentos);
