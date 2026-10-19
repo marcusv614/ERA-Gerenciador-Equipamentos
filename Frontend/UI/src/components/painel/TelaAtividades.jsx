@@ -1,6 +1,6 @@
 import { filtrarSolicitacoes, locaisDoPedido, normalizarPesquisa } from '../../utils/pesquisaSolicitacoes';
 import { useEffect, useRef, useState } from 'react';
-import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, List, Package2, RotateCcw, UserRound, X } from 'lucide-react';
+import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, List, Package2, Plus, RotateCcw, UserRound, X } from 'lucide-react';
 import { formatarData } from '../../utils/datas';
 import { obterEtapaSolicitacao, pertenceEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { DetalhesSolicitacao } from './DetalhesSolicitacao';
@@ -65,7 +65,7 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
   </div>;
 }
 
-export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
+export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, buscarObraPorId, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
   const [dataInicial, definirDataInicial] = useState('');
@@ -112,6 +112,7 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
     <header className={css.cabecalho}>
       <div><h2>Solicitações</h2><p>{visualizacao === 'kanban' ? 'Acompanhe os pedidos por etapa do fluxo.' : 'Selecione um técnico. Os pedidos mais recentes aparecem primeiro.'}</p></div>
       <div className={css.cabecalhoAcoes}>
+        {aoNovaSolicitacao && <button type="button" className={css.novoPedido} onClick={aoNovaSolicitacao}><Plus size={16} />Nova solicitação</button>}
         <span className={css.total}>{solicitacoesPorTecnico.length} {solicitacoesPorTecnico.length === 1 ? 'solicitação' : 'solicitações'}</span>
         <div className={css.alternador} role="group" aria-label="Forma de visualizar as solicitações">
           <button type="button" aria-pressed={visualizacao === 'tecnicos'} className={visualizacao === 'tecnicos' ? css.alternadorAtivo : ''} onClick={() => alterarVisualizacao('tecnicos')}><List size={15} /><span>Por técnico</span></button>

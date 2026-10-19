@@ -68,9 +68,6 @@ export function useControleAtivos() {
     .sort((primeiroNome, segundoNome) => primeiroNome.localeCompare(segundoNome, 'pt-BR')),
   [funcionarios]);
 
-  const gerenteAtual = useMemo(() => funcionarios.find(({ cargo, status, arquivado }) =>
-    !arquivado && status === 'Ativo' && cargo.toLocaleLowerCase('pt-BR').includes('gerente'))?.nome || null, [funcionarios]);
-
   async function cadastrarObra(dadosNovaObra) {
     try {
       const obraCadastrada = await apiObras.cadastrar(dadosNovaObra);
@@ -213,7 +210,6 @@ export function useControleAtivos() {
     if (!equipamento) return false;
 
     const novaSolicitacao = {
-      solicitante: gerenteAtual || dadosMovimentacao.tecnico,
       tecnico: dadosMovimentacao.tecnico,
       obraOrigemId: equipamento.obraId ?? null,
       obraDestinoId: dadosMovimentacao.obraId ?? null,
@@ -273,6 +269,15 @@ export function useControleAtivos() {
     } catch (erro) { definirErroApi(erro.message); return false; }
   }
 
+  async function cadastrarSolicitacao(dados) {
+    try {
+      const resposta = await apiAtividades.cadastrar(dados);
+      definirSolicitacoes((atuais) => [resposta, ...atuais]);
+      definirErroApi(null);
+      return true;
+    } catch (erro) { definirErroApi(erro.message); return false; }
+  }
+
   return {
     obras,
     equipamentos: equipamentosLocalizados,
@@ -300,5 +305,6 @@ export function useControleAtivos() {
     definirStatusSolicitacao,
     avancarMovimentacao,
     editarSolicitacao,
+    cadastrarSolicitacao,
   };
 }

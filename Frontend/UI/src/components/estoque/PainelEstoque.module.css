@@ -519,6 +519,8 @@
   overflow-wrap: anywhere;
 }
 .metadados strong { color: var(--stock-text); }
+.autorPedido { margin:0 0 12px; color:var(--stock-muted); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.autorPedido strong { color:var(--stock-text); }
 .metadados time {
   color: var(--stock-muted);
   display: flex;

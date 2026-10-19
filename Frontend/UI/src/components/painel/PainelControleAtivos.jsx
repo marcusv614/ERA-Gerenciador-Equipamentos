@@ -24,7 +24,7 @@ import { imprimirRelatorioAuditoriaSolicitacao, imprimirInventarioObra, imprimir
 import estilos from '../fibra-track/FibraTrack.module.css';
 
 export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTema } = {}) {
-  const { ehAdmin, encerrarSessao } = useAutenticacao();
+  const { usuario, ehAdmin, encerrarSessao } = useAutenticacao();
   const controleAtivos = useControleAtivos();
   const filtros = useFiltrosPainel(controleAtivos);
   const [telaAtual, definirTelaAtual] = useState('equipamentos');
@@ -54,6 +54,12 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   const [equipamentoParaMover, definirEquipamentoParaMover] = useState(null);
   const [equipamentoComHistoricoAberto, definirEquipamentoComHistoricoAberto] = useState(null);
   const [solicitacaoEmEdicao, definirSolicitacaoEmEdicao] = useState(null);
+  const [novaSolicitacaoAberta, definirNovaSolicitacaoAberta] = useState(false);
+  const cadastrarSolicitacao = async (dados) => {
+    const sucesso = await controleAtivos.cadastrarSolicitacao(dados);
+    if (sucesso) { definirNovaSolicitacaoAberta(false); filtros.definirTermoBusca(''); }
+    return sucesso;
+  };
   const imprimirHistoricoDoEquipamento = (equipamento) => imprimirHistoricoEquipamento(equipamento, controleAtivos.consultarHistorico(equipamento), controleAtivos.buscarObraPorId);
   const cadastrarObra = async (novaObra) => {
     if (await controleAtivos.cadastrarObra(novaObra)) definirModalNovaObraAberto(false);
@@ -132,7 +138,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
         {telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} podeEditar={ehAdmin} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoEditar={definirEquipamentoEmEdicao} aoMover={definirEquipamentoParaMover} estilos={estilos} />}
         {telaAtual === 'obras' && <TelaObras obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} podeEditarStatus={ehAdmin} aoAlterarStatus={controleAtivos.atualizarStatusObra} aoArquivar={controleAtivos.arquivarObra} aoMoverEquipamento={definirEquipamentoParaMover} aoImprimirInventario={(obra) => imprimirInventarioObra(obra, controleAtivos.equipamentos, controleAtivos.buscarObraPorId)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
         {telaAtual === 'funcionarios' && <TelaFuncionarios funcionarios={filtros.funcionariosFiltrados} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} podeEditar={ehAdmin} aoEditarFuncionario={definirFuncionarioEmEdicao} estilos={estilos} />}
-        {telaAtual === 'atividades' && <TelaAtividades erroApi={controleAtivos.erroApi} solicitacoes={solicitacoesFiltradas} todasSolicitacoes={controleAtivos.solicitacoes} tecnicos={controleAtivos.tecnicosCadastrados} termoBusca={filtros.termoBusca} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoEditar={definirSolicitacaoEmEdicao} aoExportarAuditoria={(solicitacao) => imprimirRelatorioAuditoriaSolicitacao(solicitacao, controleAtivos.buscarObraPorId)} aoExportarRomaneio={(solicitacao) => imprimirRomaneioSeparacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
+        {telaAtual === 'atividades' && <TelaAtividades aoNovaSolicitacao={() => definirNovaSolicitacaoAberta(true)} erroApi={controleAtivos.erroApi} solicitacoes={solicitacoesFiltradas} todasSolicitacoes={controleAtivos.solicitacoes} tecnicos={controleAtivos.tecnicosCadastrados} termoBusca={filtros.termoBusca} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoEditar={definirSolicitacaoEmEdicao} aoExportarAuditoria={(solicitacao) => imprimirRelatorioAuditoriaSolicitacao(solicitacao, controleAtivos.buscarObraPorId)} aoExportarRomaneio={(solicitacao) => imprimirRomaneioSeparacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
         {telaAtual === 'deposito' && <CartaoDeposito equipamentos={filtros.equipamentosDoDeposito} obras={controleAtivos.obras} podeEditar={ehAdmin} aoEditar={definirEquipamentoEmEdicao} />}
       </div>
     </main>
@@ -144,6 +150,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     {modalNovoFuncionarioAberto && <ModalNovoFuncionario funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
     {funcionarioEmEdicao && <ModalEditarFuncionario funcionario={funcionarioEmEdicao} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} aoFechar={() => definirFuncionarioEmEdicao(null)} aoSalvar={salvarFuncionario} aoArquivar={controleAtivos.arquivarFuncionario} />}
     {solicitacaoEmEdicao && <ModalEditarSolicitacao obras={controleAtivos.obras} erroApi={controleAtivos.erroApi} solicitacao={solicitacaoEmEdicao} equipamentos={controleAtivos.equipamentos} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirSolicitacaoEmEdicao(null)} aoSalvar={salvarEdicaoSolicitacao} />}
+    {novaSolicitacaoAberta && <ModalEditarSolicitacao nova solicitante={usuario.nome} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras} erroApi={controleAtivos.erroApi} equipamentos={controleAtivos.equipamentos} aoFechar={() => definirNovaSolicitacaoAberta(false)} aoSalvar={cadastrarSolicitacao} />}
     <ModalHistoricoEquipamento equipamento={equipamentoComHistoricoAberto} historico={equipamentoComHistoricoAberto ? controleAtivos.consultarHistorico(equipamentoComHistoricoAberto) : []} buscarObraPorId={controleAtivos.buscarObraPorId} aoFechar={() => definirEquipamentoComHistoricoAberto(null)} aoImprimir={() => imprimirHistoricoDoEquipamento(equipamentoComHistoricoAberto)} estilos={estilos} />
   </div>;
 }

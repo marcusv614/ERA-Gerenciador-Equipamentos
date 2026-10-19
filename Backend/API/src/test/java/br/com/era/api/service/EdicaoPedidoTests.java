@@ -68,6 +68,7 @@ class EdicaoPedidoTests {
     @Test void rejeitaEdicaoDepoisDoEnvio(){pedido.setStatus("Em trânsito");assertThrows(RegraNegocioException.class,()->service.atualizar(1L,atualizacao(null,itens())));}
     @Test void naoAceitaPedidoVazio(){assertThrows(RegraNegocioException.class,()->service.atualizar(1L,atualizacao(null,List.of())));}
     @Test void estoquePodeSepararMesmoPedidoEntreDepositoEOutraObra(){
+        pedido.setSolicitanteNome("Maria Gerente");pedido.setSolicitanteLogin("maria.gerente");pedido.setSolicitantePerfil(PerfilUsuario.GERENTE);
         pedido.setStatus("Aprovada");ReflectionTestUtils.setField(pedido,"id",1L);
         pedido.substituirMateriais(List.of(new MaterialSolicitado("Escada",1,null,"ferramentas|escada|"),new MaterialSolicitado("Alicate",1,null,"ferramentas|alicate|")));
         Obra origem=new Obra();ReflectionTestUtils.setField(origem,"id",3L);when(obras.buscarOpcional(3L)).thenReturn(origem);
@@ -82,6 +83,7 @@ class EdicaoPedidoTests {
         var respostas=service.distribuir(1L,new SolicitacaoDto.Distribuicao(atendimentos));
         assertEquals(2,respostas.size());assertEquals(3L,respostas.getFirst().obraOrigemId());assertNull(respostas.getLast().obraOrigemId());
         assertTrue(respostas.stream().allMatch(r->Long.valueOf(2L).equals(r.obraDestinoId())));
+        assertTrue(respostas.stream().allMatch(r->"Maria Gerente".equals(r.solicitante())&&"maria.gerente".equals(r.solicitanteLogin())&&"GERENTE".equals(r.solicitantePerfil())));
         assertEquals(1,escada.getQuantidadeReservada());assertEquals(1,alicate.getQuantidadeReservada());
     }
 }

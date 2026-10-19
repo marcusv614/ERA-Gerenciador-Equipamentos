@@ -8,7 +8,11 @@ import java.util.List;
 public class Solicitacao {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @Column(nullable=false,length=40) private String tipo; @Column(nullable=false,length=30) private String status="Pendente";
-    @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="solicitante_id") private Funcionario solicitante;
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="solicitante_id") private Funcionario solicitante;
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="solicitante_usuario_id") private Usuario solicitanteUsuario;
+    @Column(name="solicitante_nome",length=150) private String solicitanteNome;
+    @Column(name="solicitante_login",length=120) private String solicitanteLogin;
+    @Enumerated(EnumType.STRING) @Column(name="solicitante_perfil",length=30) private PerfilUsuario solicitantePerfil;
     @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="tecnico_id") private Funcionario tecnico;
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="obra_origem_id") private Obra obraOrigem; @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="obra_destino_id") private Obra obraDestino;
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="solicitacao_pai_id") private Solicitacao solicitacaoPai;
@@ -19,5 +23,10 @@ public class Solicitacao {
     public Solicitacao() {} @PrePersist void criarDatas(){criadoEm=OffsetDateTime.now();atualizadoEm=criadoEm;} @PreUpdate void atualizarData(){atualizadoEm=OffsetDateTime.now();}
     public Long getId(){return id;} public String getTipo(){return tipo;} public void setTipo(String v){tipo=v;} public String getStatus(){return status;} public void setStatus(String v){status=v;} public Funcionario getSolicitante(){return solicitante;} public void setSolicitante(Funcionario v){solicitante=v;} public Funcionario getTecnico(){return tecnico;} public void setTecnico(Funcionario v){tecnico=v;} public Obra getObraOrigem(){return obraOrigem;} public void setObraOrigem(Obra v){obraOrigem=v;} public Obra getObraDestino(){return obraDestino;} public void setObraDestino(Obra v){obraDestino=v;} public LocalDate getDataSolicitacao(){return dataSolicitacao;} public void setDataSolicitacao(LocalDate v){dataSolicitacao=v;} public LocalDate getDataDecisao(){return dataDecisao;} public void setDataDecisao(LocalDate v){dataDecisao=v;} public String getObservacao(){return observacao;} public void setObservacao(String v){observacao=v;} public List<MaterialSolicitado> getMateriais(){return materiais;} public void substituirMateriais(List<MaterialSolicitado> novos){materiais.clear();novos.forEach(m->{m.setSolicitacao(this);materiais.add(m);});}
     public Solicitacao getSolicitacaoPai(){return solicitacaoPai;} public void setSolicitacaoPai(Solicitacao v){solicitacaoPai=v;}
+    public Usuario getSolicitanteUsuario(){return solicitanteUsuario;} public void setSolicitanteUsuario(Usuario v){solicitanteUsuario=v;}
+    public String getSolicitanteNome(){return solicitanteNome;} public void setSolicitanteNome(String v){solicitanteNome=v;}
+    public String getSolicitanteLogin(){return solicitanteLogin;} public void setSolicitanteLogin(String v){solicitanteLogin=v;}
+    public PerfilUsuario getSolicitantePerfil(){return solicitantePerfil;} public void setSolicitantePerfil(PerfilUsuario v){solicitantePerfil=v;}
+    public String nomeSolicitante(){return solicitanteNome!=null&&!solicitanteNome.isBlank()?solicitanteNome:solicitante==null?"Não registrado":solicitante.getNome();}
     public OffsetDateTime getTransitoEm(){return transitoEm;} public void setTransitoEm(OffsetDateTime v){transitoEm=v;} public OffsetDateTime getConcluidaEm(){return concluidaEm;} public void setConcluidaEm(OffsetDateTime v){concluidaEm=v;}
 }

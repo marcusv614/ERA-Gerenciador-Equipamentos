@@ -67,7 +67,7 @@ export const apiFuncionarios = {
 
 export const apiAtividades = {
   listar: () => obter(ROTAS_API.atividades),
-  cadastrar: (dados) => avisarAposSucesso(criar(ROTAS_API.atividades, dados), 'Pedido enviado para análise do gerente.'),
+  cadastrar: (dados) => avisarAposSucesso(criar(ROTAS_API.atividades, dados), (pedido) => pedido.status === 'Pendente' ? 'Pedido enviado para análise do gerente.' : 'Pedido criado e encaminhado ao estoque.'),
   atualizar: (atividadeId, dados) => avisarAposSucesso(atualizar(ROTAS_API.atividade(atividadeId), dados), 'Alterações da solicitação salvas.'),
   aprovar: (atividadeId) => avisarAposSucesso(criar(ROTAS_API.aprovarAtividade(atividadeId)), 'Pedido aceito e encaminhado ao estoque.'),
   rejeitar: (atividadeId) => avisarAposSucesso(criar(ROTAS_API.rejeitarAtividade(atividadeId)), 'Pedido rejeitado.'),

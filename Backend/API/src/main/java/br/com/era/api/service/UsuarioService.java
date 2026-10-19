@@ -31,6 +31,15 @@ public class UsuarioService implements UserDetailsService {
     }
     @Transactional(readOnly=true) public Usuario buscarPorLogin(String login){return repository.findByLoginIgnoreCase(normalizar(login)).orElseThrow(()->new RecursoNaoEncontradoException("Usuário não encontrado."));}
     @Transactional(readOnly=true) public List<UsuarioDto.Resposta> listar(){return repository.findAll().stream().map(this::resposta).toList();}
+    @Transactional(readOnly=true)
+    public void validarAcessoRecebimento(Funcionario funcionario, br.com.era.api.model.Obra obra) {
+        if (funcionario.isArquivado() || !"Ativo".equals(funcionario.getStatus()))
+            throw new RegraNegocioException("Selecione um técnico ativo para receber os materiais.");
+        boolean responsavel = obra.getResponsaveis().stream().anyMatch(f -> f.getId().equals(funcionario.getId()));
+        if (!responsavel) throw new RegraNegocioException("O técnico responsável pelo recebimento precisa estar vinculado à obra de destino.");
+        repository.findByFuncionarioId(funcionario.getId()).filter(u -> u.isAtivo() && u.getPerfil() == PerfilUsuario.TECNICO)
+            .orElseThrow(() -> new RegraNegocioException("O técnico selecionado precisa de um acesso ativo ao sistema para confirmar o recebimento."));
+    }
     @Transactional public UsuarioDto.Resposta cadastrar(UsuarioDto.Cadastro dados){
         String login=normalizar(dados.login()); if(repository.existsByLoginIgnoreCase(login))throw new RegraNegocioException("Já existe um usuário com esse login.");
         if(dados.perfil()==PerfilUsuario.TECNICO&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico precisa estar vinculado a um funcionário.");

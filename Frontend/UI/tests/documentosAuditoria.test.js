@@ -18,6 +18,8 @@ test('pedido não separado não é apresentado como material saindo do depósito
 test('relatório identifica pedido original e horários reais de saída e recebimento',()=>{
   const html=modelos.auditoriaSolicitacao({...pedido,solicitacaoPaiId:1,transitoEm:'2026-10-15T10:00:00-04:00',concluidaEm:'2026-10-17T14:00:00-04:00',status:'Concluída'},buscar).conteudo;
   assert.match(html,/Pedido original.*?#0001/);assert.match(html,/15\/10\/2026.*?10:00:00/);assert.match(html,/17\/10\/2026.*?14:00:00/);
+  assert.match(html,/Relatório de auditoria do atendimento/);
+  assert.match(html,/Atendimento<\/span><span class="value">#0003/);
 });
 test('inventário distingue presentes, reservas e unidades em transporte sem somar duas vezes',()=>{
   const e={id:1,modelo:'Escada',tipo:'Ferramentas',serie:'ESC-1',obraId:1,quantidade:10,quantidadeReservada:5,notaFiscal:'NF-1',status:'Em campo'};
@@ -27,6 +29,22 @@ test('inventário distingue presentes, reservas e unidades em transporte sem som
   assert.match(html,/NF-1/);
   const destino=modelos.inventarioObra({...obra,id:2,nome:'Obra B'},[localizado],buscar).conteudo;
   assert.match(destino,/Entradas em transporte/);assert.match(destino,/<td>#0003<\/td><td>Escada<\/td><td>ESC-1<\/td><td>3<\/td><td>Obra A/);
+});
+
+test('documentos identificam o gerente que criou o pedido e o técnico que recebe separadamente',()=>{
+  const requisicao={...pedido,solicitante:'Maria Gerente',solicitanteLogin:'maria.gerente',solicitantePerfil:'GERENTE'};
+  for (const doc of [modelos.auditoriaSolicitacao(requisicao,buscar),modelos.romaneioSeparacao(requisicao,buscar),modelos.listaComprasSolicitacao(requisicao,[],buscar)]) {
+    assert.match(doc.conteudo,/Solicitado por<\/span><span class="value">Maria Gerente/);
+    assert.match(doc.conteudo,/Conta utilizada<\/span><span class="value">maria.gerente/);
+    assert.match(doc.conteudo,/Perfil na solicitação<\/span><span class="value">Gerente/);
+  }
+  assert.match(modelos.auditoriaSolicitacao(requisicao,buscar).conteudo,/Técnico responsável<\/span><span class="value">João/);
+});
+
+test('auditoria não atribui autoria ao técnico quando faltam os dados históricos',()=>{
+  const html=modelos.auditoriaSolicitacao(pedido,buscar).conteudo;
+  assert.match(html,/Solicitado por<\/span><span class="value">Não registrado/);
+  assert.match(html,/Perfil na solicitação<\/span><span class="value">Não registrado/);
 });
 test('itens arquivados não entram no inventário atual',()=>{
   assert.doesNotMatch(modelos.inventarioObra(obra,[{obraId:1,modelo:'ARQUIVADO',arquivado:true}],buscar).conteudo,/ARQUIVADO/);

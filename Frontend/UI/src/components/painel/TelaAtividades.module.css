@@ -1,8 +1,10 @@
 .painel { border:1px solid var(--border); border-radius:16px; background:var(--surface); overflow:hidden; }
+.novoPedido { min-height:42px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 14px; border:0; border-radius:8px; background:var(--accent); color:#fffaf0; font:600 12px var(--font-body); cursor:pointer; }
+.novoPedido:focus-visible { outline:2px solid var(--text); outline-offset:2px; }
 .cabecalho { padding:24px; display:flex; justify-content:space-between; align-items:center; gap:16px; border-bottom:1px solid var(--border); }
 .cabecalho h2 { margin:0; color:var(--text); font:600 18px/1.4 var(--font-display); }
 .cabecalho p { margin:5px 0 0; color:var(--text-muted); font-size:12px; }
-.cabecalhoAcoes { display:flex; align-items:center; justify-content:flex-end; gap:14px; }
+.cabecalhoAcoes { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:14px; }
 .total { flex-shrink:0; font-size:12px; color:var(--text-muted); }
 .alternador { display:flex; align-items:center; gap:3px; padding:3px; border:1px solid var(--border); border-radius:10px; background:var(--surface-2); }
 .alternador button { min-height:34px; display:flex; align-items:center; justify-content:center; gap:7px; padding:7px 11px; border:0; border-radius:7px; background:transparent; color:var(--text-muted); font:600 11px/1 var(--font-display); cursor:pointer; }

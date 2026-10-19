@@ -168,6 +168,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       <header><span className={estilos.icone}><PackageCheck /></span><div><small>Pedido #{String(solicitacao.id).padStart(4, '0')}</small><h2>{nomeLocal(solicitacao.obraDestinoId || solicitacao.obraOrigemId)}</h2></div><b data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{rotuloOperacional(solicitacao)}</b></header>
       <p className={estilos.instrucaoEntrega}>{tarefa}</p>
       <div className={estilos.metadados}><p><strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
+      {solicitacao.solicitante && solicitacao.solicitante !== solicitacao.tecnico && <p className={estilos.autorPedido}>Solicitado por <strong>{solicitacao.solicitante}</strong></p>}
       <ul>{agruparMateriaisPedido(solicitacao.materiais).map((material) => <li key={material.chave}>
         <span>{material.quantidade}×</span>
         <div className={estilos.detalhesMaterial}>
