@@ -324,22 +324,11 @@ export function useControleAtivos() {
 
   async function editarSolicitacao(identificador, dadosAtualizados) {
     try {
-      await apiAtividades.atualizar(identificador, dadosAtualizados);
+      const resposta = await apiAtividades.atualizar(identificador, dadosAtualizados);
+      definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === identificador ? resposta : pedido));
       definirErroApi(null);
-    } catch (erro) {
-      definirErroApi(erro.message);
-      return false;
-    }
-    const solicitacaoAnterior = solicitacoes.find((solicitacao) => solicitacao.id === identificador);
-    const solicitacaoAtualizada = solicitacaoAnterior ? { ...solicitacaoAnterior, ...dadosAtualizados } : null;
-    if (solicitacaoAtualizada?.status === 'Aprovada') {
-      sincronizarMovimentacaoAprovada(solicitacaoAtualizada, solicitacaoAnterior);
-    }
-    definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
-      solicitacao.id === identificador
-        ? { ...solicitacao, ...dadosAtualizados }
-        : solicitacao));
-    return true;
+      return true;
+    } catch (erro) { definirErroApi(erro.message); return false; }
   }
 
   return {

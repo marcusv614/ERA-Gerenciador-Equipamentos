@@ -1,116 +1,72 @@
-import { useMemo, useState } from 'react';
-import { Minus, Package, Plus, Trash2 } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { Package, Plus, Trash2 } from 'lucide-react';
 import { CampoFormulario } from '../field/Field';
 import { EstruturaModal } from '../modal-shell/ModalShell';
+import { agruparItensPedido, catalogoParaEdicao, dadosEdicaoPedido, pedidoEmAtendimento } from '../../utils/edicaoSolicitacao';
 import styles from './EditarSolicitacaoModal.module.css';
 
-const normalizar = (valor) => String(valor || '').trim().toLocaleLowerCase('pt-BR');
-const statusMovimentavel = (status) => ['em estoque', 'em campo', 'disponível', 'disponivel'].includes(normalizar(status));
-const agruparPedido = (materiais, equipamentos) => Object.values(materiais.reduce((grupos, material) => {
-  const equipamento = equipamentos.find((item) => normalizar(item.serie) === normalizar(material.identificacao));
-  const nome = equipamento?.modelo || material.nome;
-  const chave = material.catalogoChave || equipamento?.catalogoChave || normalizar(nome);
-  if (!grupos[chave]) grupos[chave] = { chave, nome, quantidade: 0, catalogoChave: material.catalogoChave || equipamento?.catalogoChave };
-  grupos[chave].quantidade += material.quantidade;
-  return grupos;
-}, {}));
-
-export function ModalEditarSolicitacao({ solicitacao, equipamentos, tecnicosCadastrados, aoFechar, aoSalvar }) {
+export function ModalEditarSolicitacao({ solicitacao, obras = [], equipamentos, tecnicosCadastrados, erroApi, aoFechar, aoSalvar }) {
+  const protegido = pedidoEmAtendimento(solicitacao);
   const [tecnico, definirTecnico] = useState(solicitacao.tecnico);
-  const obraOrigemId = solicitacao.obraOrigemId == null ? 'deposito' : String(solicitacao.obraOrigemId);
-  const obraDestinoId = solicitacao.obraDestinoId == null ? 'deposito' : String(solicitacao.obraDestinoId);
-  const [itens, definirItens] = useState(() => agruparPedido(solicitacao.materiais, equipamentos));
-  const [modeloParaAdicionar, definirModeloParaAdicionar] = useState('');
+  const [destinoId, definirDestino] = useState(String(solicitacao.obraDestinoId ?? ''));
+  const [itens, definirItens] = useState(() => agruparItensPedido(solicitacao.materiais));
+  const [modelo, definirModelo] = useState('');
   const [observacao, definirObservacao] = useState(solicitacao.observacao || '');
-  const reservadosNaSolicitacao = useMemo(() => solicitacao.materiais.reduce((totais, material) => {
-    if (material.identificacao) totais[normalizar(material.identificacao)] = (totais[normalizar(material.identificacao)] || 0) + material.quantidade;
-    return totais;
-  }, {}), [solicitacao.materiais]);
-
-  const pedidoParaObra = obraOrigemId === 'deposito' && obraDestinoId !== 'deposito';
-  const gruposCatalogo = useMemo(() => Object.values(equipamentos.reduce((grupos, equipamento) => {
-      const chave = equipamento.catalogoChave || normalizar(equipamento.modelo);
-      if (!grupos[chave]) grupos[chave] = { chave, nome: equipamento.modelo, tipo: equipamento.tipo, disponivel: 0, equipamentos: [], catalogoChave: equipamento.catalogoChave };
-      const estaNaOrigem = String(equipamento.obraId || 'deposito') === obraOrigemId;
-      const movimentavel = statusMovimentavel(equipamento.status);
-      const saldo = estaNaOrigem && movimentavel
-        ? (equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1) + (reservadosNaSolicitacao[normalizar(equipamento.serie)] || 0)
-        : 0;
-      const limite = equipamento.controleQuantidade === 'LOTE' ? saldo : Math.min(1, saldo);
-      if (limite > 0) {
-        grupos[chave].disponivel += limite;
-        grupos[chave].equipamentos.push({ ...equipamento, limiteEdicao: limite });
-      }
-      return grupos;
-    }, {})).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')), [equipamentos, obraOrigemId, reservadosNaSolicitacao]);
-  const gruposDisponiveis = useMemo(() => pedidoParaObra ? gruposCatalogo : gruposCatalogo.filter((grupo) => grupo.disponivel > 0), [gruposCatalogo, pedidoParaObra]);
-
-  const grupoPorChave = (chave) => gruposDisponiveis.find((grupo) => grupo.chave === chave);
-  const opcoesParaAdicionar = gruposDisponiveis.filter((grupo) => !itens.some((item) => item.chave === grupo.chave));
-  const alterarQuantidade = (item, diferenca) => definirItens((atuais) => atuais.map((atual) => {
-    if (atual.chave !== item.chave) return atual;
-    const limite = pedidoParaObra ? Number.MAX_SAFE_INTEGER : (grupoPorChave(item.chave)?.disponivel || 1);
-    return { ...atual, quantidade: Math.min(limite, Math.max(1, atual.quantidade + diferenca)) };
-  }));
-  const removerItem = (chave) => definirItens((atuais) => atuais.filter((item) => item.chave !== chave));
-  const adicionarItem = () => {
-    const grupo = grupoPorChave(modeloParaAdicionar);
-    if (!grupo) return;
-    definirItens((atuais) => [...atuais, { chave: grupo.chave, nome: grupo.nome, quantidade: 1, catalogoChave: grupo.catalogoChave }]);
-    definirModeloParaAdicionar('');
+  const [salvando, definirSalvando] = useState(false);
+  const [erro, definirErro] = useState('');
+  const emEnvio = useRef(false);
+  const catalogo = useMemo(() => catalogoParaEdicao(equipamentos, destinoId || null), [equipamentos, destinoId]);
+  const tecnicos = [...new Set([solicitacao.tecnico, ...tecnicosCadastrados].filter(Boolean))];
+  const obrasDisponiveis = obras.filter((obra) => !obra.arquivado && obra.status !== 'Concluída' || String(obra.id) === destinoId);
+  const nomeLocal = (id) => id == null ? 'Depósito central' : obras.find((obra) => String(obra.id) === String(id))?.nome || 'Obra não disponível';
+  const destinos = obrasDisponiveis.some((obra) => String(obra.id) === destinoId) || !destinoId ? obrasDisponiveis : [{ id: destinoId, nome: nomeLocal(Number(destinoId)) }, ...obrasDisponiveis];
+  const valido = protegido || (tecnico && destinoId && itens.length > 0 && itens.length <= 200 && itens.every((item) => Number.isInteger(item.quantidade) && item.quantidade > 0 && item.quantidade <= 2147483647 && catalogo.some(({ chave }) => chave === item.chave)));
+  const quantidade = (chave, valor) => {
+    const numero = Number(valor);
+    if (!Number.isInteger(numero) || numero < 1 || numero > 2147483647) return;
+    definirItens((atuais) => atuais.map((item) => item.chave === chave ? { ...item, quantidade: numero } : item));
+  };
+  const adicionar = () => {
+    const grupo = catalogo.find(({ chave }) => chave === modelo);
+    if (!grupo || itens.some(({ chave }) => chave === modelo)) return;
+    definirItens((atuais) => [...atuais, { ...grupo, quantidade: 1 }]); definirModelo('');
+  };
+  const salvar = async () => {
+    if (!valido || emEnvio.current) return;
+    emEnvio.current = true; definirSalvando(true); definirErro('');
+    try {
+      const sucesso = await aoSalvar(solicitacao.id, dadosEdicaoPedido(solicitacao, tecnico, destinoId ? Number(destinoId) : null, itens, observacao));
+      if (sucesso === false) definirErro('Não foi possível salvar as alterações. Tente novamente.');
+    } catch (e) { definirErro(e.message || 'Não foi possível salvar as alterações.'); }
+    finally { emEnvio.current = false; definirSalvando(false); }
   };
 
-  const materiais = pedidoParaObra ? itens.map((item) => ({
-    nome: item.nome,
-    identificacao: null,
-    quantidade: item.quantidade,
-    catalogoChave: item.catalogoChave || item.chave,
-  })) : itens.flatMap((item) => {
-    const grupo = grupoPorChave(item.chave);
-    if (!grupo) return [];
-    let restante = item.quantidade;
-    return grupo.equipamentos.flatMap((equipamento) => {
-      if (restante <= 0) return [];
-      const quantidade = Math.min(restante, equipamento.limiteEdicao);
-      restante -= quantidade;
-      return [{ nome: equipamento.modelo, identificacao: equipamento.serie, quantidade, catalogoChave: item.catalogoChave || equipamento.catalogoChave }];
-    });
-  });
-  const itensValidos = itens.length > 0 && itens.every((item) => {
-    const grupo = grupoPorChave(item.chave);
-    return grupo && item.quantidade >= 1 && (pedidoParaObra || item.quantidade <= grupo.disponivel);
-  });
-  const podeSalvar = tecnico && obraOrigemId !== obraDestinoId && itensValidos;
-
-  return <EstruturaModal titulo="Editar solicitação" subtitulo={`Movimentação · ${String(solicitacao.id).toUpperCase()}`} aoFechar={aoFechar} largo>
+  return <EstruturaModal titulo="Editar solicitação" subtitulo={`Pedido #${solicitacao.id} · ${solicitacao.status}`} aoFechar={salvando ? () => {} : aoFechar} largo>
     <div className={styles.formulario}>
+      <p className={styles.explicacao}>{protegido ? 'O estoque já iniciou o atendimento. Você pode atualizar a observação; técnico, destino, materiais, reservas e compras serão preservados.' : 'Edite os materiais e a obra que vai recebê-los. O estoque define os equipamentos e os locais de coleta durante a separação.'}</p>
       <div className={styles.dadosGerais}>
-        <CampoFormulario rotulo="Técnico solicitante"><select className={styles.campo} value={tecnico} onChange={(evento) => definirTecnico(evento.target.value)}>{tecnicosCadastrados.map((nome) => <option key={nome}>{nome}</option>)}</select></CampoFormulario>
+        <CampoFormulario rotulo="Técnico responsável pelo recebimento"><select disabled={protegido || salvando} className={styles.campo} value={tecnico} onChange={(e) => definirTecnico(e.target.value)}>{tecnicos.map((nome) => <option key={nome}>{nome}</option>)}</select></CampoFormulario>
+        <CampoFormulario rotulo={solicitacao.obraDestinoId == null && protegido ? 'Destino da retirada' : 'Obra de destino'}>
+          {protegido ? <p className={styles.valorFixo}>{nomeLocal(solicitacao.obraDestinoId)}</p> : <select disabled={salvando} className={styles.campo} value={destinoId} onChange={(e) => definirDestino(e.target.value)}><option value="">Selecione a obra que receberá os materiais</option>{destinos.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select>}
+        </CampoFormulario>
       </div>
-
       <section className={styles.secaoMateriais}>
-        <header><div><strong>Itens solicitados</strong><small>{pedidoParaObra ? 'O saldo é informativo; o excedente será encaminhado para aquisição pelo estoque.' : 'A quantidade não pode ultrapassar o saldo disponível na origem.'}</small></div><b>{itens.length}</b></header>
-        <div className={styles.listaMateriais}>
-          {itens.map((item) => {
-            const grupo = grupoPorChave(item.chave);
-            return <div className={`${styles.material} ${!grupo ? styles.materialPendente : ''}`} key={item.chave}>
-              <span className={styles.icone}><Package /></span>
-              <div className={styles.nomeItem}><strong>{item.nome}</strong>{grupo ? <small>{grupo.tipo} · {grupo.disponivel} disponível{pedidoParaObra && item.quantidade > grupo.disponivel ? ` · faltam ${item.quantidade - grupo.disponivel}` : ''}</small> : <small>Item não encontrado no catálogo</small>}</div>
-              <div className={styles.quantidade}><button type="button" disabled={!grupo || item.quantidade <= 1} onClick={() => alterarQuantidade(item, -1)} aria-label={`Diminuir quantidade de ${item.nome}`}><Minus /></button><b>{item.quantidade}</b><button type="button" disabled={!grupo || (!pedidoParaObra && item.quantidade >= grupo.disponivel)} onClick={() => alterarQuantidade(item, 1)} aria-label={`Aumentar quantidade de ${item.nome}`}><Plus /></button></div>
-              <button type="button" className={styles.remover} onClick={() => removerItem(item.chave)} aria-label={`Remover ${item.nome}`}><Trash2 /></button>
-            </div>;
-          })}
-          {!itens.length && <div className={styles.semMateriais}><Package /><div><strong>Nenhum item solicitado</strong><small>Adicione abaixo um item disponível.</small></div></div>}
-        </div>
-        <div className={styles.novoItem}>
-          <label><span>Adicionar novo item</span><select className={styles.campo} value={modeloParaAdicionar} onChange={(evento) => definirModeloParaAdicionar(evento.target.value)}><option value="">{pedidoParaObra ? 'Selecione um item do catálogo' : 'Selecione um item disponível'}</option>{opcoesParaAdicionar.map((grupo) => <option key={grupo.chave} value={grupo.chave}>{grupo.nome} · saldo {grupo.disponivel}</option>)}</select></label>
-          <button type="button" onClick={adicionarItem} disabled={!modeloParaAdicionar}><Plus /> Adicionar</button>
-        </div>
-        {!gruposDisponiveis.length && <p className={styles.aviso}>{pedidoParaObra ? 'Não existem itens cadastrados no catálogo.' : 'Não existem itens disponíveis na origem selecionada.'}</p>}
+        <header><div><strong>Itens solicitados</strong><small>{protegido ? 'Seleção registrada pelo estoque.' : 'Saldo total no depósito e nas outras obras. Quantidades acima do saldo serão avaliadas pelo estoque.'}</small></div><b>{itens.length}</b></header>
+        <div className={styles.listaMateriais}>{itens.map((item) => {
+          const grupo = catalogo.find(({ chave }) => chave === item.chave);
+          return <div className={`${styles.material} ${!grupo && !protegido ? styles.materialPendente : ''}`} key={item.chave}>
+            <span className={styles.icone}><Package /></span><div className={styles.nomeItem}><strong>{item.nome}</strong><small>{protegido ? 'Quantidade preservada' : grupo ? `${grupo.tipo} · ${grupo.disponivel} disponível(is) nas origens elegíveis` : 'Material não disponível no catálogo ativo; remova ou substitua.'}</small>
+              {protegido && solicitacao.materiais.filter((m) => (m.catalogoChave || m.nome) === (item.catalogoChave || item.nome)).map((m) => <small key={m.id}>{m.quantidade}× · {m.identificacao || 'Aguardando seleção'} · {m.identificacao ? `Coleta: ${nomeLocal(solicitacao.obraOrigemId)}` : `Compra solicitada: ${m.quantidadeCompra || 0}`}</small>)}
+            </div>
+            <div className={styles.quantidade}><input type="number" min="1" max="2147483647" step="1" aria-label={`Quantidade de ${item.nome}`} value={item.quantidade} disabled={protegido || salvando || !grupo} onChange={(e) => quantidade(item.chave, e.target.value)} /></div>
+            {!protegido && <button type="button" disabled={salvando} className={styles.remover} onClick={() => definirItens((atuais) => atuais.filter(({ chave }) => chave !== item.chave))} aria-label={`Remover ${item.nome}`}><Trash2 /></button>}
+          </div>;
+        })}{!itens.length && <p className={styles.semMateriais}>Adicione pelo menos um material do catálogo.</p>}</div>
+        {!protegido && <div className={styles.novoItem}><label><span>Adicionar material do catálogo</span><select disabled={salvando} className={styles.campo} value={modelo} onChange={(e) => definirModelo(e.target.value)}><option value="">Selecione um material</option>{catalogo.filter((grupo) => !itens.some(({ chave }) => chave === grupo.chave)).map((grupo) => <option key={grupo.chave} value={grupo.chave}>{grupo.nome} · {grupo.tipo} · saldo {grupo.disponivel}</option>)}</select></label><button type="button" disabled={!modelo || salvando || itens.length >= 200} onClick={adicionar}><Plus />Adicionar</button></div>}
       </section>
-
-      <CampoFormulario rotulo="Observação"><textarea className={`${styles.campo} ${styles.observacao}`} value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} /></CampoFormulario>
-      <div className={styles.acoes}><button type="button" className={styles.cancelar} onClick={aoFechar}>Cancelar</button><button type="button" className={styles.salvar} disabled={!podeSalvar} onClick={() => aoSalvar(solicitacao.id, { tecnico, obraOrigemId: obraOrigemId === 'deposito' ? null : Number(obraOrigemId), obraDestinoId: obraDestinoId === 'deposito' ? null : Number(obraDestinoId), materiais, observacao: observacao.trim() })}>Salvar alterações</button></div>
+      <CampoFormulario rotulo="Observação"><textarea maxLength={4000} disabled={salvando} className={`${styles.campo} ${styles.observacao}`} value={observacao} onChange={(e) => definirObservacao(e.target.value)} /></CampoFormulario>
+      {erro && <p role="alert" className={styles.erro}>{erroApi || erro}</p>}
+      <div className={styles.acoes}><button type="button" disabled={salvando} className={styles.cancelar} onClick={aoFechar}>Cancelar</button><button type="button" className={styles.salvar} disabled={!valido || salvando} onClick={salvar}>{salvando ? 'Salvando...' : 'Salvar alterações'}</button></div>
     </div>
   </EstruturaModal>;
 }

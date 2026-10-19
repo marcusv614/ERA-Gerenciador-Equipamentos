@@ -1,145 +1,56 @@
-import {
-  Check,
-  FileText,
-  Pencil,
-  Route,
-  X,
-} from "lucide-react";
-import { formatarData } from "../../utils/datas";
-import { obterEtapaSolicitacao } from "../../utils/statusSolicitacao";
+import { Building2, Check, FileText, MapPin, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
+import css from './DetalhesSolicitacao.module.css';
 
-const CLASSE_POR_ETAPA = {
-  pendente: "atividadeStatusPendente",
-  aceita: "atividadeStatusAprovada",
-  finalizada: "atividadeStatusAprovada",
-  rejeitada: "atividadeStatusRejeitada",
-};
-
-export function DetalhesSolicitacao({
-  solicitacao,
-  processando,
-  buscarObraPorId,
-  aoAprovar,
-  aoRejeitar,
-  aoEditar,
-  aoExportarRomaneio,
-  estilos,
-}) {
-  const renderizarSolicitacao = (solicitacao, classeStatus) => {
-    const obraOrigem = solicitacao.obraOrigemId
-      ? buscarObraPorId(solicitacao.obraOrigemId)
-      : null;
-    const obraDestino = solicitacao.obraDestinoId
-      ? buscarObraPorId(solicitacao.obraDestinoId)
-      : null;
-    const pendente = solicitacao.status === "Pendente";
-    const podeEditar = ["Pendente", "Aprovada"].includes(solicitacao.status);
-    const aguardandoDefinicao = solicitacao.materiais.some(
-      ({ identificacao }) => !identificacao,
-    );
-    const etapa = obterEtapaSolicitacao(solicitacao.status);
-
-    return (
-      <article key={solicitacao.id} className={estilos.atividadeCard}>
-        <header className={estilos.atividadeCabecalho}>
-          <div className={estilos.atividadeIcone}>
-            <Route size={19} />
-          </div>
-          <div className={estilos.atividadeTitulo}>
-            <div>
-              <h2>{solicitacao.tipo} de material</h2>
-              <span
-                className={`${estilos.atividadeStatus} ${estilos[classeStatus]}`}
-              >
-                {etapa.rotulo}
-              </span>
-            </div>
-            <p>
-              Solicitada por{" "}
-              <strong>{solicitacao.solicitante || solicitacao.tecnico}</strong>{" "}
-              em {formatarData(solicitacao.dataSolicitacao)}
-            </p>
-          </div>
-        </header>
-
-        <p className={estilos.atividadeObservacao}>Destino: <strong>{obraDestino?.nome || "Depósito central"}</strong></p>
-
-        <div className={estilos.atividadeMateriais}>
-          <h3>Materiais solicitados</h3>
-          <ul>
-            {solicitacao.materiais.map((material) => (
-              <li key={material.id}>
-                <span className={estilos.materialQuantidade}>
-                  {material.quantidade}x
-                </span>
-                <span>
-                  {material.nome}
-                  <small>{!material.identificacao ? 'Equipamento ainda não selecionado' : solicitacao.status === 'Concluída' ? `Recebido em ${obraDestino?.nome || 'Depósito central'}` : solicitacao.status === 'Em trânsito' ? `Em transporte: ${obraOrigem?.nome || 'Depósito central'} → ${obraDestino?.nome || 'Depósito central'}` : `Local de coleta: ${obraOrigem?.nome || 'Depósito central'}`}</small>
-                  {material.identificacao && (
-                    <small>{material.identificacao}</small>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {solicitacao.observacao && (
-          <p className={estilos.atividadeObservacao}>
-            {solicitacao.observacao}
-          </p>
-        )}
-
-        <footer className={estilos.atividadeAcoes}>
-          <div className={estilos.atividadeAcoesDocumento}>
-            {podeEditar && (
-              <button
-                disabled={processando}
-                type="button"
-                onClick={() => aoEditar(solicitacao)}
-                className={estilos.atividadeEditar}
-              >
-                <Pencil size={15} /> Editar solicitação
-              </button>
-            )}
-            {solicitacao.status === "Aprovada" && !aguardandoDefinicao && (
-              <button
-                disabled={processando}
-                type="button"
-                onClick={() => aoExportarRomaneio(solicitacao)}
-                className={estilos.atividadeEditar}
-              >
-                <FileText size={15} /> Romaneio
-              </button>
-            )}
-          </div>
-          <div className={estilos.atividadeAcoesDecisao}>
-            {pendente && (
-              <>
-                <button
-                  disabled={processando}
-                type="button"
-                  onClick={() => aoRejeitar(solicitacao.id)}
-                  className={estilos.atividadeRejeitar}
-                >
-                  <X size={15} /> Rejeitar
-                </button>
-                <button
-                  disabled={processando}
-                type="button"
-                  onClick={() => aoAprovar(solicitacao.id)}
-                  className={estilos.atividadeAprovar}
-                >
-                  <Check size={15} /> Aceitar
-                </button>
-              </>
-            )}
-          </div>
-        </footer>
-      </article>
-    );
+export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio }) {
+  const origem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId)?.nome || 'Obra não disponível' : 'Depósito central';
+  const destino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId)?.nome || 'Obra não disponível' : 'Depósito central';
+  const pendente = solicitacao.status === 'Pendente';
+  const podeEditar = ['Pendente', 'Aprovada'].includes(solicitacao.status);
+  const separado = solicitacao.materiais.every(({ identificacao }) => identificacao);
+  const total = solicitacao.materiais.reduce((quantidade, material) => quantidade + material.quantidade, 0);
+  const localizacao = (material) => {
+    if (!material.identificacao) return 'Aguardando seleção pelo estoque';
+    if (solicitacao.status === 'Concluída') return `Recebido em ${destino}`;
+    if (solicitacao.status === 'Em trânsito') return `Em transporte: ${origem} → ${destino}`;
+    if (solicitacao.status === 'Rejeitada') return `Origem informada: ${origem}`;
+    return `Coleta em ${origem}`;
   };
 
-  const etapa = obterEtapaSolicitacao(solicitacao.status);
-  return renderizarSolicitacao(solicitacao, CLASSE_POR_ETAPA[etapa.chave] || "atividadeStatusPendente");
+  return <article className={css.detalhes} aria-label="Conteúdo da solicitação">
+    <div className={css.conteudo}>
+      <section className={css.destino} aria-label="Destino do pedido">
+        <span className={css.iconeDestino}><Building2 size={22} aria-hidden="true" /></span>
+        <div><h3>{solicitacao.obraDestinoId ? 'Obra de destino' : 'Destino da retirada'}</h3><p>{destino}</p></div>
+      </section>
+      {solicitacao.solicitante && solicitacao.solicitante !== solicitacao.tecnico && <p className={css.solicitante}><UserRound size={14} aria-hidden="true" /> Pedido por <strong>{solicitacao.solicitante}</strong></p>}
+
+      <section className={css.materiais} aria-labelledby="titulo-materiais-pedido">
+        <header className={css.tituloSecao}><h3 id="titulo-materiais-pedido"><Package2 size={17} aria-hidden="true" /> Materiais solicitados</h3><span>{total} {total === 1 ? 'unidade' : 'unidades'}</span></header>
+        <div className={css.tabela}>
+          <div className={css.colunas} aria-hidden="true"><span>Material / localização</span><span>Quantidade</span></div>
+          <ul>{solicitacao.materiais.map((material) => <li key={material.id} className={css.material}>
+            <div className={css.materialDados}>
+              <strong>{material.nome}</strong>
+              {material.identificacao && <span className={css.serie}>Identificação: {material.identificacao}</span>}
+              <span className={css.localizacao}><MapPin size={13} aria-hidden="true" />{localizacao(material)}</span>
+            </div>
+            <span className={css.quantidade} aria-label={`${material.quantidade} unidades`}><strong>{material.quantidade}</strong><small>un.</small></span>
+          </li>)}</ul>
+        </div>
+      </section>
+
+      {solicitacao.observacao && <section className={css.observacao} aria-labelledby="titulo-observacao-pedido"><h3 id="titulo-observacao-pedido"><MessageSquareText size={16} aria-hidden="true" /> Observação do pedido</h3><p>{solicitacao.observacao}</p></section>}
+    </div>
+
+    {(podeEditar || (solicitacao.status === 'Aprovada' && separado)) && <footer className={css.acoes}>
+      <div className={css.acoesSecundarias}>
+        {podeEditar && <button type="button" disabled={processando} onClick={() => aoEditar(solicitacao)} className={css.editar}><Pencil size={15} />Editar</button>}
+        {solicitacao.status === 'Aprovada' && separado && <button type="button" disabled={processando} onClick={() => aoExportarRomaneio(solicitacao)} className={css.editar}><FileText size={15} />Romaneio</button>}
+      </div>
+      {pendente && <div className={css.acoesDecisao}>
+        <button type="button" disabled={processando} onClick={() => aoRejeitar(solicitacao.id)} className={css.rejeitar}><X size={16} />Rejeitar</button>
+        <button type="button" disabled={processando} onClick={() => aoAprovar(solicitacao.id)} className={css.aceitar}><Check size={16} />Aceitar pedido</button>
+      </div>}
+    </footer>}
+  </article>;
 }

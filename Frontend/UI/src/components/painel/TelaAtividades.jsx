@@ -51,13 +51,20 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
   }, [aoFechar]);
   return <div className={css.overlay} onClick={(e) => { if (e.target === e.currentTarget) aoFechar(); }}>
     <section ref={janela} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="titulo-solicitacao" className={css.janela}>
-      <header className={css.janelaCabecalho}><div><span>Detalhes do pedido</span><h2 id="titulo-solicitacao">Solicitação #{solicitacao.id}</h2><p>{solicitacao.tecnico} · {formatarData(solicitacao.dataSolicitacao)}</p></div><button type="button" aria-label="Fechar solicitação" onClick={aoFechar}><X size={21} /></button></header>
+      <header className={css.janelaCabecalho}>
+        <div className={css.janelaIdentificacao}>
+          <span>Requisição de materiais</span>
+          <div className={css.janelaTitulo}><h2 id="titulo-solicitacao">Solicitação #{String(solicitacao.id).padStart(4, '0')}</h2><span className={css.janelaStatus} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{obterEtapaSolicitacao(solicitacao.status).rotulo}</span></div>
+          <p className={css.janelaMetadados}><span><UserRound size={13} aria-hidden="true" />{solicitacao.tecnico}</span><span><CalendarDays size={13} aria-hidden="true" /><time dateTime={solicitacao.dataSolicitacao}>{formatarData(solicitacao.dataSolicitacao)}</time></span></p>
+        </div>
+        <button type="button" aria-label="Fechar solicitação" onClick={aoFechar}><X size={21} /></button>
+      </header>
       <div className={css.janelaConteudo}>{children}</div>
     </section>
   </div>;
 }
 
-export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, estilos }) {
+export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio }) {
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
   const [dataFiltro, definirDataFiltro] = useState('');
@@ -169,7 +176,7 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
       </div>}
     {selecionada && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
-      <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} estilos={estilos} processando={processando}
+      <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} processando={processando}
         aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} />
     </JanelaSolicitacao>}
   </section>;

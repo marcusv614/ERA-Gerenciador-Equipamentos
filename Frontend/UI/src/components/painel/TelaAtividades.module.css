@@ -79,7 +79,18 @@
 .janelaCabecalho h2 { margin:5px 0; font:600 20px var(--font-display); }
 .janelaCabecalho p { margin:0; color:var(--text-muted); font-size:12px; }
 .janelaCabecalho button { border:1px solid var(--border); background:var(--surface-2); color:var(--text); border-radius:9px; min-width:40px; min-height:40px; display:grid; place-items:center; cursor:pointer; }
-.janelaConteudo { padding:20px 24px; overflow-y:auto; overscroll-behavior:contain; }
+.janelaConteudo { padding:24px; overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
+.janelaIdentificacao { flex:1; min-width:0; }
+.janelaTitulo { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin:7px 0 10px; }
+.janelaTitulo h2 { margin:0; }
+.janelaCabecalho .janelaStatus { padding:5px 9px; border-radius:6px; font-size:10px; font-weight:600; letter-spacing:0; text-transform:none; background:var(--surface-2); }
+.janelaStatus[data-etapa='pendente'] { color:var(--warn); background:rgba(var(--era-yellow-rgb),.15); }
+.janelaStatus[data-etapa='aceita'] { color:#4088bf; background:rgba(64,136,191,.13); }
+.janelaStatus[data-etapa='finalizada'] { color:#27845a; background:rgba(47,158,104,.13); }
+.janelaStatus[data-etapa='rejeitada'] { color:#c44444; background:rgba(209,84,84,.12); }
+.janelaMetadados { display:flex; flex-wrap:wrap; gap:8px 18px; }
+.janelaCabecalho .janelaMetadados > span { display:inline-flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0; text-transform:none; line-height:1.5; }
+.janelaMetadados svg { flex-shrink:0; }
 .janelaConteudo > article { border:0; padding:0; box-shadow:none; background:transparent; }
 .erro { padding:12px; border-radius:8px; color:#c44444; background:rgba(209,84,84,.12); font-size:12px; }
 .processando { color:var(--text-muted); font-size:12px; }
