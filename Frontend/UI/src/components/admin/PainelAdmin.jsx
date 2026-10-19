@@ -26,7 +26,6 @@ export function PainelAdmin() {
   const [funcionarios, definirFuncionarios] = useState([]);
   const [carregando, definirCarregando] = useState(true);
   const [erro, definirErro] = useState('');
-  const [mensagem, definirMensagem] = useState('');
   const [criandoUsuario, definirCriandoUsuario] = useState(false);
   const [editandoUsuario, definirEditandoUsuario] = useState(null);
   const [redefinindo, definirRedefinindo] = useState(null);
@@ -96,7 +95,6 @@ export function PainelAdmin() {
 
   const criarUsuario = async (dados) => {
     await apiUsuarios.cadastrar(dados);
-    definirMensagem('Acesso criado. O usuário deverá trocar a senha temporária no primeiro login.');
     await carregar();
   };
 
@@ -106,14 +104,12 @@ export function PainelAdmin() {
       await encerrarSessao();
       return;
     }
-    definirMensagem('Usuário atualizado com sucesso. Uma nova senha exigirá troca no próximo login.');
     await carregar();
   };
 
   const alternarStatus = async (item) => {
     try {
       await apiUsuarios.definirStatus(item.id, !item.ativo);
-      definirMensagem(item.ativo ? 'Usuário desativado e acesso bloqueado.' : 'Usuário reativado.');
       await carregar();
     } catch (excecao) { definirErro(excecao.message); }
   };
@@ -121,7 +117,6 @@ export function PainelAdmin() {
   const redefinirSenha = async () => {
     try {
       await apiUsuarios.redefinirSenha(redefinindo.id, senhaTemporaria);
-      definirMensagem('Senha temporária redefinida. O usuário deverá alterá-la no próximo acesso.');
       definirRedefinindo(null); definirSenhaTemporaria('');
       await carregar();
     } catch (excecao) { definirErro(excecao.message); }
@@ -138,7 +133,6 @@ export function PainelAdmin() {
     {area === 'usuarios' && <main className={estilos.conteudo}>
       <section className={estilos.titulo}><div><span><Users /> Segurança e acessos</span><h1>Usuários do sistema</h1><p>Crie credenciais, atribua perfis e controle acessos.</p></div><button type="button" disabled={carregando} onClick={abrirNovoUsuario}><UserPlus /> Criar usuário</button></section>
       <div className={estilos.pesquisa}><Search aria-hidden="true" /><input type="search" value={termoBusca} onChange={(evento) => definirTermoBusca(evento.target.value)} placeholder="Pesquisar por nome, login, perfil ou funcionário" aria-label="Pesquisar usuários" /><span>{usuariosFiltrados.length} {usuariosFiltrados.length === 1 ? 'resultado' : 'resultados'}</span></div>
-      {mensagem && <p className={estilos.sucesso}>{mensagem}</p>}
       {erro && <p className={estilos.erro} role="alert">{erro}</p>}
       {carregando ? <p>Carregando usuários...</p> : <section className={estilos.grade}>
         {usuariosFiltrados.map((item) => <article key={item.id} className={estilos.usuario}>

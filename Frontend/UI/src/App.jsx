@@ -5,6 +5,7 @@ import { ProvedorAutenticacao, useAutenticacao } from './contexto/ContextoAutent
 import { PainelTecnico } from './components/tecnico/PainelTecnico';
 import { PainelEstoque } from './components/estoque/PainelEstoque';
 import { PainelAdmin } from './components/admin/PainelAdmin';
+import { Notificacoes } from './components/notificacoes/Notificacoes';
 
 function ConteudoAutenticado() {
   const { usuario, verificando } = useAutenticacao();
@@ -16,6 +17,6 @@ function ConteudoAutenticado() {
   if (usuario.perfil === 'ESTOQUE') return <PainelEstoque />;
   return <PainelControleAtivos />;
 }
-function App() { return <ProvedorAutenticacao><ConteudoAutenticado /></ProvedorAutenticacao>; }
+function App() { return <ProvedorAutenticacao><ConteudoAutenticado /><Notificacoes /></ProvedorAutenticacao>; }
 
 export default App;

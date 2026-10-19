@@ -1,3 +1,4 @@
+import { locaisDoPedido, pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
@@ -73,14 +74,8 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const nomeLocal = (id) => id == null || id === 'deposito' ? 'Depósito central' : buscarObra(id)?.nome || 'Obra';
   const pendencias = useMemo(() => solicitacoes.filter(({ status }) => ['Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status)), [solicitacoes]);
   const concluidas = useMemo(() => solicitacoes.filter(({ status }) => ['Concluída', 'Rejeitada'].includes(status)), [solicitacoes]);
-  const correspondeAosFiltros = (solicitacao) => {
-    const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId;
-    if (obraFiltrada !== 'todas' && String(obraId) !== obraFiltrada) return false;
-    const termo = busca.trim().toLocaleLowerCase('pt-BR');
-    if (!termo) return true;
-    const data = solicitacao.dataSolicitacao ? new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR') : '';
-    return [solicitacao.id, solicitacao.tecnico, solicitacao.solicitante, solicitacao.status, nomeLocal(obraId), data, ...solicitacao.materiais.flatMap(({ nome, identificacao }) => [nome, identificacao])].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR').includes(termo);
-  };
+  const correspondeAosFiltros = (solicitacao) => (obraFiltrada === 'todas' || locaisDoPedido(solicitacao).includes(obraFiltrada))
+    && pesquisarSolicitacoes([solicitacao], busca, buscarObra).length > 0;
   const pendenciasFiltradas = pendencias.filter(correspondeAosFiltros);
   const concluidasFiltradas = concluidas.filter(correspondeAosFiltros);
   const aquisicoes = useMemo(() => solicitacoes.flatMap((solicitacao) => solicitacao.materiais
@@ -115,14 +110,13 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       const atualizada = await apiAtividades.solicitarCompra(configurando.id, material.id, faltante);
       definirConfigurando(atualizada);
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
-      definirMensagem({ tipo: 'sucesso', texto: `Compra de ${faltante} unidade(s) de ${material.nome} registrada.` });
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
   };
 
   const salvarAtendimento = async (atendimentos) => {
     try {
       const atualizadas = await apiAtividades.distribuir(configurando.id, atendimentos);
-      definirSolicitacoes((atuais) => [...atuais.filter((item) => item.id !== configurando.id), ...atualizadas]); definirConfigurando(null); definirMensagem({ tipo: 'sucesso', texto: atualizadas.length > 1 ? `Materiais encontrados em ${atualizadas.length} locais de origem.` : 'Materiais confirmados para atendimento.' });
+      definirSolicitacoes((atuais) => [...atuais.filter((item) => item.id !== configurando.id), ...atualizadas]); definirConfigurando(null);
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); throw erro; }
   };
 
@@ -143,25 +137,21 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     }
     try {
       const atualizada = await apiAtividades.registrarAquisicao(solicitacao.id, material.id, quantidade, numeroNota, identificacao);
-      const equipamentosAtualizados = await apiEquipamentos.listar();
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
-      definirEquipamentos(equipamentosAtualizados);
+      apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
       definirQuantidadesRecebidas((atuais) => { const novas = { ...atuais }; delete novas[chave]; return novas; });
       definirNotasFiscaisRecebidas((atuais) => { const novas = { ...atuais }; delete novas[chave]; return novas; });
       definirIdentificacoesRecebidas((atuais) => { const novas = { ...atuais }; delete novas[chave]; return novas; });
-      definirMensagem({ tipo: 'sucesso', texto: `${quantidade} unidade(s) registrada(s) na nota ${numeroNota}.` });
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
   };
 
   const confirmarAtendimento = async (solicitacao) => {
     try {
       let atualizada = solicitacao;
-      if (atualizada.status !== 'Em trânsito') atualizada = await apiAtividades.iniciarTransito(atualizada.id);
+      if (atualizada.status !== 'Em trânsito') atualizada = await apiAtividades.iniciarTransito(atualizada.id, Boolean(atualizada.obraDestinoId));
       if (!atualizada.obraDestinoId) atualizada = await apiAtividades.concluir(atualizada.id);
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
-      const equipamentosAtualizados = await apiEquipamentos.listar();
-      definirEquipamentos(equipamentosAtualizados);
-      definirMensagem({ tipo: 'sucesso', texto: atualizada.obraDestinoId ? 'Entrega confirmada. Agora o técnico só precisa confirmar que recebeu.' : 'Material recebido no estoque. Solicitação finalizada.' });
+      apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
     }
     catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
   };

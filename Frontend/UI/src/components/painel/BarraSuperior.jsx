@@ -5,7 +5,7 @@ const INFORMACOES_TELA = {
   equipamentos: ['Equipamentos', 'Onde cada instrumento está e com quem', 'Buscar modelo, série, técnico...'],
   obras: ['Obras', 'Frentes de trabalho ativas e planejadas', 'Buscar obra, cliente, cidade...'],
   funcionarios: ['Funcionários', 'Equipe, responsabilidades e materiais sob custódia', 'Buscar funcionário, cargo, e-mail...'],
-  atividades: ['Atividades', 'Solicitações das equipes aguardando sua decisão', 'Buscar técnico, obra ou material...'],
+  atividades: ['Solicitações', 'Consulte pedidos em andamento e o histórico para auditoria', 'Código, obra, técnico, material ou série...'],
   deposito: ['Depósito', 'Itens fora de campo — estoque, manutenção e trânsito', 'Buscar item, série...'],
 };
 

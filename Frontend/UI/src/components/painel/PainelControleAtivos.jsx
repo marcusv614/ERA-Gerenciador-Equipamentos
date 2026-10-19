@@ -1,3 +1,4 @@
+import { pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BarraSuperior } from './BarraSuperior';
@@ -19,7 +20,7 @@ import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { ModalEditarSolicitacao } from '../editar-solicitacao-modal/EditarSolicitacaoModal';
 import { useControleAtivos } from '../../hooks/useControleAtivos';
 import { useFiltrosPainel } from '../../hooks/useFiltrosPainel';
-import { imprimirInventarioObra, imprimirRomaneioSeparacao, imprimirHistoricoEquipamento, imprimirHistoricoObra } from '../../services/documentosEquipamentos';
+import { imprimirRelatorioAuditoriaSolicitacao, imprimirInventarioObra, imprimirRomaneioSeparacao, imprimirHistoricoEquipamento, imprimirHistoricoObra } from '../../services/documentosEquipamentos';
 import estilos from '../fibra-track/FibraTrack.module.css';
 
 export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTema } = {}) {
@@ -98,15 +99,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     return sucesso;
   };
   const totalAtividadesPendentes = controleAtivos.solicitacoes.filter(({ status }) => status === 'Pendente').length;
-  const termoAtividades = filtros.termoBusca.trim().toLocaleLowerCase('pt-BR');
-  const solicitacoesFiltradas = termoAtividades
-    ? controleAtivos.solicitacoes.filter((solicitacao) => {
-      const origem = solicitacao.obraOrigemId ? controleAtivos.buscarObraPorId(solicitacao.obraOrigemId)?.nome : '';
-      const destino = solicitacao.obraDestinoId ? controleAtivos.buscarObraPorId(solicitacao.obraDestinoId)?.nome : '';
-      return [solicitacao.solicitante, solicitacao.tecnico, solicitacao.tipo, solicitacao.status, origem, destino, ...solicitacao.materiais.map(({ nome, identificacao }) => `${nome} ${identificacao || ''}`)]
-        .join(' ').toLocaleLowerCase('pt-BR').includes(termoAtividades);
-    })
-    : controleAtivos.solicitacoes;
+  const solicitacoesFiltradas = pesquisarSolicitacoes(controleAtivos.solicitacoes, filtros.termoBusca, controleAtivos.buscarObraPorId);
   const nomesCategoriasCadastradas = controleAtivos.categoriasEquipamento.map(({ nome }) => nome);
   const categoriasHistoricas = controleAtivos.equipamentos
     .filter(({ arquivado }) => !arquivado)
@@ -137,9 +130,9 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
         {buscaAtiva && <div className={`${estilos.searchFeedback} ${quantidadeResultados === 0 ? estilos.searchFeedbackEmpty : ''}`} role="status" aria-live="polite"><span>Pesquisa por <strong>“{filtros.termoBusca.trim()}”</strong></span><b>{quantidadeResultados} {quantidadeResultados === 1 ? 'resultado encontrado' : 'resultados encontrados'}</b><button type="button" onClick={() => filtros.definirTermoBusca('')}>Limpar pesquisa</button></div>}
         {telaAtual === 'deposito' && <ResumoEquipamentos resumo={controleAtivos.resumoEquipamentos} estilos={estilos} />}
         {telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} podeEditar={ehAdmin} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoEditar={definirEquipamentoEmEdicao} aoMover={definirEquipamentoParaMover} estilos={estilos} />}
-        {telaAtual === 'obras' && <TelaObras obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} podeEditarStatus={ehAdmin} aoAlterarStatus={controleAtivos.atualizarStatusObra} aoArquivar={controleAtivos.arquivarObra} aoMoverEquipamento={definirEquipamentoParaMover} aoImprimirInventario={(obra) => imprimirInventarioObra(obra, controleAtivos.equipamentos)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
+        {telaAtual === 'obras' && <TelaObras obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} podeEditarStatus={ehAdmin} aoAlterarStatus={controleAtivos.atualizarStatusObra} aoArquivar={controleAtivos.arquivarObra} aoMoverEquipamento={definirEquipamentoParaMover} aoImprimirInventario={(obra) => imprimirInventarioObra(obra, controleAtivos.equipamentos, controleAtivos.buscarObraPorId)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
         {telaAtual === 'funcionarios' && <TelaFuncionarios funcionarios={filtros.funcionariosFiltrados} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} podeEditar={ehAdmin} aoEditarFuncionario={definirFuncionarioEmEdicao} estilos={estilos} />}
-        {telaAtual === 'atividades' && <TelaAtividades erroApi={controleAtivos.erroApi} solicitacoes={solicitacoesFiltradas} todasSolicitacoes={controleAtivos.solicitacoes} tecnicos={controleAtivos.tecnicosCadastrados} termoBusca={filtros.termoBusca} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoEditar={definirSolicitacaoEmEdicao} aoExportarRomaneio={(solicitacao) => imprimirRomaneioSeparacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
+        {telaAtual === 'atividades' && <TelaAtividades erroApi={controleAtivos.erroApi} solicitacoes={solicitacoesFiltradas} todasSolicitacoes={controleAtivos.solicitacoes} tecnicos={controleAtivos.tecnicosCadastrados} termoBusca={filtros.termoBusca} buscarObraPorId={controleAtivos.buscarObraPorId} aoAprovar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Aprovada')} aoRejeitar={(identificador) => controleAtivos.definirStatusSolicitacao(identificador, 'Rejeitada')} aoEditar={definirSolicitacaoEmEdicao} aoExportarAuditoria={(solicitacao) => imprimirRelatorioAuditoriaSolicitacao(solicitacao, controleAtivos.buscarObraPorId)} aoExportarRomaneio={(solicitacao) => imprimirRomaneioSeparacao(solicitacao, controleAtivos.buscarObraPorId)} estilos={estilos} />}
         {telaAtual === 'deposito' && <CartaoDeposito equipamentos={filtros.equipamentosDoDeposito} obras={controleAtivos.obras} podeEditar={ehAdmin} aoEditar={definirEquipamentoEmEdicao} />}
       </div>
     </main>

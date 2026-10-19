@@ -1,10 +1,8 @@
-// Incorporar o logo evita que a janela isolada de impressão perca o caminho do
-// arquivo gerado pelo Vite antes de o navegador montar o PDF.
 import logoEra from '../assets/ERALTDA.png?inline';
-import { formatarData } from '../utils/datas';
-import { identificacaoVisivel } from '../utils/identificacaoEquipamento';
+import { criarModelosDocumentos } from './modelosDocumentos';
 
 const ESTILOS_DOCUMENTO = `
+  @page{size:A4 landscape;margin:10mm}thead{display:table-header-group}tr{break-inside:avoid}
   body{font-family:Arial,Helvetica,sans-serif;padding:8px 10px;color:#111;background:#fff}
   h1{font-size:16px;margin:0 0 5px;font-weight:700}h2{font-size:12px;margin:10px 0 6px}
   .doc-card{margin-bottom:8px}.doc-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
@@ -14,8 +12,7 @@ const ESTILOS_DOCUMENTO = `
   table{width:100%;border-collapse:collapse;margin-top:7px;table-layout:auto}th,td{padding:5px 4px;border:1px solid #d9d9d9;text-align:left;vertical-align:top;font-size:9px;word-break:break-word}th{background:#f3f3f3}
   .muted{color:#666;font-size:9px}
 `;
-
-function textoSeguro(valor) {
+function textoSeguro(valor) {
   return String(valor ?? '—')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
@@ -23,24 +20,6 @@ function textoSeguro(valor) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
-
-const serieDocumento = (serie, tipo) => textoSeguro(identificacaoVisivel(serie, tipo));
-const codigoAuditoria = (serie) => textoSeguro(String(serie || '').trim() || '—');
-const normalizarChave = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase('pt-BR');
-const agruparMateriais = (materiais) => Object.values(materiais.reduce((grupos, material) => {
-  const chave = material.catalogoChave || [material.tipo, material.modelo || material.nome, material.medida].map(normalizarChave).join('|');
-  if (!grupos[chave]) grupos[chave] = {
-    chave,
-    tipo: material.tipo,
-    nome: material.modelo || material.nome,
-    medida: material.medida,
-    quantidade: 0,
-    registros: [],
-  };
-  grupos[chave].quantidade += Number(material.quantidade || 0);
-  grupos[chave].registros.push(material);
-  return grupos;
-}, {})).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
 function imprimirAposCarregarImagens(janela) {
   const imagens = [...janela.document.images];
@@ -60,7 +39,7 @@ function imprimirAposCarregarImagens(janela) {
 }
 
 function abrirJanelaDeImpressao(titulo, conteudo) {
-  const documentoHtml = `<!doctype html><html><head><meta charset="utf-8"><title>${textoSeguro(titulo)}</title><style>${ESTILOS_DOCUMENTO}</style></head><body>${conteudo}</body></html>`;
+  const documentoHtml = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${textoSeguro(titulo)}</title><style>${ESTILOS_DOCUMENTO}</style></head><body>${conteudo}</body></html>`;
   const janelaImpressao = window.open('', '_blank');
 
   if (janelaImpressao) {
@@ -82,190 +61,44 @@ function abrirJanelaDeImpressao(titulo, conteudo) {
   setTimeout(() => quadroImpressao.remove(), 5000);
 }
 
-function criarCabecalhoObra(obra, tecnicos, titulo) {
-  return `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${titulo}</h1></div><div class="header">
-    <div class="header-row"><span class="label">Obra</span><span class="value">${textoSeguro(obra.nome)}</span></div>
-    <div class="header-row"><span class="label">Data da obra</span><span class="value">${formatarData(obra.inicio)}</span></div>
-    <div class="header-row"><span class="label">Cliente</span><span class="value">${textoSeguro(obra.cliente)}</span></div>
-    <div class="header-row"><span class="label">Localização</span><span class="value">${textoSeguro(obra.cidade)}</span></div>
-    <div class="header-row"><span class="label">Responsáveis técnicos</span><span class="value">${textoSeguro(obra.responsaveis?.join(', '))}</span></div>
-    <div class="header-row"><span class="label">Técnicos na obra</span><span class="value">${textoSeguro(tecnicos.length ? tecnicos.join(', ') : '—')}</span></div>
-  </div></div>`;
+const modelos = criarModelosDocumentos(logoEra);
+
+export function imprimirHistoricoEquipamento(...argumentos) {
+  const { titulo, conteudo } = modelos.historicoEquipamento(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-function criarCabecalhoEquipamento(equipamento, buscarObraPorId) {
-  const localAtual = equipamento.obraId
-    ? buscarObraPorId(equipamento.obraId)?.nome || 'Obra não encontrada'
-    : 'Depósito central';
-
-  return `<div class="doc-card">
-    <div class="doc-top">
-      <img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/>
-      <h1>Histórico de movimentações</h1>
-    </div>
-    <div class="header">
-      <div class="header-row"><span class="label">Tipo</span><span class="value">${textoSeguro(equipamento.tipo)}</span></div>
-      <div class="header-row"><span class="label">Equipamento</span><span class="value">${textoSeguro(equipamento.modelo)}</span></div>
-      ${identificacaoVisivel(equipamento.serie, equipamento.tipo) ? `<div class="header-row"><span class="label">Número de série</span><span class="value">${serieDocumento(equipamento.serie, equipamento.tipo)}</span></div>` : ''}
-      ${equipamento.notaFiscal ? `<div class="header-row"><span class="label">Nota fiscal</span><span class="value">${textoSeguro(equipamento.notaFiscal)}</span></div>` : ''}
-      <div class="header-row"><span class="label">Status atual</span><span class="value">${textoSeguro(equipamento.status)}</span></div>
-      <div class="header-row"><span class="label">Local atual</span><span class="value">${textoSeguro(localAtual)}</span></div>
-      <div class="header-row"><span class="label">Técnico responsável</span><span class="value">${textoSeguro(equipamento.tecnico)}</span></div>
-    </div>
-  </div>`;
+export function imprimirInventarioObra(...argumentos) {
+  const { titulo, conteudo } = modelos.inventarioObra(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-export function imprimirHistoricoEquipamento(equipamento, historico, buscarObraPorId) {
-  const linhas = historico.map((movimentacao) => {
-    const destino = movimentacao.destinoNome || (movimentacao.obraId
-      ? buscarObraPorId(movimentacao.obraId)?.nome
-      : 'Depósito central');
-    return `<tr><td>${formatarData(movimentacao.dataMovimentacao || movimentacao.date || movimentacao.saida || movimentacao.when)}</td><td>${textoSeguro(movimentacao.origemNome || 'Depósito central')}</td><td>${textoSeguro(destino)}</td><td>${formatarData(movimentacao.dataSaida || movimentacao.dataMovimentacao || movimentacao.saida)}</td><td>${formatarData(movimentacao.dataEntrada || movimentacao.data || movimentacao.dataMovimentacao)}</td><td>${textoSeguro(movimentacao.tecnico)}</td><td>${textoSeguro(movimentacao.status)}</td></tr>`;
-  }).join('');
-  const conteudo = `${criarCabecalhoEquipamento(equipamento, buscarObraPorId)}<h2>Movimentações registradas</h2><table><thead><tr><th>Data movimentação</th><th>Origem</th><th>Destino</th><th>Data saída</th><th>Data entrada</th><th>Técnico</th><th>Status</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Gerado em ${formatarData(new Date())}</p>`;
-  abrirJanelaDeImpressao(`Histórico ${equipamento.modelo}`, conteudo);
+export function imprimirInventarioHistoricoObra(...argumentos) {
+  const { titulo, conteudo } = modelos.inventarioHistoricoObra(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-export function imprimirInventarioObra(obra, equipamentos) {
-  const equipamentosDaObra = equipamentos.filter(({ obraId }) => obraId === obra.id);
-  const tecnicos = [...new Set(equipamentosDaObra.map(({ tecnico }) => tecnico).filter(Boolean))];
-  const grupos = agruparMateriais(equipamentosDaObra);
-  const linhas = grupos.length ? grupos.map((grupo) => `<tr><td>${textoSeguro(grupo.quantidade)}</td><td>${textoSeguro(grupo.tipo)}</td><td>${textoSeguro(grupo.nome)}</td><td>${textoSeguro(grupo.medida)}</td><td>${grupo.registros.length}</td></tr>`).join('') : '<tr><td colspan="5">Nenhum equipamento cadastrado na obra.</td></tr>';
-  const detalhes = equipamentosDaObra.length ? equipamentosDaObra.map((equipamento) => `<tr><td>${textoSeguro(equipamento.quantidade || 1)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${codigoAuditoria(equipamento.serie)}</td><td>${textoSeguro(equipamento.notaFiscal)}</td><td>${textoSeguro(equipamento.tecnico)}</td><td>${formatarData(equipamento.data || equipamento.dataEntrada || equipamento.saida)}</td></tr>`).join('') : '<tr><td colspan="6">Nenhum lote registrado.</td></tr>';
-  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Relatório de inventário da obra')}<h2>Resumo por material</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Material</th><th>Medida</th><th>Lotes / registros</th></tr></thead><tbody>${linhas}</tbody></table><h2>Detalhamento para auditoria</h2><table><thead><tr><th>Qtd.</th><th>Material</th><th>Código / série</th><th>Nota fiscal</th><th>Técnico</th><th>Entrada</th></tr></thead><tbody>${detalhes}</tbody></table><p class="muted">Os materiais equivalentes foram consolidados no resumo; notas e códigos permanecem disponíveis para rastreabilidade. Gerado em ${formatarData(new Date())}</p>`;
-  abrirJanelaDeImpressao(`Inventário — ${obra.nome}`, conteudo);
+export function imprimirRomaneioSeparacao(...argumentos) {
+  const { titulo, conteudo } = modelos.romaneioSeparacao(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-export function imprimirInventarioHistoricoObra(inventario) {
-  const obra = { nome: inventario.obraNome, cliente: inventario.cliente, cidade: inventario.cidade, inicio: inventario.dataReferencia, responsaveis: inventario.responsaveisTecnicos };
-  const tecnicos = [...new Set((inventario.materiais || []).map(({ tecnico }) => tecnico).filter(Boolean))];
-  const grupos = agruparMateriais(inventario.materiais || []);
-  const linhas = grupos.length
-    ? grupos.map((grupo) => `<tr><td>${textoSeguro(grupo.quantidade)}</td><td>${textoSeguro(grupo.tipo)}</td><td>${textoSeguro(grupo.nome)}</td><td>${textoSeguro(grupo.medida)}</td><td>${grupo.registros.length}</td></tr>`).join('')
-    : '<tr><td colspan="5">Nenhum equipamento registrado na obra nesta data.</td></tr>';
-  const detalhes = inventario.materiais?.length ? inventario.materiais.map((item) => `<tr><td>${textoSeguro(item.quantidade || 1)}</td><td>${textoSeguro(item.modelo)}</td><td>${codigoAuditoria(item.serie)}</td><td>${textoSeguro(item.medida)}</td><td>${textoSeguro(item.tecnico)}</td></tr>`).join('') : '<tr><td colspan="5">Nenhum lote registrado.</td></tr>';
-  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Inventário histórico da obra')}<div class="header"><div class="header-row"><span class="label">Data de referência</span><span class="value">${formatarData(inventario.dataReferencia)}</span></div><div class="header-row"><span class="label">Status da obra na data</span><span class="value">${textoSeguro(inventario.status)}</span></div></div><h2>Resumo por material</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Material</th><th>Medida</th><th>Lotes / registros</th></tr></thead><tbody>${linhas}</tbody></table><h2>Detalhamento para auditoria</h2><table><thead><tr><th>Qtd.</th><th>Material</th><th>Código / série</th><th>Medida</th><th>Técnico</th></tr></thead><tbody>${detalhes}</tbody></table><p class="muted">Documento gerado a partir do histórico imutável do sistema.</p>`;
-  abrirJanelaDeImpressao(`Inventário histórico — ${inventario.obraNome} — ${formatarData(inventario.dataReferencia)}`, conteudo);
+export function imprimirRelatorioAuditoriaSolicitacao(...argumentos) {
+  const { titulo, conteudo } = modelos.auditoriaSolicitacao(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-export function imprimirRomaneioSeparacao(solicitacao, buscarObraPorId) {
-  const identificadorSolicitacao = String(solicitacao.id ?? 'sem identificacao').toUpperCase();
-  const materiais = Array.isArray(solicitacao.materiais) ? solicitacao.materiais : [];
-  const obraOrigem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId) : null;
-  const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
-  const origem = obraOrigem?.nome || 'Depósito central';
-  const destino = obraDestino?.nome || 'Depósito central';
-  const titulo = 'Romaneio de separação';
-  const linhas = materiais.length
-    ? materiais.map((material) => `<tr><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${serieDocumento(material.identificacao)}</td></tr>`).join('')
-    : '<tr><td colspan="3">Nenhum material informado na solicitação.</td></tr>';
-  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${titulo}</h1></div><div class="header">
-    <div class="header-row"><span class="label">Solicitação</span><span class="value">${textoSeguro(identificadorSolicitacao)}</span></div>
-    <div class="header-row"><span class="label">Tipo</span><span class="value">Movimentação</span></div>
-    <div class="header-row"><span class="label">Status</span><span class="value">${textoSeguro(solicitacao.status)}</span></div>
-    <div class="header-row"><span class="label">Data da solicitação</span><span class="value">${formatarData(solicitacao.dataSolicitacao)}</span></div>
-    <div class="header-row"><span class="label">Solicitante</span><span class="value">${textoSeguro(solicitacao.solicitante || solicitacao.tecnico)}</span></div>
-    <div class="header-row"><span class="label">Técnico responsável</span><span class="value">${textoSeguro(solicitacao.tecnico)}</span></div>
-    <div class="header-row"><span class="label">Origem</span><span class="value">${textoSeguro(origem)}</span></div>
-    <div class="header-row"><span class="label">Destino</span><span class="value">${textoSeguro(destino)}</span></div>
-  </div></div>`;
-  const observacao = solicitacao.observacao ? `<h2>Observação</h2><p class="muted">${textoSeguro(solicitacao.observacao)}</p>` : '';
-  const conteudo = `${cabecalho}<p style="padding:7px;border:1px solid #d99b45;background:#fff4df;font-size:9px;font-weight:700">ROMANEIO — documento para conferência da separação dos materiais.</p><h2>Materiais separados</h2><table><thead><tr><th>Quantidade</th><th>Material</th><th>Identificação / Série</th></tr></thead><tbody>${linhas}</tbody></table>${observacao}<p class="muted">Gerado em ${formatarData(new Date())}</p>`;
-  abrirJanelaDeImpressao(`${titulo} — ${identificadorSolicitacao}`, conteudo);
+export function imprimirListaComprasSolicitacao(...argumentos) {
+  const { titulo, conteudo } = modelos.listaComprasSolicitacao(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-export function imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObraPorId) {
-  const identificador = String(solicitacao.id ?? 'sem identificação').padStart(4, '0');
-  const obraOrigem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId) : null;
-  const obraDestino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId) : null;
-  const origem = obraOrigem?.nome || 'Depósito central';
-  const destino = obraDestino?.nome || 'Depósito central';
-  const tipo = solicitacao.obraDestinoId ? 'Envio para obra' : 'Retirada da obra';
-  const materiais = Array.isArray(solicitacao.materiais) ? solicitacao.materiais : [];
-  const materiaisAgrupados = agruparMateriais(materiais);
-  const linhas = materiaisAgrupados.length
-    ? materiaisAgrupados.map((material, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${material.registros.length}</td></tr>`).join('')
-    : '<tr><td colspan="4">Nenhum material registrado.</td></tr>';
-  const detalhes = materiais.length ? materiais.map((material, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.quantidade)}</td><td>${textoSeguro(material.nome)}</td><td>${codigoAuditoria(material.identificacao)}</td></tr>`).join('') : '<tr><td colspan="4">Nenhum registro detalhado.</td></tr>';
-  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Relatório de auditoria da movimentação</h1></div><div class="header">
-    <div class="header-row"><span class="label">Solicitação</span><span class="value">#${textoSeguro(identificador)}</span></div>
-    <div class="header-row"><span class="label">Tipo da operação</span><span class="value">${textoSeguro(tipo)}</span></div>
-    <div class="header-row"><span class="label">Status atual</span><span class="value">${textoSeguro(solicitacao.status)}</span></div>
-    <div class="header-row"><span class="label">Data da solicitação</span><span class="value">${formatarData(solicitacao.dataSolicitacao)}</span></div>
-    <div class="header-row"><span class="label">Data da decisão</span><span class="value">${formatarData(solicitacao.dataDecisao)}</span></div>
-    <div class="header-row"><span class="label">Solicitante</span><span class="value">${textoSeguro(solicitacao.solicitante || solicitacao.tecnico)}</span></div>
-    <div class="header-row"><span class="label">Técnico responsável</span><span class="value">${textoSeguro(solicitacao.tecnico)}</span></div>
-    <div class="header-row"><span class="label">Origem</span><span class="value">${textoSeguro(origem)}</span></div>
-    <div class="header-row"><span class="label">Destino</span><span class="value">${textoSeguro(destino)}</span></div>
-    <div class="header-row"><span class="label">Total de unidades</span><span class="value">${materiais.reduce((total, material) => total + Number(material.quantidade || 0), 0)}</span></div>
-  </div></div>`;
-  const observacao = solicitacao.observacao ? `<h2>Observações registradas</h2><p class="muted">${textoSeguro(solicitacao.observacao)}</p>` : '<h2>Observações registradas</h2><p class="muted">Nenhuma observação informada.</p>';
-  const conteudo = `${cabecalho}<h2>Resumo por material</h2><table><thead><tr><th>Item</th><th>Quantidade</th><th>Material</th><th>Lotes / registros</th></tr></thead><tbody>${linhas}</tbody></table><h2>Detalhamento para auditoria</h2><table><thead><tr><th>Item</th><th>Quantidade</th><th>Material</th><th>Código / série</th></tr></thead><tbody>${detalhes}</tbody></table>${observacao}<p class="muted">Documento interno para auditoria. Materiais equivalentes foram agrupados no resumo sem remover os registros detalhados. Gerado em ${textoSeguro(new Date().toLocaleString('pt-BR'))}.</p>`;
-  abrirJanelaDeImpressao(`Auditoria da movimentação #${identificador}`, conteudo);
+export function imprimirListaComprasGeral(...argumentos) {
+  const { titulo, conteudo } = modelos.listaComprasGeral(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
-export function imprimirListaComprasSolicitacao(solicitacao, aquisicoes, buscarObraPorId) {
-  const identificador = String(solicitacao.id ?? '').padStart(4, '0');
-  const obraId = solicitacao.obraDestinoId || solicitacao.obraOrigemId;
-  const obra = obraId ? buscarObraPorId(obraId) : null;
-  const pendentes = aquisicoes.filter(({ pendente }) => pendente > 0);
-  const linhas = pendentes.length
-    ? pendentes.map(({ material, pendente }, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(material.nome)}</td><td>${textoSeguro(pendente)}</td><td></td><td></td></tr>`).join('')
-    : '<tr><td colspan="5">Não há materiais pendentes de compra nesta solicitação.</td></tr>';
-  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Lista de compras por solicitação</h1></div><div class="header">
-    <div class="header-row"><span class="label">Solicitação</span><span class="value">#${textoSeguro(identificador)}</span></div>
-    <div class="header-row"><span class="label">Obra</span><span class="value">${textoSeguro(obra?.nome || 'Depósito central')}</span></div>
-    <div class="header-row"><span class="label">Cliente</span><span class="value">${textoSeguro(obra?.cliente)}</span></div>
-    <div class="header-row"><span class="label">Solicitante</span><span class="value">${textoSeguro(solicitacao.solicitante || solicitacao.tecnico)}</span></div>
-    <div class="header-row"><span class="label">Data da solicitação</span><span class="value">${formatarData(solicitacao.dataSolicitacao)}</span></div>
-  </div></div>`;
-  const conteudo = `${cabecalho}<h2>Materiais pendentes de aquisição</h2><table><thead><tr><th>Item</th><th>Material</th><th>Quantidade</th><th>Fornecedor</th><th>Conferência</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Lista gerada em ${textoSeguro(new Date().toLocaleString('pt-BR'))}. Quantidades correspondem ao saldo ainda não adquirido.</p>`;
-  abrirJanelaDeImpressao(`Lista de compras — solicitação #${identificador}`, conteudo);
-}
-
-export function imprimirListaComprasGeral(aquisicoes, buscarObraPorId) {
-  const consolidados = [...aquisicoes.filter(({ pendente }) => pendente > 0).reduce((mapa, item) => {
-    const chave = item.material.catalogoChave || String(item.material.nome || '').trim().toLocaleLowerCase('pt-BR');
-    const obraId = item.solicitacao.obraDestinoId || item.solicitacao.obraOrigemId;
-    const atual = mapa.get(chave) || { nome: item.material.nome, quantidade: 0, solicitacoes: new Set(), obras: new Set() };
-    atual.quantidade += item.pendente;
-    atual.solicitacoes.add(`#${String(item.solicitacao.id).padStart(4, '0')}`);
-    atual.obras.add(obraId ? buscarObraPorId(obraId)?.nome || 'Obra não encontrada' : 'Depósito central');
-    mapa.set(chave, atual);
-    return mapa;
-  }, new Map()).values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
-  const linhas = consolidados.length
-    ? consolidados.map((item, indice) => `<tr><td>${indice + 1}</td><td>${textoSeguro(item.nome)}</td><td>${textoSeguro(item.quantidade)}</td><td>${textoSeguro([...item.obras].join(', '))}</td><td>${textoSeguro([...item.solicitacoes].join(', '))}</td><td></td></tr>`).join('')
-    : '<tr><td colspan="6">Não há materiais pendentes de compra.</td></tr>';
-  const totalUnidades = consolidados.reduce((total, item) => total + item.quantidade, 0);
-  const cabecalho = `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${logoEra}" alt="ERA Engenharia de Redes da Amazônia"/><h1>Lista geral de compras</h1></div><div class="header"><div class="header-row"><span class="label">Materiais distintos</span><span class="value">${consolidados.length}</span></div><div class="header-row"><span class="label">Total de unidades</span><span class="value">${totalUnidades}</span></div><div class="header-row"><span class="label">Gerado em</span><span class="value">${textoSeguro(new Date().toLocaleString('pt-BR'))}</span></div></div></div>`;
-  const conteudo = `${cabecalho}<h2>Materiais consolidados pendentes</h2><table><thead><tr><th>Item</th><th>Material</th><th>Quantidade</th><th>Obras</th><th>Solicitações</th><th>Conferência</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Materiais equivalentes foram agrupados e suas quantidades somadas.</p>`;
-  abrirJanelaDeImpressao('Lista geral de compras', conteudo);
-}
-
-export function imprimirHistoricoObra(obra, equipamentos) {
-  const equipamentosAtuais = equipamentos.filter(({ obraId }) => obraId === obra.id);
-  const equipamentosAnteriores = equipamentos.filter(({ historico }) => historico?.some((movimentacao) => movimentacao.destinoObraId === obra.id || movimentacao.origemObraId === obra.id));
-  const equipamentosRelacionados = [...new Map([...equipamentosAtuais, ...equipamentosAnteriores].map((equipamento) => [equipamento.id, equipamento])).values()];
-  const tecnicos = [...new Set(equipamentosRelacionados.flatMap((equipamento) => [
-    equipamento.tecnico,
-    ...(equipamento.historico || [])
-      .filter((movimentacao) => movimentacao.destinoObraId === obra.id || movimentacao.origemObraId === obra.id)
-      .map(({ tecnico }) => tecnico),
-  ]).filter(Boolean))];
-  const linhas = equipamentosRelacionados.length ? equipamentosRelacionados.map((equipamento) => {
-    const entradas = equipamento.historico?.filter(({ destinoObraId }) => destinoObraId === obra.id) || [];
-    const saidas = equipamento.historico?.filter(({ origemObraId }) => origemObraId === obra.id) || [];
-    const ultimaEntrada = entradas.at(-1);
-    const ultimaSaida = saidas.at(-1);
-    const entrada = ultimaEntrada?.dataEntrada || ultimaEntrada?.dataMovimentacao ||
-      (equipamento.obraId === obra.id ? equipamento.data || equipamento.dataEntrada || equipamento.saida : null);
-    const saida = equipamento.obraId === obra.id
-      ? null
-      : ultimaSaida?.dataSaida || ultimaSaida?.dataMovimentacao;
-    const tecnicoNaObra = ultimaEntrada?.tecnico || ultimaSaida?.tecnico || equipamento.tecnico;
-    return `<tr><td>${textoSeguro(equipamento.quantidade || 1)}</td><td>${textoSeguro(equipamento.tipo)}</td><td>${textoSeguro(equipamento.modelo)}</td><td>${serieDocumento(equipamento.serie, equipamento.tipo)}</td><td>${textoSeguro(tecnicoNaObra)}</td><td>${formatarData(entrada)}</td><td>${formatarData(saida)}</td></tr>`;
-  }).join('') : '<tr><td colspan="6">Nenhum histórico de equipamentos registrado para esta obra.</td></tr>';
-  const conteudo = `${criarCabecalhoObra(obra, tecnicos, 'Histórico da obra')}<h2>Equipamentos que passaram pela obra</h2><table><thead><tr><th>Qtd.</th><th>Tipo</th><th>Modelo</th><th>Série</th><th>Técnico</th><th>Data de entrada</th><th>Data de saída</th></tr></thead><tbody>${linhas}</tbody></table><p class="muted">Gerado em ${formatarData(new Date())}</p>`;
-  abrirJanelaDeImpressao(`Histórico da obra — ${obra.nome}`, conteudo);
+export function imprimirHistoricoObra(...argumentos) {
+  const { titulo, conteudo } = modelos.historicoObra(...argumentos);
+  abrirJanelaDeImpressao(titulo, conteudo);
 }

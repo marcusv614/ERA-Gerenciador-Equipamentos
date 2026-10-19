@@ -1,7 +1,7 @@
 import { Building2, Check, FileText, MapPin, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
 import css from './DetalhesSolicitacao.module.css';
 
-export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio }) {
+export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
   const origem = solicitacao.obraOrigemId ? buscarObraPorId(solicitacao.obraOrigemId)?.nome || 'Obra não disponível' : 'Depósito central';
   const destino = solicitacao.obraDestinoId ? buscarObraPorId(solicitacao.obraDestinoId)?.nome || 'Obra não disponível' : 'Depósito central';
   const pendente = solicitacao.status === 'Pendente';
@@ -42,8 +42,9 @@ export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId,
       {solicitacao.observacao && <section className={css.observacao} aria-labelledby="titulo-observacao-pedido"><h3 id="titulo-observacao-pedido"><MessageSquareText size={16} aria-hidden="true" /> Observação do pedido</h3><p>{solicitacao.observacao}</p></section>}
     </div>
 
-    {(podeEditar || (solicitacao.status === 'Aprovada' && separado)) && <footer className={css.acoes}>
+    {(podeEditar || aoExportarAuditoria || (solicitacao.status === 'Aprovada' && separado)) && <footer className={css.acoes}>
       <div className={css.acoesSecundarias}>
+        {aoExportarAuditoria && <button type="button" disabled={processando} onClick={() => aoExportarAuditoria(solicitacao)} className={css.editar}><FileText size={15} />Auditoria</button>}
         {podeEditar && <button type="button" disabled={processando} onClick={() => aoEditar(solicitacao)} className={css.editar}><Pencil size={15} />Editar</button>}
         {solicitacao.status === 'Aprovada' && separado && <button type="button" disabled={processando} onClick={() => aoExportarRomaneio(solicitacao)} className={css.editar}><FileText size={15} />Romaneio</button>}
       </div>

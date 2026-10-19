@@ -237,64 +237,6 @@ export function useControleAtivos() {
     return obterHistoricoEquipamento(equipamento, buscarObraPorId);
   }
 
-  function sincronizarMovimentacaoAprovada(solicitacaoAtualizada, solicitacaoAnterior = null) {
-    if (solicitacaoAtualizada.tipo !== 'Movimentação') return;
-
-    const normalizarSerie = (valor) => String(valor || '').trim().toLocaleLowerCase('pt-BR');
-    const seriesAtuais = new Set(solicitacaoAtualizada.materiais.map(({ identificacao }) => normalizarSerie(identificacao)).filter(Boolean));
-    const seriesAnteriores = new Set((solicitacaoAnterior?.materiais || []).map(({ identificacao }) => normalizarSerie(identificacao)).filter(Boolean));
-    const dataMovimentacao = solicitacaoAtualizada.dataSolicitacao || obterDataAtual();
-    const destinoObraId = solicitacaoAtualizada.obraDestinoId || null;
-    const origemObraId = solicitacaoAtualizada.obraOrigemId || null;
-
-    definirEquipamentos((equipamentosAtuais) => equipamentosAtuais.map((equipamento) => {
-      const serie = normalizarSerie(equipamento.serie);
-      const pertenceAgora = seriesAtuais.has(serie);
-      const pertenciaAntes = seriesAnteriores.has(serie);
-      if (!pertenceAgora && !pertenciaAntes) return equipamento;
-
-      const historicoSemSolicitacao = obterHistoricoEquipamento(equipamento, buscarObraPorId)
-        .filter(({ solicitacaoId }) => solicitacaoId !== solicitacaoAtualizada.id);
-
-      if (!pertenceAgora) {
-        const ultimaMovimentacaoAnterior = historicoSemSolicitacao.at(-1);
-        return {
-          ...equipamento,
-          obraId: ultimaMovimentacaoAnterior?.destinoObraId ?? origemObraId,
-          tecnico: ultimaMovimentacaoAnterior?.tecnico || null,
-          status: ultimaMovimentacaoAnterior?.status || (origemObraId ? 'Em campo' : 'Em estoque'),
-          historico: historicoSemSolicitacao,
-        };
-      }
-
-      const movimentacaoDaSolicitacao = {
-        id: `solicitacao-${solicitacaoAtualizada.id}-${equipamento.id}`,
-        solicitacaoId: solicitacaoAtualizada.id,
-        dataMovimentacao,
-        dataSaida: dataMovimentacao,
-        dataEntrada: dataMovimentacao,
-        origemObraId,
-        destinoObraId,
-        origemNome: origemObraId ? buscarObraPorId(origemObraId)?.nome : 'Depósito central',
-        destinoNome: destinoObraId ? buscarObraPorId(destinoObraId)?.nome : 'Depósito central',
-        tecnico: solicitacaoAtualizada.tecnico,
-        status: destinoObraId ? 'Em campo' : 'Em estoque',
-      };
-
-      return {
-        ...equipamento,
-        obraId: destinoObraId,
-        tecnico: destinoObraId ? solicitacaoAtualizada.tecnico : null,
-        status: movimentacaoDaSolicitacao.status,
-        data: dataMovimentacao,
-        saida: dataMovimentacao,
-        dataSaida: dataMovimentacao,
-        dataEntrada: dataMovimentacao,
-        historico: [...historicoSemSolicitacao, movimentacaoDaSolicitacao],
-      };
-    }));
-  }
-
   async function definirStatusSolicitacao(identificador, status) {
     try {
       const resposta = status === 'Aprovada'
@@ -315,7 +257,7 @@ export function useControleAtivos() {
     if (!solicitacaoAtual) return false;
     try {
       const resposta = await (acao === 'transito' ? apiAtividades.iniciarTransito(identificador) : apiAtividades.concluir(identificador));
-      if (acao === 'concluir') sincronizarMovimentacaoAprovada(resposta, solicitacaoAtual);
+      if (acao === 'concluir') apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
       definirSolicitacoes((atuais) => atuais.map((solicitacao) => solicitacao.id === identificador ? resposta : solicitacao));
       definirErroApi(null);
       return true;

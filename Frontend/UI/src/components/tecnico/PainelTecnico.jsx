@@ -178,9 +178,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     try {
       const atualizada = await apiAtividades.concluir(solicitacao.id);
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
-      const equipamentosAtualizados = await apiEquipamentos.listar();
-      definirEquipamentos(equipamentosAtualizados);
-      definirMensagem({ tipo: 'sucesso', texto: 'Recebimento confirmado. Solicitação finalizada.' });
+      apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
   };
 
@@ -211,7 +209,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       definirSolicitacoes((atuais) => [criada, ...atuais]);
       apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
       definirItens([]); definirObservacao(''); definirBusca(''); definirOperacao(''); definirEtapaMovimentacao(1); definirMostrarObservacao(false);
-      definirMensagem({ tipo: 'sucesso', texto: 'Solicitação enviada para análise do gerente.' });
+
       definirAba('acompanhar');
     } catch (erro) {
       definirMensagem({ tipo: 'erro', texto: erro.message });

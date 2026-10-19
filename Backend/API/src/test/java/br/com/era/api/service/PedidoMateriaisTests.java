@@ -125,6 +125,7 @@ class PedidoMateriaisTests {
         assertEquals("Concluída",service.concluir(1L,"tecnico").status());
         assertEquals(0,e.getQuantidadeReservada());
         assertThrows(RegraNegocioException.class,()->service.concluir(1L,"tecnico"));
+        assertEquals(s.getConcluidaEm().atZoneSameInstant(java.time.ZoneId.of("America/Manaus")).toLocalDate(),movimento.getDataMovimentacao());
         verify(movimentacoes,times(1)).save(movimento);
     }
     MaterialSolicitado materialComId(Solicitacao s) {
