@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { localizarEquipamentos } from '../utils/localizacaoEquipamentos';
-import { obterDataAtual } from '../utils/datas';
+import { criarPedidoMovimentacao } from '../utils/pedidoMovimentacao';
 import { obterHistoricoEquipamento } from '../utils/historicoEquipamento';
 import { apiAtividades, apiCategoriasEquipamento, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
 
@@ -209,16 +209,8 @@ export function useControleAtivos() {
     const equipamento = equipamentos.find(({ id }) => id === identificador);
     if (!equipamento) return false;
 
-    const novaSolicitacao = {
-      tecnico: dadosMovimentacao.tecnico,
-      obraOrigemId: equipamento.obraId ?? null,
-      obraDestinoId: dadosMovimentacao.obraId ?? null,
-      dataSolicitacao: dadosMovimentacao.dataMovimentacao || obterDataAtual(),
-      observacao: 'Movimentação solicitada pelo gerente.',
-      materiais: [{ nome: equipamento.modelo, quantidade: dadosMovimentacao.quantidade || 1, identificacao: equipamento.serie, catalogoChave: equipamento.catalogoChave || null }],
-    };
-
     try {
+      const novaSolicitacao = criarPedidoMovimentacao(equipamento, dadosMovimentacao);
       const solicitacaoCadastrada = await apiAtividades.cadastrar(novaSolicitacao);
       definirSolicitacoes((solicitacoesAtuais) => [solicitacaoCadastrada, ...solicitacoesAtuais]);
       definirErroApi(null);

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { createServer } from 'vite';
 process.env.VITE_API_URL='/api';
 const baseline=process.argv.includes('--baseline');
+const movimentacoesEnviadas=[];
 const artefatos=path.resolve('node_modules/.cache/layout-paineis');fs.mkdirSync(artefatos,{recursive:true});
 const nome='Marcus Vinicius Nunes Pinheiro da Silva Oliveira';
 const obras=[{id:1,nome:'Residencial Santa Maria — infraestrutura e implantação da rede de fibra óptica no bloco administrativo',cidade:'Manaus',status:'Em andamento',responsaveis:[nome]},{id:2,nome:'AMPLIACAO_DA_INFRAESTRUTURA_DE_REDE_ELETRICA_E_TELECOMUNICACOES_BLOCO_B',cidade:'Manaus',status:'Em andamento',responsaveis:[nome]}];
@@ -40,6 +41,15 @@ const servidor=await createServer({server:{host:'127.0.0.1',port:0},plugins:[{na
   else if(rota==='/auditorias'||rota.endsWith('/auditorias'))dados=[auditoria];
   else if(rota.includes('/auditorias/'))dados=auditoria;
   if(req.method==='POST'&&rota.endsWith('/conclusao'))dados={...pedidos.find(p=>p.id===Number(rota.split('/')[2])),status:'Concluída'};
+  if(req.method==='POST'&&rota==='/atividades'){
+    const partes=[];for await(const parte of req)partes.push(parte);
+    const pedido=JSON.parse(Buffer.concat(partes).toString());movimentacoesEnviadas.push(pedido);
+    await new Promise(r=>setTimeout(r,350));
+    const largura=new URL(req.headers.referer).searchParams.get('largura');
+    if(!pedido.tecnico){res.statusCode=400;dados={mensagem:'Existem campos inválidos.',detalhes:{tecnico:'não deve estar em branco'}};}
+    else if(largura==='320'){res.statusCode=409;dados={mensagem:'O saldo mudou. Atualize os equipamentos e tente novamente.'};}
+    else dados={...pedido,id:900,status:'Aguardando coleta',tipo:'Movimentação',solicitante:'Gerente',materiais:pedido.materiais.map((m,i)=>({...m,id:i+1}))};
+  }
   res.setHeader('Content-Type','application/json');res.end(JSON.stringify(dados));
 });}}]});
 await servidor.listen();const base='http://127.0.0.1:'+servidor.httpServer.address().port;
@@ -64,7 +74,7 @@ try{
   await cdp('Page.enable');await cdp('Runtime.enable');
   for(const largura of [320,390,768,844,1024,1440])for(const role of ['tecnico','estoque','gerencia','admin']){
     await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:largura===844?390:largura<768?844:1000,deviceScaleFactor:1,mobile:largura<768||largura===844});
-    await cdp('Page.navigate',{url:`${base}/__layout?role=${role}`});
+    await cdp('Page.navigate',{url:`${base}/__layout?role=${role}&largura=${largura}`});
     try{
       await esperar(role==='tecnico'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent.trim().startsWith('Receber material'))":role==='estoque'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent.includes('Ver disponibilidade'))":role==='admin'?"document.querySelector('input[aria-label=\"Pesquisar usuários\"]')":"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')");
       await inspecionar(`${role}-${largura}-inicio`,largura===390);
@@ -80,8 +90,16 @@ try{
         await tocar(botao('Histórico'));await inspecionar(`${role}-${largura}-historico`);
       }else if(role==='gerencia'){
         await tocar(botao('Lista',"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')"));await inspecionar(`${role}-${largura}-lista`);
-        await tocar("document.querySelector('button[aria-label^=\"Histórico de\"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-historico-equipamento`);await escapar();
-        await tocar("document.querySelector('button[aria-label^=\"Mover \"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-mover`);await escapar();
+        await esperar("document.querySelector('button[aria-label^=\"Histórico de\"]')");await tocar("document.querySelector('button[aria-label^=\"Histórico de\"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-historico-equipamento`);await escapar();
+        await tocar("document.querySelector('button[aria-label^=\"Mover \"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-mover`);
+        if([320,390,1440].includes(largura)){
+          await avaliar("(()=>{const s=document.querySelector('[role=dialog] select');s.value='';s.dispatchEvent(new Event('change',{bubbles:true}));})()");
+          assert.equal(await avaliar("document.querySelector('[role=dialog] [class*=responsavel]').textContent"),nome,'Retorno mantém o técnico de origem');
+          await tocar(botao('Enviar solicitação',"document.querySelector('[role=dialog]')"));
+          assert.ok(await avaliar("Array.from(document.querySelectorAll('[role=dialog] button')).some(b=>b.disabled&&b.textContent.includes('Enviando'))"),'Bloqueia reenvio enquanto aguarda a API');
+          if(largura===320){await esperar("document.querySelector('[role=dialog] [role=alert]')");assert.match(await avaliar("document.querySelector('[role=dialog] [role=alert]').textContent"),/O saldo mudou/);await inspecionar(`${role}-${largura}-mover-erro`);await escapar();}
+          else await esperar("!document.querySelector('[role=dialog]')");
+        }else await escapar();
         await tocar(botao('Cartões',"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')"));
         if(largura<=768){assert.equal(await avaliar("getComputedStyle(document.querySelector('aside')).display"),'none');await tocar(botao('Obras',"document.querySelector('[aria-label=\"Navegação principal\"]')"));await inspecionar(`${role}-${largura}-obras`);await tocar(botao('Vistorias',"document.querySelector('[aria-label=\"Navegação principal\"]')"));await inspecionar(`${role}-${largura}-vistorias`);}
         else{await tocar("document.querySelector('[aria-label=\"Recolher menu lateral\"]')");await inspecionar(`${role}-${largura}-sidebar-fechada`);await tocar("document.querySelector('[aria-label=\"Expandir menu lateral\"]')");}
@@ -111,6 +129,7 @@ try{
     }catch(e){resultados.push({nome:`${role}-${largura}-interacao`,erro:e.message});console.error(`${role}-${largura}: ${e.message}`);}
   }
   const falhas=resultados.filter(r=>r.erro||r.pagina>r.viewport+1||r.problemas?.length);
+  if(!baseline){assert.equal(movimentacoesEnviadas.length,3);for(const pedido of movimentacoesEnviadas){assert.equal(pedido.tecnico,nome);assert.equal(pedido.obraOrigemId,1);assert.equal(pedido.obraDestinoId,null);assert.equal(pedido.materiais[0].quantidade,1);}}
   fs.writeFileSync(path.join(artefatos,`${baseline?'antes':'depois'}-relatorio.json`),JSON.stringify(resultados,null,2));
   console.log(JSON.stringify({cenarios:resultados.length,falhas:falhas.map(f=>({nome:f.nome,pagina:f.pagina,viewport:f.viewport,problemas:f.problemas,erro:f.erro})),artefatos},null,2));
   if(!baseline)assert.equal(falhas.length,0,'Corrigir os cenarios detalhados no relatorio');

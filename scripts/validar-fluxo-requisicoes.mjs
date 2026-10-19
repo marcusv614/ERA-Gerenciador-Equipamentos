@@ -1,6 +1,7 @@
 // Executar somente contra a API temporária criada por validar-fluxo-requisicoes.ps1.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import { criarPedidoMovimentacao } from '../Frontend/UI/src/utils/pedidoMovimentacao.js';
 
 const config = JSON.parse(fs.readFileSync(process.argv[2], 'utf8').replace(/^\uFEFF/, ''));
 assert.match(config.container, /^era-auditoria-smoke-\d{14}$/);
@@ -243,4 +244,20 @@ assert.deepEqual(disputa.map(r => r.status).sort(), [200, 409]);
 const saldoDisputado = (await admin.requisicao('GET', '/equipamentos')).find(e => e.id === concorrenciaReparo.id);
 assert.equal(saldoDisputado.quantidadeDisponivel, 0); assert.equal(saldoDisputado.quantidadeReservada + saldoDisputado.quantidadeManutencao, 2);
 console.log('Manutencao: permissao, validacao, bloqueio parcial, transporte das unidades livres, historico persistido, conclusao unica e concorrencia com reservas OK');
+// Regressão: escolher o depósito apagava o técnico e fazia o POST retornar 400.
+const chaveRetorno = await novo(cadastro('Chave Phillips PH0', 'REGRESSAO-RETORNO', 2, a.id, t1.nome));
+const dadosRetorno = criarPedidoMovimentacao(chaveRetorno, { obraId:null, tecnico:null, quantidade:1, dataMovimentacao:hoje });
+const invalido = await gerente.requisicao('POST', '/atividades', { ...dadosRetorno, tecnico:null }, 400);
+assert.ok(invalido.detalhes.tecnico);
+const retiradaGerente = await gerente.requisicao('POST', '/atividades', dadosRetorno, 201);
+assert.equal(retiradaGerente.status, 'Aguardando coleta');
+assert.equal(retiradaGerente.tecnico, t1.nome); assert.equal(retiradaGerente.solicitanteLogin, 'gerente');
+assert.equal(retiradaGerente.obraOrigemId, a.id); assert.equal(retiradaGerente.obraDestinoId, null);
+await estoque.requisicao('POST', `/atividades/${retiradaGerente.id}/transito`, {});
+await tecnicoA.requisicao('POST', `/atividades/${retiradaGerente.id}/conclusao`, {}, 409);
+assert.equal((await estoque.requisicao('POST', `/atividades/${retiradaGerente.id}/conclusao`, {})).status, 'Concluída');
+const aposRetorno = await admin.requisicao('GET', '/equipamentos');
+assert.equal(aposRetorno.find(e => e.id === chaveRetorno.id).quantidade, 1);
+assert.equal(aposRetorno.find(e => e.modelo === chaveRetorno.modelo && e.obraId == null).quantidade, 1);
+console.log('Retorno solicitado pelo gerente: técnico de origem preservado, autoria autenticada e confirmação pelo estoque OK');
 console.log(`${verificacoes} requisições HTTP verificadas com sessões independentes de administrador, gerente, estoque e dois técnicos.`);

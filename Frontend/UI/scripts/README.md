@@ -17,6 +17,8 @@ Verifica os quatro perfis em larguras de 320, 390, 768, 844, 1024 e 1440 pixels.
 A largura de 844 pixels usa altura de 390 pixels para conferir a orientação
 horizontal. Inclui nomes longos, listas, cards, menus, navegação e janelas.
 Os cliques são enviados ao navegador e falham quando o botão está encoberto.
+Na movimentação, verifica também o retorno ao depósito com o técnico de origem,
+o bloqueio de reenvio durante o processamento e o erro apresentado no modal.
 
 Relatórios e capturas ficam em `node_modules/.cache/layout-paineis`.
 O processo termina com erro quando encontra overflow ou falha de interação.

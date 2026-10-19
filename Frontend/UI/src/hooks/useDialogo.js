@@ -12,6 +12,9 @@ export function useDialogo(referencia, aoFechar, ativo = true) {
     document.body.style.overflow = 'hidden';
     janela.focus({ preventScroll: true });
     const teclado = (evento) => {
+      const abertos = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')]
+        .filter((dialogo) => dialogo.getClientRects().length);
+      if (abertos.at(-1) !== janela) return;
       if (evento.key === 'Escape') {
         evento.preventDefault();
         evento.stopPropagation();
@@ -22,15 +25,17 @@ export function useDialogo(referencia, aoFechar, ativo = true) {
         .filter((campo) => !campo.disabled && campo.tabIndex >= 0 && campo.getClientRects().length);
       const primeiro = campos[0], ultimo = campos.at(-1);
       if (!primeiro) { evento.preventDefault(); return; }
-      if (evento.shiftKey && (document.activeElement === primeiro || document.activeElement === janela)) {
+      if (!janela.contains(document.activeElement)) {
+        evento.preventDefault(); (evento.shiftKey ? ultimo : primeiro).focus();
+      } else if (evento.shiftKey && (document.activeElement === primeiro || document.activeElement === janela)) {
         evento.preventDefault(); ultimo.focus();
       } else if (!evento.shiftKey && (document.activeElement === ultimo || document.activeElement === janela)) {
         evento.preventDefault(); primeiro.focus();
       }
     };
-    janela.addEventListener('keydown', teclado);
+    document.addEventListener('keydown', teclado);
     return () => {
-      janela.removeEventListener('keydown', teclado);
+      document.removeEventListener('keydown', teclado);
       document.body.style.overflow = overflow;
       if (anterior?.isConnected) anterior.focus({ preventScroll: true });
     };

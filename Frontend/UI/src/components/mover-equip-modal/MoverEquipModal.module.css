@@ -70,6 +70,10 @@
 .submit:hover {
   filter: brightness(1.08);
 }
+.erro { margin:0; color:var(--danger, #b94737); font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.responsavel { margin:0; padding:10px 12px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+.form small { color:var(--text-muted); font-size:12px; line-height:1.5; }
+.submit:disabled, .cancel:disabled { opacity:.5; cursor:not-allowed; }
 
 @media (max-width: 600px) {
   .input { min-height: 44px; }
