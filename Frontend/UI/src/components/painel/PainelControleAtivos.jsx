@@ -26,7 +26,7 @@ import { useFiltrosPainel } from '../../hooks/useFiltrosPainel';
 import { imprimirRelatorioAuditoriaSolicitacao, imprimirInventarioObra, imprimirRomaneioSeparacao, imprimirHistoricoEquipamento, imprimirHistoricoObra } from '../../services/documentosEquipamentos';
 import estilos from '../fibra-track/FibraTrack.module.css';
 
-export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTema } = {}) {
+export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTema, incorporado = false } = {}) {
   const { usuario, ehAdmin, encerrarSessao } = useAutenticacao();
   const controleAtivos = useControleAtivos();
   const filtros = useFiltrosPainel(controleAtivos);
@@ -130,9 +130,9 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   const buscaAtiva = Boolean(filtros.termoBusca.trim());
   const quantidadeResultados = resultadosPorTela[telaAtual];
 
-  return <div className={estilos.root} data-theme={modoEscuro ? 'dark' : 'light'}>
+  return <div className={estilos.root} data-incorporado={incorporado} data-theme={modoEscuro ? 'dark' : 'light'}>
     <MenuLateral aberto={menuLateralAberto} telaAtual={telaAtual} tipoSelecionado={filtros.tipoSelecionado} tiposEquipamento={tiposEquipamentoDisponiveis} obras={controleAtivos.obras} funcionarios={controleAtivos.funcionarios} totalAtividadesPendentes={totalAtividadesPendentes} aoFechar={() => definirMenuLateralAberto(false)} aoSelecionarTela={selecionarTela} aoSelecionarTipo={selecionarTipoNoMenu} aoSelecionarBusca={filtros.definirTermoBusca} estilos={estilos} />
-    <button type="button" onClick={() => definirMenuLateralAberto((aberto) => !aberto)} className={`${estilos.sidebarEdgeToggle} ${menuLateralAberto ? estilos.sidebarEdgeToggleOpen : ''}`} aria-label={menuLateralAberto ? 'Recolher menu lateral' : 'Expandir menu lateral'}>
+    <button type="button" onClick={() => definirMenuLateralAberto((aberto) => !aberto)} className={`${estilos.sidebarEdgeToggle} ${menuLateralAberto ? estilos.sidebarEdgeToggleOpen : ''}`} aria-expanded={menuLateralAberto} aria-label={menuLateralAberto ? 'Recolher menu lateral' : 'Expandir menu lateral'}>
       {menuLateralAberto ? <ChevronLeft size={18} strokeWidth={2.2} /> : <ChevronRight size={18} strokeWidth={2.2} />}
     </button>
     <main className={estilos.main}>

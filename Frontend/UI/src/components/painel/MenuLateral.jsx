@@ -15,7 +15,7 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
   return <>
     <button type="button" className={`${estilos.sidebarScrim} ${aberto ? estilos.sidebarScrimVisible : ''}`} aria-label="Fechar menu lateral" onClick={aoFechar} tabIndex={aberto ? 0 : -1} />
     <aside className={`${estilos.sidebar} ${aberto ? estilos.sidebarOpen : estilos.sidebarClosed}`}>
-      <div className={`${estilos.sidebarInner} ${aberto ? '' : estilos.sidebarInnerHidden}`} aria-hidden={!aberto}>
+      <div className={`${estilos.sidebarInner} ${aberto ? '' : estilos.sidebarInnerHidden}`} aria-hidden={!aberto} inert={!aberto}>
         <div className={estilos.brandRow}><img className={estilos.brandLogo} src={logoEra} alt="ERA Engenharia de Redes da Amazônia" /></div>
         <nav className={estilos.nav}>
           <button onClick={() => alternarGrupo('equipamentos', 'equipamentos')} className={`${estilos.navItem} ${telaAtual === 'equipamentos' ? estilos.navItemActive : ''}`}><Boxes size={16} /> Equipamentos {renderizarIndicadorGrupo('equipamentos')}</button>

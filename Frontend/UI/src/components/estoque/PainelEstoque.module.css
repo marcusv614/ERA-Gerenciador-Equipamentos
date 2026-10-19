@@ -461,6 +461,7 @@
 .icone svg { width: 19px; height: 19px; }
 .card > header > div { min-width: 0; }
 .card > header small {
+  overflow-wrap: anywhere;
   color: var(--stock-muted);
   display: block;
   font-size: 8px;
@@ -528,11 +529,11 @@
   min-width: 0;
   margin: 0;
   color: var(--stock-muted);
-  font-size: 9px;
+  font-size: 12px;
   overflow-wrap: anywhere;
 }
 .metadados strong { color: var(--stock-text); }
-.autorPedido { margin:0 0 12px; color:var(--stock-muted); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.autorPedido { margin:0 16px 12px; color:var(--stock-muted); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
 .autorPedido strong { color:var(--stock-text); }
 .metadados time {
   color: var(--stock-muted);
@@ -540,7 +541,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 5px;
-  font-size: 8px;
+  font-size: 11px;
   line-height: 1.35;
   text-align: right;
 }
@@ -581,8 +582,9 @@
 .detalhesMaterial { min-width: 0; flex: 1; }
 .detalhesMaterial > strong,
 .detalhesMaterial > small { display: block; overflow-wrap: anywhere; }
-.detalhesMaterial > strong { font-size: 10px; line-height: 1.4; }
-.detalhesMaterial > small { margin-top: 2px; color: var(--stock-muted); font-size: 8px; }
+.detalhesMaterial > strong { font-size: 13px; line-height: 1.45; }
+.detalhesMaterial > small { margin-top: 2px; color: var(--stock-muted); font-size: 11px; }
+.resumoManutencao { margin:0 16px 16px; color:var(--stock-muted); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
 .compraAnexada {
   width: fit-content;
   max-width: 100%;
@@ -894,7 +896,7 @@
   .resumoOperacional span { font-size: 9px; }
   .abas {
     position: sticky;
-    top: 8px;
+    top: 72px;
     z-index: 10;
     border-radius: 14px;
     box-shadow: 0 8px 24px rgba(16, 23, 19, .11);
@@ -908,7 +910,7 @@
     font-size: 8px;
     line-height: 1.1;
   }
-  .abas button > span { width: 100%; text-align: center; }
+  .abas button > span { width: 100%; text-align: center; font-size: 10px; overflow-wrap: anywhere; }
   .abas button > b {
     position: absolute;
     top: 5px;
@@ -945,6 +947,8 @@
     gap: 5px;
   }
   .metadados time { justify-content: flex-start; text-align: left; }
+  .autorPedido { margin-inline:14px; }
+  .filtros input, .filtros select, .entradaAquisicao input, .entradaAquisicao select { font-size:16px; }
   .card > ul { padding: 0 14px 13px; }
   .compraAnexada { width: 100%; }
   .card > footer { padding: 11px 14px 14px; }

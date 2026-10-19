@@ -351,7 +351,9 @@
 
 .gradePrincipal {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 980px;
+  margin-inline: auto;
   align-items: start;
   gap: 16px;
 }
@@ -398,9 +400,7 @@
 .listaObrasEscolha strong {
   font-size: 13px;
   line-height: 1.35;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .operacoes small,
 .listaObrasEscolha small {
@@ -487,7 +487,7 @@
 .listaMateriais .material { grid-template-columns: minmax(0, 1fr) auto; cursor: default; }
 .selecionarMaterial { min-width: 0; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .selecionarMaterial:focus-visible { outline: 2px solid var(--campo-green); outline-offset: 3px; }
-.material .quantidade input { width: 60px; }
+.material .quantidade input { width: 80px; min-height: 44px; }
 @media (max-width: 480px) {
   .listaMateriais .material { grid-template-columns: minmax(0, 1fr); }
   .material .quantidade { justify-self: end; }
@@ -509,12 +509,11 @@
 .dadosMaterial { min-width: 0; display: flex; flex-direction: column; }
 .dadosMaterial strong,
 .dadosMaterial small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
 }
-.dadosMaterial strong { font-size: 11px; }
-.dadosMaterial small { margin-top: 3px; color: var(--campo-muted); font-size: 8px; }
+.dadosMaterial strong { font-size: 13px; }
+.dadosMaterial small { margin-top: 3px; color: var(--campo-muted); font-size: 11px; }
 .disponivel { display: flex; flex-direction: column; text-align: right; }
 .disponivel b { color: var(--campo-green); font: 750 15px var(--font-display); }
 .disponivel small {
@@ -638,14 +637,12 @@
   justify-content: space-between;
   gap: 9px;
 }
-.itemResumo > div:first-child { min-width: 0; display: flex; flex-direction: column; }
+.itemResumo > div:first-child { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .itemResumo strong,
 .itemResumo small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
-.itemResumo strong { font-size: 10px; }
+.itemResumo strong { font-size: 13px; line-height: 1.45; }
 .itemResumo small { margin-top: 2px; color: var(--campo-muted); font: 8px var(--font-mono); }
 .quantidade {
   border-radius: 9px;
@@ -1241,9 +1238,7 @@
   .listaMateriais { max-height: none; grid-template-columns: 1fr; }
   .material { min-height: 62px; }
   .acoesEtapa {
-    position: sticky;
-    bottom: 0;
-    z-index: 4;
+    position: static;
     margin: 18px -4px -4px;
     padding: 9px 4px 4px;
     background: var(--campo-surface);
@@ -1274,6 +1269,9 @@
     white-space: normal;
   }
   .acaoMovimentacao { min-height: 48px; }
+  .busca input, .quantidade input, .observacao textarea,
+  .topoInventario select { font-size: 16px; }
+  .abas button strong { font-size: 10px; }
 }
 
 @media (max-width: 380px) {

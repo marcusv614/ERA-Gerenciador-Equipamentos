@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { useDialogo } from '../../hooks/useDialogo';
 import { AlertCircle, Box, Check, ChevronRight, Minus, Plus, ShoppingCart, Warehouse, X } from 'lucide-react';
 import estilos from './SepararEquipamentosModal.module.css';
 
@@ -7,6 +8,8 @@ const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0
 const statusMovimentavel = (status) => ['em estoque', 'em campo', 'disponivel'].includes(normalizar(status));
 
 export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoFechar, aoConfirmar, aoSolicitarCompra }) {
+  const referencia = useRef(null);
+  useDialogo(referencia, aoFechar);
   const [quantidades, definirQuantidades] = useState({});
   const [erro, definirErro] = useState('');
   const [salvando, definirSalvando] = useState(false);
@@ -82,7 +85,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   };
 
   return <div className={estilos.fundo} onMouseDown={(evento) => evento.target === evento.currentTarget && aoFechar()}>
-    <section className={estilos.modal} role="dialog" aria-modal="true" aria-labelledby="titulo-separacao">
+    <section ref={referencia} tabIndex={-1} className={estilos.modal} role="dialog" aria-modal="true" aria-labelledby="titulo-separacao">
       <aside className={estilos.resumo}>
         <div className={estilos.marca}><Warehouse /><span>Atendimento</span></div>
         <div className={estilos.numero}>Solicitação #{String(solicitacao.id).padStart(4, '0')}</div>

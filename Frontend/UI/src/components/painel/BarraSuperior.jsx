@@ -27,9 +27,9 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, re
       </div>
       {ehAdmin && <button type="button" className={estilos.mobileActionsToggle} onClick={() => definirAcoesAbertas((abertas) => !abertas)} aria-expanded={acoesAbertas} aria-controls="acoes-rapidas-mobile">{acoesAbertas ? <X size={17} /> : <Menu size={17} />}<span>Ações</span></button>}
       {ehAdmin && <div id="acoes-rapidas-mobile" className={`${estilos.quickActions} ${acoesAbertas ? estilos.quickActionsOpen : ''}`}>
-        <button onClick={aoAbrirNovoFuncionario} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>
-        <button onClick={aoAbrirNovoEquipamento} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>
-        <button onClick={aoAbrirNovaObra} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>
+        <button onClick={() => { definirAcoesAbertas(false); aoAbrirNovoFuncionario(); }} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>
+        <button onClick={() => { definirAcoesAbertas(false); aoAbrirNovoEquipamento(); }} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>
+        <button onClick={() => { definirAcoesAbertas(false); aoAbrirNovaObra(); }} className={estilos.btnPrimary}><Plus size={15} /> Nova obra</button>
       </div>}
       <button type="button" onClick={aoSair} className={estilos.btnGhost} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={16} /></button>
     </div>

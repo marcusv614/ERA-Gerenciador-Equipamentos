@@ -145,7 +145,7 @@ export function PainelAdmin() {
       {!funcionariosSemAcesso.length && <p className={estilos.aviso}>Todos os técnicos cadastrados já possuem um usuário vinculado. Ainda é possível criar acessos administrativos, gerenciais ou de estoque.</p>}
     </main>}
 
-    {area === 'gerencia' && <PainelControleAtivos temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
+    {area === 'gerencia' && <PainelControleAtivos incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'estoque' && <PainelEstoque incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de vistoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
 

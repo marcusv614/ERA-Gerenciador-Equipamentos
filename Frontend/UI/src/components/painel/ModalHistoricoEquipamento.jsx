@@ -1,11 +1,15 @@
 import { X } from 'lucide-react';
+import { useRef } from 'react';
+import { useDialogo } from '../../hooks/useDialogo';
 import { formatarData } from '../../utils/datas';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 
 export function ModalHistoricoEquipamento({ equipamento, historico, buscarObraPorId, aoFechar, aoImprimir, estilos }) {
+  const referencia = useRef(null);
+  useDialogo(referencia, aoFechar, Boolean(equipamento));
   if (!equipamento) return null;
   const obterNomeObra = (identificador) => identificador ? buscarObraPorId(identificador)?.nome : 'Depósito central';
-  return <div className={estilos.overlayBack} onClick={aoFechar}><div className={estilos.overlayPanel} onClick={(evento) => evento.stopPropagation()}>
+  return <div className={estilos.overlayBack} onClick={aoFechar}><div ref={referencia} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Histórico do equipamento" className={estilos.overlayPanel} onClick={(evento) => evento.stopPropagation()}>
     <button className={estilos.overlayClose} onClick={aoFechar} aria-label="Fechar"><X size={16} /></button>
     <h3>{equipamento.modelo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : ''}</h3>
     <p className={estilos.overlayMeta}>Status: <strong>{equipamento.status}</strong> • Local: {equipamento.obraId ? obterNomeObra(equipamento.obraId) : 'Depósito central'}</p>

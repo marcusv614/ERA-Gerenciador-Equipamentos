@@ -37,7 +37,7 @@
 .tecnicoBotao > svg { flex-shrink:0; transition:transform .18s; color:var(--text-muted); }
 .expandido { transform:rotate(180deg); }
 .lista { max-height:350px; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; margin:0 0 16px 54px; border:1px solid var(--border); border-radius:10px; background:var(--surface); }
-.colunas, .pedido { display:grid; grid-template-columns:130px minmax(120px,1fr) 155px 18px; align-items:center; gap:16px; }
+.colunas, .pedido { display:grid; grid-template-columns:110px minmax(0,1fr) 110px 18px; align-items:center; gap:16px; }
 .colunas { position:sticky; top:0; padding:12px 16px; background:var(--surface-2); color:var(--text-muted); font-size:10px; z-index:1; border-bottom:1px solid var(--border); }
 .pedido { width:100%; border:0; border-bottom:1px solid var(--border); padding:14px 16px; background:transparent; color:var(--text); font:inherit; text-align:left; cursor:pointer; }
 .pedido:last-child { border-bottom:0; }
@@ -74,7 +74,7 @@
 .kanbanRodape > svg { color:var(--text-muted); }
 .kanbanVazio { min-height:120px; display:grid; place-content:center; justify-items:center; gap:8px; color:var(--text-muted); font-size:10px; text-align:center; }
 .vazio { padding:32px 16px; display:grid; justify-items:center; text-align:center; color:var(--text-muted); font-size:12px; }
-.overlay { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:24px; background:rgba(15,23,30,.55); backdrop-filter:blur(4px); }
+.overlay { position:fixed; inset:0; z-index:200; display:grid; place-items:center; padding:24px; background:rgba(15,23,30,.55); backdrop-filter:blur(4px); }
 .janela { width:min(760px,100%); max-height:90dvh; display:flex; flex-direction:column; overflow:hidden; background:var(--surface); color:var(--text); border:1px solid var(--border-strong); border-radius:18px; box-shadow:0 24px 80px rgba(0,0,0,.28); outline:none; }
 .janelaCabecalho { padding:22px 24px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; border-bottom:1px solid var(--border); }
 .janelaCabecalho span { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; }
