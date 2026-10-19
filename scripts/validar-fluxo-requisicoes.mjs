@@ -188,4 +188,59 @@ const resultados = await Promise.all(concorrentes.map(p => distribuir(p.id, [{ o
 assert.deepEqual(resultados.map(r => r.status).sort(), [200, 409]);
 assert.equal((await admin.requisicao('GET', '/equipamentos')).find(e => e.id === disputado.id).quantidadeReservada, 2);
 console.log('Auditoria e devolução: quantidades limitadas, versão concorrente, conclusão imutável, fotografia histórica e nova vistoria OK');
+// Manutenção parcial: bloqueia unidades sem mudar local, responsável ou quantidade física.
+const reparavel = await novo(cadastro('Escada para manutencao', 'MANUT-1', 10, a.id, t1.nome));
+const rotaManutencao = `/equipamentos/${reparavel.id}/manutencoes`;
+await tecnicoA.requisicao('POST', rotaManutencao, { quantidade: 1, motivo: 'Avaria' }, 403);
+await estoque.requisicao('POST', rotaManutencao, { quantidade: 0, motivo: 'Avaria' }, 400);
+await estoque.requisicao('POST', rotaManutencao, { quantidade: 1.5, motivo: 'Avaria' }, 400);
+await estoque.requisicao('POST', rotaManutencao, { quantidade: 1, motivo: ' ' }, 400);
+let emReparo = await gerente.requisicao('POST', rotaManutencao, { quantidade: 2, motivo: 'Degrau danificado' });
+const reparo1 = emReparo.manutencoes[0];
+assert.equal(emReparo.quantidadeManutencao, 2); assert.equal(emReparo.quantidadeDisponivel, 8);
+assert.equal(emReparo.obraId, a.id); assert.equal(emReparo.tecnico, t1.nome); assert.equal(emReparo.status, 'Em campo');
+assert.equal(reparo1.abertaPorLogin, 'gerente'); assert.ok(reparo1.abertaEm);
+await estoque.requisicao('POST', rotaManutencao, { quantidade: 9, motivo: 'Excedente' }, 409);
+await estoque.requisicao('POST', rotaManutencao, { quantidade: 1, motivo: 'Revisao preventiva' });
+emReparo = await admin.requisicao('POST', rotaManutencao, { quantidade: 1, motivo: 'Inspecao de seguranca' });
+assert.equal(emReparo.quantidadeManutencao, 4);
+await admin.requisicao('PATCH', `/equipamentos/${reparavel.id}/arquivamento`, { arquivado: true }, 409);
+await admin.requisicao('PATCH', `/equipamentos/${reparavel.id}`, cadastro(reparavel.modelo, 'TROCADA', 10, a.id, t1.nome), 409);
+await admin.requisicao('PATCH', `/equipamentos/${reparavel.id}`, cadastro(reparavel.modelo, reparavel.serie, 3, a.id, t1.nome), 409);
+const moverDisponiveis = await gerente.requisicao('POST', '/atividades', pedido(b.id, [material(reparavel, 7)]), 201);
+await distribuir(moverDisponiveis.id, [{ obraOrigemId: a.id, materiais: [material(reparavel, 7, true)] }], 409);
+await gerente.requisicao('PATCH', `/atividades/${moverDisponiveis.id}`, { obraDestinoId: b.id, tecnico: t2.nome, materiais: [material(reparavel, 5)] });
+await distribuir(moverDisponiveis.id, [{ obraOrigemId: a.id, materiais: [material(reparavel, 5, true)] }]);
+await estoque.requisicao('POST', rotaManutencao, { quantidade: 2, motivo: 'Nao pode usar reserva' }, 409);
+await estoque.requisicao('POST', `/atividades/${moverDisponiveis.id}/transito`, {});
+emReparo = await estoque.requisicao('POST', rotaManutencao, { quantidade: 1, motivo: 'Ultima unidade presente com avaria' });
+assert.equal(emReparo.quantidadeManutencao, 5); assert.equal(emReparo.quantidadeDisponivel, 0);
+await tecnicoB.requisicao('POST', `/atividades/${moverDisponiveis.id}/conclusao`, {});
+equipamentos = await admin.requisicao('GET', '/equipamentos');
+emReparo = equipamentos.find(e => e.id === reparavel.id);
+assert.equal(emReparo.quantidade, 5); assert.equal(emReparo.status, 'Em manutenção'); assert.equal(emReparo.obraId, a.id);
+const recebidoSemReparo = equipamentos.find(e => e.modelo === reparavel.modelo && e.obraId === b.id);
+assert.equal(recebidoSemReparo.quantidade, 5); assert.equal(recebidoSemReparo.quantidadeManutencao, 0); assert.equal(recebidoSemReparo.manutencoes.length, 0);
+assert.equal((await gerente.requisicao('GET', `${rotaAuditoria(t1)}/materiais`)).find(e => e.equipamentoId === reparavel.id).quantidade, 5);
+await estoque.requisicao('POST', `${rotaManutencao}/${reparo1.id}/conclusao`, { observacao: ' ' }, 400);
+await tecnicoA.requisicao('POST', `${rotaManutencao}/${reparo1.id}/conclusao`, { observacao: 'Sem permissao' }, 403);
+await estoque.requisicao('POST', `/equipamentos/${recebidoSemReparo.id}/manutencoes/${reparo1.id}/conclusao`, { observacao: 'Outro equipamento' }, 404);
+emReparo = await estoque.requisicao('POST', `${rotaManutencao}/${reparo1.id}/conclusao`, { observacao: 'Degrau substituido e ensaio aprovado' });
+assert.equal(emReparo.quantidadeManutencao, 3); assert.equal(emReparo.quantidadeDisponivel, 2); assert.equal(emReparo.status, 'Em campo');
+assert.equal(emReparo.manutencoes.find(m => m.id === reparo1.id).concluidaPorLogin, 'estoque');
+await estoque.requisicao('POST', `${rotaManutencao}/${reparo1.id}/conclusao`, { observacao: 'Repetida' }, 409);
+for (const m of emReparo.manutencoes.filter(m => m.status === 'ABERTA')) await gerente.requisicao('POST', `${rotaManutencao}/${m.id}/conclusao`, { observacao: 'Revisao e teste aprovados' });
+emReparo = (await admin.requisicao('GET', '/equipamentos')).find(e => e.id === reparavel.id);
+assert.equal(emReparo.quantidadeManutencao, 0); assert.equal(emReparo.quantidadeDisponivel, 5); assert.equal(emReparo.manutencoes.length, 4);
+// Reserva e manutenção disputam o mesmo saldo sob o bloqueio do equipamento.
+const concorrenciaReparo = await novo(cadastro('Disputa manutencao', 'MANUT-CONCORRENTE', 2));
+const pedidoConcorrente = await gerente.requisicao('POST', '/atividades', pedido(b.id, [material(concorrenciaReparo, 2)]), 201);
+const disputa = await Promise.all([
+  estoque.requisicao('POST', `/equipamentos/${concorrenciaReparo.id}/manutencoes`, { quantidade: 2, motivo: 'Revisao' }, [200, 409]),
+  distribuir(pedidoConcorrente.id, [{ obraOrigemId: null, materiais: [material(concorrenciaReparo, 2, true)] }], [200, 409]),
+]);
+assert.deepEqual(disputa.map(r => r.status).sort(), [200, 409]);
+const saldoDisputado = (await admin.requisicao('GET', '/equipamentos')).find(e => e.id === concorrenciaReparo.id);
+assert.equal(saldoDisputado.quantidadeDisponivel, 0); assert.equal(saldoDisputado.quantidadeReservada + saldoDisputado.quantidadeManutencao, 2);
+console.log('Manutencao: permissao, validacao, bloqueio parcial, transporte das unidades livres, historico persistido, conclusao unica e concorrencia com reservas OK');
 console.log(`${verificacoes} requisições HTTP verificadas com sessões independentes de administrador, gerente, estoque e dois técnicos.`);

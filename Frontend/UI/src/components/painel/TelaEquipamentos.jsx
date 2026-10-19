@@ -18,12 +18,17 @@ function BotaoMover({ equipamento, aoMover, estilos }) {
   return <button type="button" onClick={() => aoMover(equipamento)} className={estilos.moverBtn} aria-label={`Mover ${equipamento.modelo}`}><ArrowLeftRight size={11} aria-hidden="true" /> Mover</button>;
 }
 
-function AcoesEquipamento({ equipamento, podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, estilos, incluirMover = false }) {
+function BotaoManutencao({ equipamento, aoManutencao, estilos }) {
+  if (!aoManutencao || equipamento.arquivado) return null;
+  return <button type="button" onClick={() => aoManutencao(equipamento)} className={estilos.moverBtn} aria-label={`Manutenção de ${equipamento.modelo}`}><Wrench size={12} aria-hidden="true" />Manutenção</button>;
+}
+
+function AcoesEquipamento({ equipamento, podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, estilos, incluirMover = false }) {
   return <div className={`${estilos.equipActions} ${incluirMover ? css.acoesLista : ''}`}>
     {podeEditar && <button type="button" onClick={() => aoEditar(equipamento)} className={`${estilos.iconBtn} ${estilos.equipEditBtn}`} title="Editar equipamento" aria-label={`Editar ${equipamento.modelo}`}><Pencil size={14} aria-hidden="true" /><span>Editar</span></button>}
     <button type="button" onClick={() => aoAbrirHistorico(equipamento)} className={estilos.iconBtn} title="Histórico" aria-label={`Histórico de ${equipamento.modelo}`}><FileText size={14} aria-hidden="true" /></button>
     <button type="button" onClick={() => aoImprimirHistorico(equipamento)} className={estilos.iconBtn} title="Exportar PDF" aria-label={`Exportar PDF de ${equipamento.modelo}`}><Download size={14} aria-hidden="true" /></button>
-    {incluirMover && <BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} />}
+    {incluirMover && <><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /></>}
   </div>;
 }
 
@@ -46,6 +51,7 @@ function ListaEquipamentos({ grupo, buscarObraPorId, acoes, estilos }) {
             <span><small>Total cadastrado</small><strong>{equipamento.quantidade ?? 1}</strong></span>
             <span><small>Disponível</small><strong>{equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1}</strong></span>
             {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
+            {equipamento.quantidadeManutencao > 0 && <span><small>Em manutenção</small><strong>{equipamento.quantidadeManutencao}</strong></span>}
           </div></td>
           <td role="cell" data-coluna="Localização"><div className={css.localizacao}>
             <span><MapPin size={13} aria-hidden="true" />{descreverLocalizacao(equipamento, buscarObraPorId)}</span>
@@ -59,13 +65,13 @@ function ListaEquipamentos({ grupo, buscarObraPorId, acoes, estilos }) {
   </div>;
 }
 
-export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPorId, tipoSelecionado, statusSelecionado, podeEditar, aoSelecionarTipo, aoSelecionarStatus, aoAbrirHistorico, aoImprimirHistorico, aoEditar, aoMover, estilos }) {
+export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPorId, tipoSelecionado, statusSelecionado, podeEditar, aoSelecionarTipo, aoSelecionarStatus, aoAbrirHistorico, aoImprimirHistorico, aoEditar, aoMover, aoManutencao, estilos }) {
   const [visualizacao, definirVisualizacao] = useState(visualizacaoInicial);
   const alterarVisualizacao = (modo) => {
     definirVisualizacao(modo);
     try { localStorage.setItem(CHAVE_VISUALIZACAO, modo); } catch { /* A preferência permanece nesta tela. */ }
   };
-  const acoes = { podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, estilos };
+  const acoes = { podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, estilos };
   const grupos = [{ titulo: 'Ferramentas ativas', itens: equipamentos.filter((e) => !e.arquivado) }, { titulo: 'Ferramentas arquivadas', itens: equipamentos.filter((e) => e.arquivado) }];
   return <>
     <div className={css.barraFiltros}><div className={estilos.filters}>
@@ -91,8 +97,9 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
             <span><small>Total cadastrado</small><strong>{equipamento.quantidade ?? 1}</strong></span>
             <span><small>Disponível</small><strong>{equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1}</strong></span>
             {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
+            {equipamento.quantidadeManutencao > 0 && <span><small>Em manutenção</small><strong>{equipamento.quantidadeManutencao}</strong></span>}
           </div>
-          <div className={estilos.equipFooter}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</span></div><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /></div>
+          <div className={`${estilos.equipFooter} ${css.rodape}`}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</span></div><div className={css.acoesRodape}><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /></div></div>
           {equipamento.tecnico && <div className={estilos.equipTecnico}>Com {equipamento.tecnico}</div>}
         </div>;
       })}</div>}</section>)}

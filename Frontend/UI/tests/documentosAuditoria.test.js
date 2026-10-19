@@ -25,7 +25,7 @@ test('pedido não separado não é apresentado como material saindo do depósito
 test('relatório identifica pedido original e horários reais de saída e recebimento',()=>{
   const html=modelos.auditoriaSolicitacao({...pedido,solicitacaoPaiId:1,transitoEm:'2026-10-15T10:00:00-04:00',concluidaEm:'2026-10-17T14:00:00-04:00',status:'Concluída'},buscar).conteudo;
   assert.match(html,/Pedido original.*?#0001/);assert.match(html,/15\/10\/2026.*?10:00:00/);assert.match(html,/17\/10\/2026.*?14:00:00/);
-  assert.match(html,/Relatório de auditoria do atendimento/);
+  assert.match(html,/Relatório de vistoria do atendimento/);
   assert.match(html,/Atendimento<\/span><span class="value">#0003/);
 });
 test('inventário distingue presentes, reservas e unidades em transporte sem somar duas vezes',()=>{

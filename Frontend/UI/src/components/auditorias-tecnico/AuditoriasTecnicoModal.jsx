@@ -40,7 +40,7 @@ export function AuditoriasTecnicoModal({ funcionario, aoFechar, auditoriaInicial
   const executar = async (acao) => {
     if(emEnvio.current)return;
     emEnvio.current=true;definirSalvando(true);definirErro('');
-    try { await acao(); } catch(e){definirErro(e.message || 'Não foi possível salvar a auditoria.');}
+    try { await acao(); } catch(e){definirErro(e.message || 'Não foi possível salvar a vistoria.');}
     finally{emEnvio.current=false;definirSalvando(false);}
   };
   const carregarRegistro = (a) => {
@@ -77,17 +77,17 @@ export function AuditoriasTecnicoModal({ funcionario, aoFechar, auditoriaInicial
   const termo=busca.trim().toLocaleLowerCase('pt-BR');
   const filtrados=registros.filter((a)=>!termo||[codigo(a.id),formatarData(a.dataVistoria),a.fiscal,a.status==='CONCLUIDA'?'concluída':'aberta',...a.itens.flatMap((i)=>[i.modelo,i.serie,i.local])].join(' ').toLocaleLowerCase('pt-BR').includes(termo));
 
-  return <EstruturaModal titulo="Auditorias dos materiais" subtitulo={funcionario.nome} aoFechar={salvando?()=>{}:aoFechar} largo>
+  return <EstruturaModal titulo="Vistorias dos materiais" subtitulo={funcionario.nome} aoFechar={salvando?()=>{}:aoFechar} largo>
     <div className={css.conteudo}>
-      {carregando&&<p role="status">Carregando auditorias...</p>}
+      {carregando&&<p role="status">Carregando vistorias...</p>}
       {erro&&<p className={css.erro} role="alert">{erro}</p>}
       {!carregando&&tela==='historico'&&<>
         <div className={css.explicacao}><ClipboardCheck size={20}/><p>Gere uma ficha para inspecionar os materiais, exporte o PDF e depois registre as condições encontradas. Somente itens marcados como <strong>Auditável</strong> no cadastro entram em novas fichas.</p></div>
-        <div className={css.barra}><input className={css.campo} aria-label="Pesquisar auditorias" placeholder="Código, data, fiscal, material ou obra..." value={busca} onChange={(e)=>definirBusca(e.target.value)}/><button type="button" className={css.primario} disabled={salvando||funcionario.arquivado} onClick={nova}><Plus size={16}/>Nova auditoria</button></div>
+        <div className={css.barra}><input className={css.campo} aria-label="Pesquisar vistorias" placeholder="Código, data, fiscal, material ou obra..." value={busca} onChange={(e)=>definirBusca(e.target.value)}/><button type="button" className={css.primario} disabled={salvando||funcionario.arquivado} onClick={nova}><Plus size={16}/>Nova vistoria</button></div>
         <div className={css.tabelaWrap}><table className={css.tabela}><caption>Registros de vistorias do técnico</caption><thead><tr><th>Código</th><th>Vistoria</th><th>Fiscal</th><th>Situação</th><th>Condições</th><th>Ação</th></tr></thead><tbody>{filtrados.map((a)=>{
           const resumo=somarCondicoes(a.itens);
           return <tr key={a.id}><td>{codigo(a.id)}</td><td>{a.dataVistoria?formatarData(a.dataVistoria):'Não informada'}</td><td>{a.fiscal||'A preencher'}</td><td>{a.status==='CONCLUIDA'?'Concluída':'Aberta'}</td><td>{resumo.bom} bom · {resumo.avaria} com avaria · {resumo.quebrado} quebrado{resumo.quantidade>resumo.bom+resumo.avaria+resumo.quebrado&&<small>{resumo.quantidade-resumo.bom-resumo.avaria-resumo.quebrado} a avaliar</small>}</td><td><button type="button" className={css.secundario} disabled={salvando} onClick={()=>abrir(a.id)}>Abrir</button></td></tr>;
-        })}</tbody></table>{!filtrados.length&&<p className={css.vazio}>Nenhuma auditoria encontrada.</p>}</div>
+        })}</tbody></table>{!filtrados.length&&<p className={css.vazio}>Nenhuma vistoria encontrada.</p>}</div>
       </>}
       {!carregando&&tela==='nova'&&<>
         <p className={css.explicacao}>Selecione até 200 registros auditáveis sob responsabilidade deste técnico. Unidades em transporte não entram nesta ficha. As quantidades abaixo incluem unidades reservadas que ainda estão no local.</p>
@@ -97,7 +97,7 @@ export function AuditoriasTecnicoModal({ funcionario, aoFechar, auditoriaInicial
         <div className={css.acoes}><button type="button" className={css.secundario} disabled={salvando} onClick={()=>{definirTela('historico');definirErro('');}}>Voltar</button><button type="button" className={css.primario} disabled={salvando||!selecionados.length} onClick={criar}>{salvando?'Criando...':'Criar ficha de vistoria'}</button></div>
       </>}
       {!carregando&&tela==='registro'&&auditoria&&<>
-        <div className={css.barra}><strong>Auditoria {codigo(auditoria.id)} · {concluida?'Concluída':'Em preenchimento'}</strong><button type="button" className={css.secundario} disabled={salvando} onClick={()=>imprimirVistoriaTecnico(auditoria,false)}><Download size={15}/>Ficha PDF para preencher</button>{concluida&&<button type="button" className={css.secundario} onClick={()=>imprimirVistoriaTecnico(auditoria,true)}><Download size={15}/>Resultado em PDF</button>}</div>
+        <div className={css.barra}><strong>Vistoria {codigo(auditoria.id)} · {concluida?'Concluída':'Em preenchimento'}</strong><button type="button" className={css.secundario} disabled={salvando} onClick={()=>imprimirVistoriaTecnico(auditoria,false)}><Download size={15}/>Ficha PDF para preencher</button>{concluida&&<button type="button" className={css.secundario} onClick={()=>imprimirVistoriaTecnico(auditoria,true)}><Download size={15}/>Resultado em PDF</button>}</div>
         <p className={css.explicacao}>Ficha de {auditoria.tecnicoNome}, gerada por {auditoria.criadoPorNome}. Os itens e as quantidades são os registrados na criação da ficha. As assinaturas do fiscal e do técnico são coletadas no documento impresso.</p>
         <div className={css.dados}><label>Data da vistoria<input type="date" className={css.campo} max={obterDataAtual()} value={data} disabled={concluida||salvando} onChange={(e)=>definirData(e.target.value)}/></label><label>Fiscal que realizou a vistoria<input className={css.campo} maxLength={150} value={fiscal} disabled={concluida||salvando} onChange={(e)=>definirFiscal(e.target.value)}/></label></div>
         <div className={css.itens}>{itens.map((i)=><section className={css.item} key={i.equipamentoId}>
@@ -109,7 +109,7 @@ export function AuditoriasTecnicoModal({ funcionario, aoFechar, auditoriaInicial
         <label className={css.anotacao}>Observações gerais<textarea className={css.campo} rows={3} maxLength={4000} value={observacoes} disabled={concluida||salvando} onChange={(e)=>definirObservacoes(e.target.value)}/></label>
         <p className={css.resumo}>{totais.bom} bom · {totais.avaria} com avaria · {totais.quebrado} quebrado · {totais.quantidade} unidade(s) na ficha</p>
         {auditoria.registradoPorNome&&<p className={css.pendente}>Último lançamento por {auditoria.registradoPorNome} ({auditoria.registradoPorLogin}).</p>}
-        {confirmando&&!concluida&&<section className={css.confirmacao} role="alertdialog" aria-label="Confirmar conclusão da auditoria"><strong>Concluir esta vistoria?</strong><p>Confira os estados, a data e o fiscal. Após concluir, este registro será preservado para consulta e novas inspeções terão uma nova ficha.</p><div className={css.acoes}><button type="button" className={css.secundario} disabled={salvando} onClick={()=>definirConfirmando(false)}>Continuar revisando</button><button type="button" className={css.primario} disabled={salvando} onClick={()=>salvar(true)}>Confirmar conclusão</button></div></section>}
+        {confirmando&&!concluida&&<section className={css.confirmacao} role="alertdialog" aria-label="Confirmar conclusão da vistoria"><strong>Concluir esta vistoria?</strong><p>Confira os estados, a data e o fiscal. Após concluir, este registro será preservado para consulta e novas inspeções terão uma nova ficha.</p><div className={css.acoes}><button type="button" className={css.secundario} disabled={salvando} onClick={()=>definirConfirmando(false)}>Continuar revisando</button><button type="button" className={css.primario} disabled={salvando} onClick={()=>salvar(true)}>Confirmar conclusão</button></div></section>}
         <div className={css.acoes}><button type="button" className={css.secundario} disabled={salvando} onClick={()=>{definirTela('historico');definirErro('');}}>Voltar aos registros</button>{!concluida&&!confirmando&&<><button type="button" className={css.secundario} disabled={salvando} onClick={()=>salvar(false)}>Salvar rascunho</button><button type="button" className={css.primario} disabled={salvando} onClick={()=>{const mensagem=validar(true);if(mensagem)definirErro(mensagem);else{definirErro('');definirConfirmando(true);}}}>Concluir vistoria</button></>}</div>
       </>}
     </div>

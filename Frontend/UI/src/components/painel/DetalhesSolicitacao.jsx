@@ -44,7 +44,7 @@ export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId,
 
     {(podeEditar || aoExportarAuditoria || (solicitacao.status === 'Aprovada' && separado)) && <footer className={css.acoes}>
       <div className={css.acoesSecundarias}>
-        {aoExportarAuditoria && <button type="button" disabled={processando} onClick={() => aoExportarAuditoria(solicitacao)} className={css.editar}><FileText size={15} />Auditoria</button>}
+        {aoExportarAuditoria && <button type="button" disabled={processando} onClick={() => aoExportarAuditoria(solicitacao)} className={css.editar}><FileText size={15} />Vistoria</button>}
         {podeEditar && <button type="button" disabled={processando} onClick={() => aoEditar(solicitacao)} className={css.editar}><Pencil size={15} />Editar</button>}
         {solicitacao.status === 'Aprovada' && separado && <button type="button" disabled={processando} onClick={() => aoExportarRomaneio(solicitacao)} className={css.editar}><FileText size={15} />Romaneio</button>}
       </div>

@@ -32,6 +32,8 @@ try {
         ConvertTo-Json | Set-Content -Encoding UTF8 -LiteralPath $configuracaoTeste
     node (Join-Path $PSScriptRoot 'validar-fluxo-requisicoes.mjs') $configuracaoTeste
     if ($LASTEXITCODE -ne 0) { throw 'A validacao integrada encontrou uma falha.' }
+    node (Join-Path $PSScriptRoot 'validar-migracao-manutencao.mjs') $configuracaoTeste $variaveisBanco['POSTGRES_USER']
+    if ($LASTEXITCODE -ne 0) { throw 'A validacao da migracao de manutencao encontrou uma falha.' }
 }
 finally {
     # Validar rigorosamente os alvos antes de remover somente os recursos deste teste.

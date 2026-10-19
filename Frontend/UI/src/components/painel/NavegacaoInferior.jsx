@@ -5,7 +5,7 @@ const ITENS = [
   { id: 'obras', rotulo: 'Obras', icone: Building2 },
   { id: 'atividades', rotulo: 'Atividades', icone: Activity },
   { id: 'funcionarios', rotulo: 'Equipe', icone: Users },
-  { id: 'auditorias', rotulo: 'Auditorias', icone: ClipboardCheck },
+  { id: 'auditorias', rotulo: 'Vistorias', icone: ClipboardCheck },
   { id: 'deposito', rotulo: 'Depósito', icone: Warehouse },
 ];
 

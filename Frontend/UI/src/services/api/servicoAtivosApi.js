@@ -43,6 +43,8 @@ export const apiObras = {
 };
 
 export const apiEquipamentos = {
+  abrirManutencao: async (id, dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/manutencoes`, dados), 'Manutenção registrada. As unidades selecionadas foram bloqueadas.')),
+  concluirManutencao: async (id, manutencaoId, dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/manutencoes/${manutencaoId}/conclusao`, dados), 'Manutenção concluída. Unidades liberadas para novos pedidos.')),
   listar: async () => (await obter(ROTAS_API.equipamentos)).map(normalizarEquipamento),
   listarCatalogo: () => obter(`${ROTAS_API.equipamentos}/catalogo`),
   cadastrar: async (dados) => normalizarEquipamento(await avisarAposSucesso(criar(ROTAS_API.equipamentos, dados), 'Equipamento cadastrado.')),
@@ -85,8 +87,8 @@ export const apiAuditoriasTecnico = {
   listar: (tecnicoId) => obter(ROTAS_API.auditoriasTecnico(tecnicoId)),
   materiais: (tecnicoId) => obter(ROTAS_API.materiaisAuditoriaTecnico(tecnicoId)),
   consultar: (tecnicoId, id) => obter(ROTAS_API.auditoriaTecnico(tecnicoId, id)),
-  criar: (tecnicoId, equipamentoIds) => avisarAposSucesso(criar(ROTAS_API.auditoriasTecnico(tecnicoId), { equipamentoIds }), 'Ficha de auditoria criada. Você já pode exportar o PDF.'),
-  registrar: (tecnicoId, id, dados) => avisarAposSucesso(atualizar(ROTAS_API.auditoriaTecnico(tecnicoId, id), dados), dados.concluir ? 'Auditoria concluída e registrada no histórico.' : 'Rascunho da auditoria salvo.'),
+  criar: (tecnicoId, equipamentoIds) => avisarAposSucesso(criar(ROTAS_API.auditoriasTecnico(tecnicoId), { equipamentoIds }), 'Ficha de vistoria criada. Você já pode exportar o PDF.'),
+  registrar: (tecnicoId, id, dados) => avisarAposSucesso(atualizar(ROTAS_API.auditoriaTecnico(tecnicoId, id), dados), dados.concluir ? 'Vistoria concluída e registrada no histórico.' : 'Rascunho da vistoria salvo.'),
 };
 export const apiDeposito = { listar: () => obter(ROTAS_API.deposito) };
 export const apiPainel = { obterResumo: () => obter(ROTAS_API.resumo) };

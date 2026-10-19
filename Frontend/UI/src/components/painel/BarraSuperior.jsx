@@ -2,11 +2,11 @@ import { ChevronDown, ChevronUp, LogOut, Menu, Moon, Plus, Search, Sun, X } from
 import { useState } from 'react';
 
 const INFORMACOES_TELA = {
-  auditorias: ['Auditorias', 'Vistorias periódicas de conservação e histórico dos materiais', 'Código, técnico, fiscal, obra ou material...'],
+  auditorias: ['Vistorias', 'Vistorias periódicas de conservação e histórico dos materiais', 'Código, técnico, fiscal, obra ou material...'],
   equipamentos: ['Equipamentos', 'Onde cada instrumento está e com quem', 'Buscar modelo, série, técnico...'],
   obras: ['Obras', 'Frentes de trabalho ativas e planejadas', 'Buscar obra, cliente, cidade...'],
   funcionarios: ['Funcionários', 'Equipe, responsabilidades e materiais sob custódia', 'Buscar funcionário, cargo, e-mail...'],
-  atividades: ['Solicitações', 'Consulte pedidos em andamento e o histórico para auditoria', 'Código, obra, técnico, material ou série...'],
+  atividades: ['Solicitações', 'Consulte pedidos em andamento e o histórico para vistoria', 'Código, obra, técnico, material ou série...'],
   deposito: ['Depósito', 'Itens fora de campo — estoque, manutenção e trânsito', 'Buscar item, série...'],
 };
 

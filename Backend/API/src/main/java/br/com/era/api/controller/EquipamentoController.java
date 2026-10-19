@@ -1,6 +1,7 @@
 package br.com.era.api.controller;
 import br.com.era.api.dto.EquipamentoDto;
 import br.com.era.api.dto.MovimentacaoDto;
+import br.com.era.api.dto.ManutencaoDto;
 import br.com.era.api.service.EquipamentoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,4 +18,6 @@ public class EquipamentoController {
     @PatchMapping("/{id}/arquivamento") public EquipamentoDto.Resposta arquivar(@PathVariable Long id,@Valid @RequestBody br.com.era.api.dto.ArquivamentoDto.Requisicao d,Authentication auth){return service.definirArquivamento(id,d.arquivado(),auth.getName());}
     @PostMapping("/{id}/movimentacoes") @ResponseStatus(HttpStatus.CREATED) public EquipamentoDto.Resposta movimentar(@PathVariable Long id,@Valid @RequestBody MovimentacaoDto.Requisicao dados){return service.movimentar(id,dados);}
     @GetMapping("/{id}/historico") public List<MovimentacaoDto.Resposta> historico(@PathVariable Long id,Authentication autenticacao){return service.historicoParaUsuario(id,autenticacao.getName());}
+    @PostMapping("/{id}/manutencoes") public EquipamentoDto.Resposta abrirManutencao(@PathVariable Long id,@Valid @RequestBody ManutencaoDto.Abertura dados,Authentication auth){return service.abrirManutencao(id,dados,auth.getName());}
+    @PostMapping("/{id}/manutencoes/{manutencaoId}/conclusao") public EquipamentoDto.Resposta concluirManutencao(@PathVariable Long id,@PathVariable Long manutencaoId,@Valid @RequestBody ManutencaoDto.Conclusao dados,Authentication auth){return service.concluirManutencao(id,manutencaoId,dados,auth.getName());}
 }

@@ -58,7 +58,7 @@ export function useControleAtivos() {
     total: equipamentos.filter(({ arquivado }) => !arquivado).length,
     emCampo: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em campo').length,
     emEstoque: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em estoque').length,
-    emManutencao: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em manutenção').length,
+    emManutencao: equipamentosLocalizados.filter(({ status, quantidadeManutencao, arquivado }) => !arquivado && (quantidadeManutencao > 0 || status === 'Em manutenção')).length,
     emTransito: equipamentosLocalizados.filter(({ status, quantidadeEmTransito, arquivado }) => !arquivado && (quantidadeEmTransito > 0 || status === 'Em trânsito')).length,
   }), [equipamentos, equipamentosLocalizados]);
 
@@ -214,7 +214,7 @@ export function useControleAtivos() {
       obraOrigemId: equipamento.obraId ?? null,
       obraDestinoId: dadosMovimentacao.obraId ?? null,
       dataSolicitacao: dadosMovimentacao.dataMovimentacao || obterDataAtual(),
-      observacao: `Movimentação solicitada pelo gerente. Status desejado: ${dadosMovimentacao.status}.`,
+      observacao: 'Movimentação solicitada pelo gerente.',
       materiais: [{ nome: equipamento.modelo, quantidade: dadosMovimentacao.quantidade || 1, identificacao: equipamento.serie, catalogoChave: equipamento.catalogoChave || null }],
     };
 
@@ -279,6 +279,7 @@ export function useControleAtivos() {
   }
 
   return {
+    receberEquipamentoAtualizado: (equipamento) => definirEquipamentos((atuais) => atuais.map((item) => item.id === equipamento.id ? equipamento : item)),
     obras,
     equipamentos: equipamentosLocalizados,
     funcionarios,

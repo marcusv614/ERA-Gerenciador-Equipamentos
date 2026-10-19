@@ -88,9 +88,9 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
         )}
       </div>
       {aoAuditar && <section className={styles.section}>
-        <div className={styles.sectionTitle}>Auditorias dos materiais</div>
+        <div className={styles.sectionTitle}>Vistorias dos materiais</div>
         <p className={styles.auditHint}>{equipamentos.filter((e) => e.auditavel).length} registro(s) marcado(s) como auditável. Gere a ficha de vistoria e registre depois as condições encontradas.</p>
-        <button type="button" className={styles.auditButton} onClick={() => aoAuditar(funcionario)}><ClipboardCheck size={16} aria-hidden="true" /> Gerenciar auditorias</button>
+        <button type="button" className={styles.auditButton} onClick={() => aoAuditar(funcionario)}><ClipboardCheck size={16} aria-hidden="true" /> Gerenciar vistorias</button>
       </section>}
     </div>
   );

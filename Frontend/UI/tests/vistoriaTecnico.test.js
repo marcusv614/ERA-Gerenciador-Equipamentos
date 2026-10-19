@@ -22,7 +22,7 @@ test('resultado concluído preserva ficha, fiscal, autor do lançamento e contag
   assert.match(html,/Qtd\.: 1/);assert.match(html,/Obra A/);
 });
 test('auditoria aberta não é impressa como resultado definitivo',()=>{
-  assert.doesNotMatch(modelos.vistoriaTecnico({...ficha,status:'ABERTA'},true).conteudo,/Resultado da auditoria/);
+  assert.doesNotMatch(modelos.vistoriaTecnico({...ficha,status:'ABERTA'},true).conteudo,/Resultado da vistoria/);
 });
 test('dados de vistoria são escapados no documento',()=>{
   const html=modelos.vistoriaTecnico({...ficha,tecnicoNome:'<script>ataque</script>',itens:[{...item,observacao:'<img src=x>'}]},true).conteudo;

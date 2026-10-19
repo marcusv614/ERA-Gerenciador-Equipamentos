@@ -24,7 +24,7 @@ class AuditoriaErrosHttpTests {
             """)).andExpect(status().isBadRequest()).andExpect(jsonPath("$.trace").doesNotExist());verifyNoInteractions(service);
     }
     @Test void naoConsultaFichaDeOutroTecnico() throws Exception {
-        when(service.consultar(1L,2L,"gerente")).thenThrow(new RecursoNaoEncontradoException("Auditoria não encontrada para este técnico."));
+        when(service.consultar(1L,2L,"gerente")).thenThrow(new RecursoNaoEncontradoException("Vistoria não encontrada para este técnico."));
         mvc.perform(get("/funcionarios/1/auditorias/2").principal(auth)).andExpect(status().isNotFound()).andExpect(jsonPath("$.exception").doesNotExist());
     }
 }

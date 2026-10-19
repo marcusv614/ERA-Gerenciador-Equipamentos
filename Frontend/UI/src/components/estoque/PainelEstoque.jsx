@@ -1,6 +1,6 @@
 import { locaisDoPedido, pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
 import { useEffect, useMemo, useState } from 'react';
-import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, X } from 'lucide-react';
+import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, Wrench, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { imprimirListaComprasGeral, imprimirListaComprasSolicitacao, imprimirRomaneioSeparacao, imprimirRelatorioAuditoriaSolicitacao } from '../../services/documentosEquipamentos';
@@ -9,6 +9,7 @@ import estilos from './PainelEstoque.module.css';
 import { SepararEquipamentosModal } from './SepararEquipamentosModal';
 import { tipoSemNumeroSerie } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
+import { ModalManutencaoEquipamento } from '../manutencao-equip-modal/ManutencaoEquipModal';
 
 const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificacao }) => identificacao);
 const rotuloOperacional = (solicitacao) => obterEtapaSolicitacao(solicitacao.status).rotulo;
@@ -31,6 +32,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const [busca, definirBusca] = useState('');
   const [obraFiltrada, definirObraFiltrada] = useState('todas');
   const [aba, definirAba] = useState('atividades');
+  const [equipamentoParaManutencao, definirEquipamentoParaManutencao] = useState(null);
   const [quantidadesRecebidas, definirQuantidadesRecebidas] = useState({});
   const [notasFiscaisRecebidas, definirNotasFiscaisRecebidas] = useState({});
   const [identificacoesRecebidas, definirIdentificacoesRecebidas] = useState({});
@@ -72,6 +74,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     return () => { ativo = false; window.clearInterval(intervalo); window.removeEventListener('focus', atualizar); document.removeEventListener('visibilitychange', atualizar); };
   }, []);
   const nomeLocal = (id) => id == null || id === 'deposito' ? 'Depósito central' : buscarObra(id)?.nome || 'Obra';
+  const equipamentosParaManutencao = equipamentos.filter(e => !e.arquivado && (obraFiltrada === 'todas' || String(e.obraId) === obraFiltrada) && (!busca.trim() || [e.modelo, e.serie, nomeLocal(e.obraId), e.tecnico].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR'))));
   const pendencias = useMemo(() => solicitacoes.filter(({ status }) => ['Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status)), [solicitacoes]);
   const concluidas = useMemo(() => solicitacoes.filter(({ status }) => ['Concluída', 'Rejeitada'].includes(status)), [solicitacoes]);
   const correspondeAosFiltros = (solicitacao) => (obraFiltrada === 'todas' || locaisDoPedido(solicitacao).includes(obraFiltrada))
@@ -199,9 +202,11 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
         <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Pedidos</span><b>{pendencias.length}</b></button>
         <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /><span>Compras</span><b>{comprasPendentes}</b></button>
         <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /><span>Histórico</span><b>{concluidas.length}</b></button>
+        <button className={aba === 'manutencoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('manutencoes')}><Wrench /><span>Manutenção</span></button>
       </nav>
-      {!carregando && <section className={estilos.filtros} aria-label="Pesquisa de movimentações"><label><Search /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar número, técnico, material, série ou data..." /></label><label><Building2 /><select value={obraFiltrada} onChange={(evento) => definirObraFiltrada(evento.target.value)}><option value="todas">Todas as obras</option>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label></section>}
+      {!carregando && <section className={estilos.filtros} aria-label={aba === 'manutencoes' ? 'Pesquisa de equipamentos' : 'Pesquisa de movimentações'}><label><Search /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder={aba === 'manutencoes' ? 'Buscar equipamento, série, técnico ou obra...' : 'Buscar número, técnico, material, série ou data...'} /></label><label><Building2 /><select value={obraFiltrada} onChange={(evento) => definirObraFiltrada(evento.target.value)}><option value="todas">Todas as obras</option>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label></section>}
       {carregando ? <div className={estilos.carregando}>Carregando estoque...</div> : <>
+        {aba === 'manutencoes' && <section className={estilos.secao} aria-label="Manutenção dos equipamentos">{!equipamentosParaManutencao.length && <div className={estilos.vazio}><Wrench /><strong>Nenhum equipamento encontrado</strong></div>}<div className={estilos.grade}>{equipamentosParaManutencao.map(e => <article key={e.id} className={estilos.card}><header><span className={estilos.icone}><Wrench /></span><div><h2>{e.modelo}</h2><small>{e.serie} · {nomeLocal(e.obraId)}</small></div></header><p>{e.quantidadeDisponivel} disponível(is) · {e.quantidadeManutencao || 0} em manutenção</p><footer><button type="button" onClick={() => definirEquipamentoParaManutencao(e)}><Wrench />Gerenciar manutenção</button></footer></article>)}</div></section>}
         {aba === 'atividades' && <section className={estilos.secao}>{pendenciasFiltradas.length ? <div className={estilos.grade}>{pendenciasFiltradas.map(renderizarCard)}</div> : <div className={estilos.vazio}><Check /><strong>Nenhum pedido para atender</strong></div>}</section>}
         {aba === 'registros' && <section className={estilos.secao}>{concluidasFiltradas.length ? <div className={estilos.grade}>{concluidasFiltradas.map(renderizarCard)}</div> : <div className={estilos.vazio}><ClipboardList /><strong>Nenhum registro encontrado</strong></div>}</section>}
         {aba === 'aquisicoes' && <section className={estilos.secao}>
@@ -233,5 +238,6 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       </>}
     </main>
     {configurando && <SepararEquipamentosModal solicitacao={configurando} obras={obras} equipamentos={equipamentos} aoFechar={() => definirConfigurando(null)} aoConfirmar={salvarAtendimento} aoSolicitarCompra={solicitarCompra} />}
+    {equipamentoParaManutencao && <div className={estilos.temaManutencao}><ModalManutencaoEquipamento equipamento={equipamentoParaManutencao} buscarObraPorId={buscarObra} aoFechar={() => definirEquipamentoParaManutencao(null)} aoAtualizar={e => definirEquipamentos(atuais => atuais.map(item => item.id === e.id ? e : item))} /></div>}
   </div>;
 }

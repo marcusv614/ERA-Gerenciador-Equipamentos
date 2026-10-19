@@ -22,7 +22,7 @@ public class AuditoriaTecnicoService {
     }
     private Usuario autor(String login) {
         Usuario u=usuarios.buscarPorLogin(login);
-        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE).contains(u.getPerfil()))throw new AccessDeniedException("Somente a gerência pode gerenciar auditorias dos técnicos.");
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE).contains(u.getPerfil()))throw new AccessDeniedException("Somente a gerência pode gerenciar vistorias dos técnicos.");
         return u;
     }
     @Transactional(readOnly=true) public List<AuditoriaTecnicoDto.Resposta> listar(Long tecnicoId,String login) {
@@ -33,7 +33,7 @@ public class AuditoriaTecnicoService {
         autor(login);return auditorias.findAllByOrderByCriadoEmDescIdDesc().stream().map(this::resposta).toList();
     }
     @Transactional(readOnly=true) public AuditoriaTecnicoDto.Resposta consultar(Long tecnicoId,Long id,String login) {
-        autor(login);return resposta(auditorias.findByIdAndFuncionarioId(id,tecnicoId).orElseThrow(()->new RecursoNaoEncontradoException("Auditoria não encontrada para este técnico.")));
+        autor(login);return resposta(auditorias.findByIdAndFuncionarioId(id,tecnicoId).orElseThrow(()->new RecursoNaoEncontradoException("Vistoria não encontrada para este técnico.")));
     }
     @Transactional(readOnly=true) public List<AuditoriaTecnico.Item> materiais(Long tecnicoId,String login) {
         autor(login);funcionarios.buscar(tecnicoId);return materiaisAtuais(tecnicoId);
@@ -51,18 +51,18 @@ public class AuditoriaTecnicoService {
     }
     @Transactional public AuditoriaTecnicoDto.Resposta criar(Long tecnicoId,AuditoriaTecnicoDto.Criacao dados,String login) {
         Usuario autor=autor(login);Funcionario tecnico=funcionarios.buscar(tecnicoId);
-        if(tecnico.isArquivado())throw new RegraNegocioException("Não é possível criar uma auditoria para um funcionário arquivado.");
+        if(tecnico.isArquivado())throw new RegraNegocioException("Não é possível criar uma vistoria para um funcionário arquivado.");
         Set<Long> ids=new HashSet<>(dados.equipamentoIds());
-        if(ids.size()!=dados.equipamentoIds().size())throw new RegraNegocioException("Não repita equipamentos na mesma auditoria.");
+        if(ids.size()!=dados.equipamentoIds().size())throw new RegraNegocioException("Não repita equipamentos na mesma vistoria.");
         List<AuditoriaTecnico.Item> itens=materiaisAtuais(tecnicoId).stream().filter(i->ids.contains(i.equipamentoId())).toList();
         if(itens.size()!=ids.size()||itens.isEmpty())throw new RegraNegocioException("Selecione somente itens auditáveis atualmente com este técnico e fora de transporte. Atualize a lista e tente novamente.");
         return resposta(auditorias.saveAndFlush(new AuditoriaTecnico(tecnico,autor,itens)));
     }
     @Transactional public AuditoriaTecnicoDto.Resposta registrar(Long tecnicoId,Long id,AuditoriaTecnicoDto.Registro dados,String login) {
         Usuario autor=autor(login);
-        AuditoriaTecnico a=auditorias.buscarParaAtualizacao(id,tecnicoId).orElseThrow(()->new RecursoNaoEncontradoException("Auditoria não encontrada para este técnico."));
-        if(!"ABERTA".equals(a.getStatus()))throw new RegraNegocioException("A auditoria concluída está preservada e não pode ser alterada. Crie uma nova vistoria.");
-        if(!Objects.equals(dados.versao(),a.getVersao()))throw new RegraNegocioException("Esta auditoria foi atualizada por outra pessoa. Reabra o registro antes de salvar.");
+        AuditoriaTecnico a=auditorias.buscarParaAtualizacao(id,tecnicoId).orElseThrow(()->new RecursoNaoEncontradoException("Vistoria não encontrada para este técnico."));
+        if(!"ABERTA".equals(a.getStatus()))throw new RegraNegocioException("A vistoria concluída está preservada e não pode ser alterada. Crie uma nova vistoria.");
+        if(!Objects.equals(dados.versao(),a.getVersao()))throw new RegraNegocioException("Esta vistoria foi atualizada por outra pessoa. Reabra o registro antes de salvar.");
         if(dados.dataVistoria()!=null&&dados.dataVistoria().isAfter(LocalDate.now()))throw new RegraNegocioException("A data da vistoria não pode estar no futuro.");
         if(dados.concluir()&&(dados.dataVistoria()==null||dados.fiscal()==null||dados.fiscal().isBlank()))throw new RegraNegocioException("Informe a data da vistoria e o nome do fiscal para concluir.");
         Map<Long,AuditoriaTecnicoDto.ItemRegistro> enviados=new HashMap<>();

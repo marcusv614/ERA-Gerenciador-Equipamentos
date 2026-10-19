@@ -169,8 +169,8 @@ export function ModalNovoEquipamento({
   const obrasDisponiveis = obras.filter(({ id, status }) =>
     status !== 'Concluída' || String(id) === String(equipamento?.obraId));
   const quantidade = Number(form.quantidade);
-  const quantidadeMinima = Math.max(1, Number(equipamento?.quantidadeReservada || 0));
-  const possuiReservas = Number(equipamento?.quantidadeReservada || 0) > 0;
+  const quantidadeMinima = Math.max(1, Number(equipamento?.quantidadeReservada || 0) + Number(equipamento?.quantidadeManutencao || 0));
+  const possuiReservas = Number(equipamento?.quantidadeReservada || 0) + Number(equipamento?.quantidadeManutencao || 0) > 0;
   const quantidadeValida = Number.isInteger(quantidade) && quantidade >= quantidadeMinima;
   const canSave = form.tipo.trim() && form.modelo.trim() && form.data && quantidadeValida && !serieJaCadastrada;
 
@@ -297,15 +297,15 @@ export function ModalNovoEquipamento({
             </CampoFormulario>
             <CampoFormulario
               rotulo="Quantidade"
-              dica={equipamento?.quantidadeReservada > 0
-                ? `${equipamento.quantidadeReservada} unidade(s) já reservada(s).`
+              dica={possuiReservas
+                ? `${equipamento?.quantidadeReservada || 0} reservada(s) e ${equipamento?.quantidadeManutencao || 0} em manutenção.`
                 : 'Total de unidades deste registro.'}
             >
               <input type="number" className={styles.input} min={quantidadeMinima} step="1" inputMode="numeric" value={form.quantidade} onChange={(e) => setForm((dadosAtuais) => ({ ...dadosAtuais, quantidade: e.target.value }))} required />
               {!quantidadeValida && <small className={styles.erro}>Informe um número inteiro igual ou maior que {quantidadeMinima}.</small>}
             </CampoFormulario>
           </div>
-          {possuiReservas && <p className={styles.categoryHint}>Categoria, nome, medida e série ficam preservados enquanto houver unidades reservadas para movimentação.</p>}
+          {possuiReservas && <p className={styles.categoryHint}>Categoria, nome, medida e série ficam preservados enquanto houver unidades reservadas ou em manutenção.</p>}
         </section>
 
         {camposCategoria.length > 0 && <section className={styles.section}>
@@ -378,7 +378,7 @@ export function ModalNovoEquipamento({
 
         <label className={styles.auditavel}>
           <input type="checkbox" checked={form.auditavel} onChange={(evento) => setForm({ ...form, auditavel: evento.target.checked })} />
-          <span><strong>Auditável</strong><small>Inclui este item nas vistorias de conservação dos materiais sob responsabilidade dos técnicos. Marque para ferramentas e equipamentos duráveis; deixe desmarcado para consumíveis.</small><b>{form.auditavel ? 'Participa das auditorias dos técnicos' : 'Não participa das auditorias dos técnicos'}</b></span>
+          <span><strong>Auditável</strong><small>Inclui este item nas vistorias de conservação dos materiais sob responsabilidade dos técnicos. Marque para ferramentas e equipamentos duráveis; deixe desmarcado para consumíveis.</small><b>{form.auditavel ? 'Participa das vistorias dos técnicos' : 'Não participa das vistorias dos técnicos'}</b></span>
         </label>
         <CampoFormulario rotulo="Observações (opcional)" dica="Estado de conservação, informação ausente ou outro detalhe útil.">
           <textarea className={`${styles.input} ${styles.textarea}`} rows="3" maxLength="4000" placeholder="Ex.: Ferramenta antiga, marca ilegível." value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} />

@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
-import { statusEquipamento } from '../../data/constantesDominio';
 import { obterDataAtual } from '../../utils/datas';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import styles from "./MoverEquipModal.module.css";
 
 export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastrados, aoFechar, aoSalvar }) {
   const [obraId, definirObraId] = useState(equipamento.obraId || "");
-  const [status, definirStatus] = useState(equipamento.status);
   const [tecnico, definirTecnico] = useState(equipamento.tecnico || "");
   const [dataMovimentacao, definirDataMovimentacao] = useState(obterDataAtual());
   const [quantidade, definirQuantidade] = useState(1);
@@ -16,9 +14,6 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
   const controlaLote = equipamento.controleQuantidade === 'LOTE' || quantidadeDisponivel > 1;
   const destinoAtual = equipamento.obraId == null ? '' : String(equipamento.obraId);
   const destinoInalterado = String(obraId) === destinoAtual;
-  const statusPermitidos = obraId
-    ? statusEquipamento.filter((opcao) => ['Em campo', 'Em trânsito'].includes(opcao))
-    : statusEquipamento.filter((opcao) => ['Em estoque', 'Em manutenção'].includes(opcao));
 
   return (
     <EstruturaModal
@@ -34,7 +29,6 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
             onChange={(e) => {
               const novoDestino = e.target.value;
               definirObraId(novoDestino);
-              definirStatus(novoDestino ? 'Em campo' : 'Em estoque');
               if (!novoDestino) definirTecnico('');
             }}
           >
@@ -67,20 +61,7 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
           <small>{quantidadeDisponivel} unidades disponíveis</small>
         </CampoFormulario>}
 
-        <CampoFormulario rotulo="Status">
-          <div className={styles.statusWrap}>
-            {statusPermitidos.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => definirStatus(s)}
-                className={`${styles.statusBtn} ${status === s ? styles.statusBtnActive : ""}`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        </CampoFormulario>
+        <p>O estoque registra o envio e o técnico confirma o recebimento na obra. Para bloquear unidades para reparo, use a ação Manutenção do equipamento.</p>
 
         <CampoFormulario rotulo="Técnico responsável">
           <select
@@ -101,7 +82,6 @@ export function ModalMovimentarEquipamento({ equipamento, obras, tecnicosCadastr
             onClick={() =>
               aoSalvar(equipamento.id, {
                 obraId: obraId || null,
-                status,
                 tecnico: tecnico || null,
                 dataMovimentacao,
                 quantidade,

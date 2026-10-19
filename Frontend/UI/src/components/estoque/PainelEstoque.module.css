@@ -51,6 +51,19 @@
   --stock-shadow: 0 16px 40px rgba(0, 0, 0, .2);
 }
 
+.temaManutencao {
+  --surface:var(--stock-surface);
+  --surface-2:var(--stock-soft);
+  --border:var(--stock-border);
+  --border-strong:var(--stock-border-strong);
+  --text:var(--stock-text);
+  --text-muted:var(--stock-muted);
+  --accent:var(--stock-orange);
+  --on-accent:#202722;
+  --warn:var(--stock-orange-dark);
+  --danger:var(--stock-danger);
+}
+
 .pagina *,
 .pagina *::before,
 .pagina *::after { box-sizing: border-box; }
@@ -251,7 +264,7 @@
   border-radius: 16px;
   background: var(--stock-soft);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
 }
 .abas button {

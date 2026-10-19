@@ -11,7 +11,7 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
       const correspondeAoTipo =
         tipoSelecionado === 'Todos' || equipamento.tipo === tipoSelecionado;
       const correspondeAoStatus =
-        statusSelecionado === 'Todos' || equipamento.status === statusSelecionado;
+        statusSelecionado === 'Todos' || equipamento.status === statusSelecionado || (statusSelecionado === 'Em manutenção' && equipamento.quantidadeManutencao > 0);
       const correspondeABusca = !termoNormalizado || [
         equipamento.modelo,
         equipamento.serie,
