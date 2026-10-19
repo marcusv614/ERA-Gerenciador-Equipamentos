@@ -21,6 +21,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EquipamentoServiceTests {
+    @Test void reservaPreservaSerieECatalogoAteConfirmarEntrega() {
+        EquipamentoRepository repository=mock(EquipamentoRepository.class);
+        Equipamento e=new Equipamento();e.setTipo("Ferramentas");e.setModelo("Alicate");e.setSerie("RESERVADO");e.setStatus("Em estoque");e.setQuantidade(5);e.setQuantidadeReservada(2);e.setControleQuantidade("LOTE");
+        when(repository.buscarParaAtualizacao(1L)).thenReturn(Optional.of(e));
+        EquipamentoService service=new EquipamentoService(repository,mock(MovimentacaoRepository.class),mock(ObraService.class),mock(FuncionarioService.class),mock(UsuarioService.class),mock(InventarioHistoricoService.class));
+        for(var dados:List.of(
+            new EquipamentoDto.Requisicao("Ferramentas","Alicate","NOVA-SERIE","Em estoque",null,null,null,null,null,null,5,null,"LOTE",null,null,null,null,true),
+            new EquipamentoDto.Requisicao("Ferramentas","Escada","RESERVADO","Em estoque",null,null,null,null,null,null,5,null,"LOTE",null,null,null,null,true)))
+            assertThrows(RegraNegocioException.class,()->service.atualizar(1L,dados));
+        assertEquals("RESERVADO",e.getSerie());assertEquals("Alicate",e.getModelo());verify(repository,never()).save(e);
+    }
+    @Test void divisaoDeLoteComSerieLongaOuRepetidaGeraIdentificacaoValida() {
+        EquipamentoRepository repository=mock(EquipamentoRepository.class);
+        when(repository.save(any(Equipamento.class))).thenAnswer(i->i.getArgument(0));
+        EquipamentoService service=new EquipamentoService(repository,mock(MovimentacaoRepository.class),mock(ObraService.class),mock(FuncionarioService.class),mock(UsuarioService.class),mock(InventarioHistoricoService.class));
+        Equipamento e=new Equipamento();e.setSerie("S".repeat(120));
+        Equipamento derivado=service.criarLoteDerivado(e,1,null,null,"Em estoque",LocalDate.now(),1L);
+        assertEquals(true,derivado.getSerie().length()<=120);
+        e.setSerie("EXISTENTE");when(repository.existsBySerieIgnoreCase("EXISTENTE-M1")).thenReturn(true);
+        assertEquals(true,service.criarLoteDerivado(e,1,null,null,"Em estoque",LocalDate.now(),1L).getSerie().startsWith("ERA-"));
+    }
 
     @Test
     void devePersistirEdicaoDoEquipamentoComDataETecnicoOpcional() {
@@ -32,7 +53,7 @@ class EquipamentoServiceTests {
         equipamento.setSerie("SERIE-1");
         equipamento.setStatus("Em estoque");
 
-        when(equipamentos.findById(1L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.buscarParaAtualizacao(1L)).thenReturn(Optional.of(equipamento));
         when(equipamentos.findBySerieIgnoreCase("SERIE-1")).thenReturn(Optional.empty());
         when(equipamentos.save(equipamento)).thenReturn(equipamento);
         when(movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(null)).thenReturn(List.of());
@@ -71,7 +92,7 @@ class EquipamentoServiceTests {
         equipamento.setSerie("SERIE-2");
         equipamento.setStatus("Em campo");
         equipamento.setObra(origem);
-        when(equipamentos.findById(2L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.buscarParaAtualizacao(2L)).thenReturn(Optional.of(equipamento));
 
         EquipamentoService service = new EquipamentoService(
                 equipamentos,
@@ -99,7 +120,7 @@ class EquipamentoServiceTests {
         equipamento.setStatus("Em estoque");
         equipamento.setQuantidade(1);
         equipamento.setControleQuantidade("INDIVIDUAL");
-        when(equipamentos.findById(5L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.buscarParaAtualizacao(5L)).thenReturn(Optional.of(equipamento));
         when(equipamentos.findBySerieIgnoreCase("ERA-LOTE-1")).thenReturn(Optional.empty());
         when(equipamentos.save(equipamento)).thenReturn(equipamento);
         when(movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(null)).thenReturn(List.of());
@@ -125,7 +146,7 @@ class EquipamentoServiceTests {
         equipamento.setQuantidade(10);
         equipamento.setQuantidadeReservada(4);
         equipamento.setControleQuantidade("LOTE");
-        when(equipamentos.findById(6L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.buscarParaAtualizacao(6L)).thenReturn(Optional.of(equipamento));
         when(equipamentos.findBySerieIgnoreCase("ERA-LOTE-2")).thenReturn(Optional.empty());
         EquipamentoService service = new EquipamentoService(equipamentos, mock(MovimentacaoRepository.class),
                 mock(ObraService.class), mock(FuncionarioService.class), mock(UsuarioService.class),
@@ -144,7 +165,7 @@ class EquipamentoServiceTests {
         EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
         MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
         Equipamento equipamento = new Equipamento();
-        when(equipamentos.findById(3L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.buscarParaAtualizacao(3L)).thenReturn(Optional.of(equipamento));
         when(movimentacoes.existsByEquipamentoId(3L)).thenReturn(false);
         EquipamentoService service = new EquipamentoService(equipamentos, movimentacoes, mock(ObraService.class),
                 mock(FuncionarioService.class), mock(UsuarioService.class), mock(InventarioHistoricoService.class));
@@ -160,7 +181,7 @@ class EquipamentoServiceTests {
         EquipamentoRepository equipamentos = mock(EquipamentoRepository.class);
         MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
         Equipamento equipamento = new Equipamento();
-        when(equipamentos.findById(4L)).thenReturn(Optional.of(equipamento));
+        when(equipamentos.buscarParaAtualizacao(4L)).thenReturn(Optional.of(equipamento));
         when(movimentacoes.existsByEquipamentoId(4L)).thenReturn(true);
         EquipamentoService service = new EquipamentoService(equipamentos, movimentacoes, mock(ObraService.class),
                 mock(FuncionarioService.class), mock(UsuarioService.class), mock(InventarioHistoricoService.class));

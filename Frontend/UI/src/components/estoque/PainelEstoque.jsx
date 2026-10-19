@@ -78,7 +78,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     && pesquisarSolicitacoes([solicitacao], busca, buscarObra).length > 0;
   const pendenciasFiltradas = pendencias.filter(correspondeAosFiltros);
   const concluidasFiltradas = concluidas.filter(correspondeAosFiltros);
-  const aquisicoes = useMemo(() => solicitacoes.flatMap((solicitacao) => solicitacao.materiais
+  const aquisicoes = useMemo(() => solicitacoes.flatMap((solicitacao) => (solicitacao.compras?.length ? solicitacao.compras : solicitacao.materiais)
     .filter((material) => material.quantidadeCompra > 0)
     .map((material) => ({ solicitacao, material, pendente: Math.max(0, material.quantidadeCompra - (material.quantidadeAdquirida || 0)), pendenteEntrada: Math.max(0, material.quantidadeCompra - (material.quantidadeEntradaEstoque || 0)) }))), [solicitacoes]);
   const comprasPendentes = aquisicoes.filter(({ pendenteEntrada }) => pendenteEntrada > 0).length;

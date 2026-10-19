@@ -12,6 +12,9 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento,Long> {
     boolean existsBySerieIgnoreCase(String serie);
     Optional<Equipamento> findBySerieIgnoreCase(String serie);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select e from Equipamento e where e.id=:id")
+    Optional<Equipamento> buscarParaAtualizacao(@Param("id") Long id);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select e from Equipamento e where lower(e.serie)=lower(:serie)")
     Optional<Equipamento> buscarPorSerieParaAtualizacao(@Param("serie") String serie);
     List<Equipamento> findByObraIsNullOrderByModeloAsc();

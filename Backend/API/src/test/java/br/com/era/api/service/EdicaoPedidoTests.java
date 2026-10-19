@@ -39,6 +39,10 @@ class EdicaoPedidoTests {
         verifyNoInteractions(movimentos,equipamentoService);verify(equipamentos,never()).buscarPorSerieParaAtualizacao(any());
     }
     @Test void rejeitaOrigemGlobalParaPedidoDeCatalogo(){assertThrows(RegraNegocioException.class,()->service.atualizar(1L,atualizacao(3L,itens())));}
+    @Test void edicaoNaoEncaminhaMateriaisParaObraEncerrada(){
+        pedido.getObraDestino().setStatus("Concluída");
+        assertThrows(RegraNegocioException.class,()->service.atualizar(1L,atualizacao(null,itens())));
+    }
     @Test void naoAceitaEscolhaDeSerieNaEdicaoDoPedido(){
         var itens=List.of(new SolicitacaoDto.MaterialRequisicao("Escada",1,"ESC-1","ferramentas|escada|"));
         assertThrows(RegraNegocioException.class,()->service.atualizar(1L,atualizacao(null,itens)));

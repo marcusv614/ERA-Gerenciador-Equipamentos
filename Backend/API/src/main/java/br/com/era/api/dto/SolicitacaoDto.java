@@ -18,5 +18,5 @@ public final class SolicitacaoDto {
     public record Atualizacao(@Size(max=150) String tecnico,Long obraOrigemId,Long obraDestinoId,@Size(max=4000) String observacao,@Size(max=200) List<@NotNull @Valid MaterialRequisicao> materiais) {}
     public record AtendimentoOrigem(Long obraOrigemId,@NotEmpty @Size(max=200) List<@NotNull @Valid MaterialRequisicao> materiais) {}
     public record Distribuicao(@NotEmpty @Size(max=200) List<@NotNull @Valid AtendimentoOrigem> atendimentos) {}
-    public record Resposta(Long id,Long solicitacaoPaiId,String tipo,String status,String solicitante,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,OffsetDateTime transitoEm,OffsetDateTime concluidaEm,String observacao,List<MaterialResposta> materiais,String solicitanteLogin,String solicitantePerfil) {}
+    public record Resposta(Long id,Long solicitacaoPaiId,String tipo,String status,String solicitante,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,OffsetDateTime transitoEm,OffsetDateTime concluidaEm,String observacao,List<MaterialResposta> materiais,String solicitanteLogin,String solicitantePerfil,List<MaterialResposta> compras) {}
 }

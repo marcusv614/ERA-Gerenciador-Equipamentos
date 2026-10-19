@@ -170,6 +170,7 @@ export function ModalNovoEquipamento({
     status !== 'Concluída' || String(id) === String(equipamento?.obraId));
   const quantidade = Number(form.quantidade);
   const quantidadeMinima = Math.max(1, Number(equipamento?.quantidadeReservada || 0));
+  const possuiReservas = Number(equipamento?.quantidadeReservada || 0) > 0;
   const quantidadeValida = Number.isInteger(quantidade) && quantidade >= quantidadeMinima;
   const canSave = form.tipo.trim() && form.modelo.trim() && form.data && quantidadeValida && !serieJaCadastrada;
 
@@ -278,7 +279,7 @@ export function ModalNovoEquipamento({
           </div>
           <div className={styles.categoryRow}>
             <CampoFormulario rotulo="Categoria">
-              <select className={styles.input} value={form.tipo} onChange={(e) => selecionarCategoria(e.target.value)}>
+              <select className={styles.input} value={form.tipo} disabled={possuiReservas} onChange={(e) => selecionarCategoria(e.target.value)}>
                 {categoriasExibidas.map(({ nome }) => <option key={nome} value={nome}>{nome}</option>)}
               </select>
             </CampoFormulario>
@@ -292,7 +293,7 @@ export function ModalNovoEquipamento({
           </button>
           <div className={styles.grid2}>
             <CampoFormulario rotulo="Nome do material ou equipamento">
-              <input className={styles.input} placeholder="Ex.: OTDR EXFO, chave Phillips, cabo óptico" value={form.modelo} onChange={(e) => setForm({ ...form, modelo: e.target.value })} required />
+              <input className={styles.input} placeholder="Ex.: OTDR EXFO, chave Phillips, cabo óptico" value={form.modelo} disabled={possuiReservas} onChange={(e) => setForm({ ...form, modelo: e.target.value })} required />
             </CampoFormulario>
             <CampoFormulario
               rotulo="Quantidade"
@@ -304,6 +305,7 @@ export function ModalNovoEquipamento({
               {!quantidadeValida && <small className={styles.erro}>Informe um número inteiro igual ou maior que {quantidadeMinima}.</small>}
             </CampoFormulario>
           </div>
+          {possuiReservas && <p className={styles.categoryHint}>Categoria, nome, medida e série ficam preservados enquanto houver unidades reservadas para movimentação.</p>}
         </section>
 
         {camposCategoria.length > 0 && <section className={styles.section}>
@@ -321,6 +323,7 @@ export function ModalNovoEquipamento({
                 min={campo.tipo === 'number' ? '0' : undefined}
                 step={campo.tipo === 'number' ? '1' : undefined}
                 value={valorCampoDinamico(campo.chave)}
+                disabled={possuiReservas && ['serie', 'medida'].includes(campo.chave)}
                 onChange={(e) => alterarCampoDinamico(campo.chave, e.target.value)}
               />
               {campo.chave === 'serie' && serieJaCadastrada && <small className={styles.erro}>Este número de série já está cadastrado.</small>}

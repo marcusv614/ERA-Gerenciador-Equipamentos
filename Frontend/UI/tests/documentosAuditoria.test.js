@@ -10,6 +10,13 @@ const buscar=(id)=>({id,nome:id===1?'Obra A':'Obra B'});
 const material={nome:'Escada',quantidade:2,catalogoChave:'ferramentas|escada|',identificacao:null};
 const pedido={id:3,obraOrigemId:null,obraDestinoId:2,tecnico:'João',status:'Pendente',materiais:[material]};
 
+test('auditoria mantém compras do pedido original após separar materiais por origem',()=>{
+  const separado={...pedido,status:'Concluída',materiais:[{...material,identificacao:'ESC-1',quantidadeCompra:0}],compras:[{...material,quantidadeCompra:3,quantidadeAdquirida:3,quantidadeEntradaEstoque:3}]};
+  const html=modelos.auditoriaSolicitacao(separado,buscar).conteudo;
+  assert.match(html,/Acompanhamento de compras/);
+  assert.match(html,/<td>Escada<\/td><td>3<\/td><td>3<\/td><td>3<\/td><td>0<\/td>/);
+});
+
 test('pedido não separado não é apresentado como material saindo do depósito',()=>{
   const html=modelos.auditoriaSolicitacao(pedido,buscar).conteudo;
   assert.match(html,/Ainda não definida pelo estoque/);assert.match(html,/Não selecionado/);

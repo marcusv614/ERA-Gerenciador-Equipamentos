@@ -1,5 +1,7 @@
 package br.com.era.api.model;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -19,6 +21,10 @@ public class Solicitacao {
     @Column(name="data_solicitacao",nullable=false) private LocalDate dataSolicitacao; @Column(name="data_decisao") private LocalDate dataDecisao; @Column(columnDefinition="text") private String observacao;
     @Column(name="transito_em") private OffsetDateTime transitoEm; @Column(name="concluida_em") private OffsetDateTime concluidaEm;
     @OneToMany(mappedBy="solicitacao",cascade=CascadeType.ALL,orphanRemoval=true) private List<MaterialSolicitado> materiais=new ArrayList<>();
+    public record Compra(Long id,String nome,Integer quantidade,String identificacao,String catalogoChave,Integer quantidadeCompra,OffsetDateTime compraSolicitadaEm,Integer quantidadeAdquirida,Integer quantidadeEntradaEstoque,OffsetDateTime adquiridaEm) {}
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="compras",nullable=false,columnDefinition="jsonb") private List<Compra> compras=new ArrayList<>();
+    public List<Compra> getCompras(){return compras;}
+    public void preservarCompras(){if(compras.isEmpty())compras=materiais.stream().filter(m->m.getQuantidadeCompra()>0).map(m->new Compra(m.getId(),m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm())).toList();}
     @Column(name="criado_em",nullable=false) private OffsetDateTime criadoEm; @Column(name="atualizado_em",nullable=false) private OffsetDateTime atualizadoEm;
     public Solicitacao() {} @PrePersist void criarDatas(){criadoEm=OffsetDateTime.now();atualizadoEm=criadoEm;} @PreUpdate void atualizarData(){atualizadoEm=OffsetDateTime.now();}
     public Long getId(){return id;} public String getTipo(){return tipo;} public void setTipo(String v){tipo=v;} public String getStatus(){return status;} public void setStatus(String v){status=v;} public Funcionario getSolicitante(){return solicitante;} public void setSolicitante(Funcionario v){solicitante=v;} public Funcionario getTecnico(){return tecnico;} public void setTecnico(Funcionario v){tecnico=v;} public Obra getObraOrigem(){return obraOrigem;} public void setObraOrigem(Obra v){obraOrigem=v;} public Obra getObraDestino(){return obraDestino;} public void setObraDestino(Obra v){obraDestino=v;} public LocalDate getDataSolicitacao(){return dataSolicitacao;} public void setDataSolicitacao(LocalDate v){dataSolicitacao=v;} public LocalDate getDataDecisao(){return dataDecisao;} public void setDataDecisao(LocalDate v){dataDecisao=v;} public String getObservacao(){return observacao;} public void setObservacao(String v){observacao=v;} public List<MaterialSolicitado> getMateriais(){return materiais;} public void substituirMateriais(List<MaterialSolicitado> novos){materiais.clear();novos.forEach(m->{m.setSolicitacao(this);materiais.add(m);});}

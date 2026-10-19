@@ -11,6 +11,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PedidoMateriaisTests {
+    @Test void separacaoPreservaComprasNoPedidoSemAtribuirCompraAOutraOrigem() {
+        Solicitacao s=pedido("Aprovada");Obra destino=new Obra();org.springframework.test.util.ReflectionTestUtils.setField(destino,"id",5L);s.setObraDestino(destino);MaterialSolicitado m=materialComId(s);
+        service.solicitarCompra(1L,2L,3);service.registrarAquisicao(1L,2L,3,"NF-1",null);
+        Equipamento e=new Equipamento();e.setTipo("Manual");e.setModelo("Alicate");e.setSerie("SERIE");e.setStatus("Em estoque");e.setQuantidade(10);e.setControleQuantidade("LOTE");
+        when(equipamentos.buscarPorSerieParaAtualizacao("SERIE")).thenReturn(Optional.of(e));
+        var d=new SolicitacaoDto.Distribuicao(List.of(new SolicitacaoDto.AtendimentoOrigem(null,List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",10,"SERIE","manual|alicate|")))));
+        var resposta=service.distribuir(1L,d).get(0);
+        assertEquals(3,resposta.compras().get(0).quantidadeEntradaEstoque());assertEquals(m.getCompraSolicitadaEm(),resposta.compras().get(0).compraSolicitadaEm());
+        assertEquals(0,resposta.materiais().get(0).quantidadeCompra());
+        service.distribuir(1L,d);
+        assertEquals(1,s.getCompras().size());assertEquals(3,s.getCompras().get(0).quantidadeAdquirida());assertEquals(10,e.getQuantidadeReservada());
+    }
+    @Test void separacaoNaoApagaCompraComEntregaAindaPendente() {
+        Solicitacao s=pedido("Aprovada");materialComId(s);service.solicitarCompra(1L,2L,3);
+        var erro=assertThrows(RegraNegocioException.class,()->service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of())));
+        assertEquals("Conclua as entradas das compras solicitadas antes de confirmar a separação.",erro.getMessage());
+        assertEquals(3,s.getMateriais().get(0).getQuantidadeCompra());verifyNoInteractions(equipamentos);
+    }
     @Test void outroTecnicoNaoPodeConfirmarRecebimento() {
         Solicitacao s=pedido("Em trânsito");s.setObraDestino(new Obra());
         org.springframework.test.util.ReflectionTestUtils.setField(tecnico,"id",20L);

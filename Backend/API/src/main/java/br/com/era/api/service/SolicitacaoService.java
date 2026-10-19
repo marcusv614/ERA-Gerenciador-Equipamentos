@@ -50,11 +50,7 @@ public class SolicitacaoService {
         s.setSolicitantePerfil(usuario.getPerfil());
         s.setObraOrigem(obras.buscarOpcional(d.obraOrigemId()));
         s.setObraDestino(obras.buscarOpcional(d.obraDestinoId()));
-        if (gerencia && s.getObraDestino() != null) {
-            if ("Concluída".equals(s.getObraDestino().getStatus()))
-                throw new RegraNegocioException("Selecione uma obra em andamento ou planejada para receber os materiais.");
-            usuarios.validarAcessoRecebimento(tecnico, s.getObraDestino());
-        }
+        validarDestinoRecebimento(s);
         s.setDataSolicitacao(d.dataSolicitacao());
         s.setObservacao(d.observacao());
         boolean exigeSeparacao = d.materiais().stream().anyMatch(m -> m.identificacao() == null || m.identificacao().isBlank());
@@ -99,7 +95,7 @@ public class SolicitacaoService {
         if (d.tecnico() != null) s.setTecnico(funcionarios.buscarPorNome(d.tecnico()));
         s.setObraOrigem(null);
         s.setObraDestino(obras.buscarOpcional(d.obraDestinoId()));
-        if (s.getObraDestino() != null) usuarios.validarAcessoRecebimento(s.getTecnico(), s.getObraDestino());
+        validarDestinoRecebimento(s);
         if (d.observacao() != null) s.setObservacao(d.observacao());
         return resposta(s);
     }
@@ -107,7 +103,36 @@ public class SolicitacaoService {
     @Transactional public SolicitacaoDto.Resposta rejeitar(Long id){Solicitacao s=buscarParaAtualizacao(id);if(!"Pendente".equals(s.getStatus()))throw new RegraNegocioException("A solicitação já foi analisada.");liberarReservas(s);s.setStatus("Rejeitada");s.setDataDecisao(LocalDate.now());return resposta(s);}
     @Transactional public SolicitacaoDto.Resposta solicitarCompra(Long id,Long materialId,int quantidade){Solicitacao s=buscarParaAtualizacao(id);if(!"Aprovada".equals(s.getStatus()))throw new RegraNegocioException("A compra só pode ser solicitada para uma movimentação aprovada.");MaterialSolicitado material=s.getMateriais().stream().filter(m->m.getId().equals(materialId)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Material não encontrado na solicitação."));if(material.getIdentificacao()!=null&&!material.getIdentificacao().isBlank())throw new RegraNegocioException("O material já possui equipamento definido.");if(quantidade>material.getQuantidade())throw new RegraNegocioException("A quantidade para compra não pode superar a quantidade solicitada.");if(quantidade<material.getQuantidadeEntradaEstoque())throw new RegraNegocioException("A compra não pode ser reduzida abaixo da quantidade já recebida no estoque.");material.solicitarCompra(quantidade);return resposta(s);}
     @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao){Solicitacao s=buscarParaAtualizacao(id);if(!"Aprovada".equals(s.getStatus()))throw new RegraNegocioException("A entrada da compra só pode ser registrada para uma movimentação aprovada.");MaterialSolicitado material=s.getMateriais().stream().filter(m->m.getId().equals(materialId)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Material não encontrado na solicitação."));if(material.getQuantidadeCompra()<=0)throw new RegraNegocioException("Não existe compra solicitada para este material.");int saldoEntrada=material.getQuantidadeCompra()-material.getQuantidadeEntradaEstoque();if(quantidade>saldoEntrada)throw new RegraNegocioException("A quantidade para entrada não pode superar o saldo de "+saldoEntrada+" unidade(s).");int jaAdquiridoSemEntrada=material.getQuantidadeAdquirida()-material.getQuantidadeEntradaEstoque();int novaAquisicao=Math.max(0,quantidade-jaAdquiridoSemEntrada);equipamentoService.registrarEntradaCompra(material.getNome(),material.getCatalogoChave(),quantidade,numeroNota,identificacao,s.getId());if(novaAquisicao>0)material.registrarAquisicao(novaAquisicao);material.registrarEntradaEstoque(quantidade);return resposta(s);}
-    @Transactional public List<SolicitacaoDto.Resposta> distribuir(Long id,SolicitacaoDto.Distribuicao dados){Solicitacao original=repository.buscarParaAtualizacao(id).filter(s->"Movimentação".equals(s.getTipo())).orElseThrow(()->new RecursoNaoEncontradoException("Movimentação não encontrada."));if(!"Aprovada".equals(original.getStatus()))throw new RegraNegocioException("Somente uma solicitação aprovada pode ser distribuída.");Map<String,Integer> solicitadas=agruparQuantidades(original.getMateriais().stream().map(m->new SolicitacaoDto.MaterialRequisicao(m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave())).toList());List<SolicitacaoDto.MaterialRequisicao> selecionadas=dados.atendimentos().stream().flatMap(a->a.materiais().stream()).toList();if(!solicitadas.equals(agruparQuantidades(selecionadas)))throw new RegraNegocioException("As quantidades distribuídas precisam corresponder ao pedido original.");Set<Long> origens=new HashSet<>();for(SolicitacaoDto.AtendimentoOrigem atendimento:dados.atendimentos()){validarRota(atendimento.obraOrigemId(),original.getObraDestino()==null?null:original.getObraDestino().getId());Long chave=atendimento.obraOrigemId()==null?Long.MIN_VALUE:atendimento.obraOrigemId();if(!origens.add(chave))throw new RegraNegocioException("Agrupe os materiais que saem da mesma origem.");}liberarReservas(original);Solicitacao raiz=original.getSolicitacaoPai()==null?original:original.getSolicitacaoPai();List<SolicitacaoDto.Resposta> respostas=new java.util.ArrayList<>();for(int indice=0;indice<dados.atendimentos().size();indice++){SolicitacaoDto.AtendimentoOrigem atendimento=dados.atendimentos().get(indice);Solicitacao destino=indice==0?original:copiarParaAtendimento(original,raiz);destino.setObraOrigem(obras.buscarOpcional(atendimento.obraOrigemId()));destino.substituirMateriais(criarMateriais(atendimento.materiais()));reservarMateriais(destino);if(indice>0)repository.save(destino);respostas.add(resposta(destino));}return respostas;}
+    @Transactional public List<SolicitacaoDto.Resposta> distribuir(Long id,SolicitacaoDto.Distribuicao dados) {
+        Solicitacao original=buscarParaAtualizacao(id);
+        if(!"Aprovada".equals(original.getStatus()))throw new RegraNegocioException("Somente uma solicitação aprovada pode ser distribuída.");
+        if(original.getMateriais().stream().anyMatch(m->m.getQuantidadeCompra()>m.getQuantidadeEntradaEstoque()))
+            throw new RegraNegocioException("Conclua as entradas das compras solicitadas antes de confirmar a separação.");
+        Map<String,Integer> solicitadas=agruparQuantidades(original.getMateriais().stream().map(m->new SolicitacaoDto.MaterialRequisicao(m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave())).toList());
+        List<SolicitacaoDto.MaterialRequisicao> selecionadas=dados.atendimentos().stream().flatMap(a->a.materiais().stream()).toList();
+        if(!solicitadas.equals(agruparQuantidades(selecionadas)))throw new RegraNegocioException("As quantidades distribuídas precisam corresponder ao pedido original.");
+        Set<Long> origens=new HashSet<>();
+        for(SolicitacaoDto.AtendimentoOrigem atendimento:dados.atendimentos()) {
+            validarRota(atendimento.obraOrigemId(),original.getObraDestino()==null?null:original.getObraDestino().getId());
+            Long chave=atendimento.obraOrigemId()==null?Long.MIN_VALUE:atendimento.obraOrigemId();
+            if(!origens.add(chave))throw new RegraNegocioException("Agrupe os materiais que saem da mesma origem.");
+        }
+        original.preservarCompras();
+        liberarReservas(original);
+        Solicitacao raiz=original.getSolicitacaoPai()==null?original:original.getSolicitacaoPai();
+        List<Solicitacao> atendimentos=new java.util.ArrayList<>();
+        for(int indice=0;indice<dados.atendimentos().size();indice++) {
+            SolicitacaoDto.AtendimentoOrigem atendimento=dados.atendimentos().get(indice);
+            Solicitacao destino=indice==0?original:copiarParaAtendimento(original,raiz);
+            destino.setObraOrigem(obras.buscarOpcional(atendimento.obraOrigemId()));
+            destino.substituirMateriais(criarMateriais(atendimento.materiais()));
+            reservarMateriais(destino);
+            if(indice>0)repository.save(destino);
+            atendimentos.add(destino);
+        }
+        repository.flush(); // Retornar os IDs persistidos dos materiais de todos os atendimentos.
+        return atendimentos.stream().map(this::resposta).toList();
+    }
     @Transactional public SolicitacaoDto.Resposta iniciarTransito(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarInicioTransito(s,login);if(!Set.of("Aprovada","Aguardando coleta").contains(s.getStatus()))throw new RegraNegocioException("A movimentação ainda não pode iniciar o transporte.");if(s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("O estoque precisa definir os equipamentos antes do envio.");s.setStatus("Em trânsito");s.setTransitoEm(OffsetDateTime.now());return respostaParaUsuario(s,login);}
     @Transactional public SolicitacaoDto.Resposta concluir(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarConclusao(s,login);if(!"Em trânsito".equals(s.getStatus()))throw new RegraNegocioException("A movimentação precisa estar em trânsito para confirmar o recebimento.");s.setConcluidaEm(OffsetDateTime.now());sincronizarMovimentacoes(s);if(s.getObraOrigem()!=null)inventarioHistorico.registrar(s.getObraOrigem());if(s.getObraDestino()!=null&&(s.getObraOrigem()==null||!s.getObraDestino().getId().equals(s.getObraOrigem().getId())))inventarioHistorico.registrar(s.getObraDestino());s.setStatus("Concluída");return respostaParaUsuario(s,login);}
     @Transactional(readOnly=true) public Solicitacao buscar(Long id){return repository.findById(id).filter(s->"Movimentação".equals(s.getTipo())).orElseThrow(()->new RecursoNaoEncontradoException("Movimentação não encontrada."));}
@@ -126,8 +151,15 @@ public class SolicitacaoService {
     private boolean statusMovimentavel(String status){String normalizado=CatalogoChave.normalizar(status);return Set.of("em estoque","em campo","disponivel").contains(normalizado);}
     private void validarRota(Long origemId,Long destinoId){if(origemId==null&&destinoId==null)throw new RegraNegocioException("Informe a origem ou o destino da movimentação.");if(Objects.equals(origemId,destinoId))throw new RegraNegocioException("A origem e o destino da movimentação precisam ser diferentes.");}
     private Solicitacao copiarParaAtendimento(Solicitacao base,Solicitacao raiz){Solicitacao copia=new Solicitacao();copia.setTipo(base.getTipo());copia.setStatus("Aprovada");copia.setSolicitante(base.getSolicitante());copia.setSolicitanteUsuario(base.getSolicitanteUsuario());copia.setSolicitanteNome(base.getSolicitanteNome());copia.setSolicitanteLogin(base.getSolicitanteLogin());copia.setSolicitantePerfil(base.getSolicitantePerfil());copia.setTecnico(base.getTecnico());copia.setObraDestino(base.getObraDestino());copia.setDataSolicitacao(base.getDataSolicitacao());copia.setDataDecisao(base.getDataDecisao());copia.setObservacao(base.getObservacao());copia.setSolicitacaoPai(raiz);return copia;}
-    private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name());}
+    private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),comprasPreservadas(s));}
     private SolicitacaoDto.Resposta respostaParaUsuario(Solicitacao s,String login){Usuario usuario=usuarios.buscarPorLogin(login);return usuario.getPerfil()==PerfilUsuario.TECNICO?respostaTecnico(s,obras.idsPermitidos(login)):resposta(s);}
-    private SolicitacaoDto.Resposta respostaTecnico(Solicitacao s,Set<Long> permitidas){Long origem=s.getObraOrigem()!=null&&permitidas.contains(s.getObraOrigem().getId())?s.getObraOrigem().getId():null;Long destino=s.getObraDestino()!=null&&permitidas.contains(s.getObraDestino().getId())?s.getObraDestino().getId():null;return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),origem,destino,s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name());}
+    private SolicitacaoDto.Resposta respostaTecnico(Solicitacao s,Set<Long> permitidas){Long origem=s.getObraOrigem()!=null&&permitidas.contains(s.getObraOrigem().getId())?s.getObraOrigem().getId():null;Long destino=s.getObraDestino()!=null&&permitidas.contains(s.getObraDestino().getId())?s.getObraDestino().getId():null;return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),origem,destino,s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of());}
+    private List<SolicitacaoDto.MaterialResposta> comprasPreservadas(Solicitacao s){return s.getCompras().stream().map(c->new SolicitacaoDto.MaterialResposta(c.id(),c.nome(),c.quantidade(),c.identificacao(),c.catalogoChave(),c.quantidadeCompra(),c.compraSolicitadaEm(),c.quantidadeAdquirida(),c.quantidadeEntradaEstoque(),c.adquiridaEm())).toList();}
+    private void validarDestinoRecebimento(Solicitacao s) {
+        if(s.getObraDestino()==null)return;
+        if("Concluída".equals(s.getObraDestino().getStatus()))
+            throw new RegraNegocioException("Selecione uma obra em andamento para receber os materiais.");
+        usuarios.validarAcessoRecebimento(s.getTecnico(),s.getObraDestino());
+    }
     private SolicitacaoDto.MaterialResposta respostaMaterial(MaterialSolicitado m){return new SolicitacaoDto.MaterialResposta(m.getId(),m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm());}
 }
