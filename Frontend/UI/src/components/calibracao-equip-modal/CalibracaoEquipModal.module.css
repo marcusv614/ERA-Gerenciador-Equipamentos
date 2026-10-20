@@ -1,0 +1,32 @@
+.conteudo { min-width:0; display:grid; gap:18px; color:var(--text); }
+.fila { margin-bottom:18px; }
+.conteudo p { margin:0; font-size:13px; line-height:1.6; overflow-wrap:anywhere; }
+.conteudo h3 { margin:0; font-size:16px; }
+.resumo { display:flex; align-items:center; gap:10px; padding:12px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; }
+.resumo svg { flex:none; color:var(--accent); }
+.resumo[data-situacao='VENCIDA'] { color:var(--danger,#b94737); }
+.resumo[data-situacao='A_VENCER'] { color:var(--warn,#996819); }
+.local,.conteudo small { color:var(--text-muted); }
+.formulario { min-width:0; display:grid; gap:14px; padding:0; margin:0; border:0; }
+.formulario label { min-width:0; display:grid; gap:6px; font-size:13px; }
+.formulario input,.formulario textarea { box-sizing:border-box; width:100%; min-width:0; min-height:44px; padding:10px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font:inherit; }
+.formulario textarea { resize:vertical; }
+.duasColunas { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.alternador,.acoes { display:flex; flex-wrap:wrap; gap:8px; }
+.formulario button { min-height:44px; padding:10px 14px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font:600 12px var(--font-body); cursor:pointer; }
+.formulario button:disabled,.formulario:disabled { opacity:.55; cursor:not-allowed; }
+.formulario .primario,.alternador button[aria-pressed='true'] { background:var(--accent); border-color:transparent; color:var(--on-accent,#fffaf0); }
+.formulario .secundario { justify-self:start; }
+.historico { min-width:0; display:grid; gap:14px; }
+.registro,.cancelamento { min-width:0; display:grid; gap:10px; padding:14px; border:1px solid var(--border); border-radius:10px; }
+.registro header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; font-size:13px; }
+.registro header span { color:var(--text-muted); font-size:12px; }
+.registro dl { display:flex; flex-wrap:wrap; gap:12px 24px; margin:0; }
+.registro dt { color:var(--text-muted); font-size:11px; }.registro dd { margin:3px 0 0; font-size:13px; overflow-wrap:anywhere; }
+.evento { display:grid; gap:5px; padding-top:10px; border-top:1px solid var(--border); font-size:12px; }
+.evento small { overflow-wrap:anywhere; line-height:1.5; }.observacao { white-space:pre-wrap; }
+.erro { padding:12px; border-radius:8px; background:var(--surface-2); color:var(--danger,#b94737); }
+.indicador { margin:10px 0 0; font-size:12px; line-height:1.5; color:var(--text-muted); overflow-wrap:anywhere; }
+.indicador[data-situacao='VENCIDA'] { color:var(--danger,#b94737); font-weight:600; }
+.indicador[data-situacao='A_VENCER'] { color:var(--warn,#996819); font-weight:600; }
+@media(max-width:600px) { .duasColunas { grid-template-columns:minmax(0,1fr); }.alternador,.acoes { flex-direction:column; }.formulario button,.formulario .secundario { width:100%; justify-self:stretch; }.formulario input,.formulario textarea { font-size:16px; } }

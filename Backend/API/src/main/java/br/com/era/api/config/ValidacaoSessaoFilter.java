@@ -36,11 +36,14 @@ public class ValidacaoSessaoFilter extends OncePerRequestFilter {
             return;
         }
 
-        Usuario usuario = usuarios.buscarPorLogin(autenticacao.getName());
-        if (!usuario.isAtivo()) {
+        Usuario usuario = autenticacao.getPrincipal() instanceof UsuarioAutenticado principal
+            ? usuarios.buscarParaSessao(principal.getUsuarioId())
+                .filter(u -> u.getVersaoSessao() == principal.getVersaoSessao()).orElse(null)
+            : null;
+        if (usuario == null || !usuario.isAtivo()) {
             if (request.getSession(false) != null) request.getSession(false).invalidate();
             SecurityContextHolder.clearContext();
-            escreverErro(response, HttpServletResponse.SC_UNAUTHORIZED, "Usuário desativado.");
+            escreverErro(response, HttpServletResponse.SC_UNAUTHORIZED, "Sessão encerrada. Entre novamente para continuar.");
             return;
         }
 

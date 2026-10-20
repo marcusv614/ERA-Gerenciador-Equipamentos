@@ -22,3 +22,12 @@ o bloqueio de reenvio durante o processamento e o erro apresentado no modal.
 
 Relatórios e capturas ficam em `node_modules/.cache/layout-paineis`.
 O processo termina com erro quando encontra overflow ou falha de interação.
+
+Para testar somente a calibração do Fluke:
+
+```powershell
+node scripts/verificar-layout-paineis.mjs --calibracao
+```
+
+São verificados pedido pelo gerente, fila do estoque, retirada, envio ao
+laboratório, retorno com certificado e datas, em quatro tamanhos de tela.

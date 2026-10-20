@@ -1,3 +1,4 @@
+import { localCalibracao } from './calibracoes.js';
 const normalizarSerie = (serie) => String(serie || '').trim().toLocaleLowerCase('pt-BR');
 
 export function localizarEquipamentos(equipamentos, solicitacoes) {
@@ -13,6 +14,8 @@ export function localizarEquipamentos(equipamentos, solicitacoes) {
 }
 
 export function descreverLocalizacao(equipamento, buscarObra) {
+  const laboratorio = localCalibracao(equipamento);
+  if (laboratorio) return laboratorio;
   const local = (id) => id == null ? 'Depósito central' : buscarObra(id)?.nome || 'Obra não disponível';
   const atual = local(equipamento.obraId);
   const rotas = (equipamento.deslocamentos || []).map((item) => item.status === 'Em trânsito'

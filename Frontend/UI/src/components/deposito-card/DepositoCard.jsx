@@ -1,3 +1,4 @@
+import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { Pencil, Wrench } from 'lucide-react';
 import { iconePorTipoEquipamento } from '../../data/constantesDominio';
@@ -41,7 +42,7 @@ export function CartaoDeposito({ equipamentos, obras, podeEditar, aoEditar }) {
         ) : (
           equipamentos.map((equipamento) => {
             const IconeTipo = iconePorTipoEquipamento[equipamento.tipo] || Wrench;
-            const obra = buscarObraPorId(equipamento.obraId);
+
             return (
               <div key={equipamento.id} className={styles.row}>
                 <div className={`${styles.tile} ${TILE[equipamento.tipo] || ''}`}>
@@ -52,7 +53,7 @@ export function CartaoDeposito({ equipamentos, obras, podeEditar, aoEditar }) {
                   <div className={styles.serie}>{equipamento.tipo} · {equipamento.medida || equipamento.serie} · {equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1} disponíveis{equipamento.quantidadeReservada > 0 ? ` · ${equipamento.quantidadeReservada} reservadas` : ''}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</div>
                 </div>
                 <IndicadorStatus status={equipamento.status} />
-                <div className={styles.local}>{obra ? obra.nome : 'Depósito central'}</div>
+                <div className={styles.local}>{descreverLocalizacao(equipamento,buscarObraPorId)}</div>
                 {podeEditar && <button type="button" className={styles.editar} onClick={() => aoEditar(equipamento)} aria-label={`Editar ${equipamento.modelo}`} title="Editar equipamento"><Pencil size={14} /></button>}
               </div>
             );

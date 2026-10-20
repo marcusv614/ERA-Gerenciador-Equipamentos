@@ -7,6 +7,7 @@ import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelTecnico.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
+import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
 
 const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
@@ -369,7 +370,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
         <header><h2>Materiais nas minhas obras</h2></header>
         <div className={estilos.listaObrasMateriais}>{obrasComMateriais.length ? obrasComMateriais.map(({ obra, materiais }) => <article key={obra.id} className={estilos.obraMateriais}>
           <header><span><Building2 /></span><strong>{obra.nome}</strong><b>{materiais.reduce((total, material) => total + (material.quantidade || 1), 0)}</b></header>
-          {materiais.length ? <ul>{materiais.map((material) => <li key={material.id}><div><strong>{material.modelo}</strong>{material.medida && <small>{material.medida}</small>}</div><b>{material.quantidade || 1}</b></li>)}</ul> : <p>Nenhum material nesta obra.</p>}
+          {materiais.length ? <ul>{materiais.map((material) => <li key={material.id}><div><strong>{material.modelo}</strong>{material.medida && <small>{material.medida}</small>}<IndicadorCalibracao equipamento={material}/></div><b>{material.quantidade || 1}</b></li>)}</ul> : <p>Nenhum material nesta obra.</p>}
         </article>) : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra vinculada</strong><span>Fale com o gerente.</span></div>}</div>
       </section>}
     </main>

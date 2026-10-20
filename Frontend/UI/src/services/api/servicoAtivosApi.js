@@ -43,6 +43,12 @@ export const apiObras = {
 };
 
 export const apiEquipamentos = {
+  solicitarCalibracao: async (id,dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/calibracoes`,dados),'Calibração solicitada. O equipamento foi reservado para esse atendimento.')),
+  retirarParaCalibracao: async (id,cid,dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/calibracoes/${cid}/retirada`,dados),'Retirada confirmada. O Fluke está no depósito aguardando envio.')),
+  enviarCalibracao: async (id,cid,dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/calibracoes/${cid}/envio`,dados),'Envio ao laboratório registrado.')),
+  retornarCalibracao: async (id,cid,dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/calibracoes/${cid}/retorno`,dados),'Retorno e certificado registrados. O equipamento está no depósito.')),
+  registrarCertificado: async (id,dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/calibracoes/certificados`,dados),'Certificado anterior registrado.')),
+  cancelarCalibracao: async (id,cid,dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/calibracoes/${cid}/cancelamento`,dados),'Atendimento de calibração cancelado.')),
   abrirManutencao: async (id, dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/manutencoes`, dados), 'Manutenção registrada. As unidades selecionadas foram bloqueadas.')),
   concluirManutencao: async (id, manutencaoId, dados) => normalizarEquipamento(await avisarAposSucesso(criar(`${ROTAS_API.equipamento(id)}/manutencoes/${manutencaoId}/conclusao`, dados), 'Manutenção concluída. Unidades liberadas para novos pedidos.')),
   listar: async () => (await obter(ROTAS_API.equipamentos)).map(normalizarEquipamento),

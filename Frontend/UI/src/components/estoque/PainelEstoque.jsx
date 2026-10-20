@@ -9,6 +9,11 @@ import estilos from './PainelEstoque.module.css';
 import { SepararEquipamentosModal } from './SepararEquipamentosModal';
 import { tipoSemNumeroSerie } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
+import { ModalCalibracaoEquipamento } from '../calibracao-equip-modal/CalibracaoEquipModal';
+import { FilaCalibracoes } from '../calibracao-equip-modal/FilaCalibracoes';
+import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
+import { calibracaoAberta, ehFluke } from '../../utils/calibracoes';
+import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { ModalManutencaoEquipamento } from '../manutencao-equip-modal/ManutencaoEquipModal';
 
 const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificacao }) => identificacao);
@@ -33,6 +38,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const [obraFiltrada, definirObraFiltrada] = useState('todas');
   const [aba, definirAba] = useState('atividades');
   const [equipamentoParaManutencao, definirEquipamentoParaManutencao] = useState(null);
+  const [equipamentoParaCalibracao, definirEquipamentoParaCalibracao] = useState(null);
   const [quantidadesRecebidas, definirQuantidadesRecebidas] = useState({});
   const [notasFiscaisRecebidas, definirNotasFiscaisRecebidas] = useState({});
   const [identificacoesRecebidas, definirIdentificacoesRecebidas] = useState({});
@@ -75,6 +81,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   }, []);
   const nomeLocal = (id) => id == null || id === 'deposito' ? 'Depósito central' : buscarObra(id)?.nome || 'Obra';
   const equipamentosParaManutencao = equipamentos.filter(e => !e.arquivado && (obraFiltrada === 'todas' || String(e.obraId) === obraFiltrada) && (!busca.trim() || [e.modelo, e.serie, nomeLocal(e.obraId), e.tecnico].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR'))));
+  const calibracoesFiltradas = equipamentos.filter(e=>{const c=calibracaoAberta(e);return c && !e.arquivado && (obraFiltrada === 'todas' || String(c.obraOrigemId)===obraFiltrada || String(e.obraId)===obraFiltrada) && (!busca.trim() || [c.id,e.modelo,e.serie,c.localOrigem,c.tecnicoOrigem,c.laboratorio].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR')));});
   const pendencias = useMemo(() => solicitacoes.filter(({ status }) => ['Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status)), [solicitacoes]);
   const concluidas = useMemo(() => solicitacoes.filter(({ status }) => ['Concluída', 'Rejeitada'].includes(status)), [solicitacoes]);
   const correspondeAosFiltros = (solicitacao) => (obraFiltrada === 'todas' || locaisDoPedido(solicitacao).includes(obraFiltrada))
@@ -199,14 +206,15 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Operação</span><h1>Estoque</h1></div></section>
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}{mensagem.texto}<button onClick={() => definirMensagem(null)}><X /></button></div>}
       <nav className={estilos.abas} aria-label="Áreas do estoque">
-        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Pedidos</span><b>{pendencias.length}</b></button>
+        <button className={aba === 'atividades' ? estilos.abaAtiva : ''} onClick={() => definirAba('atividades')}><Truck /><span>Pedidos</span><b>{pendencias.length+equipamentos.filter(e=>!e.arquivado&&calibracaoAberta(e)).length}</b></button>
         <button className={aba === 'aquisicoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('aquisicoes')}><ShoppingCart /><span>Compras</span><b>{comprasPendentes}</b></button>
         <button className={aba === 'registros' ? estilos.abaAtiva : ''} onClick={() => definirAba('registros')}><ClipboardList /><span>Histórico</span><b>{concluidas.length}</b></button>
         <button className={aba === 'manutencoes' ? estilos.abaAtiva : ''} onClick={() => definirAba('manutencoes')}><Wrench /><span>Manutenção</span></button>
       </nav>
       {!carregando && <section className={estilos.filtros} aria-label={aba === 'manutencoes' ? 'Pesquisa de equipamentos' : 'Pesquisa de movimentações'}><label><Search /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder={aba === 'manutencoes' ? 'Buscar equipamento, série, técnico ou obra...' : 'Buscar número, técnico, material, série ou data...'} /></label><label><Building2 /><select value={obraFiltrada} onChange={(evento) => definirObraFiltrada(evento.target.value)}><option value="todas">Todas as obras</option>{obras.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label></section>}
       {carregando ? <div className={estilos.carregando}>Carregando estoque...</div> : <>
-        {aba === 'manutencoes' && <section className={estilos.secao} aria-label="Manutenção dos equipamentos">{!equipamentosParaManutencao.length && <div className={estilos.vazio}><Wrench /><strong>Nenhum equipamento encontrado</strong></div>}<div className={estilos.grade}>{equipamentosParaManutencao.map(e => <article key={e.id} className={estilos.card}><header><span className={estilos.icone}><Wrench /></span><div><h2>{e.modelo}</h2><small>{e.serie} · {nomeLocal(e.obraId)}</small></div></header><p className={estilos.resumoManutencao}>{e.quantidadeDisponivel} disponível(is) · {e.quantidadeManutencao || 0} em manutenção</p><footer><button type="button" onClick={() => definirEquipamentoParaManutencao(e)}><Wrench />Gerenciar manutenção</button></footer></article>)}</div></section>}
+        {aba === 'atividades' && <FilaCalibracoes equipamentos={calibracoesFiltradas} aoAbrir={definirEquipamentoParaCalibracao} estilos={estilos}/>}
+        {aba === 'manutencoes' && <section className={estilos.secao} aria-label="Manutenção dos equipamentos">{!equipamentosParaManutencao.length && <div className={estilos.vazio}><Wrench /><strong>Nenhum equipamento encontrado</strong></div>}<div className={estilos.grade}>{equipamentosParaManutencao.map(e => <article key={e.id} className={estilos.card}><header><span className={estilos.icone}><Wrench /></span><div><h2>{e.modelo}</h2><small>{e.serie} · {descreverLocalizacao(e,buscarObra)}</small></div></header><p className={estilos.resumoManutencao}>{e.quantidadeDisponivel} disponível(is) · {e.quantidadeManutencao || 0} em manutenção</p><div className={estilos.resumoManutencao}><IndicadorCalibracao equipamento={e}/></div><footer>{(ehFluke(e)||e.calibracoes?.length)&&<button type="button" onClick={()=>definirEquipamentoParaCalibracao(e)}>Calibração</button>}<button type="button" onClick={() => definirEquipamentoParaManutencao(e)}><Wrench />Gerenciar manutenção</button></footer></article>)}</div></section>}
         {aba === 'atividades' && <section className={estilos.secao}>{pendenciasFiltradas.length ? <div className={estilos.grade}>{pendenciasFiltradas.map(renderizarCard)}</div> : <div className={estilos.vazio}><Check /><strong>Nenhum pedido para atender</strong></div>}</section>}
         {aba === 'registros' && <section className={estilos.secao}>{concluidasFiltradas.length ? <div className={estilos.grade}>{concluidasFiltradas.map(renderizarCard)}</div> : <div className={estilos.vazio}><ClipboardList /><strong>Nenhum registro encontrado</strong></div>}</section>}
         {aba === 'aquisicoes' && <section className={estilos.secao}>
@@ -238,6 +246,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       </>}
     </main>
     {configurando && <SepararEquipamentosModal solicitacao={configurando} obras={obras} equipamentos={equipamentos} aoFechar={() => definirConfigurando(null)} aoConfirmar={salvarAtendimento} aoSolicitarCompra={solicitarCompra} />}
+    {equipamentoParaCalibracao && <div className={estilos.temaManutencao}><ModalCalibracaoEquipamento equipamento={equipamentoParaCalibracao} buscarObraPorId={buscarObra} aoFechar={()=>definirEquipamentoParaCalibracao(null)} aoAtualizar={atualizado=>definirEquipamentos(atuais=>atuais.map(e=>e.id===atualizado.id?atualizado:e))}/></div>}
     {equipamentoParaManutencao && <div className={estilos.temaManutencao}><ModalManutencaoEquipamento equipamento={equipamentoParaManutencao} buscarObraPorId={buscarObra} aoFechar={() => definirEquipamentoParaManutencao(null)} aoAtualizar={e => definirEquipamentos(atuais => atuais.map(item => item.id === e.id ? e : item))} /></div>}
   </div>;
 }

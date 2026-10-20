@@ -9,7 +9,7 @@ import br.com.era.api.model.PerfilUsuario;
 import br.com.era.api.model.Usuario;
 import br.com.era.api.repository.FuncionarioRepository;
 import br.com.era.api.repository.UsuarioRepository;
-import org.springframework.security.core.userdetails.User;
+import br.com.era.api.config.UsuarioAutenticado;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,9 +26,9 @@ public class UsuarioService implements UserDetailsService {
     public UsuarioService(UsuarioRepository repository,FuncionarioRepository funcionarios,PasswordEncoder encoder){this.repository=repository;this.funcionarios=funcionarios;this.encoder=encoder;}
     @Override @Transactional(readOnly=true) public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         Usuario usuario=repository.findByLoginIgnoreCase(normalizar(login)).orElseThrow(()->new UsernameNotFoundException("Credenciais inválidas."));
-        boolean bloqueado=usuario.getBloqueadoAte()!=null&&usuario.getBloqueadoAte().isAfter(OffsetDateTime.now());
-        return User.withUsername(usuario.getLogin()).password(usuario.getSenhaHash()).roles(usuario.getPerfil().name()).disabled(!usuario.isAtivo()).accountLocked(bloqueado).build();
+        return new UsuarioAutenticado(usuario);
     }
+    @Transactional(readOnly=true) public java.util.Optional<Usuario> buscarParaSessao(Long id){return repository.findById(id);}
     @Transactional(readOnly=true) public Usuario buscarPorLogin(String login){return repository.findByLoginIgnoreCase(normalizar(login)).orElseThrow(()->new RecursoNaoEncontradoException("Usuário não encontrado."));}
     @Transactional(readOnly=true) public List<UsuarioDto.Resposta> listar(){return repository.findAll().stream().map(this::resposta).toList();}
     @Transactional(readOnly=true)
@@ -62,11 +62,23 @@ public class UsuarioService implements UserDetailsService {
     }
     @Transactional public UsuarioDto.Resposta definirStatus(Long id,boolean ativo,String solicitante){Usuario u=buscar(id);if(!ativo&&u.getLogin().equalsIgnoreCase(solicitante))throw new RegraNegocioException("O administrador não pode desativar a própria conta.");if(!ativo&&u.getPerfil()==PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ser desativado.");u.setAtivo(ativo);if(ativo){u.setTentativasFalhas(0);u.setBloqueadoAte(null);}return resposta(u);}
     @Transactional public UsuarioDto.Resposta redefinirSenha(Long id,String senha){Usuario u=buscar(id);validarSenha(u.getLogin(),senha);u.setSenhaHash(encoder.encode(senha));u.setDeveAlterarSenha(true);u.setTentativasFalhas(0);u.setBloqueadoAte(null);return resposta(u);}
-    @Transactional public void registrarFalha(String login){repository.findByLoginIgnoreCase(normalizar(login)).ifPresent(u->{int tentativas=u.getTentativasFalhas()+1;u.setTentativasFalhas(tentativas);if(tentativas>=MAX_TENTATIVAS)u.setBloqueadoAte(OffsetDateTime.now().plusMinutes(15));});}
-    @Transactional public Usuario registrarSucesso(String login){Usuario u=buscarPorLogin(login);u.setTentativasFalhas(0);u.setBloqueadoAte(null);u.setUltimoLogin(OffsetDateTime.now());return u;}
-    @Transactional public void alterarSenha(String login,AutenticacaoDto.AlterarSenha dados){Usuario u=buscarPorLogin(login);if(!u.isDeveAlterarSenha()&&(dados.senhaAtual()==null||!encoder.matches(dados.senhaAtual(),u.getSenhaHash())))throw new RegraNegocioException("A senha atual está incorreta.");validarSenha(u.getLogin(),dados.novaSenha());if(encoder.matches(dados.novaSenha(),u.getSenhaHash()))throw new RegraNegocioException("A nova senha deve ser diferente da atual.");u.setSenhaHash(encoder.encode(dados.novaSenha()));u.setDeveAlterarSenha(false);u.setSenhaAlteradaEm(OffsetDateTime.now());}
+    @Transactional public void registrarFalha(String login){repository.buscarLoginParaAtualizacao(normalizar(login)).ifPresent(u->{
+        OffsetDateTime agora=OffsetDateTime.now();
+        if(u.getBloqueadoAte()!=null&&u.getBloqueadoAte().isAfter(agora))return;
+        int tentativas=u.getBloqueadoAte()!=null?1:Math.min(u.getTentativasFalhas()+1,MAX_TENTATIVAS);
+        u.setTentativasFalhas(tentativas);u.setBloqueadoAte(tentativas>=MAX_TENTATIVAS?agora.plusMinutes(15):null);
+    });}
+    @Transactional public Usuario registrarSucesso(Long id,long versaoSessao){Usuario u=buscar(id);if(!u.isAtivo()||u.getVersaoSessao()!=versaoSessao)throw new org.springframework.security.authentication.BadCredentialsException("Credenciais inválidas.");u.setTentativasFalhas(0);u.setBloqueadoAte(null);u.setUltimoLogin(OffsetDateTime.now());return u;}
+    @Transactional public UsuarioAutenticado alterarSenha(Long id,AutenticacaoDto.AlterarSenha dados,long versaoSessao){
+        Usuario u=buscar(id);
+        if(!u.isAtivo()||u.getVersaoSessao()!=versaoSessao)throw new org.springframework.security.access.AccessDeniedException("Sessão revogada.");
+        if(!u.isDeveAlterarSenha()&&(dados.senhaAtual()==null||!encoder.matches(dados.senhaAtual(),u.getSenhaHash())))throw new RegraNegocioException("A senha atual está incorreta.");
+        validarSenha(u.getLogin(),dados.novaSenha());if(encoder.matches(dados.novaSenha(),u.getSenhaHash()))throw new RegraNegocioException("A nova senha deve ser diferente da atual.");
+        u.setSenhaHash(encoder.encode(dados.novaSenha()));u.setDeveAlterarSenha(false);u.setSenhaAlteradaEm(OffsetDateTime.now());
+        return new UsuarioAutenticado(u);
+    }
     public AutenticacaoDto.Sessao sessao(Usuario u){return new AutenticacaoDto.Sessao(u.getId(),u.getFuncionario()==null?null:u.getFuncionario().getId(),u.getNome(),u.getLogin(),u.getPerfil().name(),u.isDeveAlterarSenha());}
-    private Usuario buscar(Long id){return repository.findById(id).orElseThrow(()->new RecursoNaoEncontradoException("Usuário não encontrado."));}
+    private Usuario buscar(Long id){return repository.buscarIdParaAtualizacao(id).orElseThrow(()->new RecursoNaoEncontradoException("Usuário não encontrado."));}
     private UsuarioDto.Resposta resposta(Usuario u){return new UsuarioDto.Resposta(u.getId(),u.getFuncionario()==null?null:u.getFuncionario().getId(),u.getNome(),u.getLogin(),u.getPerfil(),u.isAtivo(),u.isDeveAlterarSenha());}
     private String normalizar(String login){return login==null?"":login.trim().toLowerCase();}
     private void validarSenha(String login,String senha){if(senha==null||senha.length()<8)throw new RegraNegocioException("A senha precisa ter pelo menos 8 caracteres.");if(senha.toLowerCase().contains(login))throw new RegraNegocioException("A senha não pode conter o login do usuário.");}

@@ -1,6 +1,7 @@
 package br.com.era.api.config;
 
 import br.com.era.api.model.Usuario;
+import br.com.era.api.model.PerfilUsuario;
 import br.com.era.api.service.UsuarioService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,8 @@ class ValidacaoSessaoFilterTests {
 
     @Test
     void deveBloquearRecursosEnquantoSenhaForTemporaria() throws Exception {
-        autenticar("tecnico@era.com");
         Usuario usuario = usuario(true, true);
-        when(usuarios.buscarPorLogin("tecnico@era.com")).thenReturn(usuario);
+        autenticar(usuario);
 
         MockHttpServletResponse response = executar("GET", "/equipamentos");
 
@@ -38,8 +38,7 @@ class ValidacaoSessaoFilterTests {
 
     @Test
     void devePermitirEndpointDeAlteracaoDaSenhaTemporaria() throws Exception {
-        autenticar("tecnico@era.com");
-        when(usuarios.buscarPorLogin("tecnico@era.com")).thenReturn(usuario(true, true));
+        autenticar(usuario(true, true));
 
         MockHttpServletResponse response = executar("POST", "/auth/alterar-senha");
 
@@ -48,23 +47,63 @@ class ValidacaoSessaoFilterTests {
 
     @Test
     void deveEncerrarAcessoDeUsuarioDesativado() throws Exception {
-        autenticar("bloqueado@era.com");
-        when(usuarios.buscarPorLogin("bloqueado@era.com")).thenReturn(usuario(false, false));
+        Usuario usuario=usuario(true,false);
+        autenticar(usuario);
+        usuario.setAtivo(false);
 
         MockHttpServletResponse response = executar("GET", "/auth/me");
 
         assertEquals(401, response.getStatus());
-        assertTrue(response.getContentAsString().contains("Usuário desativado"));
+        assertTrue(response.getContentAsString().contains("Sessão encerrada"));
     }
 
-    private void autenticar(String login) {
+    @Test
+    void deveRevogarPermissoesAntigasAposRebaixarAdministrador() throws Exception {
+        Usuario usuario=usuario(true,false);usuario.setPerfil(PerfilUsuario.ADMIN);
+        autenticar(usuario);usuario.setPerfil(PerfilUsuario.TECNICO);
+        assertEquals(401,executar("GET","/usuarios").getStatus());
+        assertTrue(SecurityContextHolder.getContext().getAuthentication()==null);
+    }
+
+    @Test
+    void sessaoAntigaNaoPodeTrocarSenhaRedefinidaPeloAdministrador() throws Exception {
+        Usuario usuario=usuario(true,false);autenticar(usuario);
+        usuario.setSenhaHash("nova-senha-temporaria");usuario.setDeveAlterarSenha(true);
+        assertEquals(401,executar("POST","/auth/alterar-senha").getStatus());
+    }
+
+    @Test
+    void desativarEReativarNaoRestauraSessaoAnterior() throws Exception {
+        Usuario usuario=usuario(true,false);autenticar(usuario);
+        usuario.setAtivo(false);usuario.setAtivo(true);
+        assertEquals(401,executar("GET","/auth/me").getStatus());
+    }
+
+    @Test
+    void sessaoDeContaRemovidaNaoPodeAssumirOutroUsuarioComMesmoLogin() throws Exception {
+        Usuario usuario=usuario(true,false);autenticar(usuario);
+        when(usuarios.buscarParaSessao(1L)).thenReturn(java.util.Optional.empty());
+        assertEquals(401,executar("GET","/auth/me").getStatus());
+    }
+
+    @Test
+    void loginOuVinculoAlteradoRevogaSessao() throws Exception {
+        Usuario usuario=usuario(true,false);autenticar(usuario);usuario.setLogin("outro-login");
+        assertEquals(401,executar("GET","/auth/me").getStatus());
+    }
+
+    private void autenticar(Usuario usuario) {
+        var principal=new UsuarioAutenticado(usuario);
         SecurityContextHolder.getContext().setAuthentication(
-            UsernamePasswordAuthenticationToken.authenticated(login, "", java.util.List.of())
+            UsernamePasswordAuthenticationToken.authenticated(principal, "", principal.getAuthorities())
         );
+        when(usuarios.buscarParaSessao(usuario.getId())).thenReturn(java.util.Optional.of(usuario));
     }
 
     private Usuario usuario(boolean ativo, boolean deveAlterarSenha) {
         Usuario usuario = new Usuario();
+        org.springframework.test.util.ReflectionTestUtils.setField(usuario,"id",1L);
+        usuario.setLogin("tecnico@era.com");usuario.setSenhaHash("hash");usuario.setPerfil(PerfilUsuario.TECNICO);
         usuario.setAtivo(ativo);
         usuario.setDeveAlterarSenha(deveAlterarSenha);
         return usuario;

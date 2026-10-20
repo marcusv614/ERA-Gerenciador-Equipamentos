@@ -59,6 +59,7 @@ export function useControleAtivos() {
     total: equipamentos.filter(({ arquivado }) => !arquivado).length,
     emCampo: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em campo').length,
     emEstoque: equipamentosLocalizados.filter(({ status, arquivado }) => !arquivado && status === 'Em estoque').length,
+    emCalibracao: equipamentosLocalizados.filter(e=>!e.arquivado&&e.quantidadeCalibracao>0).length,
     emManutencao: equipamentosLocalizados.filter(({ status, quantidadeManutencao, arquivado }) => !arquivado && (quantidadeManutencao > 0 || status === 'Em manutenção')).length,
     emTransito: equipamentosLocalizados.filter(({ status, quantidadeEmTransito, arquivado }) => !arquivado && (quantidadeEmTransito > 0 || status === 'Em trânsito')).length,
   }), [equipamentos, equipamentosLocalizados]);

@@ -4,6 +4,6 @@ dist/
 .github/
 .vscode/
 .idea/
-.env
-.env.local
+.env*
+.cache/
 *.log

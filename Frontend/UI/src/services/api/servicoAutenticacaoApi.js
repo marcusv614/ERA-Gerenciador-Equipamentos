@@ -8,9 +8,11 @@ export async function prepararCsrf() {
 }
 export async function entrar(credenciais) {
   const tokenCsrf = await prepararCsrf();
-  return obterDadosResposta(await clienteHttp.post(ROTAS_API.login, credenciais, {
+  const resposta = await clienteHttp.post(ROTAS_API.login, credenciais, {
     headers: { 'X-XSRF-TOKEN': tokenCsrf },
-  }));
+  });
+  await prepararCsrf();
+  return obterDadosResposta(resposta);
 }
 export async function obterSessao() { return obterDadosResposta(await clienteHttp.get(ROTAS_API.sessao)); }
 export async function sair() {

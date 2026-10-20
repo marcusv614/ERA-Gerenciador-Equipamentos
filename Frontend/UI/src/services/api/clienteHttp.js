@@ -14,7 +14,10 @@ export const clienteHttp = axios.create({
 clienteHttp.interceptors.response.use(
   (resposta) => resposta,
   (erro) => {
-    if (erro.response?.status === 401 && !String(erro.config?.url || '').includes('/auth/')) window.dispatchEvent(new Event('era:sessao-expirada'));
+    const rota = String(erro.config?.url || '').split('?')[0];
+    if (erro.response?.status === 401 && !['/auth/login', '/auth/csrf'].includes(rota)) {
+      window.dispatchEvent(new Event('era:sessao-expirada'));
+    }
     const mensagem = mensagemErroApi(erro);
     const erroNormalizado = new Error(mensagem);
     erroNormalizado.status = erro.response?.status;

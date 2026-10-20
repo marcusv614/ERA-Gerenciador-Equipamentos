@@ -4,5 +4,5 @@ target/
 .vscode/
 .idea/
 *.log
-.env
+.env*
 compose*.yaml

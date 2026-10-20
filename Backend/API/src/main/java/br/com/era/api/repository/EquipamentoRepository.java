@@ -1,12 +1,14 @@
 package br.com.era.api.repository;
-import br.com.era.api.model.Equipamento;
-import jakarta.persistence.LockModeType;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import java.util.List;
-import java.util.Optional;
+
+import br.com.era.api.model.Equipamento;
+import jakarta.persistence.LockModeType;
 public interface EquipamentoRepository extends JpaRepository<Equipamento,Long> {
     List<Equipamento> findByTecnicoIdAndAuditavelTrueAndArquivadoFalseOrderByModeloAscSerieAsc(Long tecnicoId);
     boolean existsBySerieIgnoreCase(String serie);

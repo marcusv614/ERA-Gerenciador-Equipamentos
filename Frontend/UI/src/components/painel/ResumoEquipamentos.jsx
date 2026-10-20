@@ -6,6 +6,7 @@ export function ResumoEquipamentos({ resumo, estilos }) {
     <CartaoResumo rotulo="Em campo" valor={resumo.emCampo} destaque="var(--accent)" />
     <CartaoResumo rotulo="Em estoque" valor={resumo.emEstoque} destaque="var(--info)" />
     <CartaoResumo rotulo="Em manutenção" valor={resumo.emManutencao} destaque="var(--warn)" />
+    <CartaoResumo rotulo="Em calibração / aguardando" valor={resumo.emCalibracao ?? 0} destaque="var(--warn)" />
     <CartaoResumo rotulo="Em trânsito" valor={resumo.emTransito} destaque="var(--accent)" />
   </div>;
 }

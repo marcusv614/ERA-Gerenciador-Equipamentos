@@ -7,12 +7,15 @@ import path from 'node:path';
 import { createServer } from 'vite';
 process.env.VITE_API_URL='/api';
 const baseline=process.argv.includes('--baseline');
+const apenasCalibracao=process.argv.includes('--calibracao');
 const movimentacoesEnviadas=[];
 const artefatos=path.resolve('node_modules/.cache/layout-paineis');fs.mkdirSync(artefatos,{recursive:true});
 const nome='Marcus Vinicius Nunes Pinheiro da Silva Oliveira';
 const obras=[{id:1,nome:'Residencial Santa Maria — infraestrutura e implantação da rede de fibra óptica no bloco administrativo',cidade:'Manaus',status:'Em andamento',responsaveis:[nome]},{id:2,nome:'AMPLIACAO_DA_INFRAESTRUTURA_DE_REDE_ELETRICA_E_TELECOMUNICACOES_BLOCO_B',cidade:'Manaus',status:'Em andamento',responsaveis:[nome]}];
 const modelos=['Equipamento de medição de potência óptica com acessórios e maleta de transporte','CHAVE_PHILLIPS_PARA_MANUTENCAO_E_INSTALACAO_DE_EQUIPAMENTOS_PROFISSIONAIS','Escada extensível de alumínio com plataforma e trava de segurança'];
 const equipamentos=Array.from({length:6},(_,i)=>({id:i+1,tipo:i===0?'OTDR':'Ferramentas',modelo:modelos[i%3],serie:'ERA-'+String(i+1)+'-IDENTIFICACAO-COMPRIDA-PARA-RASTREAMENTO-DE-EQUIPAMENTO-2026',catalogoChave:`catalogo-${i%3}`,obraId:i%2?null:1,tecnico:i%2?null:nome,status:i%2?'Em estoque':'Em campo',quantidade:12,quantidadeDisponivel:10,quantidadeReservada:1,quantidadeManutencao:1,auditavel:true,manutencoes:[],historico:[]}));
+const fluke={id:70,tipo:'Fluke',modelo:'DSX-5000 Fluke para certificação de redes de telecomunicações',serie:'FLUKE-70',catalogoChave:'fluke|dsx-5000|',obraId:1,tecnico:nome,status:'Em campo',quantidade:1,quantidadeDisponivel:1,quantidadeReservada:0,quantidadeManutencao:0,quantidadeCalibracao:0,controleQuantidade:'INDIVIDUAL',auditavel:true,manutencoes:[],calibracoes:[],historico:[]};
+equipamentos.push(fluke);
 const material=(n,quantidade=2,separado=false)=>({id:n+1,nome:equipamentos[n].modelo,catalogoChave:equipamentos[n].catalogoChave,quantidade,identificacao:separado?equipamentos[n].serie:null,quantidadeCompra:n===0?3:0,quantidadeAdquirida:0,quantidadeEntradaEstoque:0});
 const pedidos=['Aprovada','Aprovada','Em trânsito','Aguardando coleta','Pendente','Concluída','Rejeitada'].map((status,i)=>({id:i+1,tipo:'Movimentação',status,tecnico:nome,solicitante:'Gerente responsável pela mobilização emergencial de materiais e equipes',solicitanteLogin:'gerente',solicitantePerfil:'GERENTE',obraOrigemId:i>1?1:null,obraDestinoId:i===3?null:2,dataSolicitacao:'2026-10-19',materiais:[material(0,i===1?25:3,i>1),material(1,2,i>1)]}));
 const funcionarios=[{id:1,nome,cargo:'Técnico de telecomunicações e infraestrutura',email:'marcus.vinicius.tecnico.responsavel@empresa-de-telecomunicacoes.com.br',telefone:'92912345678',status:'Ativo'}];
@@ -50,6 +53,17 @@ const servidor=await createServer({server:{host:'127.0.0.1',port:0},plugins:[{na
     else if(largura==='320'){res.statusCode=409;dados={mensagem:'O saldo mudou. Atualize os equipamentos e tente novamente.'};}
     else dados={...pedido,id:900,status:'Aguardando coleta',tipo:'Movimentação',solicitante:'Gerente',materiais:pedido.materiais.map((m,i)=>({...m,id:i+1}))};
   }
+  if(req.method==='POST'&&rota.startsWith('/equipamentos/70/calibracoes')){
+    const partes=[];for await(const parte of req)partes.push(parte);const corpo=JSON.parse(Buffer.concat(partes).toString());
+    const hoje=new Date().toLocaleDateString('en-CA'),c=fluke.calibracoes[0];
+    const evento=acao=>({acao,registradoEm:new Date().toISOString(),autorNome:nome,autorLogin:role,autorPerfil:role==='estoque'?'ESTOQUE':'GERENTE'});
+    if(rota==='/equipamentos/70/calibracoes'){fluke.calibracoes=[{id:1,status:'AGUARDANDO_RETIRADA',modelo:fluke.modelo,serie:fluke.serie,localOrigem:obras[0].nome,tecnicoOrigem:nome,obraOrigemId:1,laboratorio:corpo.laboratorio,observacao:corpo.observacao,criadoEm:new Date().toISOString(),eventos:[evento('SOLICITADA')]}];fluke.quantidadeDisponivel=0;fluke.quantidadeCalibracao=1;}
+    else if(rota.endsWith('/retirada')){c.status='AGUARDANDO_ENVIO';c.dataRetirada=corpo.dataRetirada;fluke.obraId=null;fluke.tecnico=null;fluke.status='Aguardando calibração';c.eventos.push(evento('RETIRADA_CONFIRMADA'));}
+    else if(rota.endsWith('/envio')){c.status='EM_CALIBRACAO';Object.assign(c,corpo);fluke.status='Em calibração';c.eventos.push(evento('ENVIO_CONFIRMADO'));}
+    else if(rota.endsWith('/retorno')){c.status='CONCLUIDA';Object.assign(c,corpo);fluke.status='Em estoque';fluke.quantidadeDisponivel=1;fluke.quantidadeCalibracao=0;c.eventos.push(evento('RETORNO_CONFIRMADO'));}
+    else if(rota.endsWith('/certificados')){fluke.calibracoes.push({...corpo,id:2,status:'CONCLUIDA',historico:true,modelo:fluke.modelo,serie:fluke.serie,localOrigem:'Depósito central',criadoEm:hoje,eventos:[evento('CERTIFICADO_ANTERIOR')]});}
+    dados=fluke;
+  }
   res.setHeader('Content-Type','application/json');res.end(JSON.stringify(dados));
 });}}]});
 await servidor.listen();const base='http://127.0.0.1:'+servidor.httpServer.address().port;
@@ -68,11 +82,11 @@ try{
   const escapar=async()=>{await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape'});await esperar("!document.querySelector('[role=dialog]')");};
   const botao=(texto,raiz='document')=>`Array.from(${raiz}.querySelectorAll('button')).find(b=>b.getBoundingClientRect().height&&(b.textContent.trim().startsWith(${JSON.stringify(texto)})||b.querySelector('small')?.textContent.trim()===${JSON.stringify(texto)}))`;
   const inspecionar=async(nome,imagem=false)=>{
-    const m=await avaliar(`(()=>{const visivel=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&r.right>0&&s.visibility!=='hidden'&&s.clipPath!=='inset(50%)'&&!e.closest('[aria-hidden=true],[inert]');};const problemas=Array.from(document.querySelectorAll('main *,[role=dialog] *')).filter(e=>!['svg','path','circle','select','input','textarea','option'].includes(e.tagName)&&visivel(e)&&e.clientWidth>0&&e.scrollWidth>e.clientWidth+2&&!['auto','scroll'].includes(getComputedStyle(e).overflowX)&&getComputedStyle(e).textOverflow!=='ellipsis').map(e=>({tag:e.tagName,classe:String(e.className),largura:e.clientWidth,conteudo:e.scrollWidth,texto:e.textContent.slice(0,100)}));return{viewport:innerWidth,pagina:document.documentElement.scrollWidth,problemas:problemas.slice(-12)};})()`);
+    const m=await avaliar(`(()=>{const visivel=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&r.right>0&&s.visibility!=='hidden'&&s.clipPath!=='inset(50%)'&&!e.closest('[aria-hidden=true],[inert]');};const problemas=Array.from(document.querySelectorAll('main *,[role=dialog] *')).filter(e=>!['svg','path','circle','select','input','textarea','option'].includes(e.tagName.toLowerCase())&&visivel(e)&&e.clientWidth>0&&e.scrollWidth>e.clientWidth+2&&!['auto','scroll'].includes(getComputedStyle(e).overflowX)&&getComputedStyle(e).textOverflow!=='ellipsis').map(e=>({tag:e.tagName,classe:String(e.className),largura:e.clientWidth,conteudo:e.scrollWidth,texto:e.textContent.slice(0,100)}));return{viewport:innerWidth,pagina:document.documentElement.scrollWidth,problemas:problemas.slice(-12)};})()`);
     resultados.push({nome,...m});if(imagem)fs.writeFileSync(path.join(artefatos,`${baseline?'antes':'depois'}-${nome}.png`),Buffer.from((await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
   };
   await cdp('Page.enable');await cdp('Runtime.enable');
-  for(const largura of [320,390,768,844,1024,1440])for(const role of ['tecnico','estoque','gerencia','admin']){
+  if(!apenasCalibracao)for(const largura of [320,390,768,844,1024,1440])for(const role of ['tecnico','estoque','gerencia','admin']){
     await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:largura===844?390:largura<768?844:1000,deviceScaleFactor:1,mobile:largura<768||largura===844});
     await cdp('Page.navigate',{url:`${base}/__layout?role=${role}&largura=${largura}`});
     try{
@@ -89,7 +103,7 @@ try{
         await tocar(botao('Manutenção'));await inspecionar(`${role}-${largura}-manutencao`);await tocar(botao('Gerenciar manutenção'));await inspecionar(`${role}-${largura}-modal-manutencao`);await escapar();
         await tocar(botao('Histórico'));await inspecionar(`${role}-${largura}-historico`);
       }else if(role==='gerencia'){
-        await tocar(botao('Lista',"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')"));await inspecionar(`${role}-${largura}-lista`);
+        if(largura>768)await tocar(botao('Lista',"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')"));await inspecionar(`${role}-${largura}-lista`);
         await esperar("document.querySelector('button[aria-label^=\"Histórico de\"]')");await tocar("document.querySelector('button[aria-label^=\"Histórico de\"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-historico-equipamento`);await escapar();
         await tocar("document.querySelector('button[aria-label^=\"Mover \"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-mover`);
         if([320,390,1440].includes(largura)){
@@ -100,7 +114,7 @@ try{
           if(largura===320){await esperar("document.querySelector('[role=dialog] [role=alert]')");assert.match(await avaliar("document.querySelector('[role=dialog] [role=alert]').textContent"),/O saldo mudou/);await inspecionar(`${role}-${largura}-mover-erro`);await escapar();}
           else await esperar("!document.querySelector('[role=dialog]')");
         }else await escapar();
-        await tocar(botao('Cartões',"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')"));
+        if(largura>768)await tocar(botao('Cartões',"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')"));
         if(largura<=768){assert.equal(await avaliar("getComputedStyle(document.querySelector('aside')).display"),'none');await tocar(botao('Obras',"document.querySelector('[aria-label=\"Navegação principal\"]')"));await inspecionar(`${role}-${largura}-obras`);await tocar(botao('Vistorias',"document.querySelector('[aria-label=\"Navegação principal\"]')"));await inspecionar(`${role}-${largura}-vistorias`);}
         else{await tocar("document.querySelector('[aria-label=\"Recolher menu lateral\"]')");await inspecionar(`${role}-${largura}-sidebar-fechada`);await tocar("document.querySelector('[aria-label=\"Expandir menu lateral\"]')");}
         for(const area of ['funcionarios','atividades','deposito']){
@@ -128,9 +142,33 @@ try{
       }
     }catch(e){resultados.push({nome:`${role}-${largura}-interacao`,erro:e.message});console.error(`${role}-${largura}: ${e.message}`);}
   }
+  if(apenasCalibracao){
+    const preencher=async(rotulo,valor)=>{await avaliar(`(()=>{const label=Array.from(document.querySelectorAll('[role=dialog] label')).find(l=>l.textContent.trim().startsWith(${JSON.stringify(rotulo)}));const campo=label?.querySelector('input,textarea');if(!campo)throw Error('Campo ausente: '+${JSON.stringify(rotulo)});Object.getOwnPropertyDescriptor(campo.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(campo,${JSON.stringify(valor)});campo.dispatchEvent(new Event('input',{bubbles:true}));campo.dispatchEvent(new Event('change',{bubbles:true}));})()`);};
+    const navegar=async(role,largura)=>{await cdp('Page.navigate',{url:`${base}/__layout?role=${role}&largura=${largura}`});await esperar(role==='estoque'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Gerenciar calibração')":"document.querySelector('button[aria-label^=\"Calibração de\"]')");};
+    const noModal=texto=>botao(texto,"document.querySelector('[role=dialog]')");
+    for(const largura of [320,390,844,1440]){
+      Object.assign(fluke,{obraId:1,tecnico:nome,status:'Em campo',quantidadeDisponivel:1,quantidadeCalibracao:0,calibracoes:[]});
+      await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:largura===844?390:844,deviceScaleFactor:1,mobile:largura<768||largura===844});
+      try{
+        await navegar('gerencia',largura);await tocar("document.querySelector('button[aria-label^=\"Calibração de\"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`calibracao-${largura}-solicitar`,largura===390);
+        await preencher('Laboratório previsto','Laboratório de metrologia e certificação de instrumentos');
+        await tocar("Array.from(document.querySelectorAll('[role=dialog] button')).find(b=>b.textContent==='Solicitar calibração'&&b.className.includes('primario'))");
+        await esperar("document.querySelector('[role=dialog]').textContent.includes('Aguardando retirada da obra')");
+        assert.equal(fluke.obraId,1);assert.equal(fluke.quantidadeDisponivel,0);assert.ok(!await avaliar("Array.from(document.querySelectorAll('[role=dialog] button')).some(b=>b.textContent==='Confirmar retirada e chegada ao depósito')"));
+        await inspecionar(`calibracao-${largura}-gerente-aguardando`);await escapar();
+        await navegar('estoque',largura);await inspecionar(`calibracao-${largura}-fila-estoque`,largura===390);await tocar(botao('Gerenciar calibração'));
+        await tocar(noModal('Confirmar retirada e chegada ao depósito'));await esperar("Array.from(document.querySelectorAll('[role=dialog] button')).some(b=>b.textContent==='Confirmar envio ao laboratório')");assert.equal(fluke.obraId,null);
+        await inspecionar(`calibracao-${largura}-envio`,largura===390);await tocar(noModal('Confirmar envio ao laboratório'));await esperar("Array.from(document.querySelectorAll('[role=dialog] button')).some(b=>b.textContent.includes('Confirmar retorno e certificado'))");
+        await inspecionar(`calibracao-${largura}-retorno`,largura===390);await preencher('Número do certificado','CAL-2026-70');await preencher('Validade conforme o certificado','2027-07-20');
+        await tocar(noModal('Confirmar retorno e certificado'));await esperar("document.querySelector('[role=dialog]').textContent.includes('Calibração válida até')");
+        assert.equal(fluke.status,'Em estoque');assert.equal(fluke.quantidadeDisponivel,1);assert.equal(fluke.calibracoes[0].certificado,'CAL-2026-70');
+        await inspecionar(`calibracao-${largura}-concluida`,largura===390);await escapar();
+      }catch(e){resultados.push({nome:`calibracao-${largura}-interacao`,erro:e.message});}
+    }
+  }
   const falhas=resultados.filter(r=>r.erro||r.pagina>r.viewport+1||r.problemas?.length);
-  if(!baseline){assert.equal(movimentacoesEnviadas.length,3);for(const pedido of movimentacoesEnviadas){assert.equal(pedido.tecnico,nome);assert.equal(pedido.obraOrigemId,1);assert.equal(pedido.obraDestinoId,null);assert.equal(pedido.materiais[0].quantidade,1);}}
-  fs.writeFileSync(path.join(artefatos,`${baseline?'antes':'depois'}-relatorio.json`),JSON.stringify(resultados,null,2));
+  if(!baseline&&!apenasCalibracao){assert.equal(movimentacoesEnviadas.length,3);for(const pedido of movimentacoesEnviadas){assert.equal(pedido.tecnico,nome);assert.equal(pedido.obraOrigemId,1);assert.equal(pedido.obraDestinoId,null);assert.equal(pedido.materiais[0].quantidade,1);}}
+  fs.writeFileSync(path.join(artefatos,`${apenasCalibracao?'calibracao':baseline?'antes':'depois'}-relatorio.json`),JSON.stringify(resultados,null,2));
   console.log(JSON.stringify({cenarios:resultados.length,falhas:falhas.map(f=>({nome:f.nome,pagina:f.pagina,viewport:f.viewport,problemas:f.problemas,erro:f.erro})),artefatos},null,2));
   if(!baseline)assert.equal(falhas.length,0,'Corrigir os cenarios detalhados no relatorio');
   await enviar('Browser.close');

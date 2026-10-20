@@ -6,6 +6,8 @@ const STATUS_CLASS = {
   'Em estoque': styles.estoque,
   'Em manutenção': styles.manutencao,
   'Em trânsito': styles.transito,
+  'Em calibração': styles.manutencao,
+  'Aguardando calibração': styles.manutencao,
 };
 
 export function IndicadorStatus({ status }) {

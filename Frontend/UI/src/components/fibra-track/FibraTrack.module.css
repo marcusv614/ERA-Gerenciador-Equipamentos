@@ -1301,6 +1301,8 @@ button.equipCard {
   position: relative;
 }
 .overlayPanel > h3 { padding-right:40px; }
+.calibracaoHistorico { padding:14px; border:1px solid var(--border); border-radius:10px; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.calibracaoHistorico p { margin:6px 0 0; }
 .overlayClose {
   position: absolute;
   right: 12px;

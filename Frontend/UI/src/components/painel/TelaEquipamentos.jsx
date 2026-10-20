@@ -5,6 +5,8 @@ import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { iconePorTipoEquipamento, statusEquipamento } from '../../data/constantesDominio';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import css from './TelaEquipamentos.module.css';
+import { ehFluke, resumoCalibracao } from '../../utils/calibracoes';
+import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
 
 const classePorTipo = { Fluke: 'tipoFluke', OTDR: 'tipoOtdr', Outro: 'tipoOutro' };
 const CHAVE_VISUALIZACAO = 'era-equipamentos-visualizacao';
@@ -27,12 +29,17 @@ function BotaoManutencao({ equipamento, aoManutencao, estilos }) {
   return <button type="button" onClick={() => aoManutencao(equipamento)} className={estilos.moverBtn} aria-label={`Manutenção de ${equipamento.modelo}`}><Wrench size={12} aria-hidden="true" />Manutenção</button>;
 }
 
-function AcoesEquipamento({ equipamento, podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, estilos, incluirMover = false }) {
+function BotaoCalibracao({ equipamento, aoCalibracao, estilos }) {
+  if(!aoCalibracao||(!ehFluke(equipamento)&&!equipamento.calibracoes?.length))return null;
+  return <button type="button" className={estilos.moverBtn} aria-label={`Calibração de ${equipamento.modelo}`} onClick={()=>aoCalibracao(equipamento)}>Calibração</button>;
+}
+
+function AcoesEquipamento({ equipamento, podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, aoCalibracao, estilos, incluirMover = false }) {
   return <div className={`${estilos.equipActions} ${incluirMover ? css.acoesLista : ''}`}>
     {podeEditar && <button type="button" onClick={() => aoEditar(equipamento)} className={`${estilos.iconBtn} ${estilos.equipEditBtn}`} title="Editar equipamento" aria-label={`Editar ${equipamento.modelo}`}><Pencil size={14} aria-hidden="true" /><span>Editar</span></button>}
     <button type="button" onClick={() => aoAbrirHistorico(equipamento)} className={estilos.iconBtn} title="Histórico" aria-label={`Histórico de ${equipamento.modelo}`}><FileText size={14} aria-hidden="true" /></button>
     <button type="button" onClick={() => aoImprimirHistorico(equipamento)} className={estilos.iconBtn} title="Exportar PDF" aria-label={`Exportar PDF de ${equipamento.modelo}`}><Download size={14} aria-hidden="true" /></button>
-    {incluirMover && <><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /></>}
+    {incluirMover && <><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /><BotaoCalibracao equipamento={equipamento} aoCalibracao={aoCalibracao} estilos={estilos}/></>}
   </div>;
 }
 
@@ -61,6 +68,7 @@ function ListaEquipamentos({ grupo, buscarObraPorId, acoes, estilos }) {
             <span><MapPin size={13} aria-hidden="true" />{descreverLocalizacao(equipamento, buscarObraPorId)}</span>
             {equipamento.tecnico && <small>Com {equipamento.tecnico}</small>}
             {equipamento.notaFiscal && <small>NF {equipamento.notaFiscal}</small>}
+            <IndicadorCalibracao equipamento={equipamento}/>
           </div></td>
           <td role="cell" data-coluna="Ações"><AcoesEquipamento equipamento={equipamento} {...acoes} incluirMover /></td>
         </tr>;
@@ -69,7 +77,7 @@ function ListaEquipamentos({ grupo, buscarObraPorId, acoes, estilos }) {
   </div>;
 }
 
-export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPorId, tipoSelecionado, statusSelecionado, podeEditar, aoSelecionarTipo, aoSelecionarStatus, aoAbrirHistorico, aoImprimirHistorico, aoEditar, aoMover, aoManutencao, estilos }) {
+export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPorId, tipoSelecionado, statusSelecionado, podeEditar, aoSelecionarTipo, aoSelecionarStatus, aoAbrirHistorico, aoImprimirHistorico, aoEditar, aoMover, aoManutencao, aoCalibracao, estilos }) {
   const [visualizacao, definirVisualizacao] = useState(visualizacaoInicial);
   const [telaCompacta, definirTelaCompacta] = useState(telaCompactaInicial);
   useEffect(() => {
@@ -84,15 +92,17 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
     try { localStorage.setItem(CHAVE_VISUALIZACAO, modo); } catch { /* A preferência permanece nesta tela. */ }
   };
   const visualizacaoAtual = telaCompacta ? 'cartoes' : visualizacao;
-  const acoes = { podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, estilos };
-  const grupos = [{ titulo: 'Ferramentas ativas', itens: equipamentos.filter((e) => !e.arquivado) }, { titulo: 'Ferramentas arquivadas', itens: equipamentos.filter((e) => e.arquivado) }];
+  const [filtroCalibracao, definirFiltroCalibracao] = useState('TODAS');
+  const filtrados = equipamentos.filter(e => filtroCalibracao === 'TODAS' || ((ehFluke(e) || e.calibracoes?.length) && resumoCalibracao(e).chave === filtroCalibracao));
+  const acoes = { podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, aoCalibracao, estilos };
+  const grupos = [{ titulo: 'Ferramentas ativas', itens: filtrados.filter((e) => !e.arquivado) }, { titulo: 'Ferramentas arquivadas', itens: filtrados.filter((e) => e.arquivado) }];
   return <>
     <div className={css.barraFiltros}><div className={estilos.filters}>
       <select className={estilos.filterSelect} value={tipoSelecionado} onChange={(evento) => aoSelecionarTipo(evento.target.value)} aria-label="Filtrar por subcategoria">
         <option value="Todos">Todas as subcategorias</option>
         {tiposDisponiveis.map((tipo) => <option key={tipo} value={tipo}>{tipo === 'Outro' ? 'Outros' : tipo}</option>)}
       </select>
-      <span className={estilos.filterDivider} />
+      <select className={estilos.filterSelect} aria-label="Filtrar calibração" value={filtroCalibracao} onChange={e=>definirFiltroCalibracao(e.target.value)}><option value="TODAS">Todas as calibrações</option><option value="ATENDIMENTO">Em atendimento</option><option value="VENCIDA">Calibração vencida</option><option value="A_VENCER">Vence em até 30 dias</option><option value="EM_DIA">Calibração em dia</option><option value="SEM_REGISTRO">Sem certificado</option></select><span className={estilos.filterDivider} />
       {['Todos', ...statusEquipamento].map((status) => <button type="button" key={status} aria-pressed={statusSelecionado === status} onClick={() => aoSelecionarStatus(status)} className={`${estilos.filterChip} ${statusSelecionado === status ? estilos.filterChipStatusActive : ''}`}>{status}</button>)}
     </div><div className={css.alternador} role="group" aria-label="Visualização dos equipamentos">
       <button type="button" aria-pressed={visualizacao === 'cartoes'} onClick={() => alterarVisualizacao('cartoes')}><LayoutGrid size={16} aria-hidden="true" />Cartões</button>
@@ -112,11 +122,11 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
             {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
             {equipamento.quantidadeManutencao > 0 && <span><small>Em manutenção</small><strong>{equipamento.quantidadeManutencao}</strong></span>}
           </div>
-          <div className={`${estilos.equipFooter} ${css.rodape}`}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</span></div><div className={css.acoesRodape}><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /></div></div>
+          <IndicadorCalibracao equipamento={equipamento}/><div className={`${estilos.equipFooter} ${css.rodape}`}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</span></div><div className={css.acoesRodape}><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /><BotaoCalibracao equipamento={equipamento} aoCalibracao={aoCalibracao} estilos={estilos}/></div></div>
           {equipamento.tecnico && <div className={estilos.equipTecnico}>Com {equipamento.tecnico}</div>}
         </div>;
       })}</div>}</section>)}
-      {equipamentos.length === 0 && <div className={estilos.emptyState}>Nenhum equipamento encontrado com esses filtros.</div>}
+      {filtrados.length === 0 && <div className={estilos.emptyState}>Nenhum equipamento encontrado com esses filtros.</div>}
     </div>
   </>;
 }
