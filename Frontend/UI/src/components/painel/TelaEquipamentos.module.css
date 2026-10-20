@@ -37,8 +37,7 @@
 @media(max-width:768px) {
   .barraFiltros { gap:12px; }
   .barraFiltros > div:first-child { flex-basis:100%; }
-  .alternador { width:100%; box-sizing:border-box; }
-  .alternador button { flex:1; min-height:44px; }
+  .alternador { display:none; }
 }
 @media(max-width:1100px) {
   .tabela, .tabela tbody { display:block; }

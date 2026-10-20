@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
+import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
@@ -35,7 +35,10 @@ const agruparMateriaisPedido = (materiais) => Object.values(materiais.reduce((gr
   grupos[chave].quantidade += material.quantidade || 0;
   return grupos;
 }, {}));
-const rotuloStatus = (solicitacao) => obterEtapaSolicitacao(solicitacao.status).rotulo;
+const rotuloStatus = (solicitacao) => ({
+  Aprovada: 'Aceita',
+  Concluída: 'Finalizada',
+}[solicitacao.status] || solicitacao.status || 'Atualizando');
 const descricaoStatus = (solicitacao) => ({
   Pendente: 'Aguarde o gerente.',
   Aprovada: 'O estoque está preparando.',
@@ -43,7 +46,12 @@ const descricaoStatus = (solicitacao) => ({
   'Em trânsito': solicitacao.obraDestinoId ? 'Recebeu? Confirme abaixo.' : 'O estoque está recebendo.',
   Concluída: 'Finalizado.',
   Rejeitada: 'Não aprovado.',
-}[solicitacao.status]);
+}[solicitacao.status] || 'Acompanhe a atualização deste pedido.');
+const formatarDataSolicitacao = (valor) => {
+  if (!valor) return 'Data não informada';
+  const data = new Date(`${valor}T12:00:00`);
+  return Number.isNaN(data.getTime()) ? 'Data não informada' : data.toLocaleDateString('pt-BR');
+};
 const iconeEtapa = (status) => {
   const etapa = obterEtapaSolicitacao(status).chave;
   if (etapa === 'pendente') return <Clock3 />;
@@ -62,10 +70,12 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
   const [destino, definirDestino] = useState('');
   const [busca, definirBusca] = useState('');
   const [itens, definirItens] = useState([]);
+  const [quantidadesEmEdicao, definirQuantidadesEmEdicao] = useState({});
   const [observacao, definirObservacao] = useState('');
   const [aba, definirAba] = useState(modoAdministrador ? 'acompanhar' : 'solicitar');
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
+  const [confirmandoRecebimentoId, definirConfirmandoRecebimentoId] = useState(null);
   const [mensagem, definirMensagem] = useState(null);
   const [operacao, definirOperacao] = useState('');
   const [etapaMovimentacao, definirEtapaMovimentacao] = useState(1);
@@ -90,15 +100,17 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
 
   useEffect(() => {
     let componenteAtivo = true;
-    Promise.all([apiObras.listar(), apiEquipamentos.listar(), apiEquipamentos.listarCatalogo(), apiAtividades.listar()])
-      .then(([obrasRecebidas, equipamentosRecebidos, catalogoRecebido, solicitacoesRecebidas]) => {
+    Promise.allSettled([apiObras.listar(), apiEquipamentos.listar(), apiEquipamentos.listarCatalogo(), apiAtividades.listar()])
+      .then(([resultadoObras, resultadoEquipamentos, resultadoCatalogo, resultadoSolicitacoes]) => {
         if (!componenteAtivo) return;
-        definirObras(obrasRecebidas);
-        definirEquipamentos(equipamentosRecebidos);
-        definirCatalogoMateriais(catalogoRecebido);
-        definirSolicitacoes(solicitacoesRecebidas);
+        if (resultadoObras.status === 'fulfilled') definirObras(resultadoObras.value);
+        if (resultadoEquipamentos.status === 'fulfilled') definirEquipamentos(resultadoEquipamentos.value);
+        if (resultadoCatalogo.status === 'fulfilled') definirCatalogoMateriais(resultadoCatalogo.value);
+        if (resultadoSolicitacoes.status === 'fulfilled') definirSolicitacoes(resultadoSolicitacoes.value);
+        const falha = [resultadoObras, resultadoEquipamentos, resultadoCatalogo, resultadoSolicitacoes]
+          .find((resultado) => resultado.status === 'rejected');
+        if (falha) definirMensagem({ tipo: 'erro', texto: falha.reason?.message || 'Não foi possível carregar todos os dados.' });
       })
-      .catch((erro) => { if (componenteAtivo) definirMensagem({ tipo: 'erro', texto: erro.message }); })
       .finally(() => { if (componenteAtivo) definirCarregando(false); });
     return () => { componenteAtivo = false; };
   }, [usuario.nome]);
@@ -106,14 +118,14 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
   useEffect(() => {
     let componenteAtivo = true;
     const atualizarMovimentacoes = async () => {
-      try {
-        const [solicitacoesRecebidas, equipamentosRecebidos] = await Promise.all([apiAtividades.listar(), apiEquipamentos.listar()]);
-        if (!componenteAtivo) return;
-        definirSolicitacoes(solicitacoesRecebidas);
-        definirEquipamentos(equipamentosRecebidos);
-      } catch {
-        // A carga inicial já informa falhas; a sincronização silenciosa tenta novamente no próximo ciclo.
-      }
+      const [resultadoSolicitacoes, resultadoEquipamentos, resultadoObras, resultadoCatalogo] = await Promise.allSettled([
+        apiAtividades.listar(), apiEquipamentos.listar(), apiObras.listar(), apiEquipamentos.listarCatalogo(),
+      ]);
+      if (!componenteAtivo) return;
+      if (resultadoSolicitacoes.status === 'fulfilled') definirSolicitacoes(resultadoSolicitacoes.value);
+      if (resultadoEquipamentos.status === 'fulfilled') definirEquipamentos(resultadoEquipamentos.value);
+      if (resultadoObras.status === 'fulfilled') definirObras(resultadoObras.value);
+      if (resultadoCatalogo.status === 'fulfilled') definirCatalogoMateriais(resultadoCatalogo.value);
     };
     const aoRetomarPainel = () => { if (document.visibilityState === 'visible') atualizarMovimentacoes(); };
     const intervalo = window.setInterval(atualizarMovimentacoes, 10_000);
@@ -127,15 +139,15 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     };
   }, []);
 
-  const obrasAtivas = useMemo(() => obras.filter(({ status }) => status !== 'Concluída'), [obras]);
+  const obrasAtivas = useMemo(() => obras.filter(({ status, arquivado }) => !arquivado && status !== 'Concluída'), [obras]);
   const equipamentosDaOrigem = useMemo(() => agruparEquipamentos(equipamentos.filter((equipamento) => {
     if (!origem || localizacaoEquipamento(equipamento) !== origem) return false;
-    const texto = `${equipamento.modelo} ${equipamento.tipo} ${equipamento.serie} ${equipamento.medida || ''}`.toLocaleLowerCase('pt-BR');
-    return texto.includes(busca.trim().toLocaleLowerCase('pt-BR')) && (equipamento.quantidadeDisponivel ?? 1) > 0;
+    const texto = normalizarChave(`${equipamento.modelo} ${equipamento.tipo} ${equipamento.serie} ${equipamento.medida || ''}`);
+    return texto.includes(normalizarChave(busca)) && (equipamento.quantidadeDisponivel ?? 1) > 0;
   }), `obra-${origem}`), [equipamentos, origem, busca]);
   const materiaisDoCatalogo = useMemo(() => catalogoMateriais.filter((material) => {
-    const texto = `${material.modelo} ${material.tipo} ${material.medida || ''}`.toLocaleLowerCase('pt-BR');
-    return texto.includes(busca.trim().toLocaleLowerCase('pt-BR'));
+    const texto = normalizarChave(`${material.modelo} ${material.tipo} ${material.medida || ''}`);
+    return texto.includes(normalizarChave(busca));
   }).map((material) => ({ ...material, id: `catalogo-${material.tipo}-${material.modelo}-${material.medida || 'sem-medida'}`, serie: null })), [catalogoMateriais, busca]);
   const materiaisParaSelecionar = operacao === 'receber' ? materiaisDoCatalogo : equipamentosDaOrigem;
 
@@ -143,16 +155,32 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
   const pendentes = solicitacoes.filter(({ status }) => status === 'Pendente').length;
   const recebimentosPendentes = solicitacoes.filter(({ status, obraDestinoId }) => status === 'Em trânsito' && obraDestinoId).length;
   const quantidadeTotal = itens.reduce((total, item) => total + item.quantidade, 0);
-  const podeEnviar = ((operacao === 'receber' && destino) || (operacao === 'devolver' && origem)) && itens.length > 0 && !enviando;
-  const obrasComMateriais = obras.map((obra) => ({
+  const quantidadeEmEdicaoInvalida = Object.entries(quantidadesEmEdicao).some(([id, valor]) => {
+    const item = itens.find((atual) => atual.id === id);
+    if (!item || !/^\d+$/.test(valor)) return true;
+    const quantidade = Number(valor);
+    const limite = operacao === 'receber' ? 2147483647 : (item.equipamento.quantidadeDisponivel ?? 1);
+    return quantidade < 1 || quantidade > limite;
+  });
+  const podeEnviar = ((operacao === 'receber' && destino) || (operacao === 'devolver' && origem)) && itens.length > 0 && !quantidadeEmEdicaoInvalida && !enviando;
+  const obrasComMateriais = obras.filter(({ arquivado }) => !arquivado).map((obra) => ({
     obra,
     materiais: agruparEquipamentos(equipamentos.filter(({ obraId }) => String(obraId) === String(obra.id)), `obra-${obra.id}`),
   }));
-  const adicionarItem = (equipamento) => definirItens((atuais) => {
-    const id = identificadorLocal(equipamento);
-    if (atuais.some((item) => item.id === id)) return atuais;
-    return [...atuais, { id, equipamento, quantidade: 1 }];
+  const limparQuantidadeEmEdicao = (id) => definirQuantidadesEmEdicao((atuais) => {
+    if (!Object.prototype.hasOwnProperty.call(atuais, id)) return atuais;
+    const proximas = { ...atuais };
+    delete proximas[id];
+    return proximas;
   });
+  const adicionarItem = (equipamento) => {
+    const id = identificadorLocal(equipamento);
+    limparQuantidadeEmEdicao(id);
+    definirItens((atuais) => {
+      if (atuais.some((item) => item.id === id)) return atuais;
+      return [...atuais, { id, equipamento, quantidade: 1 }];
+    });
+  };
 
   const definirQuantidade = (id, valor) => definirItens((atuais) => atuais.map((item) => {
     if (item.id !== id) return item;
@@ -160,26 +188,48 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     const limite = operacao === 'receber' ? 2147483647 : (item.equipamento.quantidadeDisponivel ?? 1);
     return Number.isInteger(quantidade) && quantidade > 0 && quantidade <= limite ? { ...item, quantidade } : item;
   }));
-  const removerItem = (id) => definirItens((atuais) => atuais.filter((item) => item.id !== id));
+  const editarQuantidade = (id, valor, limite) => {
+    const valorNumerico = valor.replace(/\D/g, '');
+    definirQuantidadesEmEdicao((atuais) => ({ ...atuais, [id]: valorNumerico }));
+    if (!valorNumerico) return;
+    const quantidade = Number(valorNumerico);
+    if (quantidade >= 1 && quantidade <= limite) definirQuantidade(id, quantidade);
+  };
+  const valorQuantidade = (id, quantidade) => Object.prototype.hasOwnProperty.call(quantidadesEmEdicao, id)
+    ? quantidadesEmEdicao[id]
+    : String(quantidade);
+  const removerItem = (id) => {
+    limparQuantidadeEmEdicao(id);
+    definirItens((atuais) => atuais.filter((item) => item.id !== id));
+  };
+  const ajustarQuantidade = (id, quantidade) => {
+    limparQuantidadeEmEdicao(id);
+    if (quantidade < 1) removerItem(id);
+    else definirQuantidade(id, quantidade);
+  };
 
   const trocarOrigem = (valor) => {
     definirOrigem(valor);
     definirItens([]);
+    definirQuantidadesEmEdicao({});
     if (valor === destino) definirDestino('');
   };
   const selecionarOperacao = (novaOperacao) => {
-    definirOperacao(novaOperacao); definirItens([]); definirBusca('');
+    definirOperacao(novaOperacao); definirItens([]); definirQuantidadesEmEdicao({}); definirBusca(''); definirObservacao(''); definirMostrarObservacao(false);
     if (novaOperacao === 'receber') { definirOrigem('deposito'); definirDestino(''); }
     else if (novaOperacao === 'devolver') { definirOrigem(''); definirDestino('deposito'); }
     definirEtapaMovimentacao(2);
   };
   const confirmarRecebimento = async (solicitacao) => {
+    if (confirmandoRecebimentoId !== null) return;
+    definirConfirmandoRecebimentoId(solicitacao.id);
     definirMensagem(null);
     try {
       const atualizada = await apiAtividades.concluir(solicitacao.id);
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
       apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
+    finally { definirConfirmandoRecebimentoId(null); }
   };
 
   const enviarSolicitacao = async () => {
@@ -208,7 +258,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       });
       definirSolicitacoes((atuais) => [criada, ...atuais]);
       apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
-      definirItens([]); definirObservacao(''); definirBusca(''); definirOperacao(''); definirEtapaMovimentacao(1); definirMostrarObservacao(false);
+      definirItens([]); definirQuantidadesEmEdicao({}); definirObservacao(''); definirBusca(''); definirOperacao(''); definirEtapaMovimentacao(1); definirMostrarObservacao(false);
 
       definirAba('acompanhar');
     } catch (erro) {
@@ -234,66 +284,85 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
         {!modoAdministrador && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>Material entregue</small></span><ChevronRight /></button>}
       </section>
       <nav className={estilos.abas} aria-label="Navegação do técnico">
-        {!modoAdministrador && <button className={aba === 'solicitar' ? estilos.abaAtiva : ''} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Novo pedido</strong></span></button>}
-        <button className={aba === 'materiais' ? estilos.abaAtiva : ''} onClick={() => definirAba('materiais')}><Box /><span><strong>Materiais</strong></span></button>
-        <button className={aba === 'acompanhar' ? estilos.abaAtiva : ''} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Meus pedidos</strong></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
+        {!modoAdministrador && <button type="button" className={aba === 'solicitar' ? estilos.abaAtiva : ''} aria-current={aba === 'solicitar' ? 'page' : undefined} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Novo pedido</strong></span></button>}
+        <button type="button" className={aba === 'materiais' ? estilos.abaAtiva : ''} aria-current={aba === 'materiais' ? 'page' : undefined} onClick={() => definirAba('materiais')}><Box /><span><strong>Materiais</strong></span></button>
+        <button type="button" className={aba === 'acompanhar' ? estilos.abaAtiva : ''} aria-current={aba === 'acompanhar' ? 'page' : undefined} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Meus pedidos</strong></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
       </nav>
 
-      {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
-      {carregando && <div className={estilos.carregando}><i /><span>Sincronizando o campo...</span></div>}
+      {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`} role={mensagem.tipo === 'erro' ? 'alert' : 'status'}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button type="button" aria-label="Fechar mensagem" onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
+      {carregando && <div className={estilos.carregando} role="status" aria-live="polite"><i /><span>Sincronizando o campo...</span></div>}
 
       {!carregando && aba === 'solicitar' && <div className={`${estilos.gradePrincipal} ${etapaMovimentacao === 4 ? estilos.gradeRevisao : ''}`}>
         {etapaMovimentacao < 4 && <section className={estilos.formulario}>
-          {etapaMovimentacao === 1 && <div className={estilos.operacoes}><span className={estilos.selo}>Nova solicitação</span><h2>O que você precisa?</h2>{obrasAtivas.length ? <><button onClick={() => selecionarOperacao('receber')}><PackageCheck /><span><strong>Receber material</strong><small>Informe o que precisa na sua obra.</small></span><ChevronRight /></button><button onClick={() => selecionarOperacao('devolver')}><Box /><span><strong>Devolver material</strong><small>Peça a retirada de um material da sua obra.</small></span><ChevronRight /></button></> : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra atribuída</strong><span>Peça ao gerente para vincular uma obra ao seu usuário.</span></div>}</div>}
+          {etapaMovimentacao === 1 && <div className={estilos.operacoes}><span className={estilos.selo}>Nova solicitação</span><h2>O que você precisa?</h2>{obrasAtivas.length ? <><button type="button" onClick={() => selecionarOperacao('receber')}><PackageCheck /><span><strong>Pedir Material</strong><small>Informe o que precisa na sua obra.</small></span><ChevronRight /></button><button type="button" onClick={() => selecionarOperacao('devolver')}><Box /><span><strong>Devolver material</strong><small>Peça a retirada de um material da sua obra.</small></span><ChevronRight /></button></> : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra atribuída</strong><span>Peça ao gerente para vincular uma obra ao seu usuário.</span></div>}</div>}
           {etapaMovimentacao === 2 && <div className={estilos.escolhaObra}><span className={estilos.selo}>Escolha sua obra</span><h2>{operacao === 'receber' ? 'Destino do material:' : 'De onde o material deve ser retirado?'}</h2><div className={estilos.listaObrasEscolha}>{obrasAtivas.map((obra) => {
             const selecionada = String(obra.id) === (operacao === 'receber' ? destino : origem);
             return <button type="button" key={obra.id} className={selecionada ? estilos.obraSelecionada : ''} aria-pressed={selecionada} onClick={() => { if (operacao === 'receber') definirDestino(String(obra.id)); else trocarOrigem(String(obra.id)); }}><Building2 /><span><strong>{obra.nome}</strong><small>{obra.cidade}</small></span>{selecionada ? <Check /> : <ChevronRight />}</button>;
-          })}</div><div className={estilos.acoesEtapa}><button onClick={() => definirEtapaMovimentacao(1)}>Voltar</button><button disabled={operacao === 'receber' ? !destino : !origem} onClick={() => definirEtapaMovimentacao(3)}>Continuar <ChevronRight /></button></div></div>}
+          })}</div><div className={estilos.acoesEtapa}><button type="button" onClick={() => definirEtapaMovimentacao(1)}>Voltar</button><button type="button" disabled={operacao === 'receber' ? !destino : !origem} onClick={() => definirEtapaMovimentacao(3)}>Continuar <ChevronRight /></button></div></div>}
 
-          {etapaMovimentacao === 3 && <><div className={estilos.tituloSimples}><span className={estilos.selo}>Escolha os materiais</span><h2>{operacao === 'receber' ? 'O que você precisa?' : 'O que deve ser retirado?'}</h2><p>{operacao === 'receber' ? 'Você não precisa saber onde o material está.' : `Mostrando apenas materiais de ${nomeLocal(origem)}.`}</p></div><div className={estilos.busca}><Search size={19} /><input value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material" /></div>
+          {etapaMovimentacao === 3 && <><div className={estilos.tituloSimples}><span className={estilos.selo}>Escolha os materiais</span><h2>{operacao === 'receber' ? 'O que você precisa?' : 'O que deve ser retirado?'}</h2><p>{operacao === 'receber' ? 'Você não precisa saber onde o material está.' : `Mostrando apenas materiais de ${nomeLocal(origem)}.`}</p></div><div className={estilos.busca}><Search size={19} /><input type="search" aria-label="Buscar material" value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material" /></div>
             <div className={estilos.listaMateriais}>{materiaisParaSelecionar.length ? materiaisParaSelecionar.map((equipamento) => {
               const id = identificadorLocal(equipamento);
               const quantidade = itens.find((item) => item.id === id)?.quantidade || 0;
               const selecionado = quantidade > 0;
               const limite = operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1);
-              return <div key={equipamento.id} className={`${estilos.material} ${selecionado ? estilos.materialSelecionado : ''}`}>
-                <button type="button" className={estilos.selecionarMaterial} aria-pressed={selecionado} onClick={() => selecionado ? removerItem(id) : adicionarItem(equipamento)}>
-                <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
+              const alternarSelecao = () => selecionado ? removerItem(id) : adicionarItem(equipamento);
+              return <div key={equipamento.id} className={`${estilos.material} ${selecionado ? estilos.materialSelecionado : ''}`} onClick={(evento) => {
+                if (!window.matchMedia?.('(max-width: 640px)').matches || evento.target.closest('button, input, [data-controle-quantidade]')) return;
+                alternarSelecao();
+              }}>
+                <button type="button" className={estilos.selecionarMaterial} aria-pressed={selecionado} aria-label={`${selecionado ? 'Desmarcar' : 'Selecionar'} ${equipamento.modelo}`} onClick={alternarSelecao}>
+                <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small><span className={estilos.acaoMaterial}>{selecionado ? 'Selecionado' : 'Toque para selecionar'}</span></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
                 </button>
-                <div className={estilos.quantidade} role="group" aria-label={`Quantidade de ${equipamento.modelo}`}>
-                  <input type="number" aria-label={`Quantidade de ${equipamento.modelo}`} min="0" max={limite} step="1" value={quantidade} onChange={(evento) => {
-                    const valor = Number(evento.target.value);
-                    if (!Number.isInteger(valor) || valor < 0 || valor > limite) return;
-                    if (valor === 0) removerItem(id);
-                    else if (selecionado) definirQuantidade(id, valor);
-                    else definirItens((atuais) => [...atuais, { id, equipamento, quantidade: valor }]);
-                  }} />
+                <div className={estilos.quantidade} role="group" aria-label={`Quantidade de ${equipamento.modelo}`} data-controle-quantidade>
+                  <span className={estilos.rotuloQuantidade}>Quantidade</span>
+                  <button type="button" className={estilos.ajusteQuantidade} disabled={!selecionado} aria-label={`Diminuir quantidade de ${equipamento.modelo}`} onClick={() => ajustarQuantidade(id, quantidade - 1)}><Minus /></button>
+                  <input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} />
+                  <button type="button" className={estilos.ajusteQuantidade} disabled={selecionado && quantidade >= limite} aria-label={`Aumentar quantidade de ${equipamento.modelo}`} onClick={() => selecionado ? ajustarQuantidade(id, quantidade + 1) : adicionarItem(equipamento)}><Plus /></button>
                 </div>
               </div>;
-            }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material encontrado</strong><span>Tente buscar por outro nome.</span></div>}</div><div className={estilos.acoesEtapa}><button onClick={() => definirEtapaMovimentacao(2)}>Voltar</button><button disabled={!itens.length} onClick={() => definirEtapaMovimentacao(4)}>Revisar {quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'} <ChevronRight /></button></div></>}
+            }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material encontrado</strong><span>Tente buscar por outro nome.</span></div>}</div><div className={estilos.acoesEtapa}><button type="button" onClick={() => definirEtapaMovimentacao(2)}>Voltar</button><button type="button" disabled={!itens.length || quantidadeEmEdicaoInvalida} onClick={() => definirEtapaMovimentacao(4)}>Revisar {quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'} <ChevronRight /></button></div></>}
         </section>}
 
         {etapaMovimentacao === 4 && <aside className={estilos.resumoPedido} aria-label="Resumo da solicitação">
           <div className={estilos.resumoTopo}><span><ClipboardList /></span><div><small>Sua solicitação</small><strong>{quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'}</strong></div></div>
           <div className={estilos.miniRota}><span><MapPin />{operacao === 'receber' ? `Entregar em ${nomeLocal(destino)}` : `Retirar de ${nomeLocal(origem)}`}</span></div>
-          <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><input type="number" aria-label={`Quantidade de ${equipamento.modelo}`} min="1" max={operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1)} step="1" value={quantidade} onChange={(evento) => definirQuantidade(id, evento.target.value)} /></div></div>)}</div>
+          <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => {
+            const limite = operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1);
+            return <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} /></div></div>;
+          })}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
-          {!mostrarObservacao ? <button className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
-          <button className={estilos.enviar} disabled={!podeEnviar} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao gerente <ChevronRight /></>}</button>
+          {!mostrarObservacao ? <button type="button" className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
+          <button type="button" className={estilos.enviar} disabled={!podeEnviar} aria-busy={enviando} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao gerente <ChevronRight /></>}</button>
           <p className={estilos.seguranca}><ShieldCheck /> O gerente aceitará ou rejeitará esta solicitação.</p>
-          <button className={estilos.voltarRevisao} onClick={() => definirEtapaMovimentacao(3)}>Voltar e corrigir</button>
+          <button type="button" className={estilos.voltarRevisao} onClick={() => definirEtapaMovimentacao(3)}>Voltar e corrigir</button>
         </aside>}
       </div>}
 
       {!carregando && aba === 'acompanhar' && <section className={estilos.acompanhamento}>
         <div className={estilos.cabecalhoHistorico}><div><h2>Meus pedidos</h2></div></div>
-        <div className={estilos.listaSolicitacoes}>{solicitacoes.length ? solicitacoes.map((solicitacao) => <article key={solicitacao.id} className={estilos.cartaoSolicitacao} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>
-          <div className={estilos.statusSolicitacao}><span>{iconeEtapa(solicitacao.status)}</span><div><small>Solicitação #{String(solicitacao.id).padStart(4, '0')}</small><strong>{rotuloStatus(solicitacao)}</strong></div><time>{new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
-          <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao)}</p>
-          <strong className={estilos.destinoSolicitacao}>{solicitacao.obraDestinoId ? nomeLocal(solicitacao.obraDestinoId) : 'Retirada da obra'}</strong>
-          <div className={estilos.materiaisCartao}>{agruparMateriaisPedido(solicitacao.materiais).map((material) => <span key={material.chave}><b>{material.quantidade}×</b> {material.nome}</span>)}</div>
-          {!modoAdministrador && solicitacao.status === 'Em trânsito' && solicitacao.obraDestinoId && <button className={estilos.acaoMovimentacao} onClick={() => confirmarRecebimento(solicitacao)}><PackageCheck /> Confirmar que recebi</button>}
-        </article>) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3>{!modoAdministrador && <button onClick={() => definirAba('solicitar')}>Criar solicitação</button>}</div>}</div>
+        <div className={estilos.listaSolicitacoes}>{solicitacoes.length ? solicitacoes.map((solicitacao) => {
+          const materiais = agruparMateriaisPedido(solicitacao.materiais);
+          const totalMateriais = materiais.reduce((total, material) => total + material.quantidade, 0);
+          const possuiDestino = Boolean(solicitacao.obraDestinoId);
+          const localPedido = possuiDestino ? nomeLocal(solicitacao.obraDestinoId) : solicitacao.obraOrigemId ? nomeLocal(solicitacao.obraOrigemId) : 'Local não disponível';
+          return <article key={solicitacao.id} className={estilos.cartaoSolicitacao} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>
+            <header className={estilos.topoCartaoSolicitacao}>
+              <div className={estilos.identificacaoSolicitacao}><span>{iconeEtapa(solicitacao.status)}</span><div><small>Pedido</small><strong>#{String(solicitacao.id).padStart(4, '0')}</strong></div></div>
+              <span className={estilos.statusSolicitacao}>{rotuloStatus(solicitacao)}</span>
+            </header>
+            <div className={estilos.detalhesSolicitacao}>
+              <div className={estilos.destinoSolicitacao}><MapPin /><span><small>{possuiDestino ? 'Destino' : 'Origem'}</small><strong>{localPedido}</strong></span></div>
+              <time dateTime={solicitacao.dataSolicitacao || undefined}><small>Solicitado em</small>{formatarDataSolicitacao(solicitacao.dataSolicitacao)}</time>
+            </div>
+            <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao)}</p>
+            <section className={estilos.materiaisCartao} aria-label="Materiais do pedido">
+              <header><span>Materiais</span><b>{totalMateriais} {totalMateriais === 1 ? 'item' : 'itens'}</b></header>
+              <ul>{materiais.map((material) => <li key={material.chave}><span>{material.nome}</span><b>{material.quantidade}</b></li>)}</ul>
+            </section>
+            {!modoAdministrador && solicitacao.status === 'Em trânsito' && solicitacao.obraDestinoId && <button type="button" className={estilos.acaoMovimentacao} disabled={confirmandoRecebimentoId !== null} aria-busy={confirmandoRecebimentoId === solicitacao.id} onClick={() => confirmarRecebimento(solicitacao)}><PackageCheck /> {confirmandoRecebimentoId === solicitacao.id ? 'Confirmando...' : 'Confirmar recebimento'}</button>}
+          </article>;
+        }) : <div className={estilos.semSolicitacoes}><ClipboardList /><h3>Nenhuma solicitação ainda</h3>{!modoAdministrador && <button type="button" onClick={() => definirAba('solicitar')}>Criar solicitação</button>}</div>}</div>
       </section>}
 
       {!carregando && aba === 'materiais' && <section className={estilos.materiaisObras}>

@@ -25,7 +25,7 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, re
         {buscaAtiva && <span className={estilos.searchResult} aria-live="polite">{resultadoBusca} {resultadoBusca === 1 ? 'resultado' : 'resultados'}</span>}
         {buscaAtiva && <button type="button" className={estilos.searchClear} onClick={() => aoBuscar('')} aria-label="Limpar pesquisa" title="Limpar pesquisa"><X size={14} /></button>}
       </div>
-      {ehAdmin && <button type="button" className={estilos.mobileActionsToggle} onClick={() => definirAcoesAbertas((abertas) => !abertas)} aria-expanded={acoesAbertas} aria-controls="acoes-rapidas-mobile">{acoesAbertas ? <X size={17} /> : <Menu size={17} />}<span>Ações</span></button>}
+      {ehAdmin && <button type="button" className={estilos.mobileActionsToggle} onClick={() => definirAcoesAbertas((abertas) => !abertas)} aria-label={acoesAbertas ? 'Fechar ações rápidas' : 'Abrir ações rápidas'} title={acoesAbertas ? 'Fechar ações rápidas' : 'Ações rápidas'} aria-expanded={acoesAbertas} aria-controls="acoes-rapidas-mobile">{acoesAbertas ? <X size={17} /> : <Menu size={17} />}<span>Ações</span></button>}
       {ehAdmin && <div id="acoes-rapidas-mobile" className={`${estilos.quickActions} ${acoesAbertas ? estilos.quickActionsOpen : ''}`}>
         <button onClick={() => { definirAcoesAbertas(false); aoAbrirNovoFuncionario(); }} className={estilos.btnGhost}><Plus size={15} /> Funcionário</button>
         <button onClick={() => { definirAcoesAbertas(false); aoAbrirNovoEquipamento(); }} className={estilos.btnGhost}><Plus size={15} /> Equipamento</button>

@@ -22,6 +22,7 @@
   --campo-info-soft: #e0edf6;
   --campo-shadow: 0 14px 34px rgba(33, 47, 39, .07);
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--campo-bg);
   color: var(--campo-text);
   font-family: var(--font-body);
@@ -514,6 +515,9 @@
 }
 .dadosMaterial strong { font-size: 13px; }
 .dadosMaterial small { margin-top: 3px; color: var(--campo-muted); font-size: 11px; }
+.acaoMaterial,
+.rotuloQuantidade,
+.quantidade .ajusteQuantidade { display: none; }
 .disponivel { display: flex; flex-direction: column; text-align: right; }
 .disponivel b { color: var(--campo-green); font: 750 15px var(--font-display); }
 .disponivel small {
@@ -856,112 +860,168 @@
   gap: 12px;
 }
 .cartaoSolicitacao {
+  --etapa-cor: var(--campo-orange-dark);
   min-width: 0;
   overflow: hidden;
-  padding: 15px;
+  position: relative;
+  padding: 0 0 16px;
   border: 1px solid var(--campo-border);
-  border-top: 3px solid var(--campo-orange);
-  border-radius: 13px;
+  border-radius: 9px;
   background: var(--campo-raised);
+  box-shadow: 0 8px 24px rgba(24, 39, 31, .055);
 }
-.cartaoSolicitacao[data-etapa='aceita'] { border-top-color: var(--campo-info); }
-.cartaoSolicitacao[data-etapa='finalizada'] { border-top-color: var(--campo-success); }
-.cartaoSolicitacao[data-etapa='rejeitada'] { border-top-color: var(--campo-danger); }
-.statusSolicitacao {
+.cartaoSolicitacao::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--etapa-cor);
+}
+.cartaoSolicitacao[data-etapa='aceita'] { --etapa-cor: var(--campo-info); }
+.cartaoSolicitacao[data-etapa='finalizada'] { --etapa-cor: var(--campo-success); }
+.cartaoSolicitacao[data-etapa='rejeitada'] { --etapa-cor: var(--campo-danger); }
+.topoCartaoSolicitacao {
   min-width: 0;
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto;
+  min-height: 64px;
+  padding: 13px 16px 12px 18px;
+  border-bottom: 1px solid var(--campo-border);
+  display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: space-between;
+  gap: 12px;
 }
-.statusSolicitacao > span {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--campo-orange-soft);
-  color: var(--campo-orange-dark);
-  display: grid;
-  place-items: center;
-}
-.cartaoSolicitacao[data-etapa='finalizada'] .statusSolicitacao > span {
-  background: var(--campo-success-soft);
-  color: var(--campo-success);
-}
-.cartaoSolicitacao[data-etapa='rejeitada'] .statusSolicitacao > span {
-  background: var(--campo-danger-soft);
-  color: var(--campo-danger);
-}
-.cartaoSolicitacao[data-etapa='aceita'] .statusSolicitacao > span {
-  background: var(--campo-info-soft);
-  color: var(--campo-info);
-}
-.statusSolicitacao svg { width: 16px; }
-.statusSolicitacao > div { min-width: 0; display: flex; flex-direction: column; }
-.statusSolicitacao small { color: var(--campo-muted); font: 8px var(--font-mono); }
-.statusSolicitacao strong {
-  margin-top: 2px;
-  font-size: 10px;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-.statusSolicitacao time {
-  color: var(--campo-muted);
-  font-size: 8px;
-  white-space: nowrap;
-}
-.trajetoCartao {
+.identificacaoSolicitacao {
   min-width: 0;
-  margin: 13px 0 10px;
-  padding: 10px;
-  border-radius: 10px;
-  background: var(--campo-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.identificacaoSolicitacao > span {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 1px solid color-mix(in srgb, var(--etapa-cor) 30%, var(--campo-border));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--etapa-cor) 8%, var(--campo-raised));
+  color: var(--etapa-cor);
   display: grid;
   place-items: center;
-  text-align: center;
 }
-.trajetoCartao span { font-size: 9px; font-weight: 750; line-height: 1.4; overflow-wrap: anywhere; }
-.fluxoSolicitacao {
-  margin: 13px 0 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: var(--campo-orange-soft);
-  color: var(--campo-orange-dark);
-  font-size: 10px;
+.identificacaoSolicitacao svg { width: 15px; }
+.identificacaoSolicitacao > div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.identificacaoSolicitacao small,
+.detalhesSolicitacao small {
+  color: var(--campo-muted);
+  font-size: 7px;
   font-weight: 800;
-  line-height: 1.45;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.identificacaoSolicitacao strong {
+  color: var(--campo-text);
+  font: 750 13px var(--font-mono);
+  letter-spacing: .03em;
+}
+.statusSolicitacao {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, var(--etapa-cor) 34%, var(--campo-border));
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--etapa-cor) 8%, var(--campo-raised));
+  color: var(--etapa-cor);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .07em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.detalhesSolicitacao {
+  min-width: 0;
+  padding: 14px 16px 0 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
 }
 .destinoSolicitacao {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 11px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+.destinoSolicitacao > svg { width: 16px; height: 16px; margin-top: 2px; color: var(--campo-muted); }
+.destinoSolicitacao > span { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.destinoSolicitacao strong { font-size: 11px; line-height: 1.45; overflow-wrap: anywhere; }
+.detalhesSolicitacao time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  color: var(--campo-muted);
+  font: 8px var(--font-mono);
+  white-space: nowrap;
+}
+.fluxoSolicitacao {
+  margin: 13px 16px 14px 18px;
+  padding: 2px 0 2px 10px;
+  border-left: 2px solid var(--etapa-cor);
+  color: var(--campo-muted);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.materiaisCartao {
+  min-width: 0;
+  margin: 0 16px 0 18px;
+  border: 1px solid var(--campo-border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.materiaisCartao > header {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--campo-border);
+  background: var(--campo-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.materiaisCartao > header span {
+  color: var(--campo-muted);
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.materiaisCartao > header b { color: var(--campo-muted); font: 750 8px var(--font-mono); }
+.materiaisCartao ul { margin: 0; padding: 0; list-style: none; }
+.materiaisCartao li {
+  min-width: 0;
+  min-height: 36px;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.materiaisCartao li + li { border-top: 1px solid var(--campo-border); }
+.materiaisCartao li span {
+  min-width: 0;
+  font-size: 9px;
+  font-weight: 650;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
-.materiaisCartao { min-width: 0; display: flex; flex-wrap: wrap; gap: 5px; }
-.materiaisCartao > span {
-  max-width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--campo-border);
-  border-radius: 8px;
+.materiaisCartao li b {
+  min-width: 28px;
+  padding: 4px 6px;
+  border-radius: 4px;
   background: var(--campo-soft);
-  font-size: 9px;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-.materiaisCartao small {
-  display: block;
-  margin-top: 2px;
-  color: var(--campo-muted);
-  font: 7px var(--font-mono);
-  overflow-wrap: anywhere;
-}
-.notaCartao {
-  margin: 11px 0 0;
-  color: var(--campo-muted);
-  font-size: 9px;
-  font-style: italic;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
+  color: var(--campo-text);
+  font: 800 9px var(--font-mono);
+  text-align: center;
 }
 .cartaoSolicitacao > span {
   display: block;
@@ -970,7 +1030,23 @@
   font-size: 9px;
   text-align: center;
 }
-.acaoMovimentacao { margin-top: 12px; padding: 0 12px; }
+.acaoMovimentacao {
+  width: calc(100% - 34px);
+  min-height: 42px;
+  margin: 14px 16px 0 18px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--campo-green-action);
+  color: var(--campo-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
 .acaoMovimentacao svg { width: 16px; }
 .semSolicitacoes {
   grid-column: 1/-1;
@@ -1165,6 +1241,76 @@
 }
 
 @media (max-width: 640px) {
+  .listaMateriais { gap: 10px; padding: 2px 0 4px; }
+  .listaMateriais .material {
+    min-height: 0;
+    padding: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 5px 16px rgba(24, 63, 50, .05);
+    touch-action: manipulation;
+  }
+  .listaMateriais .materialSelecionado {
+    border-color: color-mix(in srgb, var(--campo-success) 72%, var(--campo-border));
+    box-shadow: 0 7px 20px rgba(36, 107, 78, .12), inset 0 0 0 1px color-mix(in srgb, var(--campo-success) 28%, transparent);
+  }
+  .selecionarMaterial {
+    width: 100%;
+    min-height: 76px;
+    align-self: stretch;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 11px;
+    padding: 12px;
+  }
+  .iconeMaterial { width: 44px; height: 44px; border-radius: 13px; }
+  .iconeMaterial svg { width: 19px; }
+  .dadosMaterial strong { font-size: 14px; }
+  .acaoMaterial {
+    display: block;
+    margin-top: 5px;
+    color: var(--campo-orange-dark);
+    font-size: 9px;
+    font-weight: 750;
+  }
+  .materialSelecionado .acaoMaterial { color: var(--campo-success); }
+  .material .quantidade { display: none; }
+  .materialSelecionado .quantidade {
+    min-height: 56px;
+    margin: 0 12px 12px;
+    padding: 6px 7px 6px 12px;
+    justify-self: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px 68px 42px;
+    align-items: center;
+    gap: 3px;
+    border: 1px solid color-mix(in srgb, var(--campo-success) 22%, var(--campo-border));
+    border-radius: 13px;
+    background: color-mix(in srgb, var(--campo-raised) 72%, var(--campo-green-soft));
+  }
+  .rotuloQuantidade { display: block; color: var(--campo-muted); font-size: 10px; font-weight: 700; }
+  .quantidade .ajusteQuantidade {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    border-radius: 10px;
+    background: var(--campo-raised);
+    box-shadow: inset 0 0 0 1px var(--campo-border);
+    touch-action: manipulation;
+  }
+  .material .quantidade input {
+    width: 68px;
+    min-height: 42px;
+    padding: 6px 3px;
+    border-color: var(--campo-border-strong);
+    border-radius: 10px;
+    background: var(--campo-raised);
+    font-weight: 750;
+  }
+  .pagina:has(.quantidade input:focus) .abas,
+  .pagina:has(.busca input:focus) .abas { display: none; }
   .cabecalho { min-height: 60px; padding: 0 12px; }
   .marca img { width: 72px; }
   .marca span { display: none; }
@@ -1259,15 +1405,12 @@
   .topoInventario label { min-width: 0; width: 100%; }
   .faixaObra { padding: 12px; align-items: flex-start; }
   .blocoInventario { padding: 13px; }
-  .statusSolicitacao {
-    grid-template-columns: 36px minmax(0, 1fr);
-    align-items: start;
-  }
-  .statusSolicitacao time {
-    grid-column: 2;
-    margin-top: -7px;
-    white-space: normal;
-  }
+  .topoCartaoSolicitacao { min-height: 60px; padding: 12px 13px 11px 15px; }
+  .detalhesSolicitacao { padding: 13px 13px 0 15px; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .detalhesSolicitacao time { align-items: baseline; flex-direction: row; gap: 6px; white-space: normal; }
+  .fluxoSolicitacao { margin: 12px 13px 13px 15px; }
+  .materiaisCartao { margin-inline: 15px 13px; }
+  .acaoMovimentacao { width: calc(100% - 28px); margin: 13px 13px 0 15px; }
   .acaoMovimentacao { min-height: 48px; }
   .busca input, .quantidade input, .observacao textarea,
   .topoInventario select { font-size: 16px; }

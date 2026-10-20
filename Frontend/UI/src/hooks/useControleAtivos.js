@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { localizarEquipamentos } from '../utils/localizacaoEquipamentos';
 import { criarPedidoMovimentacao } from '../utils/pedidoMovimentacao';
 import { obterHistoricoEquipamento } from '../utils/historicoEquipamento';
+import { ehFuncionarioEstoquista } from '../utils/classificacaoFuncionario';
 import { apiAtividades, apiCategoriasEquipamento, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
 
 export function useControleAtivos() {
@@ -63,7 +64,8 @@ export function useControleAtivos() {
   }), [equipamentos, equipamentosLocalizados]);
 
   const tecnicosCadastrados = useMemo(() => funcionarios
-    .filter(({ status, cargo, arquivado }) => !arquivado && status === 'Ativo' && !cargo.toLocaleLowerCase('pt-BR').includes('gerente'))
+    .filter((funcionario) => !funcionario.arquivado && funcionario.status === 'Ativo' &&
+      !funcionario.cargo.toLocaleLowerCase('pt-BR').includes('gerente') && !ehFuncionarioEstoquista(funcionario))
     .map(({ nome }) => nome)
     .sort((primeiroNome, segundoNome) => primeiroNome.localeCompare(segundoNome, 'pt-BR')),
   [funcionarios]);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeftRight, Download, FileText, LayoutGrid, List, MapPin, Pencil, Wrench } from 'lucide-react';
 import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
@@ -11,6 +11,10 @@ const CHAVE_VISUALIZACAO = 'era-equipamentos-visualizacao';
 function visualizacaoInicial() {
   try { return localStorage.getItem(CHAVE_VISUALIZACAO) === 'lista' ? 'lista' : 'cartoes'; }
   catch { return 'cartoes'; }
+}
+function telaCompactaInicial() {
+  try { return window.matchMedia('(max-width: 768px)').matches; }
+  catch { return false; }
 }
 
 function BotaoMover({ equipamento, aoMover, estilos }) {
@@ -67,10 +71,19 @@ function ListaEquipamentos({ grupo, buscarObraPorId, acoes, estilos }) {
 
 export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPorId, tipoSelecionado, statusSelecionado, podeEditar, aoSelecionarTipo, aoSelecionarStatus, aoAbrirHistorico, aoImprimirHistorico, aoEditar, aoMover, aoManutencao, estilos }) {
   const [visualizacao, definirVisualizacao] = useState(visualizacaoInicial);
+  const [telaCompacta, definirTelaCompacta] = useState(telaCompactaInicial);
+  useEffect(() => {
+    const consulta = window.matchMedia('(max-width: 768px)');
+    const atualizar = () => definirTelaCompacta(consulta.matches);
+    atualizar();
+    consulta.addEventListener('change', atualizar);
+    return () => consulta.removeEventListener('change', atualizar);
+  }, []);
   const alterarVisualizacao = (modo) => {
     definirVisualizacao(modo);
     try { localStorage.setItem(CHAVE_VISUALIZACAO, modo); } catch { /* A preferência permanece nesta tela. */ }
   };
+  const visualizacaoAtual = telaCompacta ? 'cartoes' : visualizacao;
   const acoes = { podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, estilos };
   const grupos = [{ titulo: 'Ferramentas ativas', itens: equipamentos.filter((e) => !e.arquivado) }, { titulo: 'Ferramentas arquivadas', itens: equipamentos.filter((e) => e.arquivado) }];
   return <>
@@ -85,7 +98,7 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
       <button type="button" aria-pressed={visualizacao === 'cartoes'} onClick={() => alterarVisualizacao('cartoes')}><LayoutGrid size={16} aria-hidden="true" />Cartões</button>
       <button type="button" aria-pressed={visualizacao === 'lista'} onClick={() => alterarVisualizacao('lista')}><List size={16} aria-hidden="true" />Lista</button>
     </div></div>
-    <div className={estilos.registrosAgrupados}>{grupos.map((grupo) => grupo.itens.length > 0 && <section key={grupo.titulo} className={estilos.registroGrupo}><header><strong>{grupo.titulo}</strong><b>{grupo.itens.length}</b></header>{visualizacao === 'lista' ? <ListaEquipamentos grupo={grupo} buscarObraPorId={buscarObraPorId} acoes={acoes} estilos={estilos} /> : <div className={estilos.equipGrid}>
+    <div className={estilos.registrosAgrupados}>{grupos.map((grupo) => grupo.itens.length > 0 && <section key={grupo.titulo} className={estilos.registroGrupo}><header><strong>{grupo.titulo}</strong><b>{grupo.itens.length}</b></header>{visualizacaoAtual === 'lista' ? <ListaEquipamentos grupo={grupo} buscarObraPorId={buscarObraPorId} acoes={acoes} estilos={estilos} /> : <div className={estilos.equipGrid}>
       {grupo.itens.map((equipamento) => {
         const IconeTipo = iconePorTipoEquipamento[equipamento.tipo] || Wrench;
 

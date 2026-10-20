@@ -1,9 +1,10 @@
-import { ClipboardCheck, PackageSearch, Pencil } from 'lucide-react';
+import { BriefcaseBusiness, ClipboardCheck, Mail, PackageSearch, Pencil, Phone } from 'lucide-react';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData } from '../../utils/datas';
 import styles from './TecnicoCard.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
+import { ehFuncionarioEstoquista } from '../../utils/classificacaoFuncionario';
 
 export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar, aoAuditar }) {
   const { nome, cargo, email, telefone, status } = funcionario;
@@ -16,6 +17,8 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
     .toUpperCase();
 
   const buscarObraDoEquipamento = (obraId) => (obraId ? todasAsObras.find((obra) => obra.id === obraId) : null);
+  const equipamentosAuditaveis = equipamentos.filter((equipamento) => equipamento.auditavel).length;
+  const estoquista = ehFuncionarioEstoquista(funcionario);
 
   return (
     <div className={styles.card}>
@@ -24,33 +27,33 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
         <div className={styles.headerInfo}>
           <div className={styles.name}>{nome}</div>
           <div className={styles.roleLine}><span>{cargo}</span><b data-status={status}>{status}</b></div>
-          <div className={styles.contactList}><span>{email}</span>{telefone && <span>{telefone}</span>}</div>
-          <div className={styles.meta}>
+          <div className={styles.contactList}><span><Mail size={13} />{email}</span>{telefone && <span><Phone size={13} />{telefone}</span>}</div>
+          {!estoquista && <div className={styles.meta}>
             <span className={styles.pill}>
-              {obras.length} {obras.length === 1 ? 'obra' : 'obras'}
+              <BriefcaseBusiness size={13} /><strong>{obras.length}</strong> {obras.length === 1 ? 'obra' : 'obras'}
             </span>
             <span className={styles.pill}>
-              {equipamentos.length} {equipamentos.length === 1 ? 'material' : 'materiais'}
+              <PackageSearch size={13} /><strong>{equipamentos.length}</strong> {equipamentos.length === 1 ? 'material' : 'materiais'}
             </span>
-          </div>
+          </div>}
         </div>
         {podeEditar && <button type="button" className={styles.editButton} onClick={() => aoEditar(funcionario)} aria-label={`Editar dados de ${nome}`}><Pencil size={15} /> Editar</button>}
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Obras sob responsabilidade</div>
+      {!estoquista && <div className={styles.section}>
+        <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Obras sob responsabilidade</div><span>{obras.length}</span></div>
         {obras.length > 0 ? <div className={styles.obraList}>
           {obras.map((o) => (
               <div key={o.id} className={styles.obraRow}>
-                <span className={styles.obraNome}>{o.nome}</span>
+                <div className={styles.obraIdentity}><span className={styles.obraIcon}><BriefcaseBusiness size={14} /></span><span className={styles.obraNome}>{o.nome}</span></div>
                 <IndicadorStatusObra status={o.status} />
               </div>
           ))}
         </div> : <div className={styles.empty}>Nenhuma obra atribuída no momento.</div>}
-      </div>
+      </div>}
 
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Materiais registrados com o técnico</div>
+      {!estoquista && <div className={styles.section}>
+        <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Materiais registrados com o técnico</div><span>{equipamentos.length}</span></div>
         {equipamentos.length === 0 ? (
           <div className={styles.empty}>Nenhum material registrado no momento.</div>
         ) : (
@@ -75,7 +78,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
                     <span className={styles.rowStatus}>
                       <IndicadorStatus status={e.status} />
                     </span>
-                    {serie && <span className={styles.rowSerie} data-label="Série">{serie}</span>}
+                    <span className={styles.rowSerie} data-label="Série">{serie || '—'}</span>
                     <span className={styles.rowLocal} data-label="Local">
                       {obra ? obra.nome : 'Depósito central'}
                     </span>
@@ -86,10 +89,9 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
             </div>
           </div>
         )}
-      </div>
-      {aoAuditar && <section className={styles.section}>
-        <div className={styles.sectionTitle}>Vistorias dos materiais</div>
-        <p className={styles.auditHint}>{equipamentos.filter((e) => e.auditavel).length} registro(s) marcado(s) como auditável. Gere a ficha de vistoria e registre depois as condições encontradas.</p>
+      </div>}
+      {!estoquista && aoAuditar && <section className={`${styles.section} ${styles.auditSection}`}>
+        <div className={styles.auditContent}><span className={styles.auditIcon}><ClipboardCheck size={18} aria-hidden="true" /></span><div><div className={styles.sectionTitle}>Vistorias dos materiais</div><p className={styles.auditHint}>{equipamentosAuditaveis === 0 ? 'Nenhum material marcado para vistoria.' : `${equipamentosAuditaveis} ${equipamentosAuditaveis === 1 ? 'material marcado' : 'materiais marcados'} para vistoria.`} Gere a ficha e registre as condições encontradas.</p></div></div>
         <button type="button" className={styles.auditButton} onClick={() => aoAuditar(funcionario)}><ClipboardCheck size={16} aria-hidden="true" /> Gerenciar vistorias</button>
       </section>}
     </div>
