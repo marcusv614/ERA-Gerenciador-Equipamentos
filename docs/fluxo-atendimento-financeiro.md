@@ -2,6 +2,16 @@
 
 O Kanban da Gerência também atende o Financeiro. Pedidos de catálogo seguem a primeira análise da Gerência (técnicos) ou do RH (TSTs/EPI) e depois ficam em **Aguardando financeiro**.
 
+Pedidos ainda pendentes da primeira aprovação não aparecem no painel do Financeiro, inclusive na prévia financeira do administrador. Rejeições feitas nessa primeira etapa também ficam fora da fila financeira. Transportes diretos autorizados pela Gerência/RH seguem ao estoque e não entram nessa fila. Solicitações criadas pelo próprio gerente/RH já registram sua primeira autorização.
+
+## Acompanhamento pela Gerência/RH
+
+O Kanban separa **Aguardando aprovação**, **No Financeiro**, **Compra e separação**, **Em trânsito**, **Concluídas** e **Rejeitadas**. O painel financeiro começa na etapa **No Financeiro**. A lista por técnico e os cartões mostram o estado detalhado; ao abrir um pedido, a seção **Acompanhamento do pedido** apresenta a sequência das etapas, a situação atual e o responsável.
+
+Compra autorizada não significa compra iniciada. Após a aprovação financeira, o estoque registra **Iniciar compra / providências** (ou **Iniciar providências**, quando não há compra). Esse registro informa à Gerência/RH que o atendimento começou. A primeira entrada de compra também registra o início automaticamente, sem exigir um clique anterior. Repetir a ação não duplica o evento.
+
+As entradas e a separação atualizam o acompanhamento: compra em andamento, compra parcialmente recebida, compra recebida aguardando separação e pronto para envio. O trânsito e a conclusão seguem as confirmações habituais. Atendimentos parciais são identificados para não apresentar uma remessa como conclusão de todo o pedido original. Não são criadas datas ou recebimentos presumidos; os autores e horários registrados podem ser consultados no histórico.
+
 O Financeiro define, por material, quais equipamentos existentes serão utilizados, suas origens e quantidades, e a quantidade para compra. Pode autorizar uma compra mesmo havendo saldo em outra obra, registrando uma justificativa para preservar o equipamento em uso. A soma de transporte e compra deve corresponder exatamente ao pedido.
 
 Salvar o plano registra as instruções e a justificativa no histórico, visível à Gerência/RH. Aprovar valida novamente o saldo e reserva os equipamentos escolhidos. O estoque recebe o pedido somente após essa aprovação.

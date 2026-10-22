@@ -86,6 +86,7 @@ public class SolicitacaoService {
         if (gerencia) {
             s.setStatus(transporteDireto?(s.getObraDestino()==null?"Aguardando coleta":"Aprovada"):"Aguardando financeiro");
             s.setDataDecisao(LocalDate.now());
+            s.registrarEventoFinanceiro("APROVACAO_INICIAL",transporteDireto?"Transporte direto autorizado pela Gerência/RH; não exige análise financeira.":"Pedido criado e aprovado na primeira etapa pela Gerência/RH, encaminhado ao Financeiro.",usuario);
         }
         Solicitacao salva = repository.save(s);
         return gerencia ? resposta(salva) : respostaTecnico(salva, obras.idsPermitidos(login));
@@ -138,7 +139,9 @@ public class SolicitacaoService {
         Solicitacao s=buscarParaAtualizacao(id);Usuario autor=usuarios.buscarPorLogin(login);validarEscopoRh(s,autor);
         if("Pendente".equals(s.getStatus())){
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(autor.getPerfil()))throw new AccessDeniedException("A primeira análise cabe à Gerência ou ao RH.");
-            return aprovarPrimeiraEtapa(s);
+            aprovarPrimeiraEtapa(s);
+            s.registrarEventoFinanceiro("APROVACAO_INICIAL","Pedido aprovado pela Gerência/RH e encaminhado ao Financeiro.",autor);
+            return resposta(s);
         }
         if("Aguardando financeiro".equals(s.getStatus())){
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("A análise financeira cabe ao Financeiro.");
@@ -170,7 +173,17 @@ public class SolicitacaoService {
         throw new RegraNegocioException("Defina as quantidades de compra e transporte no plano financeiro antes de aprovar.");
     }
     @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao){Solicitacao s=buscarParaAtualizacao(id);if(!"Aprovada".equals(s.getStatus()))throw new RegraNegocioException("A entrada da compra só pode ser registrada para uma movimentação aprovada.");MaterialSolicitado material=s.getMateriais().stream().filter(m->m.getId().equals(materialId)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Material não encontrado na solicitação."));if(material.getQuantidadeCompra()<=0)throw new RegraNegocioException("Não existe compra solicitada para este material.");int saldoEntrada=material.getQuantidadeCompra()-material.getQuantidadeEntradaEstoque();if(quantidade>saldoEntrada)throw new RegraNegocioException("A quantidade para entrada não pode superar o saldo de "+saldoEntrada+" unidade(s).");int jaAdquiridoSemEntrada=material.getQuantidadeAdquirida()-material.getQuantidadeEntradaEstoque();int novaAquisicao=Math.max(0,quantidade-jaAdquiridoSemEntrada);Equipamento recebido=equipamentoService.registrarEntradaCompra(material.getNome(),material.getCatalogoChave(),quantidade,numeroNota,identificacao,s.getId());if(!s.getPlanoFinanceiro().isEmpty()){recebido.setQuantidadeReservada(recebido.getQuantidadeReservada()+quantidade);s.adicionarEntradaCompra(new Solicitacao.OrigemPlanejada(recebido.getId(),recebido.getSerie(),null,quantidade,material.getCatalogoChave(),material.getNome()));}if(novaAquisicao>0)material.registrarAquisicao(novaAquisicao);material.registrarEntradaEstoque(quantidade);return resposta(s);}
-    @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao,String login){validarOperadorEstoque(login);return registrarAquisicao(id,materialId,quantidade,numeroNota,identificacao);}
+    @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao,String login){validarOperadorEstoque(login);registrarAquisicao(id,materialId,quantidade,numeroNota,identificacao);Solicitacao s=buscarParaAtualizacao(id);registrarInicioAtendimento(s,usuarios.buscarPorLogin(login));return resposta(s);}
+    @Transactional public SolicitacaoDto.Resposta iniciarAtendimento(Long id,String login){
+        validarOperadorEstoque(login);Solicitacao s=buscarParaAtualizacao(id);
+        if(!"Aprovada".equals(s.getStatus())||s.getPlanoFinanceiro().isEmpty()||!s.isReservasPlanoAtivas()||s.getMateriais().stream().anyMatch(m->m.getIdentificacao()!=null&&!m.getIdentificacao().isBlank()))throw new RegraNegocioException("O início do atendimento exige um plano aprovado pelo Financeiro, ainda não separado.");
+        registrarInicioAtendimento(s,usuarios.buscarPorLogin(login));return resposta(s);
+    }
+    private void registrarInicioAtendimento(Solicitacao s,Usuario autor){
+        if(s.getEventosFinanceiros().stream().anyMatch(e->"INICIO_ATENDIMENTO".equals(e.tipo())))return;
+        boolean compra=s.getMateriais().stream().anyMatch(m->m.getQuantidadeCompra()>0);
+        s.registrarEventoFinanceiro("INICIO_ATENDIMENTO",compra?"O estoque iniciou a compra e as providências dos materiais autorizados.":"O estoque iniciou a coleta e a separação dos materiais autorizados.",autor);
+    }
     @Transactional public List<SolicitacaoDto.Resposta> distribuir(Long id,SolicitacaoDto.Distribuicao dados) {
         Solicitacao original=buscarParaAtualizacao(id);
         if(!"Aprovada".equals(original.getStatus()))throw new RegraNegocioException("Somente uma solicitação aprovada pode ser distribuída.");
@@ -445,7 +458,7 @@ public class SolicitacaoService {
     }
     private boolean solicitacaoEhEpi(Solicitacao solicitacao){return !solicitacao.getMateriais().isEmpty()&&solicitacao.getMateriais().stream().allMatch(m->EscopoEquipamento.catalogoEhEpi(m.getCatalogoChave()));}
     private boolean pertenceAoRh(Solicitacao solicitacao){return solicitacaoEhEpi(solicitacao)&&usuarios.funcionarioTemPerfilAtivo(solicitacao.getTecnico(),PerfilUsuario.TST);}
-    private boolean visivelFinanceiro(Solicitacao s){return Set.of("Aguardando financeiro","Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus())||("Rejeitada".equals(s.getStatus())&&!s.getEventosFinanceiros().isEmpty());}
+    private boolean visivelFinanceiro(Solicitacao s){return !s.isMovimentacaoDireta()&&(Set.of("Aguardando financeiro","Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus())||("Rejeitada".equals(s.getStatus())&&s.getEventosFinanceiros().stream().anyMatch(e->"REJEICAO".equals(e.tipo()))));}
     private boolean liberadaParaEstoque(Solicitacao s){return Set.of("Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus());}
     private void validarEscopoRh(Solicitacao solicitacao,String login){validarEscopoRh(solicitacao,usuarios.buscarPorLogin(login));}
     private void validarEscopoRh(Solicitacao solicitacao,Usuario usuario){if(usuario.getPerfil()==PerfilUsuario.RH&&!pertenceAoRh(solicitacao))throw new AccessDeniedException("O RH pode operar somente solicitações de EPI dos TSTs.");}

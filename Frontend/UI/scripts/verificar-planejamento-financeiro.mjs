@@ -18,6 +18,16 @@ const equipamentos = [
 ].map((e) => ({ ...e, modelo: materiais[0].nome, catalogoChave: 'escada', status: e.obraId ? 'Em campo' : 'Em estoque' }));
 equipamentos.push({ id: 5, serie: 'ENTRADA-DO-PEDIDO', modelo: materiais[1].nome, catalogoChave: 'capacete', status: 'Em estoque', obraId: null, quantidadeDisponivel: 1 });
 const pasta = path.resolve('node_modules/.cache/plano-financeiro'); fs.mkdirSync(pasta, { recursive: true });
+const kanbanFixtures = [
+  {id:901,status:'Pendente'}, {id:902,status:'Aguardando financeiro'},
+  {id:903,status:'Aprovada'}, {id:904,status:'Aprovada',eventosFinanceiros:[{tipo:'INICIO_ATENDIMENTO',autorNome:'Estoque',registradoEm:'2026-10-22T08:00:00-04:00'}]},
+  {id:905,status:'Aprovada',materiais:[{...materiais[0],quantidade:10,quantidadeCompra:10,quantidadeEntradaEstoque:4}]},
+  {id:906,status:'Aprovada',materiais:[{...materiais[0],identificacao:'ERA-PRONTO'}]}, {id:907,status:'Em trânsito'}, {id:908,status:'Concluída'},
+  {id:909,status:'Rejeitada'}, {id:910,status:'Rejeitada',eventosFinanceiros:[{tipo:'REJEICAO'}]}, {id:911,status:'Aprovada',movimentacaoDireta:true},
+].map(p=>({...pedido,dataSolicitacao:'2026-10-22',materiais:[{...materiais[0],quantidade:10,quantidadeCompra:10}],...p}));
+const htmlKanban=(tema,financeiro)=>`<!doctype html><html data-theme="${tema}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
+import React,{useState}from'react';import{createRoot}from'react-dom/client';import{TelaAtividades}from'/src/components/painel/TelaAtividades.jsx';import'/src/index.css';localStorage.setItem('era-atividades-visualizacao','kanban');
+function Pagina(){const[pedidos,setPedidos]=useState(${JSON.stringify(kanbanFixtures)});return React.createElement(TelaAtividades,{solicitacoes:pedidos,todasSolicitacoes:pedidos,perfil:'${financeiro?'FINANCEIRO':'GERENTE'}',statusDecisao:'${financeiro?'Aguardando financeiro':'Pendente'}',obras:${JSON.stringify(obras)},buscarObraPorId:id=>${JSON.stringify(obras)}.find(o=>o.id===id),aoAprovar:async id=>{setPedidos(atuais=>atuais.map(p=>p.id===id?{...p,status:'Aguardando financeiro'}:p));return true;},aoRejeitar:async()=>true});}createRoot(document.getElementById('root')).render(React.createElement(Pagina));</script></body></html>`;
 const html = (tema, modo) => `<!doctype html><html data-theme="${tema}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
 import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{SepararEquipamentosModal}from'/src/components/estoque/SepararEquipamentosModal.jsx';import{AtendimentoParcialModal}from'/src/components/estoque/AtendimentoParcialModal.jsx';import{DetalhesSolicitacao}from'/src/components/painel/DetalhesSolicitacao.jsx';import'/src/index.css';
 const solicitacao=${JSON.stringify(pedido)};if('${modo}'==='antigo')solicitacao.planoFinanceiro=[{materialId:10,quantidadeCompra:0,origens:[{equipamentoId:999,quantidade:7}]}];
@@ -26,7 +36,7 @@ window.envios=[];window.falhar=false;
 function Pagina(){const[aberto,setAberto]=useState(true);const[planejando,setPlanejando]=useState('${modo}'!=='detalhes');const salvar=async(id,dados)=>{window.envios.push(dados);const r=await fetch('/__salvar',{method:'POST',headers:{'Content-Type':'application/json','X-Teste-Falha':String(window.falhar)},body:JSON.stringify(dados)});if(!r.ok)throw Error((await r.json()).mensagem);setAberto(false);return true;};return aberto?(!planejando?React.createElement(DetalhesSolicitacao,{solicitacao,perfil:'FINANCEIRO',equipamentos:${JSON.stringify(equipamentos)},buscarObraPorId:id=>${JSON.stringify(obras)}.find(o=>o.id===id),aoPlanejar:()=>setPlanejando(true)}):React.createElement('${modo}'==='parcial'?AtendimentoParcialModal:SepararEquipamentosModal,{solicitacao,obras:${JSON.stringify(obras)},equipamentos:${JSON.stringify(equipamentos)},aoFechar:()=>setAberto(false),aoSalvarPlano:salvar,aoSalvar:salvar})):React.createElement('p',{role:'status'},'Plano salvo ou janela fechada');}
 createRoot(document.getElementById('root')).render(React.createElement(Pagina));</script></body></html>`;
 const servidor = await createServer({ server: { host: '127.0.0.1', port: 0 }, plugins: [{ name: 'plano-fixtures', configureServer(s) { s.middlewares.use(async (req, res, next) => {
-  if (req.url.startsWith('/__plano')) { const p = new URL(req.url, 'http://localhost').searchParams; res.setHeader('Content-Type', 'text/html'); res.end(await s.transformIndexHtml(req.url, html(p.get('tema') || 'light', p.get('modo') || 'novo'))); return; }
+  if (req.url.startsWith('/__plano')) { const p = new URL(req.url, 'http://localhost').searchParams; const modo=p.get('modo')||'novo',tema=p.get('tema')||'light';res.setHeader('Content-Type', 'text/html'); res.end(await s.transformIndexHtml(req.url,modo.startsWith('kanban')?htmlKanban(tema,modo==='kanban-financeiro'):html(tema,modo))); return; }
   if (req.url === '/__salvar') { for await (const parte of req) void parte; await new Promise((r) => setTimeout(r, 450)); res.setHeader('Content-Type', 'application/json'); res.statusCode = req.headers['x-teste-falha'] === 'true' ? 409 : 200; res.end(JSON.stringify({ mensagem: 'O saldo mudou. Revise as origens antes de salvar.' })); return; }
   next();
 }); } }] });
@@ -135,6 +145,23 @@ try {
     await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:900,deviceScaleFactor:1,mobile:largura<768});
     await cdp('Page.navigate',{url:`${base}/__plano?modo=detalhes`});await esperar(`${botao('Editar atendimento aprovado')}`);
     await tocar(botao('Editar atendimento aprovado'));await esperar("document.querySelector('[role=dialog] h4')");await inspecionar(`${largura}-botao-revisao-acessivel`);
+  }
+  for(const largura of [320,390,768,844,1024,1440])for(const financeiro of [false,true]){
+    const nome=`${largura}-kanban-${financeiro?'financeiro':'gerencia'}`;
+    await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:largura===844?390:900,deviceScaleFactor:1,mobile:largura<768||largura===844});
+    await cdp('Page.navigate',{url:`${base}/__plano?modo=kanban-${financeiro?'financeiro':'gerencia'}`});await esperar("document.querySelector('[aria-label=\"Kanban de solicitações\"]')");
+    const medidas=await avaliar("(()=>{const p=document.querySelector('[aria-label=\"Kanban de solicitações\"]');return {pagina:document.documentElement.scrollWidth,viewport:innerWidth,colunas:p.querySelectorAll(':scope>section').length};})()");
+    assert.ok(medidas.pagina<=medidas.viewport,JSON.stringify({nome,...medidas}));resultados.push({nome,...medidas});
+    if(financeiro){assert.equal(await avaliar("document.querySelector('[aria-label^=\"Abrir solicitação 901,\"]')"),null);assert.equal(await avaliar("document.querySelector('[aria-label^=\"Abrir solicitação 909,\"]')"),null);assert.equal(await avaliar("document.querySelector('[aria-label^=\"Abrir solicitação 911,\"]')"),null);assert.equal(medidas.colunas,5);}
+    else{assert.ok(await avaliar("Boolean(document.querySelector('[aria-label^=\"Abrir solicitação 901,\"]'))"));assert.equal(medidas.colunas,6);}
+    await tocar("document.querySelector('[aria-label^=\"Abrir solicitação 904,\"]')");await esperar("document.querySelector('[aria-label=\"Acompanhamento do pedido\"]')");
+    assert.match(await avaliar("document.querySelector('[aria-label=\"Acompanhamento do pedido\"]').textContent"),/Compra em andamento/);
+    const acompanhamento=await avaliar("(()=>{const p=document.querySelector('[role=dialog]');return {pagina:document.documentElement.scrollWidth,viewport:innerWidth,overflow:p.scrollWidth>p.clientWidth+2,passos:p.querySelectorAll('[aria-label=\"Acompanhamento do pedido\"] li').length};})()");
+    assert.ok(acompanhamento.pagina<=acompanhamento.viewport&&!acompanhamento.overflow);assert.equal(acompanhamento.passos,5);
+    if([390,1440].includes(largura))fs.writeFileSync(path.join(pasta,`${nome}.png`),Buffer.from((await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
+    await tocar("document.querySelector('[aria-label=\"Fechar solicitação\"]')");
+    if(largura===390){await tocar("document.querySelector('[aria-label^=\"Abrir solicitação 908,\"]')");await esperar("document.querySelector('[aria-label=\"Acompanhamento do pedido\"]')");assert.equal(await avaliar("document.querySelectorAll('[aria-label=\"Acompanhamento do pedido\"] li[data-estado=concluida]').length"),5);await tocar("document.querySelector('[aria-label=\"Fechar solicitação\"]')");}
+    if(!financeiro){await tocar("document.querySelector('[aria-label^=\"Abrir solicitação 901,\"]')");await tocar(botao('Aceitar pedido'));await esperar("!document.querySelector('[role=dialog]')");assert.ok(await avaliar("document.querySelector('#kanban-financeiro').closest('section').querySelector('[aria-label^=\"Abrir solicitação 901,\"]')!==null"));}
   }
   fs.writeFileSync(path.join(pasta, 'relatorio.json'), JSON.stringify(resultados, null, 2));
   console.log(JSON.stringify({ cenarios: resultados.length, falhas: 0, artefatos: pasta }, null, 2));

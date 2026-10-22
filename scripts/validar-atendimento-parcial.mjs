@@ -24,7 +24,8 @@ class Cliente {
     return this;
   }
 }
-for (let n=0;;n++) { try { if ((await fetch(`${config.url}/api/actuator/health`)).ok) break; } catch { /* inicialização */ } if(n>=60)throw Error('API temporária não iniciou');await new Promise(r=>setTimeout(r,1000)); }
+const limiteInicializacao=Date.now()+180000;
+for (;;) { try { if ((await fetch(`${config.url}/api/actuator/health`,{signal:AbortSignal.timeout(2000)})).ok) break; } catch { /* inicialização */ } if(Date.now()>=limiteInicializacao)throw Error('API temporária não iniciou em três minutos; consulte o log de inicialização.');await new Promise(r=>setTimeout(r,1000)); }
 const hoje = new Intl.DateTimeFormat('en-CA',{ timeZone:'America/Manaus' }).format(new Date());
 const admin = await new Cliente().entrar('audit-smoke-admin','TempCheck#578943');
 const funcionario = nome => admin.req('POST','/funcionarios',{ nome,cargo:'Técnico',status:'Ativo' },201);
@@ -41,6 +42,30 @@ const partial = (p,equipamentoId,quantidade) => ({ motivo:'Fornecedor não tinha
 const pedidos = async(c=financeiro) => c.req('GET','/atividades');
 const localizar = async(id,c=financeiro) => (await pedidos(c)).find(p=>p.id===id);
 const comprar = async(p,q,serie) => estoque.req('POST',`/atividades/${p.id}/materiais/${p.materiais[0].id}/aquisicao`,{ quantidade:q,numeroNota:`NF-${serie}`,identificacao:serie });
+
+let primeiraAnalise=await novoPedido(2,equipamento,b,ob,tecnicoB);
+assert.equal(primeiraAnalise.status,'Pendente');
+assert.ok(!(await pedidos()).some(p=>p.id===primeiraAnalise.id),'Financeiro não recebe pedido antes da Gerência');
+assert.equal((await financeiro.req('GET','/painel/resumo')).totalSolicitacoes,(await pedidos()).length,'Contador financeiro exclui os pedidos ainda não aprovados');
+await tecnicoB.req('GET','/painel/resumo',null,403);
+await financeiro.req('POST',`/atividades/${primeiraAnalise.id}/aprovacao`,{},403);
+await financeiro.req('POST',`/atividades/${primeiraAnalise.id}/plano-financeiro`,plano(primeiraAnalise,2),409);
+await estoque.req('POST',`/atividades/${primeiraAnalise.id}/inicio-atendimento`,{},409);
+primeiraAnalise=await gerente.req('POST',`/atividades/${primeiraAnalise.id}/aprovacao`,{});
+assert.ok((await pedidos()).some(p=>p.id===primeiraAnalise.id));
+assert.equal((await financeiro.req('GET','/painel/resumo')).totalSolicitacoes,(await pedidos()).length);
+assert.ok(primeiraAnalise.eventosFinanceiros.some(e=>e.tipo==='APROVACAO_INICIAL'&&e.autorLogin==='gerente'));
+assert.ok(!(await pedidos(estoque)).some(p=>p.id===primeiraAnalise.id));
+await financeiro.req('POST',`/atividades/${primeiraAnalise.id}/plano-financeiro`,plano(primeiraAnalise,2));
+await financeiro.req('POST',`/atividades/${primeiraAnalise.id}/aprovacao`,{});
+await financeiro.req('POST',`/atividades/${primeiraAnalise.id}/inicio-atendimento`,{},403);
+await gerente.req('POST',`/atividades/${primeiraAnalise.id}/inicio-atendimento`,{},403);
+await estoque.req('POST',`/atividades/${primeiraAnalise.id}/inicio-atendimento`,{});
+await estoque.req('POST',`/atividades/${primeiraAnalise.id}/inicio-atendimento`,{});
+const acompanhado=await localizar(primeiraAnalise.id,gerente);
+assert.equal(acompanhado.eventosFinanceiros.filter(e=>e.tipo==='INICIO_ATENDIMENTO').length,1);
+assert.ok(acompanhado.eventosFinanceiros.some(e=>e.tipo==='INICIO_ATENDIMENTO'&&e.autorLogin==='estoque'));
+console.log('Financeiro só recebe após aprovação inicial; Gerência acompanha o início real da compra: OK');
 
 let principal = await novoPedido(10);
 assert.equal(principal.status,'Aguardando financeiro');

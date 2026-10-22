@@ -1,5 +1,6 @@
 import { BellRing, Building2, Check, CircleDollarSign, FileText, History, MapPin, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
 import css from './DetalhesSolicitacao.module.css';
+import { AndamentoSolicitacao } from './AndamentoSolicitacao';
 
 const formatarInstante = (valor) => valor ? new Date(valor).toLocaleString('pt-BR', { timeZone: 'America/Manaus' }) : 'Não registrado';
 
@@ -36,6 +37,7 @@ export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId,
 
   return <article className={css.detalhes} aria-label="Conteúdo da solicitação">
     <div className={css.conteudo}>
+      <AndamentoSolicitacao solicitacao={solicitacao} />
       <section className={css.destino} aria-label="Destino do pedido">
         <span className={css.iconeDestino}><Building2 size={22} aria-hidden="true" /></span>
         <div><h3>{solicitacao.obraDestinoId ? 'Obra de destino' : 'Destino da retirada'}</h3><p>{destino}</p></div>
@@ -73,7 +75,7 @@ export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId,
 
       {compras.length > 0 && <section className={css.historico} aria-labelledby="titulo-compras-pedido"><h3 id="titulo-compras-pedido"><CircleDollarSign size={16} aria-hidden="true" /> Compras e entradas</h3>{compras.map((material) => <article key={`compra-${material.id}-${material.catalogoChave}`}><strong>{material.nome}</strong><span>Compra solicitada: {material.quantidadeCompra} · Adquirida: {material.quantidadeAdquirida || 0} · Entrada no estoque: {material.quantidadeEntradaEstoque || 0}</span><small>Solicitada em {formatarInstante(material.compraSolicitadaEm)}{material.adquiridaEm ? ` · adquirida em ${formatarInstante(material.adquiridaEm)}` : ''}</small></article>)}</section>}
 
-      {(eventosFinanceiros.length > 0 || solicitacao.transitoEm || solicitacao.concluidaEm) && <section className={css.historico} aria-labelledby="titulo-historico-pedido"><h3 id="titulo-historico-pedido"><History size={16} aria-hidden="true" /> Histórico do atendimento</h3>{eventosFinanceiros.map((evento, indice) => <article key={`${evento.tipo}-${evento.registradoEm}-${indice}`}><strong>{({ ALTERACAO: 'Alteração financeira', APROVACAO: 'Aprovação financeira', REJEICAO: 'Rejeição financeira', REVISAO_PLANO: 'Revisão do atendimento', ATENDIMENTO_PARCIAL: 'Atendimento parcial', AJUSTE_ESTOQUE: 'Ajuste pelo estoque' })[evento.tipo] || 'Alteração do atendimento'}</strong><span>{evento.descricao}</span><small>{formatarInstante(evento.registradoEm)} · {evento.autorNome} ({evento.autorLogin})</small></article>)}{solicitacao.transitoEm && <article><strong>Materiais enviados</strong><small>{formatarInstante(solicitacao.transitoEm)}</small></article>}{solicitacao.concluidaEm && <article><strong>Recebimento confirmado</strong><small>{formatarInstante(solicitacao.concluidaEm)}</small></article>}</section>}
+      {(eventosFinanceiros.length > 0 || solicitacao.transitoEm || solicitacao.concluidaEm) && <section className={css.historico} aria-labelledby="titulo-historico-pedido"><h3 id="titulo-historico-pedido"><History size={16} aria-hidden="true" /> Histórico do atendimento</h3>{eventosFinanceiros.map((evento, indice) => <article key={`${evento.tipo}-${evento.registradoEm}-${indice}`}><strong>{({ APROVACAO_INICIAL: 'Primeira aprovação (Gerência/RH)', INICIO_ATENDIMENTO: 'Compra ou providências iniciadas', ALTERACAO: 'Alteração financeira', APROVACAO: 'Aprovação financeira', REJEICAO: 'Rejeição financeira', REVISAO_PLANO: 'Revisão do atendimento', ATENDIMENTO_PARCIAL: 'Atendimento parcial', AJUSTE_ESTOQUE: 'Ajuste pelo estoque' })[evento.tipo] || 'Alteração do atendimento'}</strong><span>{evento.descricao}</span><small>{formatarInstante(evento.registradoEm)} · {evento.autorNome} ({evento.autorLogin})</small></article>)}{solicitacao.transitoEm && <article><strong>Materiais enviados</strong><small>{formatarInstante(solicitacao.transitoEm)}</small></article>}{solicitacao.concluidaEm && <article><strong>Recebimento confirmado</strong><small>{formatarInstante(solicitacao.concluidaEm)}</small></article>}</section>}
     </div>
 
     {(podeEditar || aoExportarAuditoria || (financeiro && aoPlanejar) || (solicitacao.status === 'Aprovada' && separado)) && <footer className={css.acoes}>

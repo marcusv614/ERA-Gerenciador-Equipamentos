@@ -74,6 +74,25 @@ class FluxoFinanceiroTests {
         assertThrows(AccessDeniedException.class,()->service.atualizar(1L,dados,"financeiro"));
     }
 
+    @Test void financeiroSoRecebePedidoDepoisDaPrimeiraAprovacao(){
+        when(pedidos.findAll()).thenAnswer(i->List.of(pedido));
+        assertTrue(service.listarParaUsuario("financeiro").isEmpty());
+        assertThrows(br.com.era.api.exception.RegraNegocioException.class,()->service.salvarPlanoFinanceiro(1L,new SolicitacaoDto.PlanoFinanceiro(List.of(new SolicitacaoDto.MaterialPlano(2L,1,"Comprar",List.of()))),"financeiro"));
+        service.aprovar(1L,"gerente");
+        assertEquals(1,service.listarParaUsuario("financeiro").size());
+        assertEquals("APROVACAO_INICIAL",pedido.getEventosFinanceiros().getFirst().tipo());
+        assertEquals("gerente",pedido.getEventosFinanceiros().getFirst().autorLogin());
+    }
+
+    @Test void financeiroNaoRecebeTransporteDiretoNemRejeicaoDaGerencia(){
+        Solicitacao direto=pedido("Aprovada");direto.setMovimentacaoDireta(true);
+        Solicitacao rejeitado=pedido("Rejeitada");rejeitado.registrarEventoFinanceiro("ALTERACAO","Nota administrativa",gerente);
+        when(pedidos.findAll()).thenReturn(List.of(direto,rejeitado));
+        assertTrue(service.listarParaUsuario("financeiro").isEmpty());
+        rejeitado.registrarEventoFinanceiro("REJEICAO","Rejeição financeira",financeiro);
+        assertEquals(1,service.listarParaUsuario("financeiro").size());
+    }
+
     private Solicitacao pedido(String status){
         Solicitacao s=new Solicitacao();ReflectionTestUtils.setField(s,"id",1L);s.setTipo("Movimentação");s.setStatus(status);s.setTecnico(tecnico);s.setSolicitante(tecnico);s.setObraDestino(obra);
         s.substituirMateriais(List.of(new MaterialSolicitado("Alicate",1,null,"ferramentas|alicate|")));ReflectionTestUtils.setField(s.getMateriais().getFirst(),"id",2L);return s;

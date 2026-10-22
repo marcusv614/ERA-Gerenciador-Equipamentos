@@ -1,4 +1,5 @@
 import { locaisDoPedido, pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
+import { acompanhamentoSolicitacao } from '../../utils/acompanhamentoSolicitacao';
 import { AtendimentoParcialModal } from './AtendimentoParcialModal';
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, Wrench, X } from 'lucide-react';
@@ -34,6 +35,16 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const [carregando, definirCarregando] = useState(true);
   const [mensagem, definirMensagem] = useState(null);
   const [separandoId, definirSeparandoId] = useState(null);
+  const [iniciandoId, definirIniciandoId] = useState(null);
+  const iniciarProvidencias = async (pedido) => {
+    if (iniciandoId !== null) return;
+    definirIniciandoId(pedido.id);
+    try {
+      const atualizado = await apiAtividades.iniciarAtendimento(pedido.id);
+      definirSolicitacoes((atuais) => atuais.map((s) => s.id === atualizado.id ? atualizado : s));
+    } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
+    finally { definirIniciandoId(null); }
+  };
   const [busca, definirBusca] = useState('');
   const [obraFiltrada, definirObraFiltrada] = useState('todas');
   const [aba, definirAba] = useState('atividades');
@@ -169,6 +180,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const renderizarCard = (solicitacao) => {
     const entradaNaObra = Boolean(solicitacao.obraDestinoId);
     const separado = possuiSeries(solicitacao);
+    const andamento = acompanhamentoSolicitacao(solicitacao);
     const tarefa = solicitacao.status === 'Concluída' ? 'Finalizado'
       : solicitacao.status === 'Rejeitada' ? 'Sem ação necessária'
       : solicitacao.status === 'Em trânsito' ? (entradaNaObra ? `Aguardando confirmação de ${solicitacao.tecnico}` : 'Confirme o recebimento')
@@ -177,6 +189,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     return <article className={estilos.card} key={solicitacao.id}>
       <header><span className={estilos.icone}><PackageCheck /></span><div><small>Pedido #{String(solicitacao.id).padStart(4, '0')}</small><h2>{nomeLocal(solicitacao.obraDestinoId || solicitacao.obraOrigemId)}</h2></div><b data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{rotuloOperacional(solicitacao)}</b></header>
       <p className={estilos.instrucaoEntrega}>{tarefa}</p>
+      {!separado && <p className={estilos.instrucaoEntrega}><strong>{andamento.rotulo}</strong></p>}
       {solicitacao.solicitacaoPaiId && <p className={estilos.autorPedido}>Atendimento vinculado ao pedido #{solicitacao.solicitacaoPaiId}</p>}
       {solicitacao.materiaisOriginais?.length > 0 && <p className={estilos.autorPedido}>Pedido original preservado · {solicitacao.materiaisOriginais.reduce((soma, m) => soma + m.quantidade, 0)} unidades</p>}
       <div className={estilos.metadados}><p><strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
@@ -194,6 +207,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       </li>)}</ul>
       {!separado && solicitacao.planoFinanceiro?.length > 0 && <div className={estilos.planoFinanceiro}><strong>Instruções do Financeiro</strong>{solicitacao.planoFinanceiro.map((item) => <section key={item.materialId}><strong>{item.nome}</strong>{item.origens.map((origem,indice) => <p key={`${origem.equipamentoId}-${indice}`}>Buscar {origem.quantidade} un. em {nomeLocal(origem.obraOrigemId)} · {origem.identificacao}</p>)}{item.quantidadeCompra > 0 && <p>Comprar {item.quantidadeCompra} un. e registrar a entrada na aba Compras.</p>}{item.justificativa && <small>{item.justificativa}</small>}</section>)}</div>}
       <footer>
+        {solicitacao.status === 'Aprovada' && !separado && solicitacao.planoFinanceiro?.length > 0 && !andamento.inicio && <button type="button" disabled={iniciandoId !== null || separandoId !== null} onClick={() => iniciarProvidencias(solicitacao)}>{iniciandoId === solicitacao.id ? 'Registrando...' : andamento.compra > 0 ? 'Iniciar compra / providências' : 'Iniciar providências'}</button>}
         {solicitacao.status === 'Aprovada' && !separado && solicitacao.planoFinanceiro?.length > 0 && <button type="button" onClick={() => definirEditandoAtendimento(solicitacao)}>Editar solicitação / envio parcial</button>}
         <button onClick={() => imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObra)}><FileText /> Relatório PDF</button>
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button onClick={() => imprimirRomaneioSeparacao(solicitacao, buscarObra)}><FileDown /> Romaneio da separação</button>}

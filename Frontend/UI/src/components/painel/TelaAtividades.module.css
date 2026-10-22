@@ -47,6 +47,12 @@
 .identificador strong, .obra strong { font-size:12px; overflow-wrap:anywhere; }
 .identificador small, .obra small { font-size:10px; color:var(--text-muted); }
 .status { justify-self:start; padding:5px 9px; border-radius:6px; background:var(--surface-2); color:var(--text-muted); font-size:10px; font-weight:600; }
+.status { max-width:100%;line-height:1.5;overflow-wrap:anywhere; }
+.kanbanParcial { color:var(--text-muted);font-size:10px;line-height:1.5;overflow-wrap:anywhere; }
+.kanbanColuna[data-etapa='gerencia'] .kanbanIndicador { background:var(--warn); }
+.kanbanColuna[data-etapa='financeiro'] .kanbanIndicador { background:#9472c4; }
+.kanbanColuna[data-etapa='providencias'] .kanbanIndicador { background:#4088bf; }
+.kanbanColuna[data-etapa='envio'] .kanbanIndicador { background:#d58b25; }
 .status[data-etapa='pendente'] { color:var(--warn); background:rgba(var(--era-yellow-rgb),.15); }
 .status[data-etapa='aceita'] { color:#4088bf; background:rgba(64,136,191,.13); }
 .status[data-etapa='finalizada'] { color:#27845a; background:rgba(47,158,104,.13); }

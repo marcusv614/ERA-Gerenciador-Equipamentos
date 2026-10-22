@@ -31,7 +31,12 @@ try {
     @{ url = "http://$portaTeste"; container = $nomeContainerTeste; database = $nomeBancoTeste } |
         ConvertTo-Json | Set-Content -Encoding UTF8 -LiteralPath $configuracaoTeste
     node (Join-Path $PSScriptRoot 'validar-atendimento-parcial.mjs') $configuracaoTeste
-    if ($LASTEXITCODE -ne 0) { throw 'A validacao integrada encontrou uma falha.' }
+    if ($LASTEXITCODE -ne 0) {
+        $logInicializacao = Join-Path $raizProjeto 'Backend/API/target/atendimento-parcial-api.log'
+        docker logs --tail 160 $nomeContainerTeste *> $logInicializacao
+        Write-Output "Log da API temporaria salvo em $logInicializacao"
+        throw 'A validacao integrada encontrou uma falha.'
+    }
 }
 finally {
     # Validar rigorosamente os alvos antes de remover somente os recursos deste teste.

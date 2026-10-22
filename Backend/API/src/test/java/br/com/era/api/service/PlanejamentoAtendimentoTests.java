@@ -206,6 +206,21 @@ class PlanejamentoAtendimentoTests {
     }
 
     SolicitacaoDto.AtendimentoParcial parcial(Long materialId,Long equipamentoId,int quantidade){return new SolicitacaoDto.AtendimentoParcial("Fornecedor sem o saldo completo.",List.of(new SolicitacaoDto.MaterialParcial(materialId,List.of(new SolicitacaoDto.OrigemPlano(equipamentoId,quantidade)))));}
+    @Test void inicioDeCompraExigePlanoAprovadoERegistraUmUnicoEvento(){
+        assertThrows(RegraNegocioException.class,()->service.iniciarAtendimento(1L,"ESTOQUE"));
+        service.salvarPlanoFinanceiro(1L,plano(3,List.of()),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        for(String perfil:List.of("FINANCEIRO","GERENTE","RH","TECNICO","TST"))assertThrows(AccessDeniedException.class,()->service.iniciarAtendimento(1L,perfil));
+        service.iniciarAtendimento(1L,"ESTOQUE");service.iniciarAtendimento(1L,"ESTOQUE");
+        assertEquals(1,pedido.getEventosFinanceiros().stream().filter(e->e.tipo().equals("INICIO_ATENDIMENTO")).count());
+        assertEquals("ESTOQUE",pedido.getEventosFinanceiros().getLast().autorLogin());assertEquals("Aprovada",pedido.getStatus());
+    }
+
+    @Test void entradaDeCompraTambemRegistraOInicioSemExigirCliqueAnterior(){
+        service.salvarPlanoFinanceiro(1L,plano(3,List.of()),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        var resultado=service.registrarAquisicao(1L,2L,1,"NF-1","COMPRA-1","ESTOQUE");
+        assertTrue(resultado.eventosFinanceiros().stream().anyMatch(e->e.tipo().equals("INICIO_ATENDIMENTO")));
+    }
+
     void material(int quantidade){var m=new MaterialSolicitado("Alicate",quantidade,null,chave);ReflectionTestUtils.setField(m,"id",2L);pedido.substituirMateriais(List.of(m));}
     SolicitacaoDto.PlanoFinanceiro plano(int comprar,List<SolicitacaoDto.OrigemPlano> origens){return new SolicitacaoDto.PlanoFinanceiro(List.of(new SolicitacaoDto.MaterialPlano(2L,comprar,"Equipamento da obra A em uso",origens)));}
     Equipamento equipamento(Long id,String serie,int quantidade,Obra obra){

@@ -78,6 +78,7 @@ export const apiAtividades = {
   cadastrarTransporteDireto: (dados) => avisarAposSucesso(criar(ROTAS_API.transporteDireto,dados), 'Transporte encaminhado diretamente ao estoque.'),
   salvarPlanoFinanceiro: (id,dados) => avisarAposSucesso(criar(ROTAS_API.planoFinanceiro(id),dados), 'Plano de transporte e compra salvo. Confira os dados antes de aprovar.'),
   executarPlano: (id) => avisarAposSucesso(criar(ROTAS_API.execucaoPlano(id)), 'Separação confirmada conforme o plano financeiro.'),
+  iniciarAtendimento: (id) => avisarAposSucesso(criar(ROTAS_API.inicioAtendimento(id)), 'Início do atendimento registrado. A Gerência/RH já pode acompanhar o andamento.'),
   atenderParcialmente: (id,dados) => avisarAposSucesso(criar(ROTAS_API.atendimentoParcial(id),dados), 'Itens separados. O restante permanece pendente para atendimento posterior.'),
   cadastrar: (dados) => avisarAposSucesso(criar(ROTAS_API.atividades, dados), (pedido) => pedido.status === 'Pendente' ? 'Pedido enviado para a primeira análise.' : 'Pedido criado e encaminhado ao Financeiro.'),
   atualizar: (atividadeId, dados) => avisarAposSucesso(atualizar(ROTAS_API.atividade(atividadeId), dados), 'Alterações da solicitação salvas.'),

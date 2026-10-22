@@ -2,25 +2,13 @@ import { filtrarSolicitacoes, locaisDoPedido, normalizarPesquisa } from '../../u
 import { useEffect, useRef, useState } from 'react';
 import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, List, Package2, Plus, RotateCcw, UserRound, X } from 'lucide-react';
 import { formatarData } from '../../utils/datas';
-import { obterEtapaSolicitacao, pertenceEtapaSolicitacao } from '../../utils/statusSolicitacao';
+import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
+import { acompanhamentoSolicitacao, COLUNAS_ACOMPANHAMENTO, pedidosDoPerfil } from '../../utils/acompanhamentoSolicitacao';
 import { DetalhesSolicitacao } from './DetalhesSolicitacao';
 import { SepararEquipamentosModal } from '../estoque/SepararEquipamentosModal';
 import css from './TelaAtividades.module.css';
 
 const CHAVE_VISUALIZACAO = 'era-atividades-visualizacao';
-const COLUNAS_KANBAN = [
-  { id: 'pendente', etapa: 'pendente', titulo: 'Pendente', descricao: 'Aguardando decisão' },
-  { id: 'aceitas', etapa: 'aceita', titulo: 'Aceitas', descricao: 'Em atendimento pelo estoque' },
-  { id: 'rejeitadas', etapa: 'rejeitada', titulo: 'Rejeitadas', descricao: 'Pedidos não autorizados' },
-  { id: 'finalizadas', etapa: 'finalizada', titulo: 'Finalizadas', descricao: 'Recebimento confirmado' },
-];
-const FILTROS_ETAPA = [
-  { id: 'todas', rotulo: 'Todas' },
-  { id: 'pendente', rotulo: 'Pendentes' },
-  { id: 'aceita', rotulo: 'Aceitas' },
-  { id: 'rejeitada', rotulo: 'Rejeitadas' },
-  { id: 'finalizada', rotulo: 'Finalizadas' },
-];
 
 const compararMaisRecentesPrimeiro = (primeira, segunda) => {
   const porData = String(segunda.dataSolicitacao || '').localeCompare(String(primeira.dataSolicitacao || ''));
@@ -56,7 +44,7 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
       <header className={css.janelaCabecalho}>
         <div className={css.janelaIdentificacao}>
           <span>Requisição de materiais</span>
-          <div className={css.janelaTitulo}><h2 id="titulo-solicitacao">Solicitação #{String(solicitacao.id).padStart(4, '0')}</h2><span className={css.janelaStatus} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{obterEtapaSolicitacao(solicitacao.status).rotulo}</span></div>
+          <div className={css.janelaTitulo}><h2 id="titulo-solicitacao">Solicitação #{String(solicitacao.id).padStart(4, '0')}</h2><span className={css.janelaStatus} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{acompanhamentoSolicitacao(solicitacao).rotulo}</span></div>
           <p className={css.janelaMetadados}><span><UserRound size={13} aria-hidden="true" />{solicitacao.tecnico}</span><span><CalendarDays size={13} aria-hidden="true" /><time dateTime={solicitacao.dataSolicitacao}>{formatarData(solicitacao.dataSolicitacao)}</time></span></p>
         </div>
         <button type="button" aria-label="Fechar solicitação" onClick={aoFechar}><X size={21} /></button>
@@ -66,7 +54,11 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
   </div>;
 }
 
-export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], equipamentos = [], obras = [], termoBusca = '', erroApi, buscarObraPorId, statusDecisao = 'Pendente', perfil, aoSalvarPlano, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
+export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: todasRecebidas = recebidas, tecnicos = [], equipamentos = [], obras = [], termoBusca = '', erroApi, buscarObraPorId, statusDecisao = 'Pendente', perfil, aoSalvarPlano, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
+  const solicitacoes = pedidosDoPerfil(recebidas, perfil);
+  const todasSolicitacoes = pedidosDoPerfil(todasRecebidas, perfil);
+  const colunasKanban = COLUNAS_ACOMPANHAMENTO.filter((c) => perfil !== 'FINANCEIRO' || c.id !== 'gerencia');
+  const filtrosEtapa = [{ id: 'todas', rotulo: 'Todas' }, ...colunasKanban.map((c) => ({ id: c.id, rotulo: c.rotulo }))];
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
   const [dataInicial, definirDataInicial] = useState('');
@@ -80,18 +72,18 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
   const emProcessamento = useRef(false);
   const [fechar] = useState(() => () => selecionar(null));
   const selecionada = todasSolicitacoes.find(({ id }) => id === selecionadaId);
-  const nomes = [...new Set([...tecnicos, ...todasSolicitacoes.map(({ tecnico }) => tecnico)].filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const nomes = [...new Set([...(perfil === 'FINANCEIRO' ? [] : tecnicos), ...todasSolicitacoes.map(({ tecnico }) => tecnico)].filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
   const termo = normalizarPesquisa(termoBusca);
   const obrasDisponiveis = [...new Map(todasSolicitacoes.flatMap((pedido) => locaisDoPedido(pedido).map((id) => [id, {id,nome:id === 'deposito' ? 'Depósito central' : buscarObraPorId(Number(id))?.nome || `Obra #${id}`}])))
     .values()].sort((a,b) => a.nome.localeCompare(b.nome, 'pt-BR'));
   const solicitacoesDaDataEObra = filtrarSolicitacoes(solicitacoes, {inicio:dataInicial, fim:dataFinal, obra:obraFiltro});
-  const solicitacoesPorTecnico = filtrarSolicitacoes(solicitacoesDaDataEObra, {etapa:etapaFiltro});
+  const solicitacoesPorTecnico = solicitacoesDaDataEObra.filter((s) => etapaFiltro === 'todas' || acompanhamentoSolicitacao(s).grupo === etapaFiltro);
   const filtrosLocaisAtivos = Boolean(dataInicial || dataFinal || obraFiltro !== 'todas' || etapaFiltro !== 'todas');
   const grupos = nomes.map((nome) => ({ nome, pedidos: solicitacoesPorTecnico.filter(({ tecnico }) => tecnico === nome).sort(compararMaisRecentesPrimeiro) }))
     .filter(({ nome, pedidos }) => pedidos.length || (!filtrosLocaisAtivos && (!termo || normalizarPesquisa(nome).includes(termo))));
   const quantidadePorEtapa = (etapa) => etapa === 'todas'
     ? solicitacoesDaDataEObra.length
-    : solicitacoesDaDataEObra.filter(({ status }) => pertenceEtapaSolicitacao(status, etapa)).length;
+    : solicitacoesDaDataEObra.filter((s) => acompanhamentoSolicitacao(s).grupo === etapa).length;
   const limparFiltros = () => { definirDataInicial(''); definirDataFinal(''); definirObraFiltro('todas'); definirEtapaFiltro('todas'); };
   const alterarVisualizacao = (modo) => {
     definirVisualizacao(modo);
@@ -108,7 +100,7 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
   };
   const nomeObra = (pedido) => pedido.obraDestinoId != null ? buscarObraPorId(pedido.obraDestinoId)?.nome || 'Obra não disponível' : 'Depósito central';
   const abrirSolicitacao = (id) => { definirErro(''); selecionar(id); };
-  const pedidosOrdenados = (etapa) => solicitacoesPorTecnico.filter((pedido) => pertenceEtapaSolicitacao(pedido.status, etapa))
+  const pedidosOrdenados = (etapa) => solicitacoesPorTecnico.filter((pedido) => acompanhamentoSolicitacao(pedido).grupo === etapa)
     .sort(compararMaisRecentesPrimeiro);
   return <section className={css.painel} aria-label="Solicitações">
     <header className={css.cabecalho}>
@@ -129,7 +121,7 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
           <label><span><Building2 size={14} /> Obra (origem ou destino)</span><select value={obraFiltro} onChange={(evento) => definirObraFiltro(evento.target.value)}><option value="todas">Todas as obras</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
         </div>
         <div className={css.filtrosEtapa} role="group" aria-label="Mostrar solicitações por situação">
-          {FILTROS_ETAPA.map((filtro) => <button type="button" key={filtro.id} aria-pressed={etapaFiltro === filtro.id} className={etapaFiltro === filtro.id ? css.filtroEtapaAtivo : ''} onClick={() => definirEtapaFiltro(filtro.id)}><span>{filtro.rotulo}</span><b>{quantidadePorEtapa(filtro.id)}</b></button>)}
+          {filtrosEtapa.map((filtro) => <button type="button" key={filtro.id} aria-pressed={etapaFiltro === filtro.id} className={etapaFiltro === filtro.id ? css.filtroEtapaAtivo : ''} onClick={() => definirEtapaFiltro(filtro.id)}><span>{filtro.rotulo}</span><b>{quantidadePorEtapa(filtro.id)}</b></button>)}
         </div>
         {filtrosLocaisAtivos && <button type="button" className={css.limparFiltros} onClick={limparFiltros}><RotateCcw size={14} /> Limpar filtros</button>}
       </section>
@@ -146,29 +138,31 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
         </button>
         {aberto && <div id={painelId} className={css.lista} role="region" aria-label={`Solicitações de ${nome}`} tabIndex={0}>
           {pedidos.length ? <><div className={css.colunas} aria-hidden="true"><span>Solicitação / data</span><span>Obra</span><span>Status</span><span /></div>
-            {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${obterEtapaSolicitacao(pedido.status).rotulo}`}>
+            {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
               <span className={css.identificador}><strong>#{String(pedido.id).padStart(4, '0')}</strong><small>{formatarData(pedido.dataSolicitacao)}</small>{pedido.solicitacaoPaiId != null && <small>Pedido original #{String(pedido.solicitacaoPaiId).padStart(4, '0')}</small>}</span>
               <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
-              <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{obterEtapaSolicitacao(pedido.status).rotulo}</span><ChevronRight size={16} />
+              <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span><ChevronRight size={16} />
             </button>)}
           </> : <div className={css.vazio}><ClipboardList size={24} /><p>Nenhuma solicitação deste técnico{termo ? ' para esta busca' : ''}.</p></div>}
         </div>}
       </section>;
     })}{!grupos.length && <div className={css.vazio}><ClipboardList size={28} /><p>{termo || filtrosLocaisAtivos ? 'Nenhuma solicitação encontrada com os filtros selecionados.' : 'Nenhum técnico cadastrado ou solicitação recebida.'}</p></div>}</div></> :
       <div className={css.kanban} aria-label="Kanban de solicitações">
-        {COLUNAS_KANBAN.map((coluna) => {
-          const pedidos = pedidosOrdenados(coluna.etapa);
-          return <section key={coluna.etapa} className={css.kanbanColuna} data-etapa={coluna.etapa} aria-labelledby={`kanban-${coluna.id}`}>
+        {colunasKanban.map((coluna) => {
+          const pedidos = pedidosOrdenados(coluna.id);
+          return <section key={coluna.id} className={css.kanbanColuna} data-etapa={coluna.id} aria-labelledby={`kanban-${coluna.id}`}>
             <header className={css.kanbanCabecalho}>
               <span className={css.kanbanIndicador} aria-hidden="true" />
               <div><h3 id={`kanban-${coluna.id}`}>{coluna.titulo}</h3><p>{coluna.descricao}</p></div>
               <b aria-label={`${pedidos.length} solicitações`}>{pedidos.length}</b>
             </header>
             <div className={css.kanbanCartoes}>
-              {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.kanbanCartao} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${nomeObra(pedido)}, ${obterEtapaSolicitacao(pedido.status).rotulo}`}>
+              {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.kanbanCartao} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
                 <span className={css.kanbanCartaoTopo}><strong>#{String(pedido.id).padStart(4, '0')}</strong><time dateTime={pedido.dataSolicitacao}><CalendarDays size={13} />{formatarData(pedido.dataSolicitacao)}</time></span>
                 <span className={css.kanbanObra}>{nomeObra(pedido)}</span>
                 <span className={css.kanbanTecnico}><UserRound size={14} />{pedido.tecnico}</span>
+                <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span>
+                {acompanhamentoSolicitacao(pedido).parcial && <small className={css.kanbanParcial}>Atendimento parcial · pedido original #{pedido.solicitacaoPaiId || pedido.id}</small>}
                 <span className={css.kanbanRodape}><span><Package2 size={14} />{pedido.materiais.length} {pedido.materiais.length === 1 ? 'material' : 'materiais'}</span><ChevronRight size={16} /></span>
               </button>)}
               {!pedidos.length && <div className={css.kanbanVazio}><ClipboardList size={20} /><span>Nenhuma solicitação</span></div>}

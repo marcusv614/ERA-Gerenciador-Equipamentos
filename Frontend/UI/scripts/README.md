@@ -50,3 +50,9 @@ compra integral sem retirada de outras obras e edição do envio parcial pelo
 estoque. O teste integrado de permissões, reservas e compras sucessivas roda
 pela raiz com `./scripts/validar-atendimento-parcial.ps1`, sempre em uma API e
 banco temporários.
+
+O roteiro visual também verifica o Kanban financeiro recebendo uma lista com
+pedidos ainda pendentes: esses pedidos devem permanecer ocultos. Confere os
+cartões de acompanhamento, a aprovação pelo gerente e a linha de etapas em
+desktop e mobile. O teste integrado verifica a aprovação inicial, as permissões
+para iniciar providências e a consulta do gerente ao evento registrado pelo estoque.
