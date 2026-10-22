@@ -25,11 +25,15 @@ public class SolicitacaoService {
     @Transactional(readOnly=true) public List<SolicitacaoDto.Resposta> listarParaUsuario(String login){
         Usuario usuario=usuarios.buscarPorLogin(login);
         if(usuario.getPerfil()==PerfilUsuario.RH)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::pertenceAoRh).map(this::resposta).toList();
-        if(usuario.getPerfil()==PerfilUsuario.FINANCEIRO)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::visivelFinanceiro).map(this::resposta).toList();
+        if(usuario.getPerfil()==PerfilUsuario.FINANCEIRO)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::visivelFinanceiro).filter(PedidosFinanceiros::permiteAnalise).map(this::respostaFinanceira).toList();
         if(usuario.getPerfil()==PerfilUsuario.ESTOQUE)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::liberadaParaEstoque).map(this::resposta).toList();
         if(!usuario.getPerfil().ehProfissionalDeCampo())return listar();
         if(usuario.getFuncionario()==null)throw new RegraNegocioException("O usuário técnico ou TST precisa estar vinculado a um funcionário.");
         Set<Long> permitidas=obras.idsPermitidos(login);return repository.findByTecnicoIdOrderByCriadoEmDesc(usuario.getFuncionario().getId()).stream().filter(s->"Movimentação".equals(s.getTipo())).map(s->respostaTecnico(s,permitidas)).toList();
+    }
+    @Transactional(readOnly=true) public List<br.com.era.api.dto.PedidoFinanceiroDto.Resposta> listarPedidosFinanceiros(String login){
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(usuarios.buscarPorLogin(login).getPerfil()))throw new AccessDeniedException("Somente o Financeiro e o administrador podem consultar os pedidos financeiros.");
+        return PedidosFinanceiros.consolidar(repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::visivelFinanceiro).toList(),this::respostaFinanceira);
     }
     @Transactional
     public SolicitacaoDto.Resposta cadastrar(SolicitacaoDto.Requisicao d, String login) {
@@ -127,12 +131,13 @@ public class SolicitacaoService {
         Solicitacao s=buscarParaAtualizacao(id);Usuario autor=usuarios.buscarPorLogin(login);validarEscopoRh(s,autor);
         validarPermissaoEdicao(s,autor);
         String antes=resumoParaAuditoria(s);
+        if("Aguardando financeiro".equals(s.getStatus())&&d.materiais()!=null&&!agruparQuantidades(d.materiais()).equals(agruparQuantidades(s.getMateriais().stream().map(m->new SolicitacaoDto.MaterialRequisicao(m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave())).toList())))s.preservarPedidoOriginal();
         atualizar(id,d);
         s=buscarParaAtualizacao(id);validarEscopoRh(s,autor);
         if(!antes.equals(resumoParaAuditoria(s))&&"Aguardando financeiro".equals(s.getStatus())){s.setPlanoFinanceiro(List.of());if(s.getMateriais().stream().noneMatch(m->m.getQuantidadeEntradaEstoque()>0))s.getMateriais().forEach(m->m.solicitarCompra(0));}
         if(autor.getPerfil()==PerfilUsuario.FINANCEIRO&&!antes.equals(resumoParaAuditoria(s)))
             s.registrarEventoFinanceiro("ALTERACAO","O Financeiro alterou dados ou incluiu uma observação neste pedido. Revise os dados antes de acompanhar o atendimento.",autor);
-        return resposta(s);
+        return respostaParaUsuario(s,login);
     }
     @Transactional public SolicitacaoDto.Resposta aprovar(Long id){Solicitacao s=buscarParaAtualizacao(id);return aprovarPrimeiraEtapa(s);}
     @Transactional public SolicitacaoDto.Resposta aprovar(Long id,String login){
@@ -141,7 +146,7 @@ public class SolicitacaoService {
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(autor.getPerfil()))throw new AccessDeniedException("A primeira análise cabe à Gerência ou ao RH.");
             aprovarPrimeiraEtapa(s);
             s.registrarEventoFinanceiro("APROVACAO_INICIAL","Pedido aprovado pela Gerência/RH e encaminhado ao Financeiro.",autor);
-            return resposta(s);
+            return respostaParaUsuario(s,login);
         }
         if("Aguardando financeiro".equals(s.getStatus())){
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("A análise financeira cabe ao Financeiro.");
@@ -149,7 +154,7 @@ public class SolicitacaoService {
             s.setStatus(s.getObraDestino()==null?"Aguardando coleta":"Aprovada");
             if("Aguardando coleta".equals(s.getStatus())&&s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("Defina os equipamentos antes de aprovar a retirada.");
             s.registrarEventoFinanceiro("APROVACAO","Pedido aprovado pelo Financeiro e liberado para separação ou compra.",autor);
-            return resposta(s);
+            return respostaParaUsuario(s,login);
         }
         throw new RegraNegocioException("A solicitação já foi analisada nesta etapa.");
     }
@@ -162,7 +167,7 @@ public class SolicitacaoService {
         }
         if("Aguardando financeiro".equals(s.getStatus())){
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("A análise financeira cabe ao Financeiro.");
-            liberarReservas(s);s.setStatus("Rejeitada");s.registrarEventoFinanceiro("REJEICAO","Pedido rejeitado pelo Financeiro. Consulte a observação e o histórico financeiro.",autor);return resposta(s);
+            liberarReservas(s);s.setStatus("Rejeitada");s.registrarEventoFinanceiro("REJEICAO","Pedido rejeitado pelo Financeiro. Consulte a observação e o histórico financeiro.",autor);return respostaParaUsuario(s,login);
         }
         throw new RegraNegocioException("A solicitação já foi analisada nesta etapa.");
     }
@@ -198,6 +203,7 @@ public class SolicitacaoService {
             Long chave=atendimento.obraOrigemId()==null?Long.MIN_VALUE:atendimento.obraOrigemId();
             if(!origens.add(chave))throw new RegraNegocioException("Agrupe os materiais que saem da mesma origem.");
         }
+        if(dados.atendimentos().size()>1)original.preservarPedidoOriginal();
         original.preservarCompras();
         liberarReservasPlano(original);
         liberarReservas(original);
@@ -243,7 +249,7 @@ public class SolicitacaoService {
             s.registrarEventoFinanceiro("ALTERACAO","Plano de atendimento definido pelo Financeiro. "+descricao,autor);
         }
         if(revisao){validarEReservarPlano(s);s.registrarEventoFinanceiro("REVISAO_PLANO","O Financeiro revisou o atendimento antes da separação. Motivo: "+dados.motivoRevisao().trim(),autor);}
-        return resposta(s);
+        return respostaParaUsuario(s,login);
     }
 
     private record DivisaoParcial(MaterialSolicitado original,int envio,int compraEnviada,String justificativa,List<Solicitacao.OrigemPlanejada> origensEnvio,List<Solicitacao.OrigemPlanejada> origensPendentes) {}
@@ -438,7 +444,8 @@ public class SolicitacaoService {
     private void validarRota(Long origemId,Long destinoId){if(origemId==null&&destinoId==null)throw new RegraNegocioException("Informe a origem ou o destino da movimentação.");if(Objects.equals(origemId,destinoId))throw new RegraNegocioException("A origem e o destino da movimentação precisam ser diferentes.");}
     private Solicitacao copiarParaAtendimento(Solicitacao base,Solicitacao raiz){Solicitacao copia=new Solicitacao();copia.setTipo(base.getTipo());copia.setStatus("Aprovada");copia.setSolicitante(base.getSolicitante());copia.setSolicitanteUsuario(base.getSolicitanteUsuario());copia.setSolicitanteNome(base.getSolicitanteNome());copia.setSolicitanteLogin(base.getSolicitanteLogin());copia.setSolicitantePerfil(base.getSolicitantePerfil());copia.setTecnico(base.getTecnico());copia.setObraDestino(base.getObraDestino());copia.setDataSolicitacao(base.getDataSolicitacao());copia.setDataDecisao(base.getDataDecisao());copia.setObservacao(base.getObservacao());copia.setSolicitacaoPai(raiz);copia.copiarEventosFinanceirosDe(base);copia.copiarPedidoOriginalDe(base);copia.setPlanoFinanceiro(base.getPlanoFinanceiro());copia.setMovimentacaoDireta(base.isMovimentacaoDireta());return copia;}
     private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),comprasPreservadas(s),eventosFinanceiros(s),s.getPlanoFinanceiro(),s.getEntradasCompra(),s.isMovimentacaoDireta(),s.getMateriaisOriginais());}
-    private SolicitacaoDto.Resposta respostaParaUsuario(Solicitacao s,String login){Usuario usuario=usuarios.buscarPorLogin(login);return usuario.getPerfil().ehProfissionalDeCampo()?respostaTecnico(s,obras.idsPermitidos(login)):resposta(s);}
+    private SolicitacaoDto.Resposta respostaFinanceira(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),null,s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),null,s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),null,null,s.getObservacao(),s.getMateriais().stream().map(m->new SolicitacaoDto.MaterialResposta(m.getId(),m.getNome(),m.getQuantidade(),"Aguardando financeiro".equals(s.getStatus())?m.getIdentificacao():null,m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm())).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of(),eventosFinanceiros(s).stream().filter(e->Set.of("APROVACAO_INICIAL","APROVACAO","REJEICAO","ALTERACAO","REVISAO_PLANO").contains(e.tipo())).toList(),PedidosFinanceiros.permiteAnalise(s)?s.getPlanoFinanceiro():List.of(),PedidosFinanceiros.permiteAnalise(s)?s.getEntradasCompra():List.of(),false,List.of());}
+    private SolicitacaoDto.Resposta respostaParaUsuario(Solicitacao s,String login){Usuario usuario=usuarios.buscarPorLogin(login);if(usuario.getPerfil()==PerfilUsuario.FINANCEIRO)return respostaFinanceira(s);return usuario.getPerfil().ehProfissionalDeCampo()?respostaTecnico(s,obras.idsPermitidos(login)):resposta(s);}
     private SolicitacaoDto.Resposta respostaTecnico(Solicitacao s,Set<Long> permitidas){Long origem=s.getObraOrigem()!=null&&permitidas.contains(s.getObraOrigem().getId())?s.getObraOrigem().getId():null;Long destino=s.getObraDestino()!=null&&permitidas.contains(s.getObraDestino().getId())?s.getObraDestino().getId():null;return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),origem,destino,s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of(),List.of(),List.of(),List.of(),s.isMovimentacaoDireta(),s.getMateriaisOriginais());}
     private List<SolicitacaoDto.MaterialResposta> comprasPreservadas(Solicitacao s){return s.getCompras().stream().map(c->new SolicitacaoDto.MaterialResposta(c.id(),c.nome(),c.quantidade(),c.identificacao(),c.catalogoChave(),c.quantidadeCompra(),c.compraSolicitadaEm(),c.quantidadeAdquirida(),c.quantidadeEntradaEstoque(),c.adquiridaEm())).toList();}
     private List<SolicitacaoDto.EventoFinanceiroResposta> eventosFinanceiros(Solicitacao s){return s.getEventosFinanceiros().stream().map(e->new SolicitacaoDto.EventoFinanceiroResposta(e.tipo(),e.descricao(),e.autorNome(),e.autorLogin(),e.registradoEm())).toList();}

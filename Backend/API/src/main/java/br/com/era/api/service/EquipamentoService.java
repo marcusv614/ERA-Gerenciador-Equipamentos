@@ -23,6 +23,10 @@ public class EquipamentoService {
     private final EquipamentoRepository repository; private final MovimentacaoRepository movimentacoes; private final ObraService obras; private final FuncionarioService funcionarios; private final UsuarioService usuarios; private final InventarioHistoricoService inventarioHistorico;
     public EquipamentoService(EquipamentoRepository repository,MovimentacaoRepository movimentacoes,ObraService obras,FuncionarioService funcionarios,UsuarioService usuarios,InventarioHistoricoService inventarioHistorico){this.repository=repository;this.movimentacoes=movimentacoes;this.obras=obras;this.funcionarios=funcionarios;this.usuarios=usuarios;this.inventarioHistorico=inventarioHistorico;}
     @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listar(){return repository.findAll().stream().filter(e->!e.isArquivado()).map(this::resposta).toList();}
+    @Transactional(readOnly=true) public List<EquipamentoDto.DisponibilidadeFinanceira> disponibilidadeFinanceira(String login){
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(usuarios.buscarPorLogin(login).getPerfil()))throw new org.springframework.security.access.AccessDeniedException("Consulta restrita ao Financeiro e administrador.");
+        return repository.findAll().stream().filter(e->!e.isArquivado()).map(e->new EquipamentoDto.DisponibilidadeFinanceira(e.getId(),e.getTipo(),e.getModelo(),e.getSerie(),e.getStatus(),e.getObra()==null?null:e.getObra().getId(),e.getMedida(),CatalogoChave.criar(e.getTipo(),e.getModelo(),e.getMedida()),e.getQuantidadeDisponivel(),e.getControleQuantidade())).toList();
+    }
     @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listarParaUsuario(String login){
         Usuario usuario=usuarios.buscarPorLogin(login);PerfilUsuario perfil=usuario.getPerfil();
         if(perfil==PerfilUsuario.ADMIN)return repository.findAll().stream().map(this::resposta).toList();

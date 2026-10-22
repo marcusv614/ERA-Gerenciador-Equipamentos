@@ -44,6 +44,16 @@ for(const u of [tecnicoA,tecnicoB,colega,tst])assert.equal((await u.req('GET','/
 await new Cliente().req('GET','/notificacoes',null,401);
 for(const u of [admin,gerente,financeiro,estoque,rh])assert.equal((await u.req('GET','/notificacoes')).naoLidas,0);
 const equipamento = await admin.req('POST','/equipamentos',{ tipo:'Ferramentas',modelo:'Alicate',serie:'OBRA-A',quantidade:5,controleQuantidade:'LOTE',obraId:oa.id,tecnico:a.nome,status:'Em campo',data:hoje,auditavel:true },201);
+await new Cliente().req('GET','/atividades/pedidos-financeiros',null,401);
+for(const perfil of [gerente,estoque,rh,tecnicoA,tecnicoB,tst]){
+  await perfil.req('GET','/atividades/pedidos-financeiros',null,403);
+  await perfil.req('GET','/equipamentos/disponibilidade-financeira',null,403);
+}
+for(const rota of ['/equipamentos',`/equipamentos/${equipamento.id}/historico`,`/obras/${oa.id}/historico`,`/obras/${oa.id}/inventario-historico?data=${hoje}`,'/auditorias'])await financeiro.req('GET',rota,null,403);
+const disponiveis=await financeiro.req('GET','/equipamentos/disponibilidade-financeira');
+assert.ok(disponiveis.some(e=>e.id===equipamento.id&&e.obraId===oa.id));
+for(const campo of ['historico','calibracoes','manutencoes','tecnico','numeroNota','valor'])assert.ok(!(campo in disponiveis[0]));
+const historicoFinanceiro=()=>financeiro.req('GET','/atividades/pedidos-financeiros');
 const novoPedido = async(q,e= equipamento,tecnico=b,destino=ob,operador=gerente) => operador.req('POST','/atividades',{ tecnico:tecnico.nome,obraDestinoId:destino.id,dataSolicitacao:hoje,materiais:[{ nome:e.modelo,catalogoChave:e.catalogoChave,quantidade:q }],observacao:'Teste de atendimento parcial' },201);
 const plano = (p,compra,origens=[],motivoRevisao) => ({ materiais:[{ materialId:p.materiais[0].id,quantidadeCompra:compra,justificativa:'Preservar o equipamento em uso na obra.',origens }],...(motivoRevisao?{motivoRevisao}:{}) });
 const partial = (p,equipamentoId,quantidade) => ({ motivo:'Fornecedor não tinha a quantidade total. Manter o restante pendente.',materiais:[{ materialId:p.materiais[0].id,origens:[{ equipamentoId,quantidade }] }] });
@@ -54,6 +64,7 @@ const comprar = async(p,q,serie) => estoque.req('POST',`/atividades/${p.id}/mate
 let primeiraAnalise=await novoPedido(2,equipamento,b,ob,tecnicoB);
 assert.equal(primeiraAnalise.status,'Pendente');
 assert.ok(!(await pedidos()).some(p=>p.id===primeiraAnalise.id),'Financeiro não recebe pedido antes da Gerência');
+assert.ok(!(await historicoFinanceiro()).some(p=>p.id===primeiraAnalise.id));
 assert.equal((await financeiro.req('GET','/painel/resumo')).totalSolicitacoes,(await pedidos()).length,'Contador financeiro exclui os pedidos ainda não aprovados');
 await tecnicoB.req('GET','/painel/resumo',null,403);
 await financeiro.req('POST',`/atividades/${primeiraAnalise.id}/aprovacao`,{},403);
@@ -155,6 +166,32 @@ assert.equal(inventario.filter(e=>e.obraId===ob.id&&e.catalogoChave===equipament
 assert.ok(inventario.filter(e=>e.catalogoChave===equipamento.catalogoChave).every(e=>e.quantidadeReservada===0));
 assert.equal(inventario.find(e=>e.id===equipamento.id).quantidade,5);assert.equal(inventario.find(e=>e.id===equipamento.id).obraId,oa.id);
 console.log('Atendimentos sucessivos 6 + 1 + 3, compras sem duplicação e recebimento obrigatório: OK');
+const historicoFechado=await historicoFinanceiro(),pedidoFechado=historicoFechado.find(p=>p.id===principal.id);
+assert.equal(historicoFechado.filter(p=>p.id===principal.id).length,1);
+assert.equal(pedidoFechado.materiais[0].quantidadeSolicitada,10);
+assert.equal(pedidoFechado.materiais[0].quantidadeCompra,10);
+assert.equal(pedidoFechado.materiais[0].quantidadeAdquirida,10);
+assert.equal(pedidoFechado.solicitanteLogin,'gerente');assert.equal(pedidoFechado.obraDestinoId,ob.id);
+assert.deepEqual(pedidoFechado.analises,[]);
+assert.ok(pedidoFechado.decisoes.some(d=>d.tipo==='APROVACAO_INICIAL'&&d.autorLogin==='gerente'));
+assert.ok(pedidoFechado.decisoes.some(d=>d.tipo==='APROVACAO'&&d.autorLogin==='financeiro'));
+assert.ok(pedidoFechado.decisoes.every(d=>!['ATENDIMENTO_PARCIAL','AJUSTE_ESTOQUE','INICIO_ATENDIMENTO'].includes(d.tipo)));
+assert.ok(!historicoFechado.some(p=>[pendente.id,ultimo.id].includes(p.id)),'Envios não viram novos pedidos na auditoria financeira');
+for(const campo of ['obraOrigemId','transitoEm','concluidaEm','historico','movimentacoes'])assert.ok(!(campo in pedidoFechado));
+
+let ajustado=await novoPedido(3);
+await financeiro.req('PATCH',`/atividades/${ajustado.id}`,{tecnico:b.nome,obraDestinoId:ob.id,observacao:'Ajustado para duas unidades',materiais:[{nome:equipamento.modelo,catalogoChave:equipamento.catalogoChave,quantidade:2}]});
+assert.equal((await historicoFinanceiro()).find(p=>p.id===ajustado.id).materiais[0].quantidadeSolicitada,3);
+assert.equal((await localizar(ajustado.id)).materiais[0].quantidade,2);
+await financeiro.req('POST',`/atividades/${ajustado.id}/rejeicao`,{});
+assert.equal((await historicoFinanceiro()).find(p=>p.id===ajustado.id).status,'Rejeitada');
+
+const loteObraB=inventario.find(e=>e.obraId===ob.id&&e.catalogoChave===equipamento.catalogoChave);
+let retorno=await gerente.req('POST','/atividades',{tecnico:b.nome,obraOrigemId:ob.id,obraDestinoId:null,dataSolicitacao:hoje,materiais:[{nome:loteObraB.modelo,catalogoChave:loteObraB.catalogoChave,quantidade:1,identificacao:loteObraB.serie}]},201);
+const retornoFinanceiro=(await historicoFinanceiro()).find(p=>p.id===retorno.id);
+assert.equal(retornoFinanceiro.analises[0].materiais[0].identificacao,loteObraB.serie);
+retorno=await financeiro.req('POST',`/atividades/${retorno.id}/aprovacao`,{});assert.equal(retorno.status,'Aguardando coleta');
+console.log('Histórico financeiro: pedidos consolidados, autores, compras sem duplicação, ajustes, retorno e permissões: OK');
 
 let revisao = await novoPedido(3);
 await financeiro.req('POST',`/atividades/${revisao.id}/plano-financeiro`,plano(revisao,0,[{ equipamentoId:equipamento.id,quantidade:3 }]));

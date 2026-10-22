@@ -1,0 +1,19 @@
+import { Building2, Check, CircleDollarSign, FileText, History, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
+import { rotuloDecisaoFinanceira } from '../../utils/pedidosFinanceiros';
+import css from './DetalhesSolicitacao.module.css';
+const instante=valor=>valor?new Date(valor).toLocaleString('pt-BR',{timeZone:'America/Manaus'}):'Não registrado';
+
+export function DetalhesPedidoFinanceiro({solicitacao,processando,buscarObraPorId,aoPlanejar,aoAprovar,aoRejeitar,aoEditar,aoExportarAuditoria}) {
+  const destino=solicitacao.obra||buscarObraPorId(solicitacao.obraDestinoId)?.nome||'Depósito central';
+  return <article className={css.detalhes} aria-label="Dados do pedido financeiro"><div className={css.conteudo}>
+    <section className={css.destino}><span className={css.iconeDestino}><Building2 size={22}/></span><div><h3>Obra do pedido</h3><p>{destino}</p></div></section>
+    <p className={css.solicitante}><UserRound size={14}/>Solicitado por <strong>{solicitacao.solicitante}</strong>{solicitacao.solicitanteLogin&&` · ${solicitacao.solicitanteLogin}`}</p>
+    <section className={css.materiais} aria-label="Materiais pedidos e comprados"><header className={css.tituloSecao}><h3><Package2 size={17}/>Materiais do pedido</h3><span>{solicitacao.materiais.length} itens</span></header><div className={css.tabela}><ul>{solicitacao.materiais.map((m,i)=><li className={css.material} key={`${m.catalogoChave}-${i}`}><div className={css.materialDados}><strong>{m.nome}</strong><span className={css.localizacao}>Pedido: {m.quantidadeSolicitada} un. · Compra autorizada: {m.quantidadeCompra} un. · Comprado: {m.quantidadeAdquirida} un.</span></div><span className={css.quantidade}><strong>{m.quantidadeSolicitada}</strong><small>pedidas</small></span></li>)}</ul></div></section>
+    {solicitacao.observacao&&<section className={css.observacao}><h3><MessageSquareText size={16}/>Observação do pedido</h3><p>{solicitacao.observacao}</p></section>}
+    <section className={css.historico} aria-label="Aprovações do pedido"><h3><History size={16}/>Aprovações e responsáveis</h3>{(solicitacao.decisoes||[]).map((d,i)=><article key={i}><strong>{rotuloDecisaoFinanceira(d.tipo)}</strong><span>{d.autorNome} · {d.autorLogin}</span><small>{instante(d.registradoEm)}</small></article>)}</section>
+    {(solicitacao.analises||[]).map(a=>{
+      const pendente=a.status==='Aguardando financeiro',identificado=a.materiais.every(m=>m.identificacao);
+      return <section key={a.id} className={css.historico} aria-label="Análise financeira"><h3><CircleDollarSign size={16}/>{a.id===solicitacao.id?'Análise do pedido':'Saldo pendente do pedido'}</h3><p>{a.materiais.map(m=>`${m.quantidade}× ${m.nome}`).join(' · ')}</p><div className={css.acoes}><div className={css.acoesSecundarias}>{pendente&&!identificado&&<button type="button" className={css.editar} disabled={processando} onClick={()=>aoEditar(a)}><Pencil size={15}/>Editar</button>}{!identificado&&aoPlanejar&&<button type="button" className={css.editar} disabled={processando} onClick={()=>aoPlanejar(a)}><CircleDollarSign size={15}/>{a.status==='Aprovada'?'Editar atendimento aprovado':a.planoFinanceiro?.length?'Revisar plano':'Definir transporte e compra'}</button>}</div>{pendente&&<div className={css.acoesDecisao}><button type="button" className={css.rejeitar} disabled={processando} onClick={()=>aoRejeitar(a.id)}><X size={16}/>Rejeitar</button><button type="button" className={css.aceitar} disabled={processando||(!identificado&&!a.planoFinanceiro?.length)} onClick={()=>aoAprovar(a.id)}><Check size={16}/>Aprovar plano e enviar ao estoque</button></div>}</div></section>;
+    })}
+  </div><footer className={css.acoes}><div className={css.acoesSecundarias}><button type="button" className={css.editar} disabled={processando} onClick={()=>aoExportarAuditoria(solicitacao)}><FileText size={15}/>PDF do pedido</button></div></footer></article>;
+}

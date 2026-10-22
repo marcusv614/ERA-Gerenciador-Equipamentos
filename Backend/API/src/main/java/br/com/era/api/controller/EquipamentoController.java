@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 public class EquipamentoController {
     private final EquipamentoService service; public EquipamentoController(EquipamentoService service){this.service=service;}
     @GetMapping public List<EquipamentoDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
+    @GetMapping("/disponibilidade-financeira") public List<EquipamentoDto.DisponibilidadeFinanceira> disponibilidadeFinanceira(Authentication auth){return service.disponibilidadeFinanceira(auth.getName());}
     @GetMapping("/catalogo") public List<EquipamentoDto.ItemCatalogo> listarCatalogo(Authentication autenticacao){return service.listarCatalogoParaUsuario(autenticacao.getName());}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public EquipamentoDto.Resposta cadastrar(@Valid @RequestBody EquipamentoDto.Requisicao dados){return service.cadastrar(dados);}
     @PatchMapping("/{id}") public EquipamentoDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody EquipamentoDto.Requisicao dados){return service.atualizar(id,dados);}

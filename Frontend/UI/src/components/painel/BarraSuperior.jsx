@@ -11,8 +11,10 @@ const INFORMACOES_TELA = {
   deposito: ['Depósito', 'Itens fora de campo — estoque, manutenção e trânsito', 'Buscar item, série...'],
 };
 
-export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos, mostrarNotificacoes = true }) {
-  const [titulo, subtitulo, textoBusca] = INFORMACOES_TELA[telaAtual];
+export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos, mostrarNotificacoes = true, financeiro = false }) {
+  const [titulo, subtituloOriginal, buscaOriginal] = INFORMACOES_TELA[telaAtual];
+  const subtitulo=financeiro?({atividades:'Pedidos, aprovações e compras',obras:'Consulta dos pedidos e compras por obra',funcionarios:'Consulta dos pedidos por técnico',deposito:'Pedidos destinados ao depósito'})[telaAtual]:subtituloOriginal;
+  const textoBusca=financeiro?'Código, técnico, obra, material ou aprovador…':buscaOriginal;
   const [acoesAbertas, definirAcoesAbertas] = useState(false);
   const buscaAtiva = Boolean(termoBusca.trim());
   return <header className={`${estilos.topbar} ${recolhida ? estilos.topbarCollapsed : ''}`}>

@@ -1,3 +1,5 @@
+import { acompanhamentoPedidoFinanceiro } from './pedidosFinanceiros.js';
+
 export const COLUNAS_ACOMPANHAMENTO = [
   { id: 'gerencia', titulo: 'Aguardando aprovação', rotulo: 'Gerência / RH', descricao: 'Primeira análise do pedido' },
   { id: 'financeiro', titulo: 'No Financeiro', rotulo: 'Financeiro', descricao: 'Análise e planejamento' },
@@ -16,6 +18,7 @@ export function visivelNoFinanceiro(pedido) {
 export const pedidosDoPerfil = (pedidos, perfil) => perfil === 'FINANCEIRO' ? pedidos.filter(visivelNoFinanceiro) : pedidos;
 
 export function acompanhamentoSolicitacao(pedido) {
+  if(pedido.financeiro)return acompanhamentoPedidoFinanceiro(pedido);
   const eventos = pedido.eventosFinanceiros || [];
   const compras = (pedido.compras?.length ? pedido.compras : pedido.materiais || []).filter((m) => m.quantidadeCompra > 0);
   const compra = compras.reduce((s, m) => s + m.quantidadeCompra, 0);

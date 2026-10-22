@@ -66,6 +66,10 @@ function abrirJanelaDeImpressao(titulo, conteudo, retrato = false) {
 }
 
 const modelos = criarModelosDocumentos(logoEra);
+export function imprimirPedidosFinanceiros(...argumentos) {
+  const {titulo,conteudo}=modelos.pedidosFinanceiros(...argumentos);
+  abrirJanelaDeImpressao(titulo,conteudo,true);
+}
 export function imprimirOrdemAtendimento(...argumentos) {
   const { titulo, conteudo } = modelos.ordemAtendimento(...argumentos);
   abrirJanelaDeImpressao(titulo, conteudo, true);

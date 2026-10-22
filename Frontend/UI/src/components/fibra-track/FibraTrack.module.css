@@ -1,3 +1,4 @@
+.root[data-financeiro='true'] .bottomNav { grid-template-columns:repeat(4,minmax(0,1fr)); }
 .root {
   position: relative;
   width: 100%;

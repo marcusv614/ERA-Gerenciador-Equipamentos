@@ -59,6 +59,7 @@ class FluxoFinanceiroTests {
         assertEquals(2,resposta.materiais().getFirst().quantidade());
         assertEquals("ALTERACAO",resposta.eventosFinanceiros().getFirst().tipo());
         assertEquals("financeiro",resposta.eventosFinanceiros().getFirst().autorLogin());
+        assertEquals(1,pedido.getMateriaisOriginais().getFirst().quantidade());
     }
 
     @Test void estoqueNaoRecebePedidoAntesDaAprovacaoFinanceira(){
@@ -90,9 +91,35 @@ class FluxoFinanceiroTests {
         when(pedidos.findAll()).thenReturn(List.of(direto,rejeitado));
         assertTrue(service.listarParaUsuario("financeiro").isEmpty());
         rejeitado.registrarEventoFinanceiro("REJEICAO","Rejeição financeira",financeiro);
-        assertEquals(1,service.listarParaUsuario("financeiro").size());
+        assertTrue(service.listarParaUsuario("financeiro").isEmpty());
+        assertEquals(1,service.listarPedidosFinanceiros("financeiro").size());
     }
 
+    @Test void consultaFinanceiraNaoPerdePedidosEncerradosNemExpoeMovimentacoes(){
+        pedido.setStatus("Concluída");pedido.registrarEventoFinanceiro("APROVACAO_INICIAL","Liberado",gerente);
+        pedido.registrarEventoFinanceiro("ATENDIMENTO_PARCIAL","DADO FISICO",estoque);
+        pedido.setTransitoEm(java.time.OffsetDateTime.now());
+        when(pedidos.findAll()).thenReturn(List.of(pedido));
+        assertTrue(service.listarParaUsuario("financeiro").isEmpty());
+        var historico=service.listarPedidosFinanceiros("financeiro");
+        assertEquals(1,historico.size());assertTrue(historico.getFirst().analises().isEmpty());
+        assertEquals("gerente",historico.getFirst().decisoes().getFirst().autorLogin());
+        assertEquals(1,historico.getFirst().decisoes().size());
+    }
+    @Test void consultaFinanceiraExigePerfilAdequadoAntesDeLerPedidos(){
+        assertThrows(AccessDeniedException.class,()->service.listarPedidosFinanceiros("gerente"));
+        assertThrows(AccessDeniedException.class,()->service.listarPedidosFinanceiros("estoque"));
+        verify(pedidos,never()).findAll();
+    }
+    @Test void analiseFinanceiraOcultaOrigemEHistoricoFisico(){
+        pedido.setStatus("Aguardando financeiro");pedido.setObraOrigem(obra);
+        pedido.registrarEventoFinanceiro("APROVACAO_INICIAL","Liberado",gerente);
+        pedido.registrarEventoFinanceiro("INICIO_ATENDIMENTO","DADO FISICO",estoque);
+        when(pedidos.findAll()).thenReturn(List.of(pedido));
+        var analise=service.listarParaUsuario("financeiro").getFirst();
+        assertNull(analise.obraOrigemId());assertNull(analise.transitoEm());assertNull(analise.concluidaEm());
+        assertEquals(1,analise.eventosFinanceiros().size());assertTrue(analise.compras().isEmpty());
+    }
     private Solicitacao pedido(String status){
         Solicitacao s=new Solicitacao();ReflectionTestUtils.setField(s,"id",1L);s.setTipo("Movimentação");s.setStatus(status);s.setTecnico(tecnico);s.setSolicitante(tecnico);s.setObraDestino(obra);
         s.substituirMateriais(List.of(new MaterialSolicitado("Alicate",1,null,"ferramentas|alicate|")));ReflectionTestUtils.setField(s.getMateriais().getFirst(),"id",2L);return s;

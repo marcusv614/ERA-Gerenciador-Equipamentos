@@ -1,11 +1,13 @@
 import { filtrarSolicitacoes, locaisDoPedido, normalizarPesquisa } from '../../utils/pesquisaSolicitacoes';
 import { useEffect, useRef, useState } from 'react';
-import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, List, Package2, Plus, RotateCcw, UserRound, X } from 'lucide-react';
+import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, FileText, List, Package2, Plus, RotateCcw, UserRound, X } from 'lucide-react';
 import { formatarData } from '../../utils/datas';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { acompanhamentoSolicitacao, COLUNAS_ACOMPANHAMENTO, pedidosDoPerfil } from '../../utils/acompanhamentoSolicitacao';
 import { DetalhesSolicitacao } from './DetalhesSolicitacao';
 import { SepararEquipamentosModal } from '../estoque/SepararEquipamentosModal';
+import { DetalhesPedidoFinanceiro } from './DetalhesPedidoFinanceiro';
+import { COLUNAS_FINANCEIRAS } from '../../utils/pedidosFinanceiros';
 import css from './TelaAtividades.module.css';
 
 const CHAVE_VISUALIZACAO = 'era-atividades-visualizacao';
@@ -54,10 +56,11 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
   </div>;
 }
 
-export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: todasRecebidas = recebidas, tecnicos = [], equipamentos = [], obras = [], termoBusca = '', erroApi, buscarObraPorId, statusDecisao = 'Pendente', perfil, aoSalvarPlano, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
+export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: todasRecebidas = recebidas, tecnicos = [], equipamentos = [], obras = [], termoBusca = '', erroApi, buscarObraPorId, statusDecisao = 'Pendente', perfil, aoSalvarPlano, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria, aoExportarPedidos }) {
   const solicitacoes = pedidosDoPerfil(recebidas, perfil);
   const todasSolicitacoes = pedidosDoPerfil(todasRecebidas, perfil);
-  const colunasKanban = COLUNAS_ACOMPANHAMENTO.filter((c) => perfil !== 'FINANCEIRO' || c.id !== 'gerencia');
+  const financeiro=perfil==='FINANCEIRO';
+  const colunasKanban = financeiro ? COLUNAS_FINANCEIRAS : COLUNAS_ACOMPANHAMENTO;
   const filtrosEtapa = [{ id: 'todas', rotulo: 'Todas' }, ...colunasKanban.map((c) => ({ id: c.id, rotulo: c.rotulo }))];
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
@@ -107,6 +110,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
       <div><h2>Solicitações</h2><p>{visualizacao === 'kanban' ? 'Acompanhe os pedidos por etapa do fluxo.' : 'Selecione um técnico. Os pedidos mais recentes aparecem primeiro.'}</p></div>
       <div className={css.cabecalhoAcoes}>
         {aoNovaSolicitacao && <button type="button" className={css.novoPedido} onClick={aoNovaSolicitacao}><Plus size={16} />Nova solicitação</button>}
+        {aoExportarPedidos && <button type="button" className={css.novoPedido} onClick={()=>aoExportarPedidos(solicitacoesPorTecnico)} disabled={!solicitacoesPorTecnico.length}><FileText size={16}/>PDF dos pedidos</button>}
         <span className={css.total}>{solicitacoesPorTecnico.length} {solicitacoesPorTecnico.length === 1 ? 'solicitação' : 'solicitações'}</span>
         <div className={css.alternador} role="group" aria-label="Forma de visualizar as solicitações">
           <button type="button" aria-pressed={visualizacao === 'tecnicos'} className={visualizacao === 'tecnicos' ? css.alternadorAtivo : ''} onClick={() => alterarVisualizacao('tecnicos')}><List size={15} /><span>Por técnico</span></button>
@@ -118,7 +122,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
         <div className={css.camposFiltro}>
           <label><span><CalendarDays size={14} /> De</span><input type="date" aria-label="Data inicial do pedido" value={dataInicial} max={dataFinal || undefined} onChange={(evento) => definirDataInicial(evento.target.value)} /></label>
           <label><span><CalendarDays size={14} /> Até</span><input type="date" aria-label="Data final do pedido" value={dataFinal} min={dataInicial || undefined} onChange={(evento) => definirDataFinal(evento.target.value)} /></label>
-          <label><span><Building2 size={14} /> Obra (origem ou destino)</span><select value={obraFiltro} onChange={(evento) => definirObraFiltro(evento.target.value)}><option value="todas">Todas as obras</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
+          <label><span><Building2 size={14} /> {financeiro?'Obra do pedido':'Obra (origem ou destino)'}</span><select aria-label="Filtrar solicitações por obra" value={obraFiltro} onChange={(evento) => definirObraFiltro(evento.target.value)}><option value="todas">Todas as obras</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
         </div>
         <div className={css.filtrosEtapa} role="group" aria-label="Mostrar solicitações por situação">
           {filtrosEtapa.map((filtro) => <button type="button" key={filtro.id} aria-pressed={etapaFiltro === filtro.id} className={etapaFiltro === filtro.id ? css.filtroEtapaAtivo : ''} onClick={() => definirEtapaFiltro(filtro.id)}><span>{filtro.rotulo}</span><b>{quantidadePorEtapa(filtro.id)}</b></button>)}
@@ -140,7 +144,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
           {pedidos.length ? <><div className={css.colunas} aria-hidden="true"><span>Solicitação / data</span><span>Obra</span><span>Status</span><span /></div>
             {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
               <span className={css.identificador}><strong>#{String(pedido.id).padStart(4, '0')}</strong><small>{formatarData(pedido.dataSolicitacao)}</small>{pedido.solicitacaoPaiId != null && <small>Pedido original #{String(pedido.solicitacaoPaiId).padStart(4, '0')}</small>}</span>
-              <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
+              <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{financeiro?'Pedido de materiais':pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
               <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span><ChevronRight size={16} />
             </button>)}
           </> : <div className={css.vazio}><ClipboardList size={24} /><p>Nenhuma solicitação deste técnico{termo ? ' para esta busca' : ''}.</p></div>}
@@ -172,9 +176,9 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
       </div>}
     {selecionada && !planejando && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
-      <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
-        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />
+      {financeiro ? <DetalhesPedidoFinanceiro solicitacao={selecionada} processando={processando} buscarObraPorId={buscarObraPorId} aoPlanejar={aoSalvarPlano ? definirPlanejando : undefined} aoAprovar={(id)=>decidir(aoAprovar,id)} aoRejeitar={(id)=>decidir(aoRejeitar,id)} aoEditar={(pedido)=>{selecionar(null);aoEditar(pedido);}} aoExportarAuditoria={aoExportarAuditoria}/> : <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
+        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />}
     </JanelaSolicitacao>}
-    {selecionada && planejando && <SepararEquipamentosModal key={selecionada.id} solicitacao={selecionada} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { const salvo = await aoSalvarPlano(id,dados); if (salvo) definirPlanejando(false); return salvo; }} />}
+    {selecionada && planejando && <SepararEquipamentosModal key={planejando.id || selecionada.id} solicitacao={planejando === true ? selecionada : planejando} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { const salvo = await aoSalvarPlano(id,dados); if (salvo) definirPlanejando(false); return salvo; }} />}
   </section>;
 }

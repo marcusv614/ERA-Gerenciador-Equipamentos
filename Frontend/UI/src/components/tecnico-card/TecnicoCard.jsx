@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, ClipboardCheck, Mail, PackageSearch, Pencil, Phone } from 'lucide-react';
+import { BriefcaseBusiness, ClipboardCheck, FileText, Mail, PackageSearch, Pencil, Phone } from 'lucide-react';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData } from '../../utils/datas';
@@ -6,7 +6,8 @@ import styles from './TecnicoCard.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { ehFuncionarioEstoquista } from '../../utils/classificacaoFuncionario';
 
-export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar, aoAuditar }) {
+export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar, aoAuditar, pedidosFinanceiros, aoExportarPedidos, aoVerPedidos }) {
+  const financeiro=Array.isArray(pedidosFinanceiros);
   const { nome, cargo, email, telefone, status } = funcionario;
   const initials = nome
     .split(' ')
@@ -33,7 +34,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
               <BriefcaseBusiness size={13} /><strong>{obras.length}</strong> {obras.length === 1 ? 'obra' : 'obras'}
             </span>
             <span className={styles.pill}>
-              <PackageSearch size={13} /><strong>{equipamentos.length}</strong> {equipamentos.length === 1 ? 'material' : 'materiais'}
+              <PackageSearch size={13} /><strong>{financeiro?pedidosFinanceiros.length:equipamentos.length}</strong> {financeiro?'pedidos':equipamentos.length === 1 ? 'material' : 'materiais'}
             </span>
           </div>}
         </div>
@@ -52,7 +53,8 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
         </div> : <div className={styles.empty}>Nenhuma obra atribuída no momento.</div>}
       </div>}
 
-      {!estoquista && <div className={styles.section}>
+      {financeiro&&!estoquista&&<section className={styles.section}><div className={styles.sectionHeading}><div className={styles.sectionTitle}>Pedidos do técnico</div><span>{pedidosFinanceiros.length}</span></div>{pedidosFinanceiros.length?<><div className={styles.tableWrap}><div className={styles.table}><div className={styles.rowHead}><span>Pedido</span><span>Solicitante</span><span>Situação</span><span>Obra</span><span>Data</span></div>{pedidosFinanceiros.map(p=><div className={styles.row} key={p.id}><span className={styles.rowModel} data-label="Pedido">#{String(p.id).padStart(4,'0')}</span><span className={styles.rowSerie} data-label="Solicitante">{p.solicitante}</span><span className={styles.rowStatus} data-label="Situação">{p.status==='Aprovada'?'Aprovado':p.status}</span><span className={styles.rowLocal} data-label="Obra">{p.obra}</span><span className={styles.rowData} data-label="Data">{formatarData(p.dataSolicitacao)}</span></div>)}</div></div><button type="button" className={styles.auditButton} onClick={()=>aoVerPedidos(nome)}>Consultar pedidos</button><button type="button" className={styles.auditButton} onClick={()=>aoExportarPedidos(pedidosFinanceiros,`Pedidos de ${nome}`)}><FileText size={16}/>PDF dos pedidos</button></>:<div className={styles.empty}>Nenhum pedido registrado.</div>}</section>}
+      {!financeiro&&!estoquista && <div className={styles.section}>
         <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Materiais registrados com o técnico</div><span>{equipamentos.length}</span></div>
         {equipamentos.length === 0 ? (
           <div className={styles.empty}>Nenhum material registrado no momento.</div>

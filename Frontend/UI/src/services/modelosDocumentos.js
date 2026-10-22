@@ -1,6 +1,7 @@
 import { formatarData } from '../utils/datas.js';
 import { descreverLocalizacao } from '../utils/localizacaoEquipamentos.js';
 import { ROTULOS_CALIBRACAO, EVENTOS_CALIBRACAO } from '../utils/calibracoes.js';
+import { acompanhamentoPedidoFinanceiro, rotuloDecisaoFinanceira } from '../utils/pedidosFinanceiros.js';
 
 const texto = (valor) => String(valor ?? '—').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 const data = (valor) => valor ? formatarData(valor) : 'Não registrado';
@@ -15,6 +16,9 @@ const nota = (mensagem) => `<p class="muted">${texto(mensagem)}</p>`;
 export function criarModelosDocumentos(logoEra) {
   const cabecalho = (titulo, campos) => `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${texto(logoEra)}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${texto(titulo)}</h1></div><div class="header">${campos.filter(([,valor])=>valor!=null&&valor!=='').map(([rotulo, valor]) => `<div class="header-row"><span class="label">${texto(rotulo)}</span><span class="value">${texto(valor)}</span></div>`).join('')}</div></div>`;
   const documento = (titulo, conteudo) => ({ titulo, conteudo:conteudo + nota(`Gerado em ${instante(new Date())} · horário de Manaus.`) });
+  function pedidosFinanceiros(pedidos,buscar,titulo='Pedidos e compras') {
+    return documento(titulo,pedidos.length?pedidos.map(p=>cabecalho(titulo,[['Pedido',idPedido(p.id)],['Obra',p.obra||local(p.obraDestinoId,buscar)],['Técnico',p.tecnico],['Solicitado por',p.solicitante],['Conta do solicitante',p.solicitanteLogin],['Data do pedido',data(p.dataSolicitacao)],['Situação financeira',acompanhamentoPedidoFinanceiro(p).rotulo]])+tabela('Materiais do pedido',['Material','Quantidade pedida','Compra autorizada','Quantidade comprada'],p.materiais.map(m=>[m.nome,m.quantidadeSolicitada,m.quantidadeCompra,m.quantidadeAdquirida]))+tabela('Aprovações e responsáveis',['Decisão','Responsável','Conta','Data'],(p.decisoes||[]).map(d=>[rotuloDecisaoFinanceira(d.tipo),d.autorNome,d.autorLogin,instante(d.registradoEm)]))+(p.observacao?nota(`Observação do pedido: ${p.observacao}`):'')).join('<div style="break-after:page"></div>'):nota('Nenhum pedido encontrado para esta consulta.'));
+  }
   const camposObra = (obra, responsaveis = []) => [['Obra',obra.nome],['Cliente',obra.cliente],['Localização',obra.cidade],...(obra.inicio ? [['Início da obra',data(obra.inicio)]] : []),['Responsáveis técnicos cadastrados',obra.responsaveis?.join(', ') || 'Não registrado'],['Responsáveis pelos equipamentos relacionados',[...new Set(responsaveis.filter(Boolean))].join(', ') || 'Não registrado']];
   const origemPedido = (pedido, buscar) => pedido.obraOrigemId != null ? local(pedido.obraOrigemId, buscar) : pedido.materiais?.length && pedido.materiais.every((m) => m.identificacao?.trim()) ? 'Depósito central' : 'Ainda não definida pelo estoque';
   const camposAutoria = (pedido) => [
@@ -141,5 +145,5 @@ export function criarModelosDocumentos(logoEra) {
     const linhas=auditorias.flatMap((a)=>a.itens.map((i)=>[idPedido(a.id),a.tecnicoNome,a.fiscal||'Não informado',a.dataVistoria?data(a.dataVistoria):'Não informada',a.status==='CONCLUIDA'?'Concluída':'Aberta',i.modelo,i.serie,i.local,i.quantidade,i.bom,i.avaria,i.quebrado,i.quantidade-i.bom-i.avaria-i.quebrado,i.observacao||'']));
     return documento('Relatório de vistorias dos materiais',cabecalho('Relatório de vistorias dos materiais',[['Vistorias na consulta',auditorias.length],['Registros de materiais',linhas.length]])+nota(filtros)+tabela('Condições registradas nos materiais da consulta',['Vistoria','Técnico','Fiscal','Data da vistoria','Situação','Material','Código / série','Obra na ficha','Qtd.','Bom','Com avaria','Quebrado','A avaliar','Observação'],linhas)+nota('Os locais e as quantidades correspondem às fichas de vistoria, preservando cada vistoria periódica. As fichas originais completas, com campos de assinaturas, permanecem disponíveis por vistoria.'));
   }
-  return {historicoEquipamento,inventarioObra,inventarioHistoricoObra,ordemAtendimento,romaneioSeparacao,auditoriaSolicitacao,listaComprasSolicitacao,listaComprasGeral,historicoObra,vistoriaTecnico,relatorioVistorias};
+  return {pedidosFinanceiros,historicoEquipamento,inventarioObra,inventarioHistoricoObra,ordemAtendimento,romaneioSeparacao,auditoriaSolicitacao,listaComprasSolicitacao,listaComprasGeral,historicoObra,vistoriaTecnico,relatorioVistorias};
 }

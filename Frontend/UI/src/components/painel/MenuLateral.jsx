@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Activity, Boxes, Building2, ChevronDown, ChevronRight, ClipboardCheck, UserRound, Users, Warehouse } from 'lucide-react';
 import logoEra from '../../assets/ERALTDA.png';
 
-export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, usuario, ocultarVistorias = false, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
+export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, usuario, ocultarVistorias = false, ocultarEquipamentos = false, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
   const [grupoExpandido, definirGrupoExpandido] = useState(null);
   const alternarGrupo = (grupo, tela) => {
     definirGrupoExpandido((grupoAtual) => grupoAtual === grupo ? null : grupo);
@@ -18,7 +18,7 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
       <div className={`${estilos.sidebarInner} ${aberto ? '' : estilos.sidebarInnerHidden}`} aria-hidden={!aberto} inert={!aberto}>
         <div className={estilos.brandRow}><img className={estilos.brandLogo} src={logoEra} alt="ERA Engenharia de Redes da Amazônia" /></div>
         <nav className={estilos.nav}>
-          <button onClick={() => alternarGrupo('equipamentos', 'equipamentos')} className={`${estilos.navItem} ${telaAtual === 'equipamentos' ? estilos.navItemActive : ''}`}><Boxes size={16} /> Equipamentos {renderizarIndicadorGrupo('equipamentos')}</button>
+          {!ocultarEquipamentos && <><button onClick={() => alternarGrupo('equipamentos', 'equipamentos')} className={`${estilos.navItem} ${telaAtual === 'equipamentos' ? estilos.navItemActive : ''}`}><Boxes size={16} /> Equipamentos {renderizarIndicadorGrupo('equipamentos')}</button>
           {grupoExpandido === 'equipamentos' && <div className={estilos.navSub}>
             <label className={estilos.navSubLabel} htmlFor="categoria-equipamento">Subcategoria</label>
             <select id="categoria-equipamento" className={estilos.navSubSelect} value={tipoSelecionado} onChange={(evento) => aoSelecionarTipo(evento.target.value)}>
@@ -26,6 +26,7 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
               {tiposEquipamento.map((tipo) => <option key={tipo} value={tipo}>{tipo === 'Outro' ? 'Outros' : tipo}</option>)}
             </select>
           </div>}
+          </>}
           <button onClick={() => alternarGrupo('obras', 'obras')} className={`${estilos.navItem} ${telaAtual === 'obras' ? estilos.navItemActive : ''}`}><Building2 size={16} /> Obras {renderizarIndicadorGrupo('obras')}</button>
           {grupoExpandido === 'obras' && <div className={estilos.navSub}>
             {obras.map((obra) => <button key={obra.id} onClick={() => { aoSelecionarTela('obras'); aoSelecionarBusca(obra.nome); }} className={estilos.navSubItem}><Building2 size={13} /><span>{obra.nome}</span></button>)}

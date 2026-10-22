@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 public class AtividadeController {
     private final SolicitacaoService service; public AtividadeController(SolicitacaoService service){this.service=service;}
     @GetMapping public List<SolicitacaoDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
+    @GetMapping("/pedidos-financeiros") public List<br.com.era.api.dto.PedidoFinanceiroDto.Resposta> pedidosFinanceiros(Authentication auth){return service.listarPedidosFinanceiros(auth.getName());}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public SolicitacaoDto.Resposta cadastrar(@Valid @RequestBody SolicitacaoDto.Requisicao dados,Authentication autenticacao){return service.cadastrar(dados,autenticacao.getName());}
     @PostMapping("/transporte-direto") @ResponseStatus(HttpStatus.CREATED) public SolicitacaoDto.Resposta transporteDireto(@Valid @RequestBody SolicitacaoDto.Requisicao dados,Authentication autenticacao){return service.cadastrarTransporteDireto(dados,autenticacao.getName());}
     @PostMapping("/{id}/plano-financeiro") public SolicitacaoDto.Resposta salvarPlano(@PathVariable Long id,@Valid @RequestBody SolicitacaoDto.PlanoFinanceiro dados,Authentication autenticacao){return service.salvarPlanoFinanceiro(id,dados,autenticacao.getName());}

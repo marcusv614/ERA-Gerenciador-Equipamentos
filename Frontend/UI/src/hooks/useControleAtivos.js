@@ -4,8 +4,10 @@ import { criarPedidoMovimentacao } from '../utils/pedidoMovimentacao';
 import { obterHistoricoEquipamento } from '../utils/historicoEquipamento';
 import { ehFuncionarioEstoquista } from '../utils/classificacaoFuncionario';
 import { apiAtividades, apiCategoriasEquipamento, apiEquipamentos, apiFuncionarios, apiObras, carregarDadosIniciaisApi } from '../services/api/servicoAtivosApi';
+import { financeiroApi } from '../services/api/financeiroApi';
 
-export function useControleAtivos() {
+export function useControleAtivos(perfil) {
+  const financeiro = perfil === 'FINANCEIRO';
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
   const [funcionarios, definirFuncionarios] = useState([]);
@@ -16,7 +18,7 @@ export function useControleAtivos() {
 
   useEffect(() => {
     let deveAtualizar = true;
-    carregarDadosIniciaisApi()
+    (financeiro ? Promise.all([apiObras.listar(),financeiroApi.disponibilidade(),apiFuncionarios.listar(),financeiroApi.pedidos()]).then(([obras,equipamentos,funcionarios,solicitacoes])=>({obras,equipamentos,funcionarios,solicitacoes,categoriasEquipamento:[]})) : carregarDadosIniciaisApi())
       .then((dados) => {
         if (!deveAtualizar) return;
         if (Array.isArray(dados.obras)) definirObras(dados.obras);
@@ -29,7 +31,7 @@ export function useControleAtivos() {
       .catch((erro) => { if (deveAtualizar) definirErroApi(erro.message); })
       .finally(() => { if (deveAtualizar) definirCarregandoDados(false); });
     return () => { deveAtualizar = false; };
-  }, []);
+  }, [financeiro]);
 
   const buscarObraPorId = (identificador) =>
     obras.find((obra) => obra.id === identificador);
@@ -41,7 +43,7 @@ export function useControleAtivos() {
       if (document.visibilityState === 'hidden' || atualizando) return;
       atualizando = true;
       try {
-        const [itens, pedidos] = await Promise.all([apiEquipamentos.listar(), apiAtividades.listar()]);
+        const [itens, pedidos] = await Promise.all([financeiro ? financeiroApi.disponibilidade() : apiEquipamentos.listar(), financeiro ? financeiroApi.pedidos() : apiAtividades.listar()]);
         if (ativo) { definirEquipamentos(itens); definirSolicitacoes(pedidos); }
       } catch {
         // Mantém os dados atuais e tenta novamente ao retomar o painel.
@@ -51,9 +53,9 @@ export function useControleAtivos() {
     window.addEventListener('focus', atualizar);
     document.addEventListener('visibilitychange', atualizar);
     return () => { ativo = false; window.clearInterval(intervalo); window.removeEventListener('focus', atualizar); document.removeEventListener('visibilitychange', atualizar); };
-  }, []);
+  }, [financeiro]);
 
-  const equipamentosLocalizados = useMemo(() => localizarEquipamentos(equipamentos, solicitacoes), [equipamentos, solicitacoes]);
+  const equipamentosLocalizados = useMemo(() => financeiro ? equipamentos : localizarEquipamentos(equipamentos, solicitacoes), [equipamentos, solicitacoes, financeiro]);
 
   const resumoEquipamentos = useMemo(() => ({
     total: equipamentos.filter(({ arquivado }) => !arquivado).length,
@@ -233,6 +235,7 @@ export function useControleAtivos() {
       const resposta = status === 'Aprovada'
         ? await apiAtividades.aprovar(identificador)
         : await apiAtividades.rejeitar(identificador);
+      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos());definirErroApi(null);return true;}
       definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
         solicitacao.id === identificador ? resposta : solicitacao));
       definirErroApi(null);
@@ -258,6 +261,7 @@ export function useControleAtivos() {
   async function editarSolicitacao(identificador, dadosAtualizados) {
     try {
       const resposta = await apiAtividades.atualizar(identificador, dadosAtualizados);
+      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos());definirErroApi(null);return true;}
       definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === identificador ? resposta : pedido));
       definirErroApi(null);
       return true;
@@ -266,6 +270,7 @@ export function useControleAtivos() {
   async function salvarPlanoFinanceiro(id,dados) {
     try {
       const resposta = await apiAtividades.salvarPlanoFinanceiro(id,dados);
+      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos());definirErroApi(null);return true;}
       definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === id ? resposta : pedido));
       definirErroApi(null);
       return true;

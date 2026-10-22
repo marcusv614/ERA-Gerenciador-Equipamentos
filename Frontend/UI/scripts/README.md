@@ -71,3 +71,27 @@ pedidos ainda pendentes: esses pedidos devem permanecer ocultos. Confere os
 cartões de acompanhamento, a aprovação pelo gerente e a linha de etapas em
 desktop e mobile. O teste integrado verifica a aprovação inicial, as permissões
 para iniciar providências e a consulta do gerente ao evento registrado pelo estoque.
+
+Consulta financeira de pedidos
+-----------------------------
+
+```powershell
+node scripts/verificar-auditoria-financeiro.mjs
+node --test tests/pedidosFinanceiros.test.js
+```
+
+Valida a pesquisa por código exato, técnico, obra, material, solicitante,
+aprovador e data, inclusive pedidos antigos. Os filtros de período, obra e
+situação se combinam com a pesquisa; o PDF exporta o resultado filtrado.
+O histórico financeiro consolida atendimentos parciais pelo pedido original,
+preserva a quantidade pedida e soma as compras sem duplicá-las.
+
+O roteiro com Chrome usa componentes reais e dados fictícios, incluindo a
+prévia do administrador, edição do saldo, planejamento, aprovação, PDFs por
+obra e técnico, temas claro/escuro e larguras de 320, 390, 768 e 1440 px.
+Falha se tentar carregar inventário ou histórico físico no financeiro.
+Capturas ficam em `node_modules/.cache/financeiro`.
+
+O teste integrado `scripts/validar-atendimento-parcial.ps1`, na raiz do
+projeto, usa API e banco descartáveis e verifica também as permissões HTTP,
+compras parciais, histórico após encerramento e preservação do pedido original.

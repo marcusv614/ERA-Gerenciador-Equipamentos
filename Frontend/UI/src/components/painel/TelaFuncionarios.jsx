@@ -1,11 +1,14 @@
 import { CartaoTecnico } from '../tecnico-card/TecnicoCard';
 
-export function TelaFuncionarios({ funcionarios, obras, equipamentos, podeEditar, aoEditarFuncionario, aoAuditarFuncionario, estilos }) {
+export function TelaFuncionarios({ funcionarios, obras, equipamentos, podeEditar, aoEditarFuncionario, aoAuditarFuncionario, estilos, pedidosFinanceiros, aoExportarPedidos, aoVerPedidos }) {
   const grupos=[{titulo:'Funcionários ativos',itens:funcionarios.filter((f)=>f.status==='Ativo'&&!f.arquivado)},{titulo:'Funcionários inativos',itens:funcionarios.filter((f)=>f.status!=='Ativo'||f.arquivado)}];
   return <div className={estilos.registrosAgrupados}>{grupos.map((grupo)=>grupo.itens.length>0&&<section key={grupo.titulo} className={estilos.registroGrupo}><header><strong>{grupo.titulo}</strong><b>{grupo.itens.length}</b></header><div className={estilos.tecnicoGrid}>
     {grupo.itens.map((funcionario) => <CartaoTecnico
       key={funcionario.id}
       funcionario={funcionario}
+      pedidosFinanceiros={pedidosFinanceiros?.filter(p=>p.tecnico===funcionario.nome)}
+      aoExportarPedidos={aoExportarPedidos}
+      aoVerPedidos={aoVerPedidos}
       obras={obras.filter(({ responsaveis, arquivado }) => !arquivado&&responsaveis?.includes(funcionario.nome))}
       equipamentos={equipamentos.filter(({ tecnico, arquivado }) => !arquivado&&tecnico === funcionario.nome)}
       todasAsObras={obras}
