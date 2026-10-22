@@ -1,5 +1,12 @@
-.fundo{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;background:rgba(8,15,12,.72);backdrop-filter:blur(3px)}
+.fundo{position:fixed;inset:0;z-index:220;display:grid;place-items:center;padding:24px;background:rgba(8,15,12,.72);backdrop-filter:blur(3px)}
 .modal{width:min(980px,100%);height:min(720px,calc(100dvh - 48px));display:grid;grid-template-columns:270px minmax(0,1fr);overflow:hidden;border-radius:22px;background:#fbfaf6;box-shadow:0 28px 80px rgba(0,0,0,.3);color:#202722}
+.bloqueio{grid-column:1/-1;grid-row:1/-1;display:grid;grid-template-columns:inherit;grid-template-rows:inherit;min-width:0;min-height:0;margin:0;padding:0;border:0}
+.acoesMaterial{flex-wrap:wrap;justify-content:flex-end}.acoesMaterial>strong{font-size:10px;white-space:normal;max-width:180px}
+.compraPlanejada{display:grid;gap:9px;margin-top:12px;padding:14px;border:1px solid #d8d5ce;border-radius:10px;background:#f1eee7}
+.compraPlanejada label{display:grid;gap:7px;min-width:0}.compraPlanejada label>span{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700}
+.compraPlanejada input,.compraPlanejada textarea{box-sizing:border-box;min-height:44px;width:100%;padding:10px;border:1px solid #c8cbc6;border-radius:8px;background:#fff;color:#202722;font:inherit;font-size:14px}
+.compraPlanejada input{max-width:150px}.compraPlanejada textarea{min-height:80px;resize:vertical}.compraPlanejada small{font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+:global([data-theme="dark"]) .compraPlanejada{background:#202c26;border-color:#415149}:global([data-theme="dark"]) .compraPlanejada input,:global([data-theme="dark"]) .compraPlanejada textarea{background:#18221d;border-color:#415149;color:#edf2ee}
 .resumo{min-width:0;overflow-wrap:anywhere;display:flex;flex-direction:column;padding:28px 24px;background:#173d31;color:#fff}
 .marca{display:flex;align-items:center;gap:9px;color:#f2a443;font-size:10px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.marca svg{width:19px}
 .numero{margin-top:42px;color:#b8ccc3;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.resumo h2{margin:7px 0 5px;font-size:21px}.resumo>p{margin:0;color:#b8c8c1;font-size:11px;line-height:1.55}

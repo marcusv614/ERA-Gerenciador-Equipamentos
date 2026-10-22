@@ -4,6 +4,7 @@ import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Colu
 import { formatarData } from '../../utils/datas';
 import { obterEtapaSolicitacao, pertenceEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { DetalhesSolicitacao } from './DetalhesSolicitacao';
+import { SepararEquipamentosModal } from '../estoque/SepararEquipamentosModal';
 import css from './TelaAtividades.module.css';
 
 const CHAVE_VISUALIZACAO = 'era-atividades-visualizacao';
@@ -65,7 +66,7 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
   </div>;
 }
 
-export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], termoBusca = '', erroApi, buscarObraPorId, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
+export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes, tecnicos = [], equipamentos = [], obras = [], termoBusca = '', erroApi, buscarObraPorId, statusDecisao = 'Pendente', perfil, aoSalvarPlano, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria }) {
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
   const [dataInicial, definirDataInicial] = useState('');
@@ -74,6 +75,7 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
   const [etapaFiltro, definirEtapaFiltro] = useState('todas');
   const [selecionadaId, selecionar] = useState(null);
   const [processando, definirProcessando] = useState(false);
+  const [planejando, definirPlanejando] = useState(false);
   const [erro, definirErro] = useState('');
   const emProcessamento = useRef(false);
   const [fechar] = useState(() => () => selecionar(null));
@@ -135,7 +137,7 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
     {visualizacao === 'tecnicos' ? <>
       <div className={css.tecnicos}>{grupos.map(({ nome, pedidos }, indice) => {
       const aberto = tecnicoAberto === nome;
-      const pendentes = pedidos.filter(({ status }) => status === 'Pendente').length;
+      const pendentes = pedidos.filter(({ status }) => status === statusDecisao).length;
       const painelId = `pedidos-tecnico-${indice}`;
       return <section key={nome} className={css.tecnico}>
         <button type="button" className={css.tecnicoBotao} aria-expanded={aberto} aria-controls={painelId} onClick={() => definirTecnicoAberto(aberto ? null : nome)}>
@@ -174,10 +176,11 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
           </section>;
         })}
       </div>}
-    {selecionada && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
+    {selecionada && !planejando && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
-      <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} processando={processando}
+      <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
         aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />
     </JanelaSolicitacao>}
+    {selecionada && planejando && <SepararEquipamentosModal key={selecionada.id} solicitacao={selecionada} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { if (await aoSalvarPlano(id,dados)) definirPlanejando(false); }} />}
   </section>;
 }

@@ -6,6 +6,12 @@
 .destino h3 { margin:0 0 5px; color:var(--text-muted); font-size:11px; font-weight:500; }
 .destino p { margin:0; font:600 15px/1.5 var(--font-display); overflow-wrap:anywhere; }
 .solicitante { margin:-10px 0 0; display:flex; align-items:center; flex-wrap:wrap; gap:5px; color:var(--text-muted); font-size:12px; }
+.alertaFinanceiro { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border:1px solid #e4a11b; border-radius:10px; background:color-mix(in srgb, #e4a11b 10%, var(--surface)); }
+.alertaFinanceiro > svg { flex:0 0 auto; margin-top:2px; color:#b87800; }
+.alertaFinanceiro div { min-width:0; display:grid; gap:4px; }
+.alertaFinanceiro strong { font:600 13px/1.4 var(--font-display); }
+.alertaFinanceiro p, .alertaFinanceiro small { margin:0; font-size:11px; line-height:1.55; overflow-wrap:anywhere; }
+.alertaFinanceiro small { color:var(--text-muted); }
 .tituloSecao { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
 .tituloSecao h3, .observacao h3 { margin:0; display:flex; align-items:center; gap:8px; font:600 13px/1.5 var(--font-display); }
 .tituloSecao h3 svg, .observacao h3 svg { color:var(--text-muted); flex-shrink:0; }
@@ -25,6 +31,17 @@
 .quantidade small { color:var(--text-muted); font-size:10px; }
 .observacao { display:grid; gap:10px; }
 .observacao p { margin:0; padding:14px 16px; border-radius:10px; background:var(--surface-2); border:1px solid var(--border); font-size:12px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; }
+.disponibilidadeLista, .historico { display:grid; gap:8px; }
+.disponibilidadeLista article, .historico article { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:13px 15px; border:1px solid var(--border); border-radius:10px; background:var(--surface-2); }
+.disponibilidadeLista article > div { display:grid; gap:4px; min-width:0; }
+.disponibilidadeLista article > div:last-child { text-align:right; flex:0 0 auto; }
+.disponibilidadeLista strong, .historico strong { font-size:12px; line-height:1.45; }
+.disponibilidadeLista span, .disponibilidadeLista small, .historico span, .historico small { color:var(--text-muted); font-size:10px; line-height:1.55; overflow-wrap:anywhere; }
+.disponibilidadeLista b { font:600 12px/1.4 var(--font-display); }
+.disponibilidadeLista .faltante { color:#c44444; font-weight:600; }
+.historico > h3 { margin:0 0 3px; display:flex; align-items:center; gap:8px; font:600 13px/1.5 var(--font-display); }
+.historico > h3 svg { color:var(--text-muted); }
+.historico article { display:grid; justify-content:stretch; gap:3px; }
 .acoes { position:sticky; bottom:-24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin:24px 0 0; padding:18px 0; border-top:1px solid var(--border); background:var(--surface); }
 .acoesSecundarias, .acoesDecisao { display:flex; flex-wrap:wrap; gap:8px; }
 .acoesDecisao { margin-left:auto; }
@@ -42,6 +59,8 @@
   .colunas { padding:10px 12px; }
   .material { padding:16px 12px; gap:12px; }
   .quantidade { min-width:44px; }
+  .disponibilidadeLista article { flex-direction:column; gap:8px; }
+  .disponibilidadeLista article > div:last-child { text-align:left; }
   .acoes { bottom:-16px; margin:20px 0 0; padding:14px 0; }
   .acoes button { min-height:44px; padding:10px 12px; }
 }

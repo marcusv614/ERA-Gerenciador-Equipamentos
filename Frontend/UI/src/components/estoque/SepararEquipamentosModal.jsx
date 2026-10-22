@@ -7,12 +7,14 @@ const localDoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposi
 const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
 const statusMovimentavel = (status) => ['em estoque', 'em campo', 'disponivel'].includes(normalizar(status));
 
-export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoFechar, aoConfirmar, aoSolicitarCompra }) {
+export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoFechar, aoSalvarPlano }) {
   const referencia = useRef(null);
-  useDialogo(referencia, aoFechar);
-  const [quantidades, definirQuantidades] = useState({});
+  const [quantidades, definirQuantidades] = useState(() => Object.fromEntries((solicitacao.planoFinanceiro || []).map((item) => [item.materialId,Object.fromEntries(item.origens.map((origem) => [origem.equipamentoId,origem.quantidade]))])));
+  const [compras, definirCompras] = useState(() => Object.fromEntries(solicitacao.planoFinanceiro?.length ? solicitacao.planoFinanceiro.map((item) => [item.materialId,item.quantidadeCompra]) : solicitacao.materiais.map((item) => [item.id,item.quantidadeCompra || 0])));
+  const [justificativas, definirJustificativas] = useState(() => Object.fromEntries((solicitacao.planoFinanceiro || []).map((item) => [item.materialId,item.justificativa || ''])));
   const [erro, definirErro] = useState('');
   const [salvando, definirSalvando] = useState(false);
+  useDialogo(referencia, salvando ? () => {} : aoFechar);
   const nomeLocal = (id) => id == null || id === 'deposito' ? 'Depósito central' : obras.find((obra) => String(obra.id) === String(id))?.nome || 'Obra';
   const origemFixa = solicitacao.obraOrigemId == null ? null : String(solicitacao.obraOrigemId);
   const candidatos = (material) => equipamentos.filter((equipamento) => {
@@ -21,14 +23,11 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
     const mesmoCatalogo = material.catalogoChave
       ? equipamento.catalogoChave === material.catalogoChave
       : normalizar(equipamento.modelo) === normalizar(material.nome);
-    return origemPermitida && statusMovimentavel(equipamento.status) && (equipamento.quantidadeDisponivel ?? 1) > 0 && mesmoCatalogo;
+    const recebidoNestePedido = equipamento.observacoes === `Adquirido para a solicitação #${solicitacao.id}` && material.quantidadeEntradaEstoque > 0;
+    return !equipamento.arquivado && !recebidoNestePedido && origemPermitida && statusMovimentavel(equipamento.status) && (equipamento.quantidadeDisponivel ?? 1) > 0 && mesmoCatalogo;
   });
-  const gruposCandidatos = (material) => Object.values(candidatos(material).reduce((grupos, equipamento) => {
-    const local = localDoEquipamento(equipamento);
-    if (!grupos[local]) grupos[local] = { chave: local, local, equipamentos: [] };
-    grupos[local].equipamentos.push(equipamento);
-    return grupos;
-  }, {})).sort((a, b) => nomeLocal(a.local).localeCompare(nomeLocal(b.local), 'pt-BR'));
+  const gruposCandidatos = (material) => candidatos(material).map((equipamento) => ({ chave:String(equipamento.id),local:localDoEquipamento(equipamento),equipamentos:[equipamento] }))
+    .sort((a,b) => nomeLocal(a.local).localeCompare(nomeLocal(b.local),'pt-BR'));
   const quantidadeEscolhida = (materialId, equipamentoId) => quantidades[materialId]?.[equipamentoId] || 0;
   const reservadoEmOutros = (materialId, equipamentoId, estado = quantidades) => Object.entries(estado).reduce((total, [outroMaterialId, escolhas]) => String(outroMaterialId) === String(materialId) ? total : total + (escolhas[equipamentoId] || 0), 0);
   const saldoParaMaterial = (material, equipamento, estado = quantidades) => Math.max(0, (equipamento.quantidadeDisponivel ?? 1) - reservadoEmOutros(material.id, equipamento.id, estado));
@@ -39,7 +38,8 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
 
   const totais = useMemo(() => solicitacao.materiais.reduce((soma, material) => soma + material.quantidade, 0), [solicitacao]);
   const totalSeparado = solicitacao.materiais.reduce((soma, material) => soma + totalEscolhido(material), 0);
-  const completo = solicitacao.materiais.every((material) => totalEscolhido(material) === material.quantidade);
+  const totalCompra = solicitacao.materiais.reduce((soma, material) => soma + (compras[material.id] || 0), 0);
+  const completo = solicitacao.materiais.every((material) => totalEscolhido(material) + (compras[material.id] || 0) === material.quantidade && (!(compras[material.id] > 0) || justificativas[material.id]?.trim()));
   const origensSelecionadas = new Set(Object.values(quantidades).flatMap((escolhas) => Object.keys(escolhas)).map((id) => equipamentos.find((item) => String(item.id) === String(id))).filter(Boolean).map(localDoEquipamento));
 
   const definirQuantidadeGrupo = (material, grupo, valor) => definirQuantidades((atuais) => {
@@ -48,7 +48,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
     const outros = Object.entries(porMaterial).reduce((soma, [id, quantidade]) => idsGrupo.has(String(id)) ? soma : soma + quantidade, 0);
     grupo.equipamentos.forEach(({ id }) => delete porMaterial[id]);
     const maximoDisponivel = grupo.equipamentos.reduce((soma, equipamento) => soma + saldoParaMaterial(material, equipamento, atuais), 0);
-    let restante = Math.max(0, Math.min(maximoDisponivel, material.quantidade - outros, Number.isFinite(Number(valor)) ? Math.trunc(Number(valor)) : 0));
+    let restante = Math.max(0, Math.min(maximoDisponivel, material.quantidade - (compras[material.id] || 0) - outros, Number.isFinite(Number(valor)) ? Math.trunc(Number(valor)) : 0));
     grupo.equipamentos.forEach((equipamento) => {
       if (!restante) return;
       const quantidade = Math.min(restante, saldoParaMaterial(material, equipamento, atuais));
@@ -60,7 +60,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   const alterarGrupo = (material, grupo, diferenca) => definirQuantidadeGrupo(material, grupo, quantidadeEscolhidaGrupo(material, grupo) + diferenca);
 
   const preencherTudo = (material) => {
-    let restante = material.quantidade;
+    let restante = material.quantidade - (compras[material.id] || 0);
     const escolhas = {};
     candidatos(material).forEach((equipamento) => {
       if (!restante) return;
@@ -73,24 +73,22 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   };
 
   const confirmar = async () => {
-    const selecionados = solicitacao.materiais.flatMap((material) => Object.entries(quantidades[material.id] || {}).map(([equipamentoId, quantidade]) => {
-      const equipamento = equipamentos.find((item) => String(item.id) === String(equipamentoId));
-      return { origem: localDoEquipamento(equipamento), material: { nome: material.nome, quantidade, identificacao: equipamento.serie, catalogoChave: material.catalogoChave || null } };
-    }));
-    const atendimentos = Object.values(selecionados.reduce((grupos, item) => { (grupos[item.origem] ||= { obraOrigemId: item.origem === 'deposito' ? null : Number(item.origem), materiais: [] }).materiais.push(item.material); return grupos; }, {}));
+    if (!completo || salvando) return;
+    const materiais = solicitacao.materiais.map((material) => ({ materialId:material.id, quantidadeCompra:compras[material.id] || 0, justificativa:justificativas[material.id]?.trim() || '', origens:Object.entries(quantidades[material.id] || {}).filter(([,quantidade]) => quantidade > 0).map(([equipamentoId,quantidade]) => ({ equipamentoId:Number(equipamentoId),quantidade })) }));
     definirErro(''); definirSalvando(true);
-    try { await aoConfirmar(atendimentos); }
+    try { await aoSalvarPlano(solicitacao.id,{ materiais }); }
     catch (falha) { definirErro(falha.message || 'Não foi possível reservar os equipamentos.'); }
     finally { definirSalvando(false); }
   };
 
-  return <div className={estilos.fundo} onMouseDown={(evento) => evento.target === evento.currentTarget && aoFechar()}>
-    <section ref={referencia} tabIndex={-1} className={estilos.modal} role="dialog" aria-modal="true" aria-labelledby="titulo-separacao">
+  return <div className={estilos.fundo} onMouseDown={(evento) => !salvando && evento.target === evento.currentTarget && aoFechar()}>
+    <section ref={referencia} tabIndex={-1} className={estilos.modal} role="dialog" aria-modal="true" aria-labelledby="titulo-separacao" aria-busy={salvando}>
+      <fieldset className={estilos.bloqueio} disabled={salvando}>
       <aside className={estilos.resumo}>
-        <div className={estilos.marca}><Warehouse /><span>Atendimento</span></div>
+        <div className={estilos.marca}><Warehouse /><span>Decisão financeira</span></div>
         <div className={estilos.numero}>Solicitação #{String(solicitacao.id).padStart(4, '0')}</div>
         <h2>{solicitacao.tecnico}</h2>
-        <p>Veja o que existe no depósito, o que precisa ser buscado em outra obra e o que deve ser comprado.</p>
+        <p>Defina o que o estoque deve transportar e comprar. Você pode preservar os materiais em uso nas obras e autorizar a compra de novas unidades.</p>
 
         <div className={estilos.rota}>
           <div><small>Origens</small><strong>{origensSelecionadas.size || 'A definir'}</strong></div>
@@ -100,14 +98,14 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
 
         <div className={estilos.total}>
           <span>Progresso</span>
-          <strong>{totalSeparado} <small>de {totais}</small></strong>
-          <div><i style={{ width: `${totais ? (totalSeparado / totais) * 100 : 0}%` }} /></div>
+          <strong>{totalSeparado + totalCompra} <small>de {totais}</small></strong>
+          <div><i style={{ width: `${totais ? ((totalSeparado + totalCompra) / totais) * 100 : 0}%` }} /></div>
         </div>
       </aside>
 
       <main className={estilos.conteudo}>
         <header>
-          <div><span>Materiais solicitados</span><h1 id="titulo-separacao">Ver disponibilidade</h1></div>
+          <div><span>Materiais solicitados</span><h1 id="titulo-separacao">Planejar transporte e compra</h1></div>
           <button className={estilos.fechar} onClick={aoFechar} aria-label="Fechar"><X /></button>
         </header>
 
@@ -116,36 +114,39 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
             const opcoes = gruposCandidatos(material);
             const disponivel = totalDisponivel(material);
             const separado = totalEscolhido(material);
-            const faltante = Math.max(0, material.quantidade - disponivel);
+            const compra = compras[material.id] || 0;
+            const faltante = Math.max(0, material.quantidade - separado - compra);
             return <section className={estilos.material} key={material.id}>
               <header>
                 <div><h3>{material.nome}</h3><span>{disponivel} disponível(is) em todas as localizações</span></div>
-                <div className={estilos.acoesMaterial}><button type="button" onClick={() => preencherTudo(material)} disabled={!disponivel || separado === material.quantidade}>Preencher tudo</button><strong className={separado === material.quantidade ? estilos.pronto : ''}>{separado} / {material.quantidade}</strong></div>
+                <div className={estilos.acoesMaterial}><button type="button" onClick={() => { definirQuantidades((atuais) => ({ ...atuais,[material.id]:{} })); definirCompras((atuais) => ({ ...atuais,[material.id]:material.quantidadeEntradaEstoque || 0 })); }}>Limpar</button><button type="button" onClick={() => preencherTudo(material)} disabled={!disponivel || separado + compra === material.quantidade}>Preencher transporte</button><strong className={separado + compra === material.quantidade ? estilos.pronto : ''}>{separado} transporte + {compra} compra / {material.quantidade}</strong></div>
               </header>
 
               {opcoes.length > 0 && <div className={estilos.lista}>
                 {opcoes.map((grupo) => {
                   const quantidade = quantidadeEscolhidaGrupo(material, grupo);
-                  const totalMaterialAtingido = separado >= material.quantidade;
+                  const totalMaterialAtingido = separado + compra >= material.quantidade;
                   const saldo = saldoGrupo(material, grupo);
                   return <div className={`${estilos.equipamento} ${quantidade ? estilos.selecionado : ''}`} key={grupo.chave}>
                     <span className={estilos.icone}><Box /></span>
-                    <div className={estilos.dados}><strong>{material.nome}</strong><span>{nomeLocal(grupo.local)}</span></div>
+                    <div className={estilos.dados}><strong>{material.nome}</strong><span>{nomeLocal(grupo.local)}</span><span>{grupo.equipamentos[0].serie} · {grupo.equipamentos[0].tecnico || 'Sem responsável vinculado'}</span></div>
                     <span className={estilos.saldo}>{saldo}<small> disponíveis</small></span>
                     <div className={estilos.quantidade}>
                       <button onClick={() => alterarGrupo(material, grupo, -1)} disabled={quantidade === 0} aria-label="Diminuir"><Minus /></button>
-                      <input type="number" min="0" max={Math.min(saldo, material.quantidade - (separado - quantidade))} value={quantidade} onFocus={(evento) => evento.target.select()} onChange={(evento) => definirQuantidadeGrupo(material, grupo, evento.target.value)} aria-label={`Quantidade de ${material.nome} a separar em ${nomeLocal(grupo.local)}`} />
+                      <input type="number" min="0" max={Math.min(saldo, material.quantidade - compra - (separado - quantidade))} value={quantidade} onFocus={(evento) => evento.target.select()} onChange={(evento) => definirQuantidadeGrupo(material, grupo, evento.target.value)} aria-label={`Quantidade de ${material.nome} a transportar de ${nomeLocal(grupo.local)}`} />
                       <button onClick={() => alterarGrupo(material, grupo, 1)} disabled={totalMaterialAtingido || quantidade >= saldo} aria-label="Aumentar"><Plus /></button>
                     </div>
                   </div>;
                 })}
               </div>}
 
-              {faltante > 0 && <div className={estilos.falta}>
-                <AlertCircle />
-                <div><strong>Faltam {faltante} unidade(s)</strong><span>Não há saldo suficiente no depósito nem nas obras.</span></div>
-                <button onClick={() => aoSolicitarCompra(material, faltante)} disabled={material.quantidadeCompra === faltante}><ShoppingCart /> {material.quantidadeCompra === faltante ? 'Compra solicitada' : 'Enviar para compra'}</button>
-              </div>}
+              <div className={estilos.compraPlanejada}>
+                <label><span><ShoppingCart size={16} /> Quantidade para compra</span><input type="number" min={material.quantidadeEntradaEstoque || 0} max={material.quantidade - separado} value={compra} onChange={(evento) => definirCompras((atuais) => ({ ...atuais,[material.id]:Math.max(material.quantidadeEntradaEstoque || 0,Math.min(material.quantidade - separado,Math.trunc(Number(evento.target.value)) || 0)) }))} aria-label={`Quantidade de ${material.nome} para comprar`} /></label>
+                {material.quantidadeEntradaEstoque > 0 && <small>{material.quantidadeEntradaEstoque} unidade(s) já recebida(s). Estão incluídas na compra acima e não serão compradas novamente.</small>}
+                <small>A compra é permitida mesmo com saldo em outra obra. Deixe em zero o transporte dos equipamentos que devem permanecer no local.</small>
+                {compra > 0 && <label><span>Justificativa da compra</span><textarea required maxLength={1000} value={justificativas[material.id] || ''} placeholder="Ex.: equipamento da obra A em uso, sem liberação para retirada." onChange={(evento) => definirJustificativas((atuais) => ({ ...atuais,[material.id]:evento.target.value }))} /></label>}
+                {faltante > 0 && <small>Defina o atendimento das {faltante} unidade(s) restantes.</small>}
+              </div>
 
               {!opcoes.length && !faltante && <div className={estilos.vazio}><Box /> Nenhum equipamento compatível.</div>}
             </section>;
@@ -153,10 +154,11 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
         </div>
 
         <footer>
-          <span className={erro ? estilos.erro : ''}>{erro ? <><AlertCircle /> {erro}</> : completo ? <><Check /> Tudo pronto para atender</> : `Faltam ${totais - totalSeparado} unidade(s) para concluir`}</span>
-          <div><button className={estilos.cancelar} onClick={aoFechar} disabled={salvando}>Cancelar</button><button className={estilos.confirmar} disabled={!completo || salvando} onClick={confirmar}>{salvando ? 'Confirmando...' : 'Confirmar materiais'}</button></div>
+          <span className={erro ? estilos.erro : ''}>{erro ? <><AlertCircle /> {erro}</> : completo ? <><Check /> Plano completo para aprovação</> : 'Defina as origens, compras e justificativas de todos os materiais.'}</span>
+          <div><button className={estilos.cancelar} onClick={aoFechar} disabled={salvando}>Cancelar</button><button className={estilos.confirmar} disabled={!completo || salvando} onClick={confirmar}>{salvando ? 'Salvando...' : 'Salvar plano financeiro'}</button></div>
         </footer>
       </main>
+      </fieldset>
     </section>
   </div>;
 }

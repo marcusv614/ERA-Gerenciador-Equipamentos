@@ -96,7 +96,7 @@ class PedidoMateriaisTests {
     }
     @Test void aprovaUmaUnicaVez() {
         Solicitacao s=pedido("Pendente");s.setObraDestino(new Obra());
-        assertEquals("Aprovada",service.aprovar(1L).status());
+        assertEquals("Aguardando financeiro",service.aprovar(1L).status());
         assertThrows(RegraNegocioException.class,()->service.aprovar(1L));
         assertThrows(RegraNegocioException.class,()->service.rejeitar(1L));
     }
@@ -133,7 +133,12 @@ class PedidoMateriaisTests {
         Movimentacao movimento=new Movimentacao();movimento.setEquipamento(e);
         when(equipamentoService.novaMovimentacao(any(),any(),any(),any(),any(),any(),anyInt(),any())).thenReturn(movimento);
         Usuario estoque=new Usuario();estoque.setPerfil(PerfilUsuario.ESTOQUE);when(usuarios.buscarPorLogin("estoque")).thenReturn(estoque);
-        assertEquals("Aprovada",service.aprovar(1L).status());
+        assertEquals("Aguardando financeiro",service.aprovar(1L).status());
+        Usuario financeiro=new Usuario();financeiro.setPerfil(PerfilUsuario.FINANCEIRO);financeiro.setNome("Financeiro");financeiro.setLogin("financeiro");when(usuarios.buscarPorLogin("financeiro")).thenReturn(financeiro);
+        org.springframework.test.util.ReflectionTestUtils.setField(s.getMateriais().getFirst(),"id",2L);
+        when(equipamentos.buscarParaAtualizacao(30L)).thenReturn(Optional.of(e));
+        service.salvarPlanoFinanceiro(1L,new SolicitacaoDto.PlanoFinanceiro(List.of(new SolicitacaoDto.MaterialPlano(2L,0,"",List.of(new SolicitacaoDto.OrigemPlano(30L,1))))),"financeiro");
+        assertEquals("Aprovada",service.aprovar(1L,"financeiro").status());
         var atendimento=new SolicitacaoDto.AtendimentoOrigem(null,List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",1,"SERIE","manual|alicate|")));
         service.distribuir(1L,new SolicitacaoDto.Distribuicao(List.of(atendimento)));
         assertEquals(1,e.getQuantidadeReservada());

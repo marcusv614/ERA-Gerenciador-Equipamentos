@@ -214,7 +214,7 @@ export function useControleAtivos() {
 
     try {
       const novaSolicitacao = criarPedidoMovimentacao(equipamento, dadosMovimentacao);
-      const solicitacaoCadastrada = await apiAtividades.cadastrar(novaSolicitacao);
+      const solicitacaoCadastrada = await apiAtividades.cadastrarTransporteDireto(novaSolicitacao);
       definirSolicitacoes((solicitacoesAtuais) => [solicitacaoCadastrada, ...solicitacoesAtuais]);
       definirErroApi(null);
       return true;
@@ -263,6 +263,14 @@ export function useControleAtivos() {
       return true;
     } catch (erro) { definirErroApi(erro.message); return false; }
   }
+  async function salvarPlanoFinanceiro(id,dados) {
+    try {
+      const resposta = await apiAtividades.salvarPlanoFinanceiro(id,dados);
+      definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === id ? resposta : pedido));
+      definirErroApi(null);
+      return true;
+    } catch (erro) { definirErroApi(erro.message); throw erro; }
+  }
 
   async function cadastrarSolicitacao(dados) {
     try {
@@ -301,6 +309,7 @@ export function useControleAtivos() {
     definirStatusSolicitacao,
     avancarMovimentacao,
     editarSolicitacao,
+    salvarPlanoFinanceiro,
     cadastrarSolicitacao,
   };
 }

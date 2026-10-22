@@ -18,5 +18,9 @@ public final class SolicitacaoDto {
     public record Atualizacao(@Size(max=150) String tecnico,Long obraOrigemId,Long obraDestinoId,@Size(max=4000) String observacao,@Size(max=200) List<@NotNull @Valid MaterialRequisicao> materiais) {}
     public record AtendimentoOrigem(Long obraOrigemId,@NotEmpty @Size(max=200) List<@NotNull @Valid MaterialRequisicao> materiais) {}
     public record Distribuicao(@NotEmpty @Size(max=200) List<@NotNull @Valid AtendimentoOrigem> atendimentos) {}
-    public record Resposta(Long id,Long solicitacaoPaiId,String tipo,String status,String solicitante,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,OffsetDateTime transitoEm,OffsetDateTime concluidaEm,String observacao,List<MaterialResposta> materiais,String solicitanteLogin,String solicitantePerfil,List<MaterialResposta> compras) {}
+    public record OrigemPlano(@NotNull Long equipamentoId,@NotNull @Min(1) Integer quantidade) {}
+    public record MaterialPlano(@NotNull Long materialId,@NotNull @Min(0) Integer quantidadeCompra,@Size(max=1000) String justificativa,@NotNull @Size(max=500) List<@NotNull @Valid OrigemPlano> origens) {}
+    public record PlanoFinanceiro(@NotEmpty @Size(max=200) List<@NotNull @Valid MaterialPlano> materiais) {}
+    public record EventoFinanceiroResposta(String tipo,String descricao,String autorNome,String autorLogin,OffsetDateTime registradoEm) {}
+    public record Resposta(Long id,Long solicitacaoPaiId,String tipo,String status,String solicitante,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,OffsetDateTime transitoEm,OffsetDateTime concluidaEm,String observacao,List<MaterialResposta> materiais,String solicitanteLogin,String solicitantePerfil,List<MaterialResposta> compras,List<EventoFinanceiroResposta> eventosFinanceiros,List<br.com.era.api.model.Solicitacao.ItemPlano> planoFinanceiro,List<br.com.era.api.model.Solicitacao.OrigemPlanejada> entradasCompra,boolean movimentacaoDireta) {}
 }

@@ -22,7 +22,7 @@ export function useDialogo(referencia, aoFechar, ativo = true) {
       }
       if (evento.key !== 'Tab') return;
       const campos = [...janela.querySelectorAll('button, input, select, textarea, a[href], [tabindex]')]
-        .filter((campo) => !campo.disabled && campo.tabIndex >= 0 && campo.getClientRects().length);
+        .filter((campo) => !campo.matches(':disabled') && campo.tabIndex >= 0 && campo.getClientRects().length);
       const primeiro = campos[0], ultimo = campos.at(-1);
       if (!primeiro) { evento.preventDefault(); return; }
       if (!janela.contains(document.activeElement)) {

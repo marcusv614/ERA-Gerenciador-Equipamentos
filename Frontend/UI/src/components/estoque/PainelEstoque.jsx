@@ -6,7 +6,6 @@ import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/ser
 import { imprimirListaComprasGeral, imprimirListaComprasSolicitacao, imprimirRomaneioSeparacao, imprimirRelatorioAuditoriaSolicitacao } from '../../services/documentosEquipamentos';
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelEstoque.module.css';
-import { SepararEquipamentosModal } from './SepararEquipamentosModal';
 import { tipoSemNumeroSerie } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { ModalCalibracaoEquipamento } from '../calibracao-equip-modal/CalibracaoEquipModal';
@@ -33,7 +32,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const [solicitacoes, definirSolicitacoes] = useState([]);
   const [carregando, definirCarregando] = useState(true);
   const [mensagem, definirMensagem] = useState(null);
-  const [configurando, definirConfigurando] = useState(null);
+  const [separandoId, definirSeparandoId] = useState(null);
   const [busca, definirBusca] = useState('');
   const [obraFiltrada, definirObraFiltrada] = useState('todas');
   const [aba, definirAba] = useState('atividades');
@@ -112,22 +111,15 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       return !atual;
     });
   };
-  const abrirConfiguracao = (solicitacao) => definirConfigurando(solicitacao);
-
-  const solicitarCompra = async (material, faltante) => {
-    if (!faltante) return;
+  const executarPlano = async (solicitacao) => {
+    if (separandoId !== null) return;
+    definirSeparandoId(solicitacao.id);
     try {
-      const atualizada = await apiAtividades.solicitarCompra(configurando.id, material.id, faltante);
-      definirConfigurando(atualizada);
-      definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
+      const atualizadas = await apiAtividades.executarPlano(solicitacao.id);
+      definirSolicitacoes((atuais) => [...atuais.filter((item) => item.id !== solicitacao.id), ...atualizadas]);
+      apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
-  };
-
-  const salvarAtendimento = async (atendimentos) => {
-    try {
-      const atualizadas = await apiAtividades.distribuir(configurando.id, atendimentos);
-      definirSolicitacoes((atuais) => [...atuais.filter((item) => item.id !== configurando.id), ...atualizadas]); definirConfigurando(null);
-    } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); throw erro; }
+    finally { definirSeparandoId(null); }
   };
 
   const registrarAquisicao = async (solicitacao, material, pendenteEntrada) => {
@@ -172,13 +164,14 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     const tarefa = solicitacao.status === 'Concluída' ? 'Finalizado'
       : solicitacao.status === 'Rejeitada' ? 'Sem ação necessária'
       : solicitacao.status === 'Em trânsito' ? (entradaNaObra ? `Aguardando confirmação de ${solicitacao.tecnico}` : 'Confirme o recebimento')
-      : !separado ? 'Localize, separe ou encaminhe para compra'
+      : !separado ? 'Execute as origens e compras autorizadas pelo Financeiro'
       : 'Confirme a entrega';
     return <article className={estilos.card} key={solicitacao.id}>
       <header><span className={estilos.icone}><PackageCheck /></span><div><small>Pedido #{String(solicitacao.id).padStart(4, '0')}</small><h2>{nomeLocal(solicitacao.obraDestinoId || solicitacao.obraOrigemId)}</h2></div><b data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{rotuloOperacional(solicitacao)}</b></header>
       <p className={estilos.instrucaoEntrega}>{tarefa}</p>
       <div className={estilos.metadados}><p><strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
       {solicitacao.solicitante && solicitacao.solicitante !== solicitacao.tecnico && <p className={estilos.autorPedido}>Solicitado por <strong>{solicitacao.solicitante}</strong></p>}
+      {separado && <p className={estilos.instrucaoEntrega}>Coletar em <strong>{nomeLocal(solicitacao.obraOrigemId)}</strong> e entregar em <strong>{nomeLocal(solicitacao.obraDestinoId)}</strong>.</p>}
       <ul>{agruparMateriaisPedido(solicitacao.materiais).map((material) => <li key={material.chave}>
         <span>{material.quantidade}×</span>
         <div className={estilos.detalhesMaterial}>
@@ -189,10 +182,11 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
           </div>}
         </div>
       </li>)}</ul>
+      {!separado && solicitacao.planoFinanceiro?.length > 0 && <div className={estilos.planoFinanceiro}><strong>Instruções do Financeiro</strong>{solicitacao.planoFinanceiro.map((item) => <section key={item.materialId}><strong>{item.nome}</strong>{item.origens.map((origem,indice) => <p key={`${origem.equipamentoId}-${indice}`}>Buscar {origem.quantidade} un. em {nomeLocal(origem.obraOrigemId)} · {origem.identificacao}</p>)}{item.quantidadeCompra > 0 && <p>Comprar {item.quantidadeCompra} un. e registrar a entrada na aba Compras.</p>}{item.justificativa && <small>{item.justificativa}</small>}</section>)}</div>}
       <footer>
         <button onClick={() => imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObra)}><FileText /> Relatório PDF</button>
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button onClick={() => imprimirRomaneioSeparacao(solicitacao, buscarObra)}><FileDown /> Romaneio da separação</button>}
-        {solicitacao.status === 'Aprovada' && !possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => abrirConfiguracao(solicitacao)}><Box /> Ver disponibilidade</button>}
+        {solicitacao.status === 'Aprovada' && !separado && <button className={estilos.primario} disabled={separandoId !== null || !solicitacao.planoFinanceiro?.length || solicitacao.materiais.some((material) => material.quantidadeCompra > (material.quantidadeEntradaEstoque || 0))} onClick={() => executarPlano(solicitacao)}><Box />{separandoId === solicitacao.id ? 'Confirmando...' : 'Confirmar separação do plano'}</button>}
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => confirmarAtendimento(solicitacao)}><Truck /> Confirmar entrega</button>}
         {solicitacao.status === 'Aguardando coleta' && <button className={estilos.primario} onClick={() => confirmarAtendimento(solicitacao)}><Warehouse /> Confirmar recebimento no estoque</button>}
         {solicitacao.status === 'Em trânsito' && !entradaNaObra && <button className={estilos.primario} onClick={() => confirmarAtendimento(solicitacao)}><Warehouse /> Confirmar recebimento no estoque</button>}
@@ -245,7 +239,6 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
         </section>}
       </>}
     </main>
-    {configurando && <SepararEquipamentosModal solicitacao={configurando} obras={obras} equipamentos={equipamentos} aoFechar={() => definirConfigurando(null)} aoConfirmar={salvarAtendimento} aoSolicitarCompra={solicitarCompra} />}
     {equipamentoParaCalibracao && <div className={estilos.temaManutencao}><ModalCalibracaoEquipamento equipamento={equipamentoParaCalibracao} buscarObraPorId={buscarObra} aoFechar={()=>definirEquipamentoParaCalibracao(null)} aoAtualizar={atualizado=>definirEquipamentos(atuais=>atuais.map(e=>e.id===atualizado.id?atualizado:e))}/></div>}
     {equipamentoParaManutencao && <div className={estilos.temaManutencao}><ModalManutencaoEquipamento equipamento={equipamentoParaManutencao} buscarObraPorId={buscarObra} aoFechar={() => definirEquipamentoParaManutencao(null)} aoAtualizar={e => definirEquipamentos(atuais => atuais.map(item => item.id === e.id ? e : item))} /></div>}
   </div>;

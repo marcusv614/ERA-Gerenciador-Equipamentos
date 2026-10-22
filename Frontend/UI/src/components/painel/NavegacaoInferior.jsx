@@ -9,9 +9,9 @@ const ITENS = [
   { id: 'deposito', rotulo: 'Depósito', icone: Warehouse },
 ];
 
-export function NavegacaoInferior({ telaAtual, totalAtividadesPendentes, aoSelecionarTela, estilos }) {
+export function NavegacaoInferior({ telaAtual, totalAtividadesPendentes, ocultarVistorias = false, aoSelecionarTela, estilos }) {
   return <nav className={estilos.bottomNav} aria-label="Navegação principal">
-    {ITENS.map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={telaAtual === id ? estilos.bottomNavAtivo : ''} onClick={() => aoSelecionarTela(id)} aria-current={telaAtual === id ? 'page' : undefined}>
+    {ITENS.filter(({id}) => !ocultarVistorias || id !== 'auditorias').map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={telaAtual === id ? estilos.bottomNavAtivo : ''} onClick={() => aoSelecionarTela(id)} aria-current={telaAtual === id ? 'page' : undefined}>
       <span><Icone />{id === 'atividades' && totalAtividadesPendentes > 0 && <b>{totalAtividadesPendentes}</b>}</span>
       <small>{rotulo}</small>
     </button>)}

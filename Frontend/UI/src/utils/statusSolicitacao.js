@@ -1,5 +1,6 @@
 const ETAPAS_POR_STATUS = {
   Pendente: { chave: 'pendente', rotulo: 'Pendente' },
+  'Aguardando financeiro': { chave: 'pendente', rotulo: 'Aguardando financeiro' },
   Aprovada: { chave: 'aceita', rotulo: 'Aceita' },
   'Aguardando coleta': { chave: 'aceita', rotulo: 'Aceita' },
   'Em trânsito': { chave: 'aceita', rotulo: 'Aceita' },

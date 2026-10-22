@@ -39,11 +39,13 @@ const agruparMateriaisPedido = (materiais) => Object.values(materiais.reduce((gr
   return grupos;
 }, {}));
 const rotuloStatus = (solicitacao) => ({
+  'Aguardando financeiro': 'Em análise financeira',
   Aprovada: 'Aceita',
   Concluída: 'Finalizada',
 }[solicitacao.status] || solicitacao.status || 'Atualizando');
 const descricaoStatus = (solicitacao, ehTst = false) => ({
   Pendente: `Aguarde o ${ehTst ? 'RH' : 'gerente'}.`,
+  'Aguardando financeiro': 'A primeira análise foi aprovada. Aguarde o Financeiro.',
   Aprovada: 'O estoque está preparando.',
   'Aguardando coleta': 'O estoque está preparando.',
   'Em trânsito': solicitacao.obraDestinoId ? 'Recebeu? Confirme abaixo.' : 'O estoque está recebendo.',
@@ -157,7 +159,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
   const materiaisParaSelecionar = operacao === 'receber' ? materiaisDoCatalogo : equipamentosDaOrigem;
 
   const nomeLocal = (valor) => valor === 'deposito' ? 'Depósito central' : obras.find(({ id }) => String(id) === String(valor))?.nome || 'Selecione';
-  const pendentes = solicitacoes.filter(({ status }) => status === 'Pendente').length;
+  const pendentes = solicitacoes.filter(({ status }) => ['Pendente', 'Aguardando financeiro'].includes(status)).length;
   const recebimentosPendentes = solicitacoes.filter(({ status, obraDestinoId }) => status === 'Em trânsito' && obraDestinoId).length;
   const quantidadeTotal = itens.reduce((total, item) => total + item.quantidade, 0);
   const quantidadeEmEdicaoInvalida = Object.entries(quantidadesEmEdicao).some(([id, valor]) => {

@@ -3,7 +3,7 @@ const normalizarSerie = (serie) => String(serie || '').trim().toLocaleLowerCase(
 
 export function localizarEquipamentos(equipamentos, solicitacoes) {
   return equipamentos.map((equipamento) => {
-    const deslocamentos = solicitacoes.filter(({ status }) => ['Pendente', 'Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status))
+    const deslocamentos = solicitacoes.filter(({ status }) => ['Pendente', 'Aguardando financeiro', 'Aprovada', 'Aguardando coleta', 'Em trânsito'].includes(status))
       .flatMap((pedido) => pedido.materiais.filter((material) => material.identificacao && normalizarSerie(material.identificacao) === normalizarSerie(equipamento.serie))
         .map((material) => ({ solicitacaoId: pedido.id, status: pedido.status, quantidade: material.quantidade, origemId: pedido.obraOrigemId, destinoId: pedido.obraDestinoId, tecnico: pedido.tecnico })));
     const quantidadeEmTransito = deslocamentos.filter(({ status }) => status === 'Em trânsito').reduce((total, item) => total + item.quantidade, 0);

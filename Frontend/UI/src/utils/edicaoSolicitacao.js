@@ -1,7 +1,7 @@
 const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
 const chaveEquipamento = (e) => e.catalogoChave || [e.tipo, e.modelo, e.medida].map(normalizar).join('|');
 
-export const pedidoEmAtendimento = (pedido) => pedido.solicitacaoPaiId != null || pedido.materiais.some((m) => Boolean(m.identificacao?.trim()) || m.quantidadeCompra > 0);
+export const pedidoEmAtendimento = (pedido) => pedido.solicitacaoPaiId != null || pedido.materiais.some((m) => Boolean(m.identificacao?.trim()) || m.quantidadeEntradaEstoque > 0 || (pedido.status !== 'Aguardando financeiro' && m.quantidadeCompra > 0));
 
 export function catalogoParaEdicao(equipamentos, destinoId) {
   const grupos = new Map();

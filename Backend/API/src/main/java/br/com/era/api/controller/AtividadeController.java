@@ -11,6 +11,9 @@ public class AtividadeController {
     private final SolicitacaoService service; public AtividadeController(SolicitacaoService service){this.service=service;}
     @GetMapping public List<SolicitacaoDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public SolicitacaoDto.Resposta cadastrar(@Valid @RequestBody SolicitacaoDto.Requisicao dados,Authentication autenticacao){return service.cadastrar(dados,autenticacao.getName());}
+    @PostMapping("/transporte-direto") @ResponseStatus(HttpStatus.CREATED) public SolicitacaoDto.Resposta transporteDireto(@Valid @RequestBody SolicitacaoDto.Requisicao dados,Authentication autenticacao){return service.cadastrarTransporteDireto(dados,autenticacao.getName());}
+    @PostMapping("/{id}/plano-financeiro") public SolicitacaoDto.Resposta salvarPlano(@PathVariable Long id,@Valid @RequestBody SolicitacaoDto.PlanoFinanceiro dados,Authentication autenticacao){return service.salvarPlanoFinanceiro(id,dados,autenticacao.getName());}
+    @PostMapping("/{id}/execucao-plano") public List<SolicitacaoDto.Resposta> executarPlano(@PathVariable Long id,Authentication autenticacao){return service.executarPlano(id,autenticacao.getName());}
     @PatchMapping("/{id}") public SolicitacaoDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody SolicitacaoDto.Atualizacao dados,Authentication autenticacao){return service.atualizar(id,dados,autenticacao.getName());}
     @PostMapping("/{id}/aprovacao") public SolicitacaoDto.Resposta aprovar(@PathVariable Long id,Authentication autenticacao){return service.aprovar(id,autenticacao.getName());}
     @PostMapping("/{id}/rejeicao") public SolicitacaoDto.Resposta rejeitar(@PathVariable Long id,Authentication autenticacao){return autenticacao==null?service.rejeitar(id):service.rejeitar(id,autenticacao.getName());}

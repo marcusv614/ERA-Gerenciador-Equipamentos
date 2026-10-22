@@ -20,7 +20,9 @@ export function TelaLogin() {
     catch (excecao) {
       definirErro(excecao.status === 401
         ? 'Login ou senha inválidos. Confira os dados e tente novamente.'
-        : 'Não foi possível acessar o servidor. Verifique se a API está atualizada e em execução.');
+        : excecao.status === 403
+          ? 'O acesso foi bloqueado. Atualize a página e tente novamente. Se persistir, confira a configuração do endereço público e dos cookies de segurança.'
+          : excecao.message || 'Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.');
     }
     finally { definirEnviando(false); }
   };

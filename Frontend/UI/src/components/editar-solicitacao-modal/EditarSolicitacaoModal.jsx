@@ -9,7 +9,7 @@ import styles from './EditarSolicitacaoModal.module.css';
 
 const PEDIDO_NOVO = { tecnico: '', obraDestinoId: null, materiais: [] };
 
-export function ModalEditarSolicitacao({ nova = false, solicitacao = PEDIDO_NOVO, solicitante, funcionarios = [], obras = [], equipamentos, tecnicosCadastrados, erroApi, aoFechar, aoSalvar }) {
+export function ModalEditarSolicitacao({ nova = false, financeiro = false, solicitacao = PEDIDO_NOVO, solicitante, funcionarios = [], obras = [], equipamentos, tecnicosCadastrados, erroApi, aoFechar, aoSalvar }) {
   const protegido = pedidoEmAtendimento(solicitacao);
   const [tecnico, definirTecnico] = useState(solicitacao.tecnico);
   const [destinoId, definirDestino] = useState(String(solicitacao.obraDestinoId ?? ''));
@@ -48,7 +48,7 @@ export function ModalEditarSolicitacao({ nova = false, solicitacao = PEDIDO_NOVO
 
   return <EstruturaModal titulo={nova ? 'Nova solicitação de materiais' : 'Editar solicitação'} subtitulo={nova ? `Solicitante: ${solicitante}` : `Pedido #${solicitacao.id} · ${solicitacao.status}`} aoFechar={salvando ? () => {} : aoFechar} largo>
     <div className={styles.formulario}>
-      <p className={styles.explicacao}>{nova ? 'Seu pedido será autorizado e encaminhado diretamente ao estoque. Escolha a obra e o técnico responsável por confirmar o recebimento. O estoque define os equipamentos e os locais de coleta.' : protegido ? 'O estoque já iniciou o atendimento. Você pode atualizar a observação; técnico, destino, materiais, reservas e compras serão preservados.' : 'Edite os materiais e a obra que vai recebê-los. O estoque define os equipamentos e os locais de coleta durante a separação.'}</p>
+      <p className={styles.explicacao}>{nova ? 'Seu pedido será encaminhado ao Financeiro antes de chegar ao estoque. Escolha a obra e o técnico responsável por confirmar o recebimento.' : financeiro ? 'Revise o pedido antes da decisão financeira. Qualquer alteração ou observação ficará destacada no histórico para a Gerência ou o RH.' : protegido ? 'O estoque já iniciou o atendimento. Você pode atualizar a observação; técnico, destino, materiais, reservas e compras serão preservados.' : 'Edite os materiais e a obra que vai recebê-los. O Financeiro define os equipamentos, os locais de coleta e as compras antes de liberar a execução ao estoque.'}</p>
       <div className={styles.dadosGerais}>
         {!nova && <CampoFormulario rotulo="Técnico responsável pelo recebimento"><select disabled={protegido || salvando} className={styles.campo} value={tecnico} onChange={(e) => definirTecnico(e.target.value)}>{tecnicos.map((nome) => <option key={nome}>{nome}</option>)}</select></CampoFormulario>}
         <CampoFormulario rotulo={solicitacao.obraDestinoId == null && protegido ? 'Destino da retirada' : 'Obra de destino'}>
@@ -57,7 +57,7 @@ export function ModalEditarSolicitacao({ nova = false, solicitacao = PEDIDO_NOVO
         {nova && <CampoFormulario rotulo="Técnico responsável pelo recebimento"><select disabled={!destinoId || salvando} className={styles.campo} value={tecnico} onChange={(e) => definirTecnico(e.target.value)}><option value="">Selecione o técnico da obra</option>{tecnicos.map((nome) => <option key={nome}>{nome}</option>)}</select>{destinoId && !tecnicos.length && <p className={styles.erro}>Esta obra não tem um técnico ativo vinculado. Peça ao administrador para vincular um técnico à obra e habilitar seu acesso.</p>}</CampoFormulario>}
       </div>
       <section className={styles.secaoMateriais}>
-        <header><div><strong>Itens solicitados</strong><small>{protegido ? 'Seleção registrada pelo estoque.' : 'Saldo total no depósito e nas outras obras. Quantidades acima do saldo serão avaliadas pelo estoque.'}</small></div><b>{itens.length}</b></header>
+        <header><div><strong>Itens solicitados</strong><small>{protegido ? 'Seleção registrada pelo estoque.' : 'Saldo total no depósito e nas outras obras. O Financeiro avaliará as origens e a necessidade de compra.'}</small></div><b>{itens.length}</b></header>
         <div className={styles.listaMateriais}>{itens.map((item) => {
           const grupo = catalogo.find(({ chave }) => chave === item.chave);
           return <div className={`${styles.material} ${!grupo && !protegido ? styles.materialPendente : ''}`} key={item.chave}>
@@ -72,7 +72,7 @@ export function ModalEditarSolicitacao({ nova = false, solicitacao = PEDIDO_NOVO
       </section>
       <CampoFormulario rotulo="Observação"><textarea maxLength={4000} placeholder={nova ? 'Informe o contexto, a emergência e as orientações para a entrega.' : undefined} disabled={salvando} className={`${styles.campo} ${styles.observacao}`} value={observacao} onChange={(e) => definirObservacao(e.target.value)} /></CampoFormulario>
       {erro && <p role="alert" className={styles.erro}>{erroApi || erro}</p>}
-      <div className={styles.acoes}><button type="button" disabled={salvando} className={styles.cancelar} onClick={aoFechar}>Cancelar</button><button type="button" className={styles.salvar} disabled={!valido || salvando} onClick={salvar}>{salvando ? 'Salvando...' : nova ? 'Criar e encaminhar ao estoque' : 'Salvar alterações'}</button></div>
+      <div className={styles.acoes}><button type="button" disabled={salvando} className={styles.cancelar} onClick={aoFechar}>Cancelar</button><button type="button" className={styles.salvar} disabled={!valido || salvando} onClick={salvar}>{salvando ? 'Salvando...' : nova ? 'Criar e encaminhar ao Financeiro' : 'Salvar alterações'}</button></div>
     </div>
   </EstruturaModal>;
 }

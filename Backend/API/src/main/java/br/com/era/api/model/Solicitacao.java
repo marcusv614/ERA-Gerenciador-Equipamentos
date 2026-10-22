@@ -23,7 +23,27 @@ public class Solicitacao {
     @OneToMany(mappedBy="solicitacao",cascade=CascadeType.ALL,orphanRemoval=true) private List<MaterialSolicitado> materiais=new ArrayList<>();
     public record Compra(Long id,String nome,Integer quantidade,String identificacao,String catalogoChave,Integer quantidadeCompra,OffsetDateTime compraSolicitadaEm,Integer quantidadeAdquirida,Integer quantidadeEntradaEstoque,OffsetDateTime adquiridaEm) {}
     @JdbcTypeCode(SqlTypes.JSON) @Column(name="compras",nullable=false,columnDefinition="jsonb") private List<Compra> compras=new ArrayList<>();
+    public record OrigemPlanejada(Long equipamentoId,String identificacao,Long obraOrigemId,Integer quantidade,String catalogoChave,String nome) {}
+    public record ItemPlano(Long materialId,String nome,String catalogoChave,Integer quantidade,Integer quantidadeCompra,String justificativa,List<OrigemPlanejada> origens) {}
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="plano_financeiro",nullable=false,columnDefinition="jsonb") private List<ItemPlano> planoFinanceiro=new ArrayList<>();
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="entradas_compra",nullable=false,columnDefinition="jsonb") private List<OrigemPlanejada> entradasCompra=new ArrayList<>();
+    @Column(name="reservas_plano_ativas",nullable=false) private boolean reservasPlanoAtivas;
+    @Column(name="movimentacao_direta",nullable=false) private boolean movimentacaoDireta;
+    public List<ItemPlano> getPlanoFinanceiro(){return planoFinanceiro;}
+    public void setPlanoFinanceiro(List<ItemPlano> plano){planoFinanceiro=new ArrayList<>(plano);}
+    public List<OrigemPlanejada> getEntradasCompra(){return entradasCompra;}
+    public void adicionarEntradaCompra(OrigemPlanejada entrada){entradasCompra=new ArrayList<>(entradasCompra);entradasCompra.add(entrada);}
+    public boolean isReservasPlanoAtivas(){return reservasPlanoAtivas;} public void setReservasPlanoAtivas(boolean valor){reservasPlanoAtivas=valor;}
+    public boolean isMovimentacaoDireta(){return movimentacaoDireta;} public void setMovimentacaoDireta(boolean valor){movimentacaoDireta=valor;}
+    public record EventoFinanceiro(String tipo,String descricao,String autorNome,String autorLogin,OffsetDateTime registradoEm) {}
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="eventos_financeiros",nullable=false,columnDefinition="jsonb") private List<EventoFinanceiro> eventosFinanceiros=new ArrayList<>();
     public List<Compra> getCompras(){return compras;}
+    public List<EventoFinanceiro> getEventosFinanceiros(){return eventosFinanceiros;}
+    public void registrarEventoFinanceiro(String tipo,String descricao,Usuario autor){
+        eventosFinanceiros=new ArrayList<>(eventosFinanceiros);
+        eventosFinanceiros.add(new EventoFinanceiro(tipo,descricao,autor.getNome(),autor.getLogin(),OffsetDateTime.now()));
+    }
+    public void copiarEventosFinanceirosDe(Solicitacao origem){eventosFinanceiros=new ArrayList<>(origem.getEventosFinanceiros());}
     public void preservarCompras(){if(compras.isEmpty())compras=materiais.stream().filter(m->m.getQuantidadeCompra()>0).map(m->new Compra(m.getId(),m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm())).toList();}
     @Column(name="criado_em",nullable=false) private OffsetDateTime criadoEm; @Column(name="atualizado_em",nullable=false) private OffsetDateTime atualizadoEm;
     public Solicitacao() {} @PrePersist void criarDatas(){criadoEm=OffsetDateTime.now();atualizadoEm=criadoEm;} @PreUpdate void atualizarData(){atualizadoEm=OffsetDateTime.now();}

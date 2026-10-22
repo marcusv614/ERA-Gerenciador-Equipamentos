@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Activity, Boxes, Building2, ChevronDown, ChevronRight, ClipboardCheck, UserRound, Users, Warehouse } from 'lucide-react';
 import logoEra from '../../assets/ERALTDA.png';
 
-export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, usuario, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
+export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, usuario, ocultarVistorias = false, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
   const [grupoExpandido, definirGrupoExpandido] = useState(null);
   const alternarGrupo = (grupo, tela) => {
     definirGrupoExpandido((grupoAtual) => grupoAtual === grupo ? null : grupo);
@@ -35,10 +35,10 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
             {funcionarios.map((funcionario) => <button key={funcionario.id} onClick={() => { aoSelecionarTela('funcionarios'); aoSelecionarBusca(funcionario.nome); }} className={estilos.navSubItem}><UserRound size={13} /><span>{funcionario.nome}</span></button>)}
           </div>}
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('atividades'); }} className={`${estilos.navItem} ${telaAtual === 'atividades' ? estilos.navItemActive : ''}`}><Activity size={16} /> Atividades {totalAtividadesPendentes > 0 && <span className={estilos.navBadge}>{totalAtividadesPendentes}</span>}</button>
-          <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('auditorias'); }} className={`${estilos.navItem} ${telaAtual === 'auditorias' ? estilos.navItemActive : ''}`}><ClipboardCheck size={16} /> Vistorias</button>
+          {!ocultarVistorias && <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('auditorias'); }} className={`${estilos.navItem} ${telaAtual === 'auditorias' ? estilos.navItemActive : ''}`}><ClipboardCheck size={16} /> Vistorias</button>}
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('deposito'); }} className={`${estilos.navItem} ${telaAtual === 'deposito' ? estilos.navItemActive : ''}`}><Warehouse size={16} /> Depósito</button>
         </nav>
-        <div className={estilos.profileWrap}><div className={estilos.profile}><div className={estilos.avatar}>{usuario?.perfil === 'RH' ? 'RH' : usuario?.perfil === 'ADMIN' ? 'AD' : 'GE'}</div><div className={estilos.profileText}><div className={estilos.profileName}>{usuario?.nome || 'Usuário ERA'}</div><div className={estilos.profileRole}>{usuario?.perfil === 'RH' ? 'EPIs e equipe TST' : 'Gestão de ativos'}</div></div></div></div>
+        <div className={estilos.profileWrap}><div className={estilos.profile}><div className={estilos.avatar}>{usuario?.perfil === 'RH' ? 'RH' : usuario?.perfil === 'FINANCEIRO' ? 'FI' : usuario?.perfil === 'ADMIN' ? 'AD' : 'GE'}</div><div className={estilos.profileText}><div className={estilos.profileName}>{usuario?.nome || 'Usuário ERA'}</div><div className={estilos.profileRole}>{usuario?.perfil === 'RH' ? 'EPIs e equipe TST' : usuario?.perfil === 'FINANCEIRO' ? 'Análise financeira' : 'Gestão de ativos'}</div></div></div></div>
       </div>
     </aside>
   </>;

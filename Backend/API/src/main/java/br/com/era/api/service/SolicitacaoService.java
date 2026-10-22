@@ -25,12 +25,24 @@ public class SolicitacaoService {
     @Transactional(readOnly=true) public List<SolicitacaoDto.Resposta> listarParaUsuario(String login){
         Usuario usuario=usuarios.buscarPorLogin(login);
         if(usuario.getPerfil()==PerfilUsuario.RH)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::pertenceAoRh).map(this::resposta).toList();
+        if(usuario.getPerfil()==PerfilUsuario.FINANCEIRO)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::visivelFinanceiro).map(this::resposta).toList();
+        if(usuario.getPerfil()==PerfilUsuario.ESTOQUE)return repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::liberadaParaEstoque).map(this::resposta).toList();
         if(!usuario.getPerfil().ehProfissionalDeCampo())return listar();
         if(usuario.getFuncionario()==null)throw new RegraNegocioException("O usuário técnico ou TST precisa estar vinculado a um funcionário.");
         Set<Long> permitidas=obras.idsPermitidos(login);return repository.findByTecnicoIdOrderByCriadoEmDesc(usuario.getFuncionario().getId()).stream().filter(s->"Movimentação".equals(s.getTipo())).map(s->respostaTecnico(s,permitidas)).toList();
     }
     @Transactional
     public SolicitacaoDto.Resposta cadastrar(SolicitacaoDto.Requisicao d, String login) {
+        return cadastrar(d,login,false);
+    }
+    @Transactional
+    public SolicitacaoDto.Resposta cadastrarTransporteDireto(SolicitacaoDto.Requisicao d,String login){
+        PerfilUsuario perfil=usuarios.buscarPorLogin(login).getPerfil();
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(perfil))throw new AccessDeniedException("Somente a Gerência e o RH podem solicitar transporte direto.");
+        if(d.materiais().size()!=1||d.materiais().getFirst().identificacao()==null||d.materiais().getFirst().identificacao().isBlank())throw new RegraNegocioException("O transporte direto exige um único equipamento existente, com identificação e origem definidas.");
+        return cadastrar(d,login,true);
+    }
+    private SolicitacaoDto.Resposta cadastrar(SolicitacaoDto.Requisicao d,String login,boolean transporteDireto){
         validarRota(d.obraOrigemId(), d.obraDestinoId());
         Usuario usuario = usuarios.buscarPorLogin(login);
         boolean gerencia = Set.of(PerfilUsuario.ADMIN, PerfilUsuario.GERENTE, PerfilUsuario.RH).contains(usuario.getPerfil());
@@ -43,11 +55,12 @@ public class SolicitacaoService {
             obras.validarAcessoTecnico(usuario, d.obraOrigemId());
             obras.validarAcessoTecnico(usuario, d.obraDestinoId());
             if (d.obraDestinoId() != null && d.materiais().stream().anyMatch(m -> m.identificacao() != null && !m.identificacao().isBlank()))
-                throw new RegraNegocioException("Selecione materiais do catálogo. A definição dos equipamentos cabe ao estoque.");
+                throw new RegraNegocioException("Selecione materiais do catálogo. O Financeiro define o plano de transporte e compra.");
             tecnico = usuario.getFuncionario();
         } else tecnico = funcionarios.buscarPorNome(d.tecnico());
         Solicitacao s = new Solicitacao();
         s.setTipo("Movimentação");
+        s.setMovimentacaoDireta(transporteDireto);
         s.setStatus("Pendente");
         s.setTecnico(tecnico);
         s.setSolicitante(usuario.getFuncionario());
@@ -64,14 +77,14 @@ public class SolicitacaoService {
         if (exigeSeparacao && possuiItemDefinido)
             throw new RegraNegocioException("Não misture materiais separados com materiais ainda pendentes de separação.");
         if (exigeSeparacao && d.obraOrigemId() != null)
-            throw new RegraNegocioException("As origens dos materiais do catálogo são definidas pelo estoque durante a separação.");
+            throw new RegraNegocioException("As origens dos materiais do catálogo são definidas no plano financeiro.");
         s.substituirMateriais(exigeSeparacao ? criarMateriaisDoCatalogo(d.materiais()) : criarMateriais(d.materiais()));
         validarCompatibilidadeResponsavel(tecnico,s.getMateriais());
         if(usuario.getPerfil()==PerfilUsuario.RH&&!solicitacaoEhEpi(s))throw new AccessDeniedException("O RH pode criar somente solicitações de EPI para TSTs.");
         validarDestinoRecebimento(s);
         if (!exigeSeparacao) reservarMateriais(s);
         if (gerencia) {
-            s.setStatus(s.getObraDestino() == null ? "Aguardando coleta" : "Aprovada");
+            s.setStatus(transporteDireto?(s.getObraDestino()==null?"Aguardando coleta":"Aprovada"):"Aguardando financeiro");
             s.setDataDecisao(LocalDate.now());
         }
         Solicitacao salva = repository.save(s);
@@ -80,10 +93,10 @@ public class SolicitacaoService {
     @Transactional
     public SolicitacaoDto.Resposta atualizar(Long id, SolicitacaoDto.Atualizacao d) {
         Solicitacao s = buscarParaAtualizacao(id);
-        if (!Set.of("Pendente", "Aprovada").contains(s.getStatus()))
-            throw new RegraNegocioException("Somente pedidos pendentes ou aprovados podem ser editados.");
-        boolean emAtendimento = s.getSolicitacaoPai() != null || s.getMateriais().stream().anyMatch(m ->
-            (m.getIdentificacao() != null && !m.getIdentificacao().isBlank()) || m.getQuantidadeCompra() > 0);
+        if (!Set.of("Pendente", "Aguardando financeiro", "Aprovada").contains(s.getStatus()))
+            throw new RegraNegocioException("Este pedido não pode mais ser editado.");
+        boolean emAtendimento = s.isReservasPlanoAtivas() || s.getSolicitacaoPai() != null || s.getMateriais().stream().anyMatch(m ->
+            (m.getIdentificacao() != null && !m.getIdentificacao().isBlank()) || m.getQuantidadeEntradaEstoque()>0 || (!"Aguardando financeiro".equals(s.getStatus())&&m.getQuantidadeCompra() > 0));
         Long origem = s.getObraOrigem() == null ? null : s.getObraOrigem().getId();
         Long destino = s.getObraDestino() == null ? null : s.getObraDestino().getId();
         if (emAtendimento) {
@@ -94,11 +107,11 @@ public class SolicitacaoService {
             return resposta(s);
         }
         if (d.obraOrigemId() != null || d.obraDestinoId() == null)
-            throw new RegraNegocioException("Informe a obra de destino. As origens dos materiais são definidas pelo estoque durante a separação.");
+            throw new RegraNegocioException("Informe a obra de destino. As origens dos materiais são definidas no plano financeiro.");
         if (d.materiais() != null) {
             if (d.materiais().isEmpty()) throw new RegraNegocioException("Informe ao menos um material.");
             if (d.materiais().stream().anyMatch(m -> m.identificacao() != null && !m.identificacao().isBlank()))
-                throw new RegraNegocioException("A seleção das séries e origens cabe ao estoque.");
+                throw new RegraNegocioException("Defina as séries e origens no plano financeiro.");
             s.substituirMateriais(criarMateriaisDoCatalogo(d.materiais()));
         }
         if (d.tecnico() != null) s.setTecnico(funcionarios.buscarPorNome(d.tecnico()));
@@ -109,15 +122,55 @@ public class SolicitacaoService {
         if (d.observacao() != null) s.setObservacao(d.observacao());
         return resposta(s);
     }
-    @Transactional public SolicitacaoDto.Resposta atualizar(Long id,SolicitacaoDto.Atualizacao d,String login){validarEscopoRh(buscarParaAtualizacao(id),login);SolicitacaoDto.Resposta resposta=atualizar(id,d);validarEscopoRh(buscarParaAtualizacao(id),login);return resposta;}
-    @Transactional public SolicitacaoDto.Resposta aprovar(Long id){Solicitacao s=buscarParaAtualizacao(id);if(!"Pendente".equals(s.getStatus()))throw new RegraNegocioException("A solicitação já foi analisada.");s.setStatus(s.getObraDestino()==null?"Aguardando coleta":"Aprovada");s.setDataDecisao(LocalDate.now());if("Aguardando coleta".equals(s.getStatus())&&s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("Defina os equipamentos antes de aprovar a retirada.");return resposta(s);}
-    @Transactional public SolicitacaoDto.Resposta aprovar(Long id,String login){validarEscopoRh(buscarParaAtualizacao(id),login);return aprovar(id);}
+    @Transactional public SolicitacaoDto.Resposta atualizar(Long id,SolicitacaoDto.Atualizacao d,String login){
+        Solicitacao s=buscarParaAtualizacao(id);Usuario autor=usuarios.buscarPorLogin(login);validarEscopoRh(s,autor);
+        validarPermissaoEdicao(s,autor);
+        String antes=resumoParaAuditoria(s);
+        atualizar(id,d);
+        s=buscarParaAtualizacao(id);validarEscopoRh(s,autor);
+        if(!antes.equals(resumoParaAuditoria(s))&&"Aguardando financeiro".equals(s.getStatus())){s.setPlanoFinanceiro(List.of());if(s.getMateriais().stream().noneMatch(m->m.getQuantidadeEntradaEstoque()>0))s.getMateriais().forEach(m->m.solicitarCompra(0));}
+        if(autor.getPerfil()==PerfilUsuario.FINANCEIRO&&!antes.equals(resumoParaAuditoria(s)))
+            s.registrarEventoFinanceiro("ALTERACAO","O Financeiro alterou dados ou incluiu uma observação neste pedido. Revise os dados antes de acompanhar o atendimento.",autor);
+        return resposta(s);
+    }
+    @Transactional public SolicitacaoDto.Resposta aprovar(Long id){Solicitacao s=buscarParaAtualizacao(id);return aprovarPrimeiraEtapa(s);}
+    @Transactional public SolicitacaoDto.Resposta aprovar(Long id,String login){
+        Solicitacao s=buscarParaAtualizacao(id);Usuario autor=usuarios.buscarPorLogin(login);validarEscopoRh(s,autor);
+        if("Pendente".equals(s.getStatus())){
+            if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(autor.getPerfil()))throw new AccessDeniedException("A primeira análise cabe à Gerência ou ao RH.");
+            return aprovarPrimeiraEtapa(s);
+        }
+        if("Aguardando financeiro".equals(s.getStatus())){
+            if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("A análise financeira cabe ao Financeiro.");
+            validarEReservarPlano(s);
+            s.setStatus(s.getObraDestino()==null?"Aguardando coleta":"Aprovada");
+            if("Aguardando coleta".equals(s.getStatus())&&s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("Defina os equipamentos antes de aprovar a retirada.");
+            s.registrarEventoFinanceiro("APROVACAO","Pedido aprovado pelo Financeiro e liberado para separação ou compra.",autor);
+            return resposta(s);
+        }
+        throw new RegraNegocioException("A solicitação já foi analisada nesta etapa.");
+    }
     @Transactional public SolicitacaoDto.Resposta rejeitar(Long id){Solicitacao s=buscarParaAtualizacao(id);if(!"Pendente".equals(s.getStatus()))throw new RegraNegocioException("A solicitação já foi analisada.");liberarReservas(s);s.setStatus("Rejeitada");s.setDataDecisao(LocalDate.now());return resposta(s);}
-    @Transactional public SolicitacaoDto.Resposta rejeitar(Long id,String login){validarEscopoRh(buscarParaAtualizacao(id),login);return rejeitar(id);}
+    @Transactional public SolicitacaoDto.Resposta rejeitar(Long id,String login){
+        Solicitacao s=buscarParaAtualizacao(id);Usuario autor=usuarios.buscarPorLogin(login);validarEscopoRh(s,autor);
+        if("Pendente".equals(s.getStatus())){
+            if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(autor.getPerfil()))throw new AccessDeniedException("A primeira análise cabe à Gerência ou ao RH.");
+            return rejeitar(id);
+        }
+        if("Aguardando financeiro".equals(s.getStatus())){
+            if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("A análise financeira cabe ao Financeiro.");
+            liberarReservas(s);s.setStatus("Rejeitada");s.registrarEventoFinanceiro("REJEICAO","Pedido rejeitado pelo Financeiro. Consulte a observação e o histórico financeiro.",autor);return resposta(s);
+        }
+        throw new RegraNegocioException("A solicitação já foi analisada nesta etapa.");
+    }
     @Transactional public SolicitacaoDto.Resposta solicitarCompra(Long id,Long materialId,int quantidade){Solicitacao s=buscarParaAtualizacao(id);if(!"Aprovada".equals(s.getStatus()))throw new RegraNegocioException("A compra só pode ser solicitada para uma movimentação aprovada.");MaterialSolicitado material=s.getMateriais().stream().filter(m->m.getId().equals(materialId)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Material não encontrado na solicitação."));if(material.getIdentificacao()!=null&&!material.getIdentificacao().isBlank())throw new RegraNegocioException("O material já possui equipamento definido.");if(quantidade>material.getQuantidade())throw new RegraNegocioException("A quantidade para compra não pode superar a quantidade solicitada.");if(quantidade<material.getQuantidadeEntradaEstoque())throw new RegraNegocioException("A compra não pode ser reduzida abaixo da quantidade já recebida no estoque.");material.solicitarCompra(quantidade);return resposta(s);}
-    @Transactional public SolicitacaoDto.Resposta solicitarCompra(Long id,Long materialId,int quantidade,String login){validarEscopoRh(buscarParaAtualizacao(id),login);return solicitarCompra(id,materialId,quantidade);}
-    @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao){Solicitacao s=buscarParaAtualizacao(id);if(!"Aprovada".equals(s.getStatus()))throw new RegraNegocioException("A entrada da compra só pode ser registrada para uma movimentação aprovada.");MaterialSolicitado material=s.getMateriais().stream().filter(m->m.getId().equals(materialId)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Material não encontrado na solicitação."));if(material.getQuantidadeCompra()<=0)throw new RegraNegocioException("Não existe compra solicitada para este material.");int saldoEntrada=material.getQuantidadeCompra()-material.getQuantidadeEntradaEstoque();if(quantidade>saldoEntrada)throw new RegraNegocioException("A quantidade para entrada não pode superar o saldo de "+saldoEntrada+" unidade(s).");int jaAdquiridoSemEntrada=material.getQuantidadeAdquirida()-material.getQuantidadeEntradaEstoque();int novaAquisicao=Math.max(0,quantidade-jaAdquiridoSemEntrada);equipamentoService.registrarEntradaCompra(material.getNome(),material.getCatalogoChave(),quantidade,numeroNota,identificacao,s.getId());if(novaAquisicao>0)material.registrarAquisicao(novaAquisicao);material.registrarEntradaEstoque(quantidade);return resposta(s);}
-    @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao,String login){validarEscopoRh(buscarParaAtualizacao(id),login);return registrarAquisicao(id,materialId,quantidade,numeroNota,identificacao);}
+    @Transactional public SolicitacaoDto.Resposta solicitarCompra(Long id,Long materialId,int quantidade,String login){
+        Usuario autor=usuarios.buscarPorLogin(login);
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("Somente o Financeiro pode decidir compras. Defina a compra no plano financeiro.");
+        throw new RegraNegocioException("Defina as quantidades de compra e transporte no plano financeiro antes de aprovar.");
+    }
+    @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao){Solicitacao s=buscarParaAtualizacao(id);if(!"Aprovada".equals(s.getStatus()))throw new RegraNegocioException("A entrada da compra só pode ser registrada para uma movimentação aprovada.");MaterialSolicitado material=s.getMateriais().stream().filter(m->m.getId().equals(materialId)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Material não encontrado na solicitação."));if(material.getQuantidadeCompra()<=0)throw new RegraNegocioException("Não existe compra solicitada para este material.");int saldoEntrada=material.getQuantidadeCompra()-material.getQuantidadeEntradaEstoque();if(quantidade>saldoEntrada)throw new RegraNegocioException("A quantidade para entrada não pode superar o saldo de "+saldoEntrada+" unidade(s).");int jaAdquiridoSemEntrada=material.getQuantidadeAdquirida()-material.getQuantidadeEntradaEstoque();int novaAquisicao=Math.max(0,quantidade-jaAdquiridoSemEntrada);Equipamento recebido=equipamentoService.registrarEntradaCompra(material.getNome(),material.getCatalogoChave(),quantidade,numeroNota,identificacao,s.getId());if(!s.getPlanoFinanceiro().isEmpty()){recebido.setQuantidadeReservada(recebido.getQuantidadeReservada()+quantidade);s.adicionarEntradaCompra(new Solicitacao.OrigemPlanejada(recebido.getId(),recebido.getSerie(),null,quantidade,material.getCatalogoChave(),material.getNome()));}if(novaAquisicao>0)material.registrarAquisicao(novaAquisicao);material.registrarEntradaEstoque(quantidade);return resposta(s);}
+    @Transactional public SolicitacaoDto.Resposta registrarAquisicao(Long id,Long materialId,int quantidade,String numeroNota,String identificacao,String login){validarOperadorEstoque(login);return registrarAquisicao(id,materialId,quantidade,numeroNota,identificacao);}
     @Transactional public List<SolicitacaoDto.Resposta> distribuir(Long id,SolicitacaoDto.Distribuicao dados) {
         Solicitacao original=buscarParaAtualizacao(id);
         if(!"Aprovada".equals(original.getStatus()))throw new RegraNegocioException("Somente uma solicitação aprovada pode ser distribuída.");
@@ -133,6 +186,7 @@ public class SolicitacaoService {
             if(!origens.add(chave))throw new RegraNegocioException("Agrupe os materiais que saem da mesma origem.");
         }
         original.preservarCompras();
+        liberarReservasPlano(original);
         liberarReservas(original);
         Solicitacao raiz=original.getSolicitacaoPai()==null?original:original.getSolicitacaoPai();
         List<Solicitacao> atendimentos=new java.util.ArrayList<>();
@@ -148,7 +202,32 @@ public class SolicitacaoService {
         repository.flush(); // Retornar os IDs persistidos dos materiais de todos os atendimentos.
         return atendimentos.stream().map(this::resposta).toList();
     }
-    @Transactional public List<SolicitacaoDto.Resposta> distribuir(Long id,SolicitacaoDto.Distribuicao dados,String login){validarEscopoRh(buscarParaAtualizacao(id),login);return distribuir(id,dados);}
+    @Transactional public List<SolicitacaoDto.Resposta> distribuir(Long id,SolicitacaoDto.Distribuicao dados,String login){
+        validarOperadorEstoque(login);Solicitacao s=buscarParaAtualizacao(id);
+        if(s.getPlanoFinanceiro().isEmpty()||!s.isReservasPlanoAtivas())throw new RegraNegocioException("O Financeiro precisa definir e aprovar o plano de atendimento.");
+        if(!quantidadesPorOrigem(dados.atendimentos()).equals(quantidadesPorOrigem(atendimentosPlanejados(s))))throw new AccessDeniedException("O estoque deve executar exatamente as origens, equipamentos e quantidades autorizados pelo Financeiro.");
+        return distribuir(id,dados);
+    }
+    @Transactional public List<SolicitacaoDto.Resposta> executarPlano(Long id,String login){
+        validarOperadorEstoque(login);Solicitacao s=buscarParaAtualizacao(id);
+        return distribuir(id,new SolicitacaoDto.Distribuicao(atendimentosPlanejados(s)),login);
+    }
+    @Transactional public SolicitacaoDto.Resposta salvarPlanoFinanceiro(Long id,SolicitacaoDto.PlanoFinanceiro dados,String login){
+        Usuario autor=usuarios.buscarPorLogin(login);
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("Somente o Financeiro pode definir o plano de compras e transporte.");
+        Solicitacao s=buscarParaAtualizacao(id);
+        if(!"Aguardando financeiro".equals(s.getStatus()))throw new RegraNegocioException("O plano só pode ser definido durante a análise financeira.");
+        if(s.getMateriais().stream().anyMatch(m->m.getIdentificacao()!=null&&!m.getIdentificacao().isBlank()))throw new RegraNegocioException("Este transporte já possui equipamento e origem definidos.");
+        restaurarEntradasLegadas(s);
+        List<Solicitacao.ItemPlano> plano=montarPlano(s,dados);
+        if(!plano.equals(s.getPlanoFinanceiro())){
+            s.setPlanoFinanceiro(plano);
+            for(Solicitacao.ItemPlano item:plano)s.getMateriais().stream().filter(m->Objects.equals(m.getId(),item.materialId())).findFirst().orElseThrow().solicitarCompra(item.quantidadeCompra());
+            String descricao=plano.stream().map(item->item.nome()+": "+item.origens().stream().mapToInt(Solicitacao.OrigemPlanejada::quantidade).sum()+" para transportar, "+item.quantidadeCompra()+" para comprar"+(item.justificativa()==null||item.justificativa().isBlank()?"":". Motivo: "+item.justificativa())).collect(java.util.stream.Collectors.joining("; "));
+            s.registrarEventoFinanceiro("ALTERACAO","Plano de atendimento definido pelo Financeiro. "+descricao,autor);
+        }
+        return resposta(s);
+    }
     @Transactional public SolicitacaoDto.Resposta iniciarTransito(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarInicioTransito(s,login);if(!Set.of("Aprovada","Aguardando coleta").contains(s.getStatus()))throw new RegraNegocioException("A movimentação ainda não pode iniciar o transporte.");if(s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("O estoque precisa definir os equipamentos antes do envio.");s.setStatus("Em trânsito");s.setTransitoEm(OffsetDateTime.now());return respostaParaUsuario(s,login);}
     @Transactional public SolicitacaoDto.Resposta concluir(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarConclusao(s,login);if(!"Em trânsito".equals(s.getStatus()))throw new RegraNegocioException("A movimentação precisa estar em trânsito para confirmar o recebimento.");s.setConcluidaEm(OffsetDateTime.now());sincronizarMovimentacoes(s);if(s.getObraOrigem()!=null)inventarioHistorico.registrar(s.getObraOrigem());if(s.getObraDestino()!=null&&(s.getObraOrigem()==null||!s.getObraDestino().getId().equals(s.getObraOrigem().getId())))inventarioHistorico.registrar(s.getObraDestino());s.setStatus("Concluída");return respostaParaUsuario(s,login);}
     @Transactional(readOnly=true) public Solicitacao buscar(Long id){return repository.findById(id).filter(s->"Movimentação".equals(s.getTipo())).orElseThrow(()->new RecursoNaoEncontradoException("Movimentação não encontrada."));}
@@ -172,12 +251,99 @@ public class SolicitacaoService {
     private List<MaterialSolicitado> criarMateriaisDoCatalogo(List<SolicitacaoDto.MaterialRequisicao> itens){List<Equipamento> catalogo=equipamentos.findAll().stream().filter(e->!e.isArquivado()).toList();return itens.stream().map(item->{Equipamento referencia=catalogo.stream().filter(e->{String chave=CatalogoChave.criar(e.getTipo(),e.getModelo(),e.getMedida());return item.catalogoChave()!=null&&!item.catalogoChave().isBlank()&&chave.equals(item.catalogoChave());}).findFirst().orElseThrow(()->new RegraNegocioException("O material "+item.nome()+" não existe no catálogo cadastrado pelo administrador."));return new MaterialSolicitado(referencia.getModelo(),item.quantidade(),item.identificacao(),CatalogoChave.criar(referencia.getTipo(),referencia.getModelo(),referencia.getMedida()));}).toList();}
     private Map<String,Integer> agruparQuantidades(List<SolicitacaoDto.MaterialRequisicao> materiais){Map<String,Integer> totais=new LinkedHashMap<>();for(SolicitacaoDto.MaterialRequisicao material:materiais){String chave=material.catalogoChave()==null||material.catalogoChave().isBlank()?CatalogoChave.normalizar(material.nome()):material.catalogoChave();try{totais.merge(chave,material.quantidade(),Math::addExact);}catch(ArithmeticException e){throw new RegraNegocioException("A quantidade total do material excede o limite permitido.");}}return totais;}
     private boolean statusMovimentavel(String status){String normalizado=CatalogoChave.normalizar(status);return Set.of("em estoque","em campo","disponivel").contains(normalizado);}
+    private void validarOperadorEstoque(String login){if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.ESTOQUE).contains(usuarios.buscarPorLogin(login).getPerfil()))throw new AccessDeniedException("Somente o estoque pode executar este atendimento.");}
+    private List<Solicitacao.ItemPlano> montarPlano(Solicitacao s,SolicitacaoDto.PlanoFinanceiro dados){
+        Map<Long,MaterialSolicitado> materiais=new LinkedHashMap<>();s.getMateriais().forEach(m->materiais.put(m.getId(),m));
+        if(dados.materiais().size()!=materiais.size())throw new RegraNegocioException("Defina o atendimento de todos os materiais do pedido.");
+        Set<Long> vistos=new HashSet<>();Map<Long,Long> totaisEquipamento=new LinkedHashMap<>();
+        List<Solicitacao.ItemPlano> resultado=new java.util.ArrayList<>();
+        for(var item:dados.materiais()){
+            MaterialSolicitado material=materiais.get(item.materialId());
+            if(material==null||!vistos.add(item.materialId()))throw new RegraNegocioException("Material inválido ou repetido no plano financeiro.");
+            if(item.quantidadeCompra()<0||item.quantidadeCompra()>material.getQuantidade())throw new RegraNegocioException("Quantidade de compra inválida para "+material.getNome()+".");
+            if(item.quantidadeCompra()<material.getQuantidadeEntradaEstoque())throw new RegraNegocioException("Preserve as compras que já tiveram entrada no estoque.");
+            String justificativa=item.justificativa()==null?"":item.justificativa().trim();
+            if(item.quantidadeCompra()>0&&justificativa.isBlank())throw new RegraNegocioException("Informe a justificativa da compra de "+material.getNome()+".");
+            long total=item.quantidadeCompra();Set<Long> origensVistas=new HashSet<>();List<Solicitacao.OrigemPlanejada> origens=new java.util.ArrayList<>();
+            for(var origem:item.origens()){
+                if(origem.quantidade()<1||!origensVistas.add(origem.equipamentoId()))throw new RegraNegocioException("Origem repetida ou quantidade inválida no plano.");
+                Equipamento e=equipamentos.buscarParaAtualizacao(origem.equipamentoId()).orElseThrow(()->new RecursoNaoEncontradoException("Equipamento não encontrado."));
+                if(s.getEntradasCompra().stream().anyMatch(entrada->Objects.equals(entrada.equipamentoId(),e.getId())))throw new RegraNegocioException("O lote comprado já integra as entradas deste pedido; não o duplique como transporte de outra origem.");
+                validarEquipamentoPlano(s,material.getCatalogoChave(),e);
+                long reservado=totaisEquipamento.merge(e.getId(),(long)origem.quantidade(),Long::sum);
+                if(reservado>e.getQuantidadeDisponivel()||(!e.isLote()&&origem.quantidade()!=1))throw new RegraNegocioException("Saldo insuficiente para "+e.getModelo()+". Atualize as origens do plano.");
+                total+=origem.quantidade();
+                origens.add(new Solicitacao.OrigemPlanejada(e.getId(),e.getSerie(),e.getObra()==null?null:e.getObra().getId(),origem.quantidade(),material.getCatalogoChave(),material.getNome()));
+            }
+            if(total!=material.getQuantidade())throw new RegraNegocioException("Transporte e compra devem somar exatamente "+material.getQuantidade()+" unidade(s) de "+material.getNome()+".");
+            resultado.add(new Solicitacao.ItemPlano(material.getId(),material.getNome(),material.getCatalogoChave(),material.getQuantidade(),item.quantidadeCompra(),justificativa,origens));
+        }
+        return resultado;
+    }
+    private void validarEquipamentoPlano(Solicitacao s,String chave,Equipamento e){
+        Long origem=e.getObra()==null?null:e.getObra().getId();Long destino=s.getObraDestino()==null?null:s.getObraDestino().getId();
+        if(e.isArquivado()||!statusMovimentavel(e.getStatus())||!Objects.equals(chave,CatalogoChave.criar(e.getTipo(),e.getModelo(),e.getMedida())))throw new RegraNegocioException("O equipamento escolhido não está disponível ou não corresponde ao material.");
+        if(Objects.equals(origem,destino))throw new RegraNegocioException("Não use o saldo da própria obra de destino no transporte.");
+    }
+    private void validarEReservarPlano(Solicitacao s){
+        if(s.getMateriais().stream().allMatch(m->m.getIdentificacao()!=null&&!m.getIdentificacao().isBlank()))return;
+        if(s.getPlanoFinanceiro().isEmpty())throw new RegraNegocioException("Defina o plano de transporte e compra antes de aprovar o pedido.");
+        var dados=new SolicitacaoDto.PlanoFinanceiro(s.getPlanoFinanceiro().stream().map(p->new SolicitacaoDto.MaterialPlano(p.materialId(),p.quantidadeCompra(),p.justificativa(),p.origens().stream().map(o->new SolicitacaoDto.OrigemPlano(o.equipamentoId(),o.quantidade())).toList())).toList());
+        List<Solicitacao.ItemPlano> atual=montarPlano(s,dados);
+        if(!atual.equals(s.getPlanoFinanceiro()))throw new RegraNegocioException("As origens mudaram desde o planejamento. Atualize o plano antes de aprovar.");
+        for(var origem:origensDeExecucao(s)){
+            Equipamento e=equipamentos.buscarParaAtualizacao(origem.equipamentoId()).orElseThrow();
+            validarEquipamentoPlano(s,origem.catalogoChave(),e);
+            if(!Objects.equals(origem.obraOrigemId(),e.getObra()==null?null:e.getObra().getId()))throw new RegraNegocioException("O local do material recebido mudou. Revise o plano financeiro.");
+            if(e.getQuantidadeDisponivel()<origem.quantidade())throw new RegraNegocioException("O saldo mudou. Atualize o plano financeiro.");
+            e.setQuantidadeReservada(Math.addExact(e.getQuantidadeReservada(),origem.quantidade()));
+        }
+        s.setReservasPlanoAtivas(true);
+    }
+    private void restaurarEntradasLegadas(Solicitacao s){
+        if(!s.getEntradasCompra().isEmpty()||s.getMateriais().stream().noneMatch(m->m.getQuantidadeEntradaEstoque()>0))return;
+        List<Solicitacao.OrigemPlanejada> entradas=new java.util.ArrayList<>();Map<Long,Integer> usadas=new LinkedHashMap<>();
+        for(var material:s.getMateriais()){
+            int restante=material.getQuantidadeEntradaEstoque();
+            for(Equipamento referencia:equipamentos.findAll()){
+                if(restante==0)break;
+                if(!Objects.equals(referencia.getObservacoes(),"Adquirido para a solicitação #"+s.getId())||!Objects.equals(material.getCatalogoChave(),CatalogoChave.criar(referencia.getTipo(),referencia.getModelo(),referencia.getMedida())))continue;
+                Equipamento e=equipamentos.buscarParaAtualizacao(referencia.getId()).orElseThrow();
+                if(e.isArquivado()||e.getObra()!=null||!statusMovimentavel(e.getStatus()))continue;
+                int quantidade=Math.min(restante,Math.max(0,e.getQuantidadeDisponivel()-usadas.getOrDefault(e.getId(),0)));
+                if(quantidade==0)continue;
+                entradas.add(new Solicitacao.OrigemPlanejada(e.getId(),e.getSerie(),null,quantidade,material.getCatalogoChave(),material.getNome()));
+                usadas.merge(e.getId(),quantidade,Integer::sum);restante-=quantidade;
+            }
+            if(restante>0)throw new RegraNegocioException("Confira o lote já recebido de "+material.getNome()+" no estoque antes de aprovar. A entrada anterior será preservada.");
+        }
+        entradas.forEach(s::adicionarEntradaCompra);
+    }
+    private List<Solicitacao.OrigemPlanejada> origensDeExecucao(Solicitacao s){return java.util.stream.Stream.concat(s.getPlanoFinanceiro().stream().flatMap(p->p.origens().stream()),s.getEntradasCompra().stream()).toList();}
+    private List<SolicitacaoDto.AtendimentoOrigem> atendimentosPlanejados(Solicitacao s){
+        Map<Long,List<SolicitacaoDto.MaterialRequisicao>> grupos=new LinkedHashMap<>();
+        for(var origem:origensDeExecucao(s))grupos.computeIfAbsent(origem.obraOrigemId(),k->new java.util.ArrayList<>()).add(new SolicitacaoDto.MaterialRequisicao(origem.nome(),origem.quantidade(),origem.identificacao(),origem.catalogoChave()));
+        return grupos.entrySet().stream().map(e->new SolicitacaoDto.AtendimentoOrigem(e.getKey(),e.getValue())).toList();
+    }
+    private Map<String,Long> quantidadesPorOrigem(List<SolicitacaoDto.AtendimentoOrigem> atendimentos){
+        Map<String,Long> resultado=new LinkedHashMap<>();for(var atendimento:atendimentos)for(var m:atendimento.materiais())resultado.merge(Objects.toString(atendimento.obraOrigemId(),"deposito")+"|"+Objects.toString(m.catalogoChave(),"")+"|"+CatalogoChave.normalizar(m.identificacao()),(long)m.quantidade(),Long::sum);return resultado;
+    }
+    private void liberarReservasPlano(Solicitacao s){
+        if(!s.isReservasPlanoAtivas())return;
+        for(var origem:origensDeExecucao(s)){
+            Equipamento e=equipamentos.buscarParaAtualizacao(origem.equipamentoId()).orElseThrow();
+            if(e.getQuantidadeReservada()<origem.quantidade())throw new RegraNegocioException("A reserva do plano não está íntegra. Solicite revisão do atendimento.");
+            e.setQuantidadeReservada(e.getQuantidadeReservada()-origem.quantidade());
+        }
+        s.setReservasPlanoAtivas(false);
+    }
     private void validarRota(Long origemId,Long destinoId){if(origemId==null&&destinoId==null)throw new RegraNegocioException("Informe a origem ou o destino da movimentação.");if(Objects.equals(origemId,destinoId))throw new RegraNegocioException("A origem e o destino da movimentação precisam ser diferentes.");}
-    private Solicitacao copiarParaAtendimento(Solicitacao base,Solicitacao raiz){Solicitacao copia=new Solicitacao();copia.setTipo(base.getTipo());copia.setStatus("Aprovada");copia.setSolicitante(base.getSolicitante());copia.setSolicitanteUsuario(base.getSolicitanteUsuario());copia.setSolicitanteNome(base.getSolicitanteNome());copia.setSolicitanteLogin(base.getSolicitanteLogin());copia.setSolicitantePerfil(base.getSolicitantePerfil());copia.setTecnico(base.getTecnico());copia.setObraDestino(base.getObraDestino());copia.setDataSolicitacao(base.getDataSolicitacao());copia.setDataDecisao(base.getDataDecisao());copia.setObservacao(base.getObservacao());copia.setSolicitacaoPai(raiz);return copia;}
-    private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),comprasPreservadas(s));}
+    private Solicitacao copiarParaAtendimento(Solicitacao base,Solicitacao raiz){Solicitacao copia=new Solicitacao();copia.setTipo(base.getTipo());copia.setStatus("Aprovada");copia.setSolicitante(base.getSolicitante());copia.setSolicitanteUsuario(base.getSolicitanteUsuario());copia.setSolicitanteNome(base.getSolicitanteNome());copia.setSolicitanteLogin(base.getSolicitanteLogin());copia.setSolicitantePerfil(base.getSolicitantePerfil());copia.setTecnico(base.getTecnico());copia.setObraDestino(base.getObraDestino());copia.setDataSolicitacao(base.getDataSolicitacao());copia.setDataDecisao(base.getDataDecisao());copia.setObservacao(base.getObservacao());copia.setSolicitacaoPai(raiz);copia.copiarEventosFinanceirosDe(base);copia.setPlanoFinanceiro(base.getPlanoFinanceiro());copia.setMovimentacaoDireta(base.isMovimentacaoDireta());return copia;}
+    private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),comprasPreservadas(s),eventosFinanceiros(s),s.getPlanoFinanceiro(),s.getEntradasCompra(),s.isMovimentacaoDireta());}
     private SolicitacaoDto.Resposta respostaParaUsuario(Solicitacao s,String login){Usuario usuario=usuarios.buscarPorLogin(login);return usuario.getPerfil().ehProfissionalDeCampo()?respostaTecnico(s,obras.idsPermitidos(login)):resposta(s);}
-    private SolicitacaoDto.Resposta respostaTecnico(Solicitacao s,Set<Long> permitidas){Long origem=s.getObraOrigem()!=null&&permitidas.contains(s.getObraOrigem().getId())?s.getObraOrigem().getId():null;Long destino=s.getObraDestino()!=null&&permitidas.contains(s.getObraDestino().getId())?s.getObraDestino().getId():null;return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),origem,destino,s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of());}
+    private SolicitacaoDto.Resposta respostaTecnico(Solicitacao s,Set<Long> permitidas){Long origem=s.getObraOrigem()!=null&&permitidas.contains(s.getObraOrigem().getId())?s.getObraOrigem().getId():null;Long destino=s.getObraDestino()!=null&&permitidas.contains(s.getObraDestino().getId())?s.getObraDestino().getId():null;return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),origem,destino,s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of(),List.of(),List.of(),List.of(),s.isMovimentacaoDireta());}
     private List<SolicitacaoDto.MaterialResposta> comprasPreservadas(Solicitacao s){return s.getCompras().stream().map(c->new SolicitacaoDto.MaterialResposta(c.id(),c.nome(),c.quantidade(),c.identificacao(),c.catalogoChave(),c.quantidadeCompra(),c.compraSolicitadaEm(),c.quantidadeAdquirida(),c.quantidadeEntradaEstoque(),c.adquiridaEm())).toList();}
+    private List<SolicitacaoDto.EventoFinanceiroResposta> eventosFinanceiros(Solicitacao s){return s.getEventosFinanceiros().stream().map(e->new SolicitacaoDto.EventoFinanceiroResposta(e.tipo(),e.descricao(),e.autorNome(),e.autorLogin(),e.registradoEm())).toList();}
     private void validarDestinoRecebimento(Solicitacao s) {
         if(s.getObraDestino()==null)return;
         if("Concluída".equals(s.getObraDestino().getStatus()))
@@ -194,6 +360,21 @@ public class SolicitacaoService {
     }
     private boolean solicitacaoEhEpi(Solicitacao solicitacao){return !solicitacao.getMateriais().isEmpty()&&solicitacao.getMateriais().stream().allMatch(m->EscopoEquipamento.catalogoEhEpi(m.getCatalogoChave()));}
     private boolean pertenceAoRh(Solicitacao solicitacao){return solicitacaoEhEpi(solicitacao)&&usuarios.funcionarioTemPerfilAtivo(solicitacao.getTecnico(),PerfilUsuario.TST);}
-    private void validarEscopoRh(Solicitacao solicitacao,String login){if(usuarios.buscarPorLogin(login).getPerfil()==PerfilUsuario.RH&&!pertenceAoRh(solicitacao))throw new AccessDeniedException("O RH pode operar somente solicitações de EPI dos TSTs.");}
+    private boolean visivelFinanceiro(Solicitacao s){return Set.of("Aguardando financeiro","Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus())||("Rejeitada".equals(s.getStatus())&&!s.getEventosFinanceiros().isEmpty());}
+    private boolean liberadaParaEstoque(Solicitacao s){return Set.of("Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus());}
+    private void validarEscopoRh(Solicitacao solicitacao,String login){validarEscopoRh(solicitacao,usuarios.buscarPorLogin(login));}
+    private void validarEscopoRh(Solicitacao solicitacao,Usuario usuario){if(usuario.getPerfil()==PerfilUsuario.RH&&!pertenceAoRh(solicitacao))throw new AccessDeniedException("O RH pode operar somente solicitações de EPI dos TSTs.");}
+    private void validarPermissaoEdicao(Solicitacao s,Usuario usuario){
+        if(usuario.getPerfil()==PerfilUsuario.ADMIN)return;
+        if(usuario.getPerfil()==PerfilUsuario.FINANCEIRO&&"Aguardando financeiro".equals(s.getStatus()))return;
+        if(Set.of(PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(usuario.getPerfil())&&"Pendente".equals(s.getStatus()))return;
+        throw new AccessDeniedException("Você não pode editar esta solicitação nesta etapa do fluxo.");
+    }
+    private SolicitacaoDto.Resposta aprovarPrimeiraEtapa(Solicitacao s){if(!"Pendente".equals(s.getStatus()))throw new RegraNegocioException("A solicitação já foi analisada.");s.setStatus("Aguardando financeiro");s.setDataDecisao(LocalDate.now());return resposta(s);}
+    private String resumoParaAuditoria(Solicitacao s){
+        Long destino=s.getObraDestino()==null?null:s.getObraDestino().getId();
+        return Objects.toString(s.getTecnico()==null?null:s.getTecnico().getId(),"")+"|"+Objects.toString(destino,"")+"|"+Objects.toString(s.getObservacao(),"")+"|"+
+            s.getMateriais().stream().map(m->Objects.toString(m.getCatalogoChave(),m.getNome())+":"+m.getQuantidade()+":"+Objects.toString(m.getIdentificacao(),"")).toList();
+    }
     private SolicitacaoDto.MaterialResposta respostaMaterial(MaterialSolicitado m){return new SolicitacaoDto.MaterialResposta(m.getId(),m.getNome(),m.getQuantidade(),m.getIdentificacao(),m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm());}
 }

@@ -20,7 +20,7 @@ function telaCompactaInicial() {
 }
 
 function BotaoMover({ equipamento, aoMover, estilos }) {
-  if (equipamento.arquivado || !(equipamento.quantidadeDisponivel > 0)) return null;
+  if (!aoMover || equipamento.arquivado || !(equipamento.quantidadeDisponivel > 0)) return null;
   return <button type="button" onClick={() => aoMover(equipamento)} className={estilos.moverBtn} aria-label={`Mover ${equipamento.modelo}`}><ArrowLeftRight size={11} aria-hidden="true" /> Mover</button>;
 }
 

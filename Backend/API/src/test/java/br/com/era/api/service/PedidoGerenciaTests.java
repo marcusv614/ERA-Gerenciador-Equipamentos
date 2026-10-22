@@ -51,7 +51,7 @@ class PedidoGerenciaTests {
     }
     @Test void gerenteSemFuncionarioCriaPedidoAutorizadoComAutoriaAutenticada() {
         var resposta = service.cadastrar(dados("ferramentas|escada|", 50), "gerente");
-        assertEquals("Aprovada", resposta.status()); assertEquals(LocalDate.now(), resposta.dataDecisao());
+        assertEquals("Aguardando financeiro", resposta.status()); assertEquals(LocalDate.now(), resposta.dataDecisao());
         assertEquals("Maria Gerente", resposta.solicitante()); assertEquals("Ana", resposta.tecnico());
         assertEquals("maria.gerente", resposta.solicitanteLogin()); assertEquals("GERENTE", resposta.solicitantePerfil());
         assertSame(gerente, salva.getSolicitanteUsuario()); assertNull(salva.getSolicitante());
@@ -60,7 +60,7 @@ class PedidoGerenciaTests {
     }
     @Test void administradorTambemPodeCriarPedidoAutorizado() {
         gerente.setPerfil(PerfilUsuario.ADMIN);
-        assertEquals("Aprovada", service.cadastrar(dados("ferramentas|escada|", 1), "gerente").status());
+        assertEquals("Aguardando financeiro", service.cadastrar(dados("ferramentas|escada|", 1), "gerente").status());
     }
     @Test void auditoriaPreservaAutoriaMesmoDepoisDeAlterarContaETecnicoResponsavel() {
         service.cadastrar(dados("ferramentas|escada|", 1), "gerente");
@@ -102,6 +102,12 @@ class PedidoGerenciaTests {
     }
     @Test void pedidoDaGerenciaSoTerminaComRecebimentoPeloTecnico() {
         service.cadastrar(dados("ferramentas|escada|", 1), "gerente");
+        ReflectionTestUtils.setField(salva.getMateriais().getFirst(),"id",100L);
+        when(equipamentos.buscarParaAtualizacao(20L)).thenReturn(Optional.of(escada));
+        Usuario financeiro = new Usuario(); financeiro.setPerfil(PerfilUsuario.FINANCEIRO); financeiro.setNome("Financeiro"); financeiro.setLogin("financeiro");
+        when(acessos.findByLoginIgnoreCase("financeiro")).thenReturn(Optional.of(financeiro));
+        service.salvarPlanoFinanceiro(1L,new SolicitacaoDto.PlanoFinanceiro(List.of(new SolicitacaoDto.MaterialPlano(100L,0,"",List.of(new SolicitacaoDto.OrigemPlano(20L,1))))),"financeiro");
+        assertEquals("Aprovada", service.aprovar(1L, "financeiro").status());
         assertThrows(RegraNegocioException.class, () -> service.iniciarTransito(1L, "tecnico"));
         assertThrows(RegraNegocioException.class, () -> service.concluir(1L, "tecnico"));
         when(equipamentos.buscarPorSerieParaAtualizacao("ESC-1")).thenReturn(Optional.of(escada));

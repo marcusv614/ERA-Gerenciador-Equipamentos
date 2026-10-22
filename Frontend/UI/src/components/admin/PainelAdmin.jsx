@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Boxes, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
+import { Boxes, CircleDollarSign, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiFuncionarios } from '../../services/api/servicoAtivosApi';
@@ -13,6 +13,7 @@ import estilos from './PainelAdmin.module.css';
 const AREAS = [
   { id: 'usuarios', rotulo: 'Administração', icone: ShieldCheck },
   { id: 'gerencia', rotulo: 'Gerência', icone: LayoutDashboard },
+  { id: 'financeiro', rotulo: 'Financeiro', icone: CircleDollarSign },
   { id: 'estoque', rotulo: 'Estoque', icone: Warehouse },
   { id: 'tecnico', rotulo: 'Técnico', icone: Wrench },
   { id: 'tst', rotulo: 'TST', icone: HardHat },
@@ -89,6 +90,7 @@ export function PainelAdmin() {
       item.perfil === 'TECNICO' ? 'tecnico' : '',
       item.perfil === 'TST' ? 'tst segurança do trabalho' : '',
       item.perfil === 'RH' ? 'rh recursos humanos' : '',
+      item.perfil === 'FINANCEIRO' ? 'financeiro finanças aprovação' : '',
       item.perfil === 'ESTOQUE' ? 'estoquista' : '',
       item.perfil === 'GERENTE' ? 'gerente' : '',
       item.perfil === 'ADMIN' ? 'administrador' : '',
@@ -149,6 +151,7 @@ export function PainelAdmin() {
     </main>}
 
     {area === 'gerencia' && <PainelControleAtivos incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
+    {area === 'financeiro' && <><p className={estilos.modoAuditoria}><CircleDollarSign /> Visão financeira reutilizando o painel e o Kanban da Gerência, com operações restritas à etapa financeira.</p><PainelControleAtivos incorporado perfilVisualizado="FINANCEIRO" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
     {area === 'estoque' && <PainelEstoque incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de vistoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
     {area === 'tst' && <><p className={estilos.modoAuditoria}><HardHat /> Visão do TST em modo de vistoria: somente equipamentos da categoria EPI ficam disponíveis.</p><PainelTecnico modoAdministrador perfilVisualizado="TST" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}

@@ -46,7 +46,15 @@ Para apagar também o volume do PostgreSQL, use `docker compose down -v` somente
 ngrok http 8088
 ```
 
-2. Copie a URL HTTPS exibida pelo ngrok e defina `PUBLIC_APP_URL` no `.env`.
+2. Copie a URL HTTPS exibida pelo ngrok e configure no `.env`:
+
+```dotenv
+COMPOSE_FILE=compose.yaml:compose.ngrok.yaml
+PUBLIC_APP_URL=https://seu-endereco.ngrok-free.app
+```
+
+`COMPOSE_FILE` faz os comandos `docker compose` seguintes manterem o modo ngrok, inclusive após reconstruções. Atualize `PUBLIC_APP_URL` sempre que o endereço do túnel mudar.
+
 3. Recrie API e interface usando o override seguro:
 
 ```bash
@@ -54,6 +62,8 @@ docker compose -f compose.yaml -f compose.ngrok.yaml up -d --build
 ```
 
 O override ativa cookies de sessão `Secure`, preserva o protocolo HTTPS encaminhado e restringe o CORS à URL informada. Use somente dados de teste e encerre o túnel ao final da homologação.
+
+Para voltar ao acesso local por HTTP, remova `COMPOSE_FILE` do `.env` e execute `docker compose up -d`.
 
 ## Deploy em VPS
 
