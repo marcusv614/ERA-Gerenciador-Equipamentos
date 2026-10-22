@@ -18,7 +18,7 @@ class EdicaoPedidoTests {
     final ObraService obras=mock(ObraService.class);
     final FuncionarioService funcionarios=mock(FuncionarioService.class);
     final EquipamentoService equipamentoService=mock(EquipamentoService.class);
-    final SolicitacaoService service=new SolicitacaoService(pedidos,equipamentos,movimentos,obras,funcionarios,equipamentoService,mock(UsuarioService.class),mock(InventarioHistoricoService.class));
+    final SolicitacaoService service=new SolicitacaoService(pedidos,equipamentos,movimentos,obras,funcionarios,equipamentoService,mock(UsuarioService.class),mock(InventarioHistoricoService.class),mock(NotificacaoMovimentacaoService.class));
     final Solicitacao pedido=new Solicitacao();
     EdicaoPedidoTests(){
         Funcionario tecnico=new Funcionario();tecnico.setNome("Tecnico");

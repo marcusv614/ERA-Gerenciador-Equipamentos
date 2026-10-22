@@ -9,17 +9,11 @@ const codigo = (valor) => String(valor || '').trim() || 'Não selecionado';
 const normalizar = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase('pt-BR');
 const local = (id, buscar) => id == null ? 'Depósito central' : buscar(id)?.nome || 'Obra não disponível';
 const idPedido = (id) => id == null ? 'Não registrado' : `#${String(id).padStart(4, '0')}`;
-const agrupar = (itens) => [...itens.reduce((mapa, item) => {
-  const chave = item.catalogoChave || [item.tipo, item.modelo || item.nome, item.medida].map(normalizar).join('|');
-  const atual = mapa.get(chave) || { nome:item.modelo || item.nome, tipo:item.tipo, medida:item.medida, quantidade:0, presentes:0, reservados:0, transito:0, registros:0 };
-  atual.quantidade += Number(item.quantidade ?? 0); atual.presentes += item.presentes ?? 0; atual.reservados += item.reservados ?? 0; atual.transito += item.transito ?? 0; atual.registros++;
-  mapa.set(chave, atual);return mapa;
-}, new Map()).values()].sort((a,b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
 const tabela = (titulo, colunas, linhas) => `<h2>${texto(titulo)}</h2><table><thead><tr>${colunas.map((coluna) => `<th>${texto(coluna)}</th>`).join('')}</tr></thead><tbody>${linhas.length ? linhas.map((linha) => `<tr>${linha.map((valor) => `<td>${texto(valor)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${colunas.length}">Nenhum registro disponível.</td></tr>`}</tbody></table>`;
 const nota = (mensagem) => `<p class="muted">${texto(mensagem)}</p>`;
 
 export function criarModelosDocumentos(logoEra) {
-  const cabecalho = (titulo, campos) => `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${texto(logoEra)}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${texto(titulo)}</h1></div><div class="header">${campos.map(([rotulo, valor]) => `<div class="header-row"><span class="label">${texto(rotulo)}</span><span class="value">${texto(valor)}</span></div>`).join('')}</div></div>`;
+  const cabecalho = (titulo, campos) => `<div class="doc-card"><div class="doc-top"><img class="doc-logo" src="${texto(logoEra)}" alt="ERA Engenharia de Redes da Amazônia"/><h1>${texto(titulo)}</h1></div><div class="header">${campos.filter(([,valor])=>valor!=null&&valor!=='').map(([rotulo, valor]) => `<div class="header-row"><span class="label">${texto(rotulo)}</span><span class="value">${texto(valor)}</span></div>`).join('')}</div></div>`;
   const documento = (titulo, conteudo) => ({ titulo, conteudo:conteudo + nota(`Gerado em ${instante(new Date())} · horário de Manaus.`) });
   const camposObra = (obra, responsaveis = []) => [['Obra',obra.nome],['Cliente',obra.cliente],['Localização',obra.cidade],...(obra.inicio ? [['Início da obra',data(obra.inicio)]] : []),['Responsáveis técnicos cadastrados',obra.responsaveis?.join(', ') || 'Não registrado'],['Responsáveis pelos equipamentos relacionados',[...new Set(responsaveis.filter(Boolean))].join(', ') || 'Não registrado']];
   const origemPedido = (pedido, buscar) => pedido.obraOrigemId != null ? local(pedido.obraOrigemId, buscar) : pedido.materiais?.length && pedido.materiais.every((m) => m.identificacao?.trim()) ? 'Depósito central' : 'Ainda não definida pelo estoque';
@@ -28,8 +22,37 @@ export function criarModelosDocumentos(logoEra) {
     ['Conta utilizada', pedido.solicitanteLogin || 'Não registrado'],
     ['Perfil na solicitação', ({ GERENTE: 'Gerente', RH: 'RH', ADMIN: 'Administrador', TECNICO: 'Técnico', TST: 'TST', ESTOQUE: 'Estoque' })[pedido.solicitantePerfil] || 'Não registrado'],
   ];
-  const camposPedido = (pedido, buscar) => [['Atendimento',idPedido(pedido.id)],['Pedido original',idPedido(pedido.solicitacaoPaiId ?? pedido.id)],['Operação',pedido.obraDestinoId != null ? 'Envio para obra' : 'Retirada para o depósito'],['Status do atendimento',pedido.status],['Data do pedido',data(pedido.dataSolicitacao)],['Data da decisão',data(pedido.dataDecisao)],...camposAutoria(pedido),['Técnico responsável',pedido.tecnico],['Origem da separação',origemPedido(pedido,buscar)],['Destino',local(pedido.obraDestinoId,buscar)],['Saída registrada',instante(pedido.transitoEm)],['Recebimento confirmado',instante(pedido.concluidaEm)]];
+  const camposPedido = (pedido, buscar) => [['Atendimento',idPedido(pedido.id)],...(pedido.solicitacaoPaiId ? [['Pedido original',idPedido(pedido.solicitacaoPaiId)]] : []),['Status do atendimento',pedido.status],['Data do pedido',data(pedido.dataSolicitacao)],...camposAutoria(pedido),['Técnico responsável',pedido.tecnico],['Destino',local(pedido.obraDestinoId,buscar)],...(pedido.transitoEm ? [['Saída registrada',instante(pedido.transitoEm)]] : []),...(pedido.concluidaEm ? [['Recebimento confirmado',instante(pedido.concluidaEm)]] : [])];
   const observacao = (pedido) => pedido.observacao ? `<h2>Observações registradas</h2>${nota(pedido.observacao)}` : '';
+  const rotulosEventos = { APROVACAO_INICIAL:'Aprovação da Gerência / RH', APROVACAO:'Aprovação do Financeiro', ALTERACAO:'Planejamento', REVISAO_PLANO:'Revisão do plano', INICIO_ATENDIMENTO:'Início das providências', ATENDIMENTO_PARCIAL:'Envio parcial', AJUSTE_ESTOQUE:'Ajuste do estoque', REJEICAO:'Rejeição' };
+  const aprovacoes = (pedido) => {
+    const eventos = pedido.eventosFinanceiros || [];
+    const tipos = ['APROVACAO_INICIAL','APROVACAO'];
+    const linhas = tipos.flatMap(tipo => {
+      const evento = eventos.findLast(e => e.tipo === tipo);
+      return evento ? [[rotulosEventos[tipo],instante(evento.registradoEm),evento.autorNome || evento.autorLogin || 'Não registrado']] : [];
+    });
+    if (!linhas.length && pedido.dataDecisao) linhas.push(['Decisão registrada (data)',data(pedido.dataDecisao),'Não registrado']);
+    return linhas.length ? tabela('Autorizações',['Etapa','Data','Responsável'],linhas) : nota('Aprovação ainda não registrada.');
+  };
+
+  function ordemAtendimento(pedido,buscar) {
+    const itens = pedido.materiais || [];
+    const separado = itens.length > 0 && itens.every(m => m.identificacao?.trim());
+    const liberado = ['Aprovada','Aguardando coleta','Em trânsito','Concluída'].includes(pedido.status);
+    const plano = liberado ? pedido.planoFinanceiro || [] : [];
+    const coletas = !liberado ? [] : separado ? itens.map(m => [origemPedido(pedido,buscar),m.nome,m.quantidade,codigo(m.identificacao)]) : [
+      ...plano.flatMap(item => (item.origens || []).map(o => [local(o.obraOrigemId,buscar),item.nome,o.quantidade,codigo(o.identificacao)])),
+      ...(liberado ? pedido.entradasCompra || [] : []).map(e => [local(e.obraOrigemId,buscar),e.nome,e.quantidade,codigo(e.identificacao)]),
+    ];
+    const compras = !separado && liberado ? itens.filter(m => m.quantidadeCompra > 0).map(m => [m.nome,m.quantidadeCompra,m.quantidadeEntradaEstoque || 0,Math.max(0,m.quantidadeCompra-(m.quantidadeAdquirida || 0)),Math.max(0,(m.quantidadeAdquirida || 0)-(m.quantidadeEntradaEstoque || 0))]) : [];
+    const grupos = [...coletas.reduce((mapa,linha) => { const lista = mapa.get(linha[0]) || []; lista.push(linha.slice(1)); mapa.set(linha[0],lista); return mapa; },new Map())];
+    const campos = [['Atendimento',idPedido(pedido.id)],...(pedido.solicitacaoPaiId ? [['Pedido original',idPedido(pedido.solicitacaoPaiId)]] : []),['Situação',pedido.status],['Recebedor',pedido.tecnico]];
+    const aviso = !liberado ? 'Aguardando autorização. Não iniciar compras ou retiradas.' : pedido.status === 'Concluída' ? 'Atendimento concluído. Não executar novas compras ou retiradas com esta ordem.' : pedido.status === 'Em trânsito' ? 'Envio já confirmado. Aguardar o recebimento do destinatário.' : separado ? 'Conferir os materiais abaixo e confirmar o envio no sistema.' : 'Retirar somente as quantidades indicadas. Registrar as compras e confirmar a separação antes do envio.';
+    const pendencia = !separado && liberado && !plano.length ? nota('Plano de retirada e compra ainda não definido. Consultar o Financeiro antes de executar.') : '';
+    const justificativas = plano.filter(i => i.justificativa).map(i => [i.nome,i.justificativa]);
+    return documento(`Ordem de atendimento ${idPedido(pedido.id)}`,`<div class="ordem-atendimento">${cabecalho('Ordem de atendimento',campos)}<div class="ordem-destino"><span>Entregar em</span><strong>${texto(local(pedido.obraDestinoId,buscar))}</strong></div><p class="ordem-instrucao">${texto(aviso)}</p>${aprovacoes(pedido)}${pendencia}${grupos.map(([origem,linhas]) => `<section class="ordem-retirada">${tabela(`${['Em trânsito','Concluída'].includes(pedido.status)?'Origem':'Retirar em'}: ${origem}`,['Material','Quantidade','Código / série'],linhas)}</section>`).join('')}${compras.length ? `<section class="ordem-compras">${tabela('Compras deste atendimento',['Material','Autorizado','Entrada registrada','Ainda comprar','Conferir entrada'],compras)}</section>` : ''}${justificativas.length ? tabela('Orientações do Financeiro',['Material','Orientação'],justificativas) : ''}${observacao(pedido)}${!separado ? nota('Envio parcial: registrar o ajuste no sistema; o restante permanece pendente.') : ''}</div>`);
+  }
 
   function historicoEquipamento(e, historico, buscar) {
     const titulo=`Histórico do equipamento — ${e.modelo}`;
@@ -47,34 +70,33 @@ export function criarModelosDocumentos(logoEra) {
       const presentes=Math.max(0,e.quantidadeNaOrigem ?? (e.quantidade ?? 1)-transito);
       return {...e,presentes,transito,reservados:Math.min(presentes,Math.max(0,(e.quantidadeReservada ?? 0)-transito))};
     });
-    const grupos=agrupar(itens);
-    const resumo=grupos.map((g)=>[g.nome,g.tipo,g.medida,g.presentes,g.reservados,g.transito]);
     const detalhes=itens.map((e)=>[e.modelo,codigo(e.serie),e.notaFiscal,e.tecnico,e.presentes,e.reservados,e.transito]);
     const manutencoes=itens.filter(e=>e.quantidadeManutencao>0).map(e=>[e.modelo,codigo(e.serie),e.quantidadeManutencao,e.tecnico]);
     const entradas=equipamentos.filter((e)=>!e.arquivado).flatMap((e)=>(e.deslocamentos || []).filter((d)=>d.status==='Em trânsito'&&String(d.destinoId)===String(obra.id)).map((d)=>[idPedido(d.solicitacaoId),e.modelo,codigo(e.serie),d.quantidade,local(d.origemId,buscar),d.tecnico]));
     // A origem permanece vinculada ao registro até a confirmação do recebimento.
-    return documento(`Inventário — ${obra.nome}`,cabecalho('Inventário atual da obra',camposObra(obra,itens.map((e)=>e.tecnico)))+tabela('Resumo consolidado por material',['Material','Tipo','Medida','Presentes na obra','Reservadas na obra','Em transporte de saída'],resumo)+tabela('Detalhamento por registro',['Material','Código / série','Nota fiscal','Responsável','Presentes','Reservadas','Saída em transporte'],detalhes)+(manutencoes.length?tabela('Unidades em manutenção — bloqueadas para novos pedidos',['Material','Código / série','Em manutenção','Responsável'],manutencoes):'')+tabela('Entradas em transporte — ainda não recebidas',['Atendimento','Material','Código / série','Quantidade','Origem','Técnico de destino'],entradas)+nota('Reservadas e unidades em manutenção fazem parte das unidades presentes, não são quantidades adicionais. Unidades em transporte não são contabilizadas como presentes no destino.'));
+    return documento(`Inventário — ${obra.nome}`,cabecalho('Inventário atual da obra',camposObra(obra,itens.map((e)=>e.tecnico)))+tabela('Materiais por registro',['Material','Código / série','Nota fiscal','Responsável','Presentes','Reservadas','Saída em transporte'],detalhes)+(manutencoes.length?tabela('Unidades em manutenção — bloqueadas para novos pedidos',['Material','Código / série','Em manutenção','Responsável'],manutencoes):'')+(entradas.length?tabela('Entradas em transporte — ainda não recebidas',['Atendimento','Material','Código / série','Quantidade','Origem','Técnico de destino'],entradas):'')+nota('Reservas e manutenção já integram o saldo presente. Transporte não integra o saldo do destino até o recebimento.'));
   }
 
   function inventarioHistoricoObra(inventario) {
     const itens=inventario.materiais || [];
     const obra={nome:inventario.obraNome,cliente:inventario.cliente,cidade:inventario.cidade,responsaveis:inventario.responsaveisTecnicos};
     const campos=[...camposObra(obra,itens.map((e)=>e.tecnico)),['Data consultada',data(inventario.dataReferencia)],['Data do retrato armazenado',data(inventario.dataSnapshot)],['Registro do retrato',instante(inventario.registradoEm)],['Identificador do retrato',inventario.snapshotId],['Status da obra no retrato',inventario.status]];
-    return documento(`Inventário histórico — ${obra.nome}`,cabecalho('Inventário histórico da obra',campos)+tabela('Resumo do retrato armazenado',['Material','Tipo','Medida','Qtd. registrada','Registros'],agrupar(itens).map((g)=>[g.nome,g.tipo,g.medida,g.quantidade,g.registros]))+tabela('Detalhamento para vistoria',['Qtd. registrada','Material','Código / série','Medida','Responsável'],itens.map((e)=>[e.quantidade,e.modelo,codigo(e.serie),e.medida,e.tecnico]))+nota('Posição cadastral do último retrato disponível até a data consultada. Não reconstitui a localização física durante o transporte.'));
+    return documento(`Inventário histórico — ${obra.nome}`,cabecalho('Inventário histórico da obra',campos)+tabela('Materiais no retrato armazenado',['Qtd. registrada','Material','Código / série','Tipo / medida','Responsável'],itens.map((e)=>[e.quantidade,e.modelo,codigo(e.serie),[e.tipo,e.medida].filter(Boolean).join(' · '),e.tecnico]))+nota('Último retrato armazenado até a data consultada; não reconstitui a posição física durante o transporte.'));
   }
 
   function romaneioSeparacao(pedido,buscar) {
     const itens=pedido.materiais || [];
     const separado=itens.length>0&&itens.every((m)=>m.identificacao?.trim());
-    return documento(`Romaneio — ${idPedido(pedido.id)}`,cabecalho('Romaneio de separação',camposPedido(pedido,buscar))+nota(separado?'Documento para conferência dos materiais separados. Não comprova recebimento.':'Separação ainda não concluída. Este documento não comprova reserva ou recebimento.')+tabela(separado?'Materiais separados':'Materiais solicitados',['Quantidade','Material','Código / série','Origem da coleta'],itens.map((m)=>[m.quantidade,m.nome,codigo(m.identificacao),m.identificacao ? origemPedido(pedido,buscar) : 'Ainda não definida']))+observacao(pedido));
+    return documento(`Romaneio — ${idPedido(pedido.id)}`,cabecalho('Romaneio de separação',camposPedido(pedido,buscar))+nota(separado?'Conferência da separação. Não comprova recebimento.':'Separação ainda não concluída. Não comprova recebimento.')+tabela(separado?'Materiais separados':'Materiais solicitados',['Quantidade','Material','Código / série','Origem da coleta'],itens.map((m)=>[m.quantidade,m.nome,codigo(m.identificacao),m.identificacao ? origemPedido(pedido,buscar) : 'Ainda não definida']))+observacao(pedido));
   }
 
   function auditoriaSolicitacao(pedido,buscar) {
     const itens=pedido.materiais || [];
     const compras=(pedido.compras?.length?pedido.compras:itens).filter((m)=>m.quantidadeCompra>0).map((m)=>[m.nome,m.quantidadeCompra,m.quantidadeAdquirida ?? 0,m.quantidadeEntradaEstoque ?? 0,Math.max(0,m.quantidadeCompra-(m.quantidadeEntradaEstoque ?? 0))]);
-    const plano=(pedido.planoFinanceiro || []).flatMap((item)=>[...item.origens.map((origem)=>[item.nome,'Transportar',origem.obraOrigemId == null?'Depósito central':buscar(origem.obraOrigemId)?.nome || 'Obra não disponível',origem.quantidade]),...(item.quantidadeCompra>0?[[item.nome,'Comprar',item.justificativa,item.quantidadeCompra]]:[])]);
-    const eventos=(pedido.eventosFinanceiros || []).map((evento)=>[evento.tipo,instante(evento.registradoEm),evento.autorNome,evento.descricao]);
-    return documento(`Vistoria — ${idPedido(pedido.id)}`,cabecalho('Relatório de vistoria do atendimento',[...camposPedido(pedido,buscar),['Total solicitado',itens.reduce((total,m)=>total+(m.quantidade ?? 0),0)]])+((pedido.materiaisOriginais || []).length?tabela('Pedido original preservado',['Material','Quantidade original'],pedido.materiaisOriginais.map(m=>[m.nome,m.quantidade])):'')+tabela('Resumo por material',['Material','Quantidade solicitada','Registros'],agrupar(itens).map((g)=>[g.nome,g.quantidade,g.registros]))+tabela('Itens e locais de coleta',['Quantidade','Material','Código / série','Origem da coleta'],itens.map((m)=>[m.quantidade,m.nome,codigo(m.identificacao),m.identificacao?origemPedido(pedido,buscar):'Ainda não definida']))+(compras.length?tabela('Acompanhamento de compras do pedido original',['Material','Compra solicitada','Adquirida','Entrada no estoque','Aguardando entrada'],compras):'')+(plano.length?tabela('Plano de atendimento autorizado pelo Financeiro',['Material','Ação','Origem / justificativa','Quantidade'],plano):'')+(eventos.length?tabela('Histórico financeiro',['Evento','Data','Responsável','Descrição'],eventos):'')+observacao(pedido)+nota('Datas ausentes não foram presumidas. Cada atendimento separado por origem mantém sua referência ao pedido original.'));
+    const eventos=(pedido.eventosFinanceiros || []).map((evento)=>[rotulosEventos[evento.tipo] || evento.tipo,instante(evento.registradoEm),[evento.autorNome,evento.autorLogin].filter(Boolean).join(' · '),evento.descricao]);
+    const separado=itens.length>0&&itens.every(m=>m.identificacao?.trim());
+    const origens=!separado ? (pedido.planoFinanceiro || []).flatMap(item=>(item.origens || []).map(o=>[item.nome,o.quantidade,codigo(o.identificacao),local(o.obraOrigemId,buscar)])) : [];
+    return documento(`Vistoria — ${idPedido(pedido.id)}`,cabecalho('Relatório de vistoria do atendimento',camposPedido(pedido,buscar))+((pedido.materiaisOriginais || []).length?tabela('Pedido original preservado',['Material','Quantidade original'],pedido.materiaisOriginais.map(m=>[m.nome,m.quantidade])):'')+tabela('Itens deste atendimento',['Material','Quantidade','Código / série','Origem da coleta'],itens.map((m)=>[m.nome,m.quantidade,codigo(m.identificacao),m.identificacao?origemPedido(pedido,buscar):'Ainda não definida pelo estoque']))+(origens.length?tabela('Retiradas planejadas',['Material','Quantidade','Código / série','Origem'],origens):'')+(compras.length?tabela('Acompanhamento de compras do pedido original',['Material','Compra solicitada','Adquirida','Entrada no estoque','Aguardando entrada'],compras):'')+(eventos.length?tabela('Decisões e ajustes registrados',['Evento','Data','Responsável','Descrição'],eventos):pedido.dataDecisao?aprovacoes(pedido):'')+observacao(pedido));
   }
 
   function listaComprasSolicitacao(pedido,aquisicoes,buscar) {
@@ -119,5 +141,5 @@ export function criarModelosDocumentos(logoEra) {
     const linhas=auditorias.flatMap((a)=>a.itens.map((i)=>[idPedido(a.id),a.tecnicoNome,a.fiscal||'Não informado',a.dataVistoria?data(a.dataVistoria):'Não informada',a.status==='CONCLUIDA'?'Concluída':'Aberta',i.modelo,i.serie,i.local,i.quantidade,i.bom,i.avaria,i.quebrado,i.quantidade-i.bom-i.avaria-i.quebrado,i.observacao||'']));
     return documento('Relatório de vistorias dos materiais',cabecalho('Relatório de vistorias dos materiais',[['Vistorias na consulta',auditorias.length],['Registros de materiais',linhas.length]])+nota(filtros)+tabela('Condições registradas nos materiais da consulta',['Vistoria','Técnico','Fiscal','Data da vistoria','Situação','Material','Código / série','Obra na ficha','Qtd.','Bom','Com avaria','Quebrado','A avaliar','Observação'],linhas)+nota('Os locais e as quantidades correspondem às fichas de vistoria, preservando cada vistoria periódica. As fichas originais completas, com campos de assinaturas, permanecem disponíveis por vistoria.'));
   }
-  return {historicoEquipamento,inventarioObra,inventarioHistoricoObra,romaneioSeparacao,auditoriaSolicitacao,listaComprasSolicitacao,listaComprasGeral,historicoObra,vistoriaTecnico,relatorioVistorias};
+  return {historicoEquipamento,inventarioObra,inventarioHistoricoObra,ordemAtendimento,romaneioSeparacao,auditoriaSolicitacao,listaComprasSolicitacao,listaComprasGeral,historicoObra,vistoriaTecnico,relatorioVistorias};
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
@@ -8,6 +8,7 @@ import estilos from './PainelTecnico.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
+import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
 
 const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
@@ -80,6 +81,8 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
   const [quantidadesEmEdicao, definirQuantidadesEmEdicao] = useState({});
   const [observacao, definirObservacao] = useState('');
   const [aba, definirAba] = useState(modoAdministrador ? 'acompanhar' : 'solicitar');
+  const [pedidoParaAbrir, definirPedidoParaAbrir] = useState(null);
+  const pedidoFocado = useRef(null);
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
   const [confirmandoRecebimentoId, definirConfirmandoRecebimentoId] = useState(null);
@@ -87,6 +90,11 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
   const [operacao, definirOperacao] = useState('');
   const [etapaMovimentacao, definirEtapaMovimentacao] = useState(1);
   const [mostrarObservacao, definirMostrarObservacao] = useState(false);
+  useEffect(() => {
+    if (aba !== 'acompanhar' || carregando || !pedidoParaAbrir || pedidoFocado.current === pedidoParaAbrir) return;
+    const cartao = document.getElementById(`pedido-tecnico-${pedidoParaAbrir.id}`);
+    if (cartao) { cartao.scrollIntoView({ block: 'start', behavior: 'instant' }); cartao.focus({ preventScroll: true }); pedidoFocado.current = pedidoParaAbrir; }
+  }, [aba, carregando, pedidoParaAbrir, solicitacoes]);
   const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
     const temaSalvo = localStorage.getItem('era-tema-tecnico');
     return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
@@ -280,6 +288,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
       <div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>campo</span></div>
       <div className={estilos.usuario}>
         <div><small>Olá, {ehTst ? 'TST' : 'técnico'}</small><strong>{usuario.nome}</strong></div>
+        <SinoNotificacoes temaEscuro={temaEscuro} aoVerPedidos={(id) => { definirAba('acompanhar'); definirPedidoParaAbrir({ id }); }} />
         <button type="button" className={estilos.botaoTema} onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun size={18} /> : <Moon size={18} />}</button>
         <button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={19} /></button>
       </div>
@@ -353,7 +362,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
           const totalMateriais = materiais.reduce((total, material) => total + material.quantidade, 0);
           const possuiDestino = Boolean(solicitacao.obraDestinoId);
           const localPedido = possuiDestino ? nomeLocal(solicitacao.obraDestinoId) : solicitacao.obraOrigemId ? nomeLocal(solicitacao.obraOrigemId) : 'Local não disponível';
-          return <article key={solicitacao.id} className={estilos.cartaoSolicitacao} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>
+          return <article key={solicitacao.id} id={`pedido-tecnico-${solicitacao.id}`} tabIndex={-1} className={estilos.cartaoSolicitacao} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>
             <header className={estilos.topoCartaoSolicitacao}>
               <div className={estilos.identificacaoSolicitacao}><span>{iconeEtapa(solicitacao.status)}</span><div><small>{solicitacao.solicitacaoPaiId ? `Parte do pedido #${solicitacao.solicitacaoPaiId}` : 'Pedido'}</small><strong>#{String(solicitacao.id).padStart(4, '0')}</strong></div></div>
               <span className={estilos.statusSolicitacao}>{rotuloStatus(solicitacao)}</span>

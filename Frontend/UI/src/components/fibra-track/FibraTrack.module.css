@@ -2386,6 +2386,10 @@ button.equipCard {
 }
 
 /* App shell móvel inspirado em navegação nativa: contexto no topo e áreas no rodapé. */
+@media (min-width:769px) {
+  .topbarCollapsed .topbarRight:has(>[data-sino-notificacoes]) { display: flex; }
+  .topbarCollapsed .topbarRight:has(>[data-sino-notificacoes]) > :not([data-sino-notificacoes]) { display: none; }
+}
 @media (max-width:768px){
   .sidebar,.sidebarScrim,.sidebarEdgeToggle{display:none}
   .root[data-incorporado='true'] .main{height:calc(100dvh - 134px - env(safe-area-inset-bottom))}
@@ -2396,6 +2400,8 @@ button.equipCard {
   .topbarCollapsed{padding:10px 14px 11px;border-bottom-color:var(--border)}
   .topbarCollapsed .topbarRight{display:flex}
   .topbarRight{width:100%;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0}
+  .topbarRight:has(>[data-sino-notificacoes]) .searchBox{order:0;flex-basis:100%}
+  .topbarRight>[data-sino-notificacoes]{order:1;margin-left:auto}
   .searchBox{order:1;max-width:none;min-height:44px;padding:7px 11px;border-radius:12px;background:var(--surface-2);border-color:transparent;flex:1 1 150px;overflow:hidden;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--border) 82%,transparent)}
   .searchResult{display:none}.searchInput{font-size:16px}
   .themeButton{order:2;width:44px;height:44px;min-width:44px;min-height:44px;border-radius:12px;background:var(--surface-2);border-color:transparent;color:var(--text);box-shadow:inset 0 0 0 1px var(--border)}

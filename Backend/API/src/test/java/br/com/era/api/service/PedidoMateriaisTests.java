@@ -54,7 +54,7 @@ class PedidoMateriaisTests {
     final MovimentacaoRepository movimentacoes = mock(MovimentacaoRepository.class);
     final EquipamentoService equipamentoService = mock(EquipamentoService.class);
     final Funcionario tecnico = new Funcionario();
-    final SolicitacaoService service = new SolicitacaoService(pedidos,equipamentos,movimentacoes,obras,mock(FuncionarioService.class),equipamentoService,usuarios,mock(InventarioHistoricoService.class));
+    final SolicitacaoService service = new SolicitacaoService(pedidos,equipamentos,movimentacoes,obras,mock(FuncionarioService.class),equipamentoService,usuarios,mock(InventarioHistoricoService.class),mock(NotificacaoMovimentacaoService.class));
 
     PedidoMateriaisTests() {
         tecnico.setNome("Tecnico");

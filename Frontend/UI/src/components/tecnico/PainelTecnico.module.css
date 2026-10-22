@@ -860,6 +860,7 @@
   gap: 12px;
 }
 .cartaoSolicitacao {
+  scroll-margin-top: 90px;
   --etapa-cor: var(--campo-orange-dark);
   min-width: 0;
   overflow: hidden;
@@ -870,6 +871,7 @@
   background: var(--campo-raised);
   box-shadow: 0 8px 24px rgba(24, 39, 31, .055);
 }
+.cartaoSolicitacao:focus { outline: 3px solid var(--campo-green-action); outline-offset: 3px; }
 .cartaoSolicitacao::before {
   content: "";
   position: absolute;

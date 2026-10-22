@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
 import { Boxes, CircleDollarSign, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
@@ -131,6 +132,7 @@ export function PainelAdmin() {
     <header className={estilos.cabecalho}>
       <div className={estilos.identidade}><ShieldCheck /><div><small>Painel do administrador</small><strong>{usuario.nome}</strong></div></div>
       <nav aria-label="Áreas administrativas">{AREAS.map(({ id, rotulo, icone: Icone }) => <button type="button" key={id} className={area === id ? estilos.ativo : ''} onClick={() => { if (id !== area && id === 'usuarios') definirCarregando(true); definirArea(id); }}><Icone /> {rotulo}</button>)}</nav>
+      <SinoNotificacoes temaEscuro={modoEscuro} />
       <button type="button" className={estilos.tema} onClick={alternarTema} aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'}>{modoEscuro ? <Sun /> : <Moon />}</button>
       <button type="button" className={estilos.sair} onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /> <span>Sair</span></button>
     </header>

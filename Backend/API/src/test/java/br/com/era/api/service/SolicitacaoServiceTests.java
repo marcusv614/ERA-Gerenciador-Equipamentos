@@ -31,7 +31,7 @@ class SolicitacaoServiceTests {
                 mock(FuncionarioService.class),
                 mock(EquipamentoService.class),
                 usuarios,
-                mock(InventarioHistoricoService.class));
+                mock(InventarioHistoricoService.class),mock(NotificacaoMovimentacaoService.class));
     }
 
     @Test

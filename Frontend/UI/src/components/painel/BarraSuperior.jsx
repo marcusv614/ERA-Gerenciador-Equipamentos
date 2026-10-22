@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp, LogOut, Menu, Moon, Plus, Search, Sun, X } from 'lucide-react';
 import { useState } from 'react';
+import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
 
 const INFORMACOES_TELA = {
   auditorias: ['Vistorias', 'Vistorias periódicas de conservação e histórico dos materiais', 'Código, técnico, fiscal, obra ou material...'],
@@ -10,7 +11,7 @@ const INFORMACOES_TELA = {
   deposito: ['Depósito', 'Itens fora de campo — estoque, manutenção e trânsito', 'Buscar item, série...'],
 };
 
-export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos }) {
+export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos, mostrarNotificacoes = true }) {
   const [titulo, subtitulo, textoBusca] = INFORMACOES_TELA[telaAtual];
   const [acoesAbertas, definirAcoesAbertas] = useState(false);
   const buscaAtiva = Boolean(termoBusca.trim());
@@ -18,6 +19,7 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, re
     <div><h1 className={estilos.title}>{titulo}</h1><p className={estilos.subtitle}>{subtitulo}</p></div>
     <button type="button" onClick={aoAlternarRecolhimento} className={estilos.topbarCollapseBtn} aria-label={recolhida ? 'Expandir barra superior' : 'Retrair barra superior'} aria-expanded={!recolhida}>{recolhida ? <ChevronDown size={16} /> : <ChevronUp size={16} />}</button>
     <div className={estilos.topbarRight}>
+      {mostrarNotificacoes && <SinoNotificacoes temaEscuro={modoEscuro} />}
       <button type="button" aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'} onClick={aoAlternarTema} className={estilos.themeButton}>{modoEscuro ? <Sun size={17} /> : <Moon size={17} />}</button>
       <div className={`${estilos.searchBox} ${buscaAtiva ? estilos.searchBoxActive : ''} ${buscaAtiva && resultadoBusca === 0 ? estilos.searchBoxEmpty : ''}`}>
         <Search size={15} className={estilos.searchIcon} />

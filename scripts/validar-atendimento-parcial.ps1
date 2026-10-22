@@ -30,10 +30,16 @@ try {
     $portaTeste = (docker port $nomeContainerTeste 8080/tcp).Trim()
     @{ url = "http://$portaTeste"; container = $nomeContainerTeste; database = $nomeBancoTeste } |
         ConvertTo-Json | Set-Content -Encoding UTF8 -LiteralPath $configuracaoTeste
+    # Windows PowerShell pode tratar a primeira linha de stderr como exceção e ocultar o diagnóstico.
+    $ErrorActionPreference = 'Continue'
     node (Join-Path $PSScriptRoot 'validar-atendimento-parcial.mjs') $configuracaoTeste
-    if ($LASTEXITCODE -ne 0) {
+    $codigoTeste = $LASTEXITCODE
+    $ErrorActionPreference = 'Stop'
+    if ($codigoTeste -ne 0) {
         $logInicializacao = Join-Path $raizProjeto 'Backend/API/target/atendimento-parcial-api.log'
+        $ErrorActionPreference = 'Continue'
         docker logs --tail 160 $nomeContainerTeste *> $logInicializacao
+        $ErrorActionPreference = 'Stop'
         Write-Output "Log da API temporaria salvo em $logInicializacao"
         throw 'A validacao integrada encontrou uma falha.'
     }

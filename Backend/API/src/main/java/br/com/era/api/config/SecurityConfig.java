@@ -48,6 +48,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/auth/me").authenticated()
                 .requestMatchers(HttpMethod.POST,"/auth/alterar-senha","/auth/logout").authenticated()
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,"/notificacoes").authenticated()
+                .requestMatchers(HttpMethod.POST,"/notificacoes/*/leitura").authenticated()
                 .requestMatchers("/painel/**").hasAnyRole("ADMIN","GERENTE","FINANCEIRO")
                 .requestMatchers("/deposito/**").hasAnyRole("ADMIN","GERENTE","ESTOQUE")
                 .requestMatchers("/funcionarios/*/auditorias","/funcionarios/*/auditorias/**").hasAnyRole("ADMIN","GERENTE","RH")

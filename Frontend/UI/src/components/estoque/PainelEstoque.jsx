@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, Wrench, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
-import { imprimirListaComprasGeral, imprimirListaComprasSolicitacao, imprimirRomaneioSeparacao, imprimirRelatorioAuditoriaSolicitacao } from '../../services/documentosEquipamentos';
+import { imprimirListaComprasGeral, imprimirListaComprasSolicitacao, imprimirRomaneioSeparacao, imprimirRelatorioAuditoriaSolicitacao, imprimirOrdemAtendimento } from '../../services/documentosEquipamentos';
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './PainelEstoque.module.css';
 import { tipoSemNumeroSerie } from '../../utils/identificacaoEquipamento';
@@ -16,6 +16,7 @@ import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibrac
 import { calibracaoAberta, ehFluke } from '../../utils/calibracoes';
 import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { ModalManutencaoEquipamento } from '../manutencao-equip-modal/ManutencaoEquipModal';
+import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
 
 const possuiSeries = (solicitacao) => solicitacao.materiais.every(({ identificacao }) => identificacao);
 const rotuloOperacional = (solicitacao) => obterEtapaSolicitacao(solicitacao.status).rotulo;
@@ -209,7 +210,8 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       <footer>
         {solicitacao.status === 'Aprovada' && !separado && solicitacao.planoFinanceiro?.length > 0 && !andamento.inicio && <button type="button" disabled={iniciandoId !== null || separandoId !== null} onClick={() => iniciarProvidencias(solicitacao)}>{iniciandoId === solicitacao.id ? 'Registrando...' : andamento.compra > 0 ? 'Iniciar compra / providências' : 'Iniciar providências'}</button>}
         {solicitacao.status === 'Aprovada' && !separado && solicitacao.planoFinanceiro?.length > 0 && <button type="button" onClick={() => definirEditandoAtendimento(solicitacao)}>Editar solicitação / envio parcial</button>}
-        <button onClick={() => imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObra)}><FileText /> Relatório PDF</button>
+        <button type="button" onClick={() => imprimirOrdemAtendimento(solicitacao, buscarObra)}><FileDown /> Ordem de atendimento</button>
+        <button type="button" onClick={() => imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObra)}><FileText /> Rastreabilidade PDF</button>
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button onClick={() => imprimirRomaneioSeparacao(solicitacao, buscarObra)}><FileDown /> Romaneio da separação</button>}
         {solicitacao.status === 'Aprovada' && !separado && <button className={estilos.primario} disabled={separandoId !== null || !solicitacao.planoFinanceiro?.length || solicitacao.materiais.some((material) => material.quantidadeCompra > (material.quantidadeEntradaEstoque || 0))} onClick={() => executarPlano(solicitacao)}><Box />{separandoId === solicitacao.id ? 'Confirmando...' : 'Confirmar separação do plano'}</button>}
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button className={estilos.primario} onClick={() => confirmarAtendimento(solicitacao)}><Truck /> Confirmar entrega</button>}
@@ -221,7 +223,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   };
 
   return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-incorporado={incorporado}>
-    {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><button type="button" onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun /> : <Moon />}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /></button></div></header>}
+    {!incorporado && <header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><SinoNotificacoes temaEscuro={temaEscuro} /><button type="button" onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun /> : <Moon />}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut /></button></div></header>}
     <main className={estilos.conteudo}><section className={estilos.titulo}><div><span><Warehouse /> Operação</span><h1>Estoque</h1></div></section>
       {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}{mensagem.texto}<button onClick={() => definirMensagem(null)}><X /></button></div>}
       <nav className={estilos.abas} aria-label="Áreas do estoque">

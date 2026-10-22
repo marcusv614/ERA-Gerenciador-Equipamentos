@@ -21,7 +21,7 @@ class PlanejamentoAtendimentoTests {
     final ObraService obras=mock(ObraService.class);
     final FuncionarioService funcionarios=mock(FuncionarioService.class);
     final EquipamentoService cadastro=mock(EquipamentoService.class);
-    final SolicitacaoService service=new SolicitacaoService(pedidos,equipamentos,mock(MovimentacaoRepository.class),obras,funcionarios,cadastro,usuarios,mock(InventarioHistoricoService.class));
+    final SolicitacaoService service=new SolicitacaoService(pedidos,equipamentos,mock(MovimentacaoRepository.class),obras,funcionarios,cadastro,usuarios,mock(InventarioHistoricoService.class),mock(NotificacaoMovimentacaoService.class));
     final Funcionario tecnico=new Funcionario();
     final Obra origem=new Obra(),destino=new Obra();
     Equipamento existente,comprado;

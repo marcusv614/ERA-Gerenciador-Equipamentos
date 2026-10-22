@@ -20,7 +20,7 @@ class FluxoFinanceiroTests {
     final ObraService obras=mock(ObraService.class);
     final FuncionarioService funcionarios=mock(FuncionarioService.class);
     final UsuarioService usuarios=mock(UsuarioService.class);
-    final SolicitacaoService service=new SolicitacaoService(pedidos,equipamentos,mock(MovimentacaoRepository.class),obras,funcionarios,mock(EquipamentoService.class),usuarios,mock(InventarioHistoricoService.class));
+    final SolicitacaoService service=new SolicitacaoService(pedidos,equipamentos,mock(MovimentacaoRepository.class),obras,funcionarios,mock(EquipamentoService.class),usuarios,mock(InventarioHistoricoService.class),mock(NotificacaoMovimentacaoService.class));
     final Funcionario tecnico=new Funcionario();
     final Obra obra=new Obra();
     final Usuario gerente=usuario(PerfilUsuario.GERENTE,"Gerente","gerente");
