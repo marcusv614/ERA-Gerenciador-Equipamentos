@@ -1002,3 +1002,52 @@
   overflow-wrap: anywhere;
 }
 .planoFinanceiro{display:grid;gap:10px;margin:14px 0;padding:14px;border:1px solid #819d8c;border-radius:10px;font-size:12px;overflow-wrap:anywhere}.planoFinanceiro section{display:grid;gap:5px}.planoFinanceiro p{margin:0;line-height:1.6}.planoFinanceiro small{opacity:.8;line-height:1.6}
+
+.listaPedidos { display:grid; gap:12px; }
+.pedidosOperacionais { display:grid; gap:18px; }
+.barraFila { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.barraFila > p { margin:0; max-width:380px; color:var(--stock-muted); font-size:12px; line-height:1.5; }
+.alternadorFila { display:flex; gap:4px; padding:4px; border:1px solid var(--stock-border); border-radius:10px; background:var(--stock-surface); }
+.alternadorFila button { min-height:44px; padding:10px 14px; display:flex; align-items:center; gap:9px; border:0; border-radius:7px; color:var(--stock-muted); background:transparent; font-size:13px; cursor:pointer; white-space:nowrap; }
+.alternadorFila button[aria-pressed='true'] { color:var(--stock-text); background:var(--stock-green-soft); font-weight:650; }
+.alternadorFila b { font-size:11px; font-weight:650; }
+.abas button { font-size:14px; }
+.abas button > svg { width:18px; height:18px; }
+.comprasOrganizadas { display:grid; gap:16px; }
+.comprasOrganizadas > header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:4px; }
+.comprasOrganizadas h2 { margin:0; font:650 20px/1.4 var(--font-display); }
+.comprasOrganizadas > header p { margin:5px 0 0; color:var(--stock-muted); font-size:13px; line-height:1.5; }
+.comprasOrganizadas button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; padding:10px 14px; border:1px solid var(--stock-border-strong); border-radius:9px; color:var(--stock-text); background:var(--stock-raised); font-size:13px; font-weight:600; cursor:pointer; }
+.comprasOrganizadas button:disabled { opacity:.5; cursor:default; }
+.grupoCompra { border:1px solid var(--stock-border); border-radius:13px; background:var(--stock-raised); overflow:hidden; }
+.grupoCompra > header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px; border-bottom:1px solid var(--stock-border); }
+.grupoCompra > header > div { min-width:0; }
+.grupoCompra header span { color:var(--stock-muted); font-size:12px; }
+.grupoCompra h3 { margin:5px 0 0; font-size:16px; line-height:1.5; overflow-wrap:anywhere; }
+.grupoCompra > header > button { flex-shrink:0; }
+.itemCompra { padding:17px 18px; display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:18px; align-items:center; }
+.itemCompra + .itemCompra { border-top:1px solid var(--stock-border); }
+.itemCompra > div { min-width:0; display:grid; gap:5px; }
+.itemCompra strong { font-size:15px; line-height:1.5; overflow-wrap:anywhere; }
+.itemCompra span { font-size:12px; color:var(--stock-muted); }
+.itemCompra > b { font-size:13px; color:var(--stock-orange-dark); }
+.grupoCompra > details { border-top:1px solid var(--stock-border); padding:0 18px 10px; }
+.grupoCompra summary { min-height:44px; padding-block:13px; cursor:pointer; font-size:12px; color:var(--stock-muted); }
+.mensagem .tentarNovamente { grid-column:2; width:auto; font-size:12px; text-decoration:underline; }
+.mensagem { font-size:13px; line-height:1.5; }
+.secao .card h2 { font-size:16px; }
+.secao .card > header small { font-size:11px; }
+.secao .card > footer button { font-size:12px; min-height:44px; }
+.resumoManutencao, .instrucaoEntrega { font-size:13px; }
+@media(max-width:760px) {
+  .abas button { min-height:60px; }
+  .abas button > span { font-size:11px; }
+  .barraFila { flex-direction:column; align-items:stretch; gap:10px; }
+  .alternadorFila button { flex:1; justify-content:center; }
+  .barraFila > p { max-width:none; font-size:11px; }
+  .comprasOrganizadas > header { align-items:stretch; flex-direction:column; }
+  .grupoCompra > header { align-items:flex-start; }
+  .itemCompra { grid-template-columns:1fr auto; gap:12px; }
+  .itemCompra > button { grid-column:1/-1; }
+  .filtros input, .filtros select { font-size:16px; }
+}

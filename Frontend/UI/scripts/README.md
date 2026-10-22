@@ -23,6 +23,21 @@ o bloqueio de reenvio durante o processamento e o erro apresentado no modal.
 Relatórios e capturas ficam em `node_modules/.cache/layout-paineis`.
 O processo termina com erro quando encontra overflow ou falha de interação.
 
+Para validar a operação do Estoque separadamente:
+
+```powershell
+node scripts/verificar-estoque-operacao.mjs
+```
+
+Confere fila ordenada, pedidos enviados separados, pesquisa por código, filtros
+por obras de retirada, compras parciais, limites de quantidade, nota e série,
+envio parcial, confirmação de saída, retorno ao depósito, documentos e erros
+recuperáveis da API. Usa os componentes reais com dados simulados nos temas
+claro e escuro, em seis tamanhos de tela, incluindo paisagem. Capturas e
+relatório ficam em `node_modules/.cache/estoque-operacao`.
+
+As calibrações do Estoque ficam na área Manutenção.
+
 Para testar somente a calibração do Fluke:
 
 ```powershell

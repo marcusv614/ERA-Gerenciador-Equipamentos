@@ -90,7 +90,7 @@ try{
     await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:largura===844?390:largura<768?844:1000,deviceScaleFactor:1,mobile:largura<768||largura===844});
     await cdp('Page.navigate',{url:`${base}/__layout?role=${role}&largura=${largura}`});
     try{
-      await esperar(role==='tecnico'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent.trim().startsWith('Receber material'))":role==='estoque'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent.includes('Ver disponibilidade'))":role==='admin'?"document.querySelector('input[aria-label=\"Pesquisar usuários\"]')":"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')");
+      await esperar(role==='tecnico'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent.trim().startsWith('Receber material'))":role==='estoque'?"document.querySelector('[aria-label^=\"Atender pedido \"]')":role==='admin'?"document.querySelector('input[aria-label=\"Pesquisar usuários\"]')":"document.querySelector('[aria-label=\"Visualização dos equipamentos\"]')");
       await inspecionar(`${role}-${largura}-inicio`,largura===390);
       if(role==='tecnico'){
         await tocar(botao('Receber material'));await tocar(botao(obras[0].nome));await tocar(botao('Continuar'));await inspecionar(`${role}-${largura}-catalogo`,largura===390||largura===1440);
@@ -98,7 +98,7 @@ try{
         await tocar(botao('Meus pedidos'));await inspecionar(`${role}-${largura}-pedidos`);
         await tocar(botao('Materiais'));await inspecionar(`${role}-${largura}-materiais`);
       }else if(role==='estoque'){
-        await tocar(botao('Ver disponibilidade'));await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-separacao`,largura===390);await tocar("document.querySelector('[aria-label=Fechar]')");
+        await tocar("document.querySelector('[aria-label^=\"Atender pedido \"]')");await esperar("document.querySelector('[role=dialog]')");await inspecionar(`${role}-${largura}-pedido`,largura===390);await tocar("document.querySelector('[aria-label=Fechar]')");
         await tocar(botao('Compras'));await inspecionar(`${role}-${largura}-compras`,largura===390);
         await tocar(botao('Manutenção'));await inspecionar(`${role}-${largura}-manutencao`);await tocar(botao('Gerenciar manutenção'));await inspecionar(`${role}-${largura}-modal-manutencao`);await escapar();
         await tocar(botao('Histórico'));await inspecionar(`${role}-${largura}-historico`);
@@ -144,7 +144,7 @@ try{
   }
   if(apenasCalibracao){
     const preencher=async(rotulo,valor)=>{await avaliar(`(()=>{const label=Array.from(document.querySelectorAll('[role=dialog] label')).find(l=>l.textContent.trim().startsWith(${JSON.stringify(rotulo)}));const campo=label?.querySelector('input,textarea');if(!campo)throw Error('Campo ausente: '+${JSON.stringify(rotulo)});Object.getOwnPropertyDescriptor(campo.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(campo,${JSON.stringify(valor)});campo.dispatchEvent(new Event('input',{bubbles:true}));campo.dispatchEvent(new Event('change',{bubbles:true}));})()`);};
-    const navegar=async(role,largura)=>{await cdp('Page.navigate',{url:`${base}/__layout?role=${role}&largura=${largura}`});await esperar(role==='estoque'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Gerenciar calibração')":"document.querySelector('button[aria-label^=\"Calibração de\"]')");};
+    const navegar=async(role,largura)=>{await cdp('Page.navigate',{url:`${base}/__layout?role=${role}&largura=${largura}`});if(role==='estoque'){await esperar(botao('Manutenção'));await tocar(botao('Manutenção'));}await esperar(role==='estoque'?"Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Gerenciar calibração')":"document.querySelector('button[aria-label^=\"Calibração de\"]')");};
     const noModal=texto=>botao(texto,"document.querySelector('[role=dialog]')");
     for(const largura of [320,390,844,1440]){
       Object.assign(fluke,{obraId:1,tecnico:nome,status:'Em campo',quantidadeDisponivel:1,quantidadeCalibracao:0,calibracoes:[]});
