@@ -31,3 +31,16 @@ node scripts/verificar-layout-paineis.mjs --calibracao
 
 São verificados pedido pelo gerente, fila do estoque, retirada, envio ao
 laboratório, retorno com certificado e datas, em quatro tamanhos de tela.
+
+Para testar a tela de planejamento do Financeiro:
+
+```powershell
+node scripts/verificar-planejamento-financeiro.mjs
+```
+
+Verifica os seis tamanhos de tela nos temas claro e escuro, agrupamento por
+local, limites de quantidade, preenchimento do transporte, compras e motivos,
+busca, filtros, erro da API, nova tentativa e bloqueio de envio duplicado.
+Também testa revisão de um plano salvo com origem indisponível e fechamento
+pelo teclado. As capturas e o relatório ficam em
+`node_modules/.cache/plano-financeiro`.

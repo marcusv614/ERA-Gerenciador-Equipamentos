@@ -181,6 +181,6 @@ export function TelaAtividades({ solicitacoes, todasSolicitacoes = solicitacoes,
       <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
         aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />
     </JanelaSolicitacao>}
-    {selecionada && planejando && <SepararEquipamentosModal key={selecionada.id} solicitacao={selecionada} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { if (await aoSalvarPlano(id,dados)) definirPlanejando(false); }} />}
+    {selecionada && planejando && <SepararEquipamentosModal key={selecionada.id} solicitacao={selecionada} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { const salvo = await aoSalvarPlano(id,dados); if (salvo) definirPlanejando(false); return salvo; }} />}
   </section>;
 }
