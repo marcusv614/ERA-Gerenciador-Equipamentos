@@ -12,7 +12,7 @@ export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFec
   const [formulario, definirFormulario] = useState({
     nome: funcionario.nome,
     cargo: funcionario.cargo,
-    email: funcionario.email,
+    email: funcionario.email || '',
     telefone: funcionario.telefone || '',
     status: funcionario.status || 'Ativo',
     obrasIds: obrasAtuais,
@@ -23,9 +23,9 @@ export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFec
   const estoquista = ehFuncionarioEstoquista(formulario.cargo);
   const emailNormalizado = formulario.email.trim().toLocaleLowerCase('pt-BR');
   const duplicado = funcionarios.some(({ id, email, nome }) => id !== funcionario.id && (
-    email.trim().toLocaleLowerCase('pt-BR') === emailNormalizado ||
+    (emailNormalizado && email?.trim().toLocaleLowerCase('pt-BR') === emailNormalizado) ||
     nome.trim().toLocaleLowerCase('pt-BR') === formulario.nome.trim().toLocaleLowerCase('pt-BR')));
-  const podeSalvar = formulario.nome.trim() && formulario.cargo.trim() && emailNormalizado && formulario.telefone.trim() && !duplicado && !salvando;
+  const podeSalvar = formulario.nome.trim() && formulario.cargo.trim() && !duplicado && !salvando;
   const atualizarCampo = (campo, valor) => definirFormulario((atual) => ({ ...atual, [campo]: valor }));
   const alternarObra = (obraId) => definirFormulario((atual) => ({
     ...atual,
@@ -52,8 +52,8 @@ export function ModalEditarFuncionario({ funcionario, funcionarios, obras, aoFec
       <CampoFormulario rotulo="Nome completo"><input autoFocus className={styles.input} value={formulario.nome} onChange={(evento) => atualizarCampo('nome', evento.target.value)} /></CampoFormulario>
       <CampoFormulario rotulo="Cargo ou função"><input className={styles.input} value={formulario.cargo} onChange={(evento) => atualizarCampo('cargo', evento.target.value)} /></CampoFormulario>
       <div className={styles.grid2}>
-        <CampoFormulario rotulo="E-mail"><input type="email" className={styles.input} value={formulario.email} onChange={(evento) => atualizarCampo('email', evento.target.value)} /></CampoFormulario>
-        <CampoFormulario rotulo="Telefone"><input type="tel" className={styles.input} value={formulario.telefone} onChange={(evento) => atualizarCampo('telefone', evento.target.value)} /></CampoFormulario>
+        <CampoFormulario rotulo="E-mail (opcional)"><input type="email" className={styles.input} value={formulario.email} onChange={(evento) => atualizarCampo('email', evento.target.value)} /></CampoFormulario>
+        <CampoFormulario rotulo="Telefone (opcional)"><input type="tel" className={styles.input} value={formulario.telefone} onChange={(evento) => atualizarCampo('telefone', evento.target.value)} /></CampoFormulario>
       </div>
       <CampoFormulario rotulo="Situação"><div className={styles.statusRow}>{['Ativo', 'Inativo'].map((status) => <button type="button" key={status} className={`${styles.statusBtn} ${formulario.status === status ? styles.statusBtnActive : ''}`} onClick={() => atualizarCampo('status', status)}>{status}</button>)}</div></CampoFormulario>
       {!estoquista && <CampoFormulario rotulo="Obras sob responsabilidade">

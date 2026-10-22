@@ -13,7 +13,7 @@ function ConteudoAutenticado() {
   if (!usuario) return <TelaLogin />;
   if (usuario.deveAlterarSenha) return <TelaAlterarSenha />;
   if (usuario.perfil === 'ADMIN') return <PainelAdmin />;
-  if (usuario.perfil === 'TECNICO') return <PainelTecnico />;
+  if (['TECNICO', 'TST'].includes(usuario.perfil)) return <PainelTecnico />;
   if (usuario.perfil === 'ESTOQUE') return <PainelEstoque />;
   return <PainelControleAtivos />;
 }

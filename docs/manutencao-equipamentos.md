@@ -1,6 +1,6 @@
 # Manutenção de equipamentos
 
-Administradores, gerentes e estoquistas podem registrar e concluir manutenções. Técnicos continuam responsáveis pela confirmação de recebimento nas obras.
+Administradores, gerentes e estoquistas podem registrar e concluir manutenções. O RH pode operar manutenções somente em itens da categoria EPI. Técnicos e TSTs continuam responsáveis pela confirmação de recebimento nas obras às quais estão vinculados.
 
 ## Onde acessar
 

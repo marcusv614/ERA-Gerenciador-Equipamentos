@@ -23,8 +23,23 @@ public class EquipamentoService {
     private final EquipamentoRepository repository; private final MovimentacaoRepository movimentacoes; private final ObraService obras; private final FuncionarioService funcionarios; private final UsuarioService usuarios; private final InventarioHistoricoService inventarioHistorico;
     public EquipamentoService(EquipamentoRepository repository,MovimentacaoRepository movimentacoes,ObraService obras,FuncionarioService funcionarios,UsuarioService usuarios,InventarioHistoricoService inventarioHistorico){this.repository=repository;this.movimentacoes=movimentacoes;this.obras=obras;this.funcionarios=funcionarios;this.usuarios=usuarios;this.inventarioHistorico=inventarioHistorico;}
     @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listar(){return repository.findAll().stream().filter(e->!e.isArquivado()).map(this::resposta).toList();}
-    @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listarParaUsuario(String login){Usuario usuario=usuarios.buscarPorLogin(login);if(usuario.getPerfil()==PerfilUsuario.ADMIN)return repository.findAll().stream().map(this::resposta).toList();if(usuario.getPerfil()!=PerfilUsuario.TECNICO)return listar();Set<Long> permitidas=obras.idsPermitidos(login);return repository.findAll().stream().filter(e->!e.isArquivado()).filter(e->(e.getObra()!=null&&permitidas.contains(e.getObra().getId()))||movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(e.getId()).stream().anyMatch(m->obraPermitida(m,permitidas))).map(e->resposta(e,permitidas)).toList();}
+    @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listarParaUsuario(String login){
+        Usuario usuario=usuarios.buscarPorLogin(login);PerfilUsuario perfil=usuario.getPerfil();
+        if(perfil==PerfilUsuario.ADMIN)return repository.findAll().stream().map(this::resposta).toList();
+        if(perfil==PerfilUsuario.RH)return repository.findAll().stream().filter(e->!e.isArquivado()&&EscopoEquipamento.ehEpi(e.getTipo())).map(this::resposta).toList();
+        if(!perfil.ehProfissionalDeCampo())return listar();
+        Set<Long> permitidas=obras.idsPermitidos(login);
+        return repository.findAll().stream().filter(e->!e.isArquivado()).filter(e->perfil==PerfilUsuario.TST?EscopoEquipamento.ehEpi(e.getTipo()):!EscopoEquipamento.ehEpi(e.getTipo()))
+            .filter(e->(e.getObra()!=null&&permitidas.contains(e.getObra().getId()))||movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(e.getId()).stream().anyMatch(m->obraPermitida(m,permitidas)))
+            .map(e->resposta(e,permitidas)).toList();
+    }
     @Transactional(readOnly=true) public List<EquipamentoDto.ItemCatalogo> listarCatalogo(){return repository.findAll().stream().filter(e->!e.isArquivado()).map(e->new EquipamentoDto.ItemCatalogo(e.getTipo(),e.getModelo(),e.getMedida(),CatalogoChave.criar(e.getTipo(),e.getModelo(),e.getMedida()))).distinct().sorted(Comparator.comparing(EquipamentoDto.ItemCatalogo::modelo,String.CASE_INSENSITIVE_ORDER)).toList();}
+    @Transactional(readOnly=true) public List<EquipamentoDto.ItemCatalogo> listarCatalogoParaUsuario(String login){
+        PerfilUsuario perfil=usuarios.buscarPorLogin(login).getPerfil();
+        return listarCatalogo().stream().filter(item->perfil==PerfilUsuario.TST||perfil==PerfilUsuario.RH
+            ? EscopoEquipamento.ehEpi(item.tipo())
+            : perfil!=PerfilUsuario.TECNICO||!EscopoEquipamento.ehEpi(item.tipo())).toList();
+    }
     @Transactional(readOnly=true) public List<EquipamentoDto.Resposta> listarDeposito(){return repository.findByObraIsNullOrderByModeloAsc().stream().filter(e->!e.isArquivado()).map(this::resposta).toList();}
     @Transactional public EquipamentoDto.Resposta cadastrar(EquipamentoDto.Requisicao d){String serie=serieInformada(d.serie())?d.serie().trim():gerarIdentificacaoInterna();if(repository.existsBySerieIgnoreCase(serie))throw new RegraNegocioException("Já existe equipamento com esta série.");Equipamento e=new Equipamento();e.setTipo(d.tipo().trim());e.setModelo(d.modelo().trim());e.setSerie(serie);e.setStatus(d.status().trim());if(!Set.of("Em estoque","Em campo").contains(e.getStatus())||!Objects.equals(d.obraId()==null?"Em estoque":"Em campo",e.getStatus()))throw new RegraNegocioException("Cadastre o item em estoque ou em campo conforme a localização. Use as ações de manutenção para bloquear unidades.");e.setMedida(textoOpcional(d.medida()));e.setQuantidade(d.quantidade()==null?1:d.quantidade());e.setControleQuantidade(controleQuantidade(d.controleQuantidade(),e.getQuantidade()));e.setObservacoes(textoOpcional(d.observacoes()));e.setAtributos(sanitizarAtributos(d.atributos()));e.setNotaFiscal(textoOpcional(d.notaFiscal()));e.setFornecedor(textoOpcional(d.fornecedor()));e.setDataCompra(d.dataCompra());if(d.auditavel()!=null)e.setAuditavel(d.auditavel());e.setObra(obras.buscarOpcional(d.obraId()));e.setTecnico(d.tecnico()==null||d.tecnico().isBlank()?null:funcionarios.buscarPorNome(d.tecnico()));LocalDate entrada=d.dataEntrada()!=null?d.dataEntrada():(d.data()!=null?d.data():LocalDate.now());e.setDataEntrada(entrada);e.setDataSaida(d.dataSaida());repository.save(e);if(e.getObra()!=null)inventarioHistorico.registrar(e.getObra());return resposta(e);}
     @Transactional public EquipamentoDto.Resposta atualizar(Long id,EquipamentoDto.Requisicao d){
@@ -67,19 +82,28 @@ public class EquipamentoService {
     @Transactional public EquipamentoDto.Resposta movimentar(Long id,MovimentacaoDto.Requisicao d){Equipamento e=buscarParaAtualizacao(id);Obra origem=e.getObra();Obra destino=obras.buscarOpcional(d.obraId());Funcionario tecnico=d.tecnico()==null||d.tecnico().isBlank()?null:funcionarios.buscarPorNome(d.tecnico());Movimentacao m=novaMovimentacao(e,null,origem,destino,tecnico,d.status(),e.getQuantidade(),d.dataMovimentacao());movimentacoes.save(m);aplicarDestino(e,destino,tecnico,d.status(),d.dataMovimentacao());registrarObrasAfetadas(origem,destino);return resposta(e);}
     @Transactional public Equipamento registrarEntradaCompra(String nome,String catalogoChave,int quantidade,String numeroNota,String identificacao,Long solicitacaoId){String serie=serieInformada(identificacao)?identificacao.trim():gerarIdentificacaoInterna();if(repository.existsBySerieIgnoreCase(serie))throw new RegraNegocioException("Já existe um equipamento ou lote com esta identificação.");Equipamento referencia=repository.findAll().stream().filter(item->!item.isArquivado()).filter(item->CatalogoChave.criar(item.getTipo(),item.getModelo(),item.getMedida()).equals(catalogoChave)).findFirst().orElseThrow(()->new RegraNegocioException("O material não existe no catálogo cadastrado pelo administrador."));Equipamento e=new Equipamento();e.setTipo(referencia.getTipo());e.setAuditavel(referencia.isAuditavel());e.setModelo(referencia.getModelo());e.setSerie(serie);e.setStatus("Em estoque");e.setMedida(referencia.getMedida());e.setAtributos(new LinkedHashMap<>(referencia.getAtributos()));e.setQuantidade(quantidade);e.setQuantidadeReservada(0);e.setControleQuantidade("LOTE");e.setNotaFiscal(numeroNota.trim());e.setObservacoes("Adquirido para a solicitação #"+solicitacaoId);e.setDataEntrada(LocalDate.now());return repository.save(e);}
     @Transactional(readOnly=true) public List<MovimentacaoDto.Resposta> historico(Long id){buscar(id);return movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(id).stream().map(this::respostaMovimentacao).toList();}
-    @Transactional(readOnly=true) public List<MovimentacaoDto.Resposta> historicoParaUsuario(Long id,String login){Usuario usuario=usuarios.buscarPorLogin(login);if(usuario.getPerfil()!=PerfilUsuario.TECNICO)return historico(id);Set<Long> permitidas=obras.idsPermitidos(login);Equipamento equipamento=buscar(id);List<Movimentacao> historico=movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(id);boolean acessivel=(equipamento.getObra()!=null&&permitidas.contains(equipamento.getObra().getId()))||historico.stream().anyMatch(m->obraPermitida(m,permitidas));if(!acessivel)throw new RecursoNaoEncontradoException("Equipamento não encontrado.");return historico.stream().filter(m->obraPermitida(m,permitidas)).map(m->respostaMovimentacaoRestrita(m,permitidas)).toList();}
-    @Transactional(readOnly=true) public List<MovimentacaoDto.Resposta> restringirHistoricoParaUsuario(List<Movimentacao> historico,String login){Usuario usuario=usuarios.buscarPorLogin(login);if(usuario.getPerfil()!=PerfilUsuario.TECNICO)return historico.stream().map(this::respostaMovimentacao).toList();Set<Long> permitidas=obras.idsPermitidos(login);return historico.stream().filter(m->obraPermitida(m,permitidas)).map(m->respostaMovimentacaoRestrita(m,permitidas)).toList();}
+    @Transactional(readOnly=true) public List<MovimentacaoDto.Resposta> historicoParaUsuario(Long id,String login){
+        Usuario usuario=usuarios.buscarPorLogin(login);PerfilUsuario perfil=usuario.getPerfil();Equipamento equipamento=buscar(id);
+        if(perfil==PerfilUsuario.RH){if(!EscopoEquipamento.ehEpi(equipamento.getTipo()))throw new RecursoNaoEncontradoException("Equipamento não encontrado.");return historico(id);}
+        if(!perfil.ehProfissionalDeCampo())return historico(id);
+        if(perfil==PerfilUsuario.TST?!EscopoEquipamento.ehEpi(equipamento.getTipo()):EscopoEquipamento.ehEpi(equipamento.getTipo()))throw new RecursoNaoEncontradoException("Equipamento não encontrado.");
+        Set<Long> permitidas=obras.idsPermitidos(login);List<Movimentacao> historico=movimentacoes.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(id);boolean acessivel=(equipamento.getObra()!=null&&permitidas.contains(equipamento.getObra().getId()))||historico.stream().anyMatch(m->obraPermitida(m,permitidas));if(!acessivel)throw new RecursoNaoEncontradoException("Equipamento não encontrado.");return historico.stream().filter(m->obraPermitida(m,permitidas)).map(m->respostaMovimentacaoRestrita(m,permitidas)).toList();}
+    @Transactional(readOnly=true) public List<MovimentacaoDto.Resposta> restringirHistoricoParaUsuario(List<Movimentacao> historico,String login){
+        Usuario usuario=usuarios.buscarPorLogin(login);PerfilUsuario perfil=usuario.getPerfil();
+        if(perfil==PerfilUsuario.RH)return historico.stream().filter(m->EscopoEquipamento.ehEpi(m.getEquipamento().getTipo())).map(this::respostaMovimentacao).toList();
+        if(!perfil.ehProfissionalDeCampo())return historico.stream().map(this::respostaMovimentacao).toList();
+        Set<Long> permitidas=obras.idsPermitidos(login);return historico.stream().filter(m->perfil==PerfilUsuario.TST?EscopoEquipamento.ehEpi(m.getEquipamento().getTipo()):!EscopoEquipamento.ehEpi(m.getEquipamento().getTipo())).filter(m->obraPermitida(m,permitidas)).map(m->respostaMovimentacaoRestrita(m,permitidas)).toList();}
     @Transactional(readOnly=true) public Equipamento buscar(Long id){return repository.findById(id).orElseThrow(()->new RecursoNaoEncontradoException("Equipamento não encontrado."));}
     private Equipamento buscarParaAtualizacao(Long id){return repository.buscarParaAtualizacao(id).orElseThrow(()->new RecursoNaoEncontradoException("Equipamento não encontrado."));}
     private Usuario autorManutencao(String login) {
         Usuario usuario=usuarios.buscarPorLogin(login);
-        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.ESTOQUE).contains(usuario.getPerfil()))
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH,PerfilUsuario.ESTOQUE).contains(usuario.getPerfil()))
             throw new org.springframework.security.access.AccessDeniedException("Somente a gerência e o estoque podem registrar manutenções.");
         return usuario;
     }
     @Transactional public EquipamentoDto.Resposta abrirManutencao(Long id,ManutencaoDto.Abertura dados,String login) {
         Usuario autor=autorManutencao(login);
-        Equipamento e=buscarParaAtualizacao(id);
+        Equipamento e=buscarParaAtualizacao(id);validarEscopoRh(autor,e);
         if(e.isArquivado())throw new RegraNegocioException("Restaure o equipamento antes de registrar uma manutenção.");
         if(!Set.of("Em estoque","Em campo","Disponível","Em manutenção").contains(e.getStatus()))
             throw new RegraNegocioException("O equipamento precisa estar no estoque ou em campo para iniciar uma manutenção.");
@@ -93,7 +117,7 @@ public class EquipamentoService {
     }
     @Transactional public EquipamentoDto.Resposta concluirManutencao(Long id,Long manutencaoId,ManutencaoDto.Conclusao dados,String login) {
         Usuario autor=autorManutencao(login);
-        Equipamento e=buscarParaAtualizacao(id);
+        Equipamento e=buscarParaAtualizacao(id);validarEscopoRh(autor,e);
         ManutencaoEquipamento m=e.getManutencoes().stream().filter(item->Objects.equals(item.getId(),manutencaoId)).findFirst()
             .orElseThrow(()->new RecursoNaoEncontradoException("Manutenção não encontrada para este equipamento."));
         if(!m.isAberta())throw new RegraNegocioException("Esta manutenção já foi concluída.");
@@ -104,6 +128,10 @@ public class EquipamentoService {
     }
     private ManutencaoDto.Resposta respostaManutencao(ManutencaoEquipamento m) {
         return new ManutencaoDto.Resposta(m.getId(),m.isAberta()?"ABERTA":"CONCLUIDA",m.getQuantidade(),m.getMotivo(),m.getModelo(),m.getSerie(),m.getLocal(),m.getTecnico(),m.getAbertaEm(),m.getAbertaPorNome(),m.getAbertaPorLogin(),m.getConcluidaEm(),m.getConcluidaPorNome(),m.getConcluidaPorLogin(),m.getObservacaoConclusao());
+    }
+    private void validarEscopoRh(Usuario usuario,Equipamento equipamento){
+        if(usuario.getPerfil()==PerfilUsuario.RH&&!EscopoEquipamento.ehEpi(equipamento.getTipo()))
+            throw new org.springframework.security.access.AccessDeniedException("O RH pode operar somente equipamentos da categoria EPI.");
     }
     public Movimentacao novaMovimentacao(Equipamento e,Solicitacao s,Obra origem,Obra destino,Funcionario tecnico,String status,int quantidade,LocalDate data){Movimentacao m=new Movimentacao();m.setEquipamento(e);m.setSolicitacao(s);m.setObraOrigem(origem);m.setObraDestino(destino);m.setTecnico(tecnico);m.setStatus(status);m.setQuantidade(quantidade);m.setDataMovimentacao(data);return m;}
     public void aplicarDestino(Equipamento e,Obra destino,Funcionario tecnico,String status,LocalDate data){e.setObra(destino);e.setTecnico(destino==null?null:tecnico);e.setStatus(status);e.setDataSaida(data);e.setDataEntrada(data);}

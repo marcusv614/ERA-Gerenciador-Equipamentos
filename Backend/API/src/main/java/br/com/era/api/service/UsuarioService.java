@@ -37,12 +37,25 @@ public class UsuarioService implements UserDetailsService {
             throw new RegraNegocioException("Selecione um técnico ativo para receber os materiais.");
         boolean responsavel = obra.getResponsaveis().stream().anyMatch(f -> f.getId().equals(funcionario.getId()));
         if (!responsavel) throw new RegraNegocioException("O técnico responsável pelo recebimento precisa estar vinculado à obra de destino.");
-        repository.findByFuncionarioId(funcionario.getId()).filter(u -> u.isAtivo() && u.getPerfil() == PerfilUsuario.TECNICO)
-            .orElseThrow(() -> new RegraNegocioException("O técnico selecionado precisa de um acesso ativo ao sistema para confirmar o recebimento."));
+        repository.findByFuncionarioId(funcionario.getId()).filter(u -> u.isAtivo() && u.getPerfil().ehProfissionalDeCampo())
+            .orElseThrow(() -> new RegraNegocioException("O responsável selecionado precisa de um acesso técnico ou TST ativo para confirmar o recebimento."));
+    }
+    @Transactional(readOnly=true)
+    public PerfilUsuario perfilAtivoDoFuncionario(Funcionario funcionario) {
+        return repository.findByFuncionarioId(funcionario.getId())
+            .filter(Usuario::isAtivo)
+            .map(Usuario::getPerfil)
+            .filter(PerfilUsuario::ehProfissionalDeCampo)
+            .orElseThrow(() -> new RegraNegocioException("O responsável selecionado precisa de um acesso técnico ou TST ativo."));
+    }
+    @Transactional(readOnly=true)
+    public boolean funcionarioTemPerfilAtivo(Funcionario funcionario, PerfilUsuario perfil) {
+        return funcionario != null && repository.findByFuncionarioId(funcionario.getId())
+            .filter(Usuario::isAtivo).map(Usuario::getPerfil).filter(perfil::equals).isPresent();
     }
     @Transactional public UsuarioDto.Resposta cadastrar(UsuarioDto.Cadastro dados){
         String login=normalizar(dados.login()); if(repository.existsByLoginIgnoreCase(login))throw new RegraNegocioException("Já existe um usuário com esse login.");
-        if(dados.perfil()==PerfilUsuario.TECNICO&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico precisa estar vinculado a um funcionário.");
+        if(dados.perfil().ehProfissionalDeCampo()&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico ou TST precisa estar vinculado a um funcionário.");
         if(dados.funcionarioId()!=null&&repository.existsByFuncionarioId(dados.funcionarioId()))throw new RegraNegocioException("Este funcionário já possui um usuário vinculado.");
         validarSenha(login,dados.senhaTemporaria());
         Usuario usuario=new Usuario();usuario.setNome(dados.nome().trim());usuario.setLogin(login);usuario.setSenhaHash(encoder.encode(dados.senhaTemporaria()));usuario.setPerfil(dados.perfil());usuario.setDeveAlterarSenha(true);
@@ -52,11 +65,11 @@ public class UsuarioService implements UserDetailsService {
     @Transactional public UsuarioDto.Resposta atualizar(Long id,UsuarioDto.Atualizacao dados){
         Usuario usuario=buscar(id);String login=normalizar(dados.login());
         if(repository.existsByLoginIgnoreCaseAndIdNot(login,id))throw new RegraNegocioException("Já existe um usuário com esse login.");
-        if(dados.perfil()==PerfilUsuario.TECNICO&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico precisa estar vinculado a um funcionário.");
+        if(dados.perfil().ehProfissionalDeCampo()&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico ou TST precisa estar vinculado a um funcionário.");
         if(dados.funcionarioId()!=null&&repository.existsByFuncionarioIdAndIdNot(dados.funcionarioId(),id))throw new RegraNegocioException("Este funcionário já possui um usuário vinculado.");
         if(usuario.isAtivo()&&usuario.getPerfil()==PerfilUsuario.ADMIN&&dados.perfil()!=PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ter o perfil alterado.");
         usuario.setNome(dados.nome().trim());usuario.setLogin(login);usuario.setPerfil(dados.perfil());
-        if(dados.perfil()==PerfilUsuario.TECNICO){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).filter(f->!f.isArquivado()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário ativo não encontrado."));usuario.setFuncionario(funcionario);}else usuario.setFuncionario(null);
+        if(dados.perfil().ehProfissionalDeCampo()){Funcionario funcionario=funcionarios.findById(dados.funcionarioId()).filter(f->!f.isArquivado()).orElseThrow(()->new RecursoNaoEncontradoException("Funcionário ativo não encontrado."));usuario.setFuncionario(funcionario);}else usuario.setFuncionario(null);
         if(dados.senhaTemporaria()!=null){validarSenha(login,dados.senhaTemporaria());usuario.setSenhaHash(encoder.encode(dados.senhaTemporaria()));usuario.setDeveAlterarSenha(true);usuario.setTentativasFalhas(0);usuario.setBloqueadoAte(null);}
         return resposta(usuario);
     }

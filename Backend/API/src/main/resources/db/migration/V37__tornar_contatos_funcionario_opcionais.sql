@@ -1,0 +1,1 @@
+ALTER TABLE funcionarios ALTER COLUMN email DROP NOT NULL;

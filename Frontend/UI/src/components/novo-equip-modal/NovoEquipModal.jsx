@@ -74,6 +74,10 @@ const GUIA_CATEGORIAS = {
     exemplos: ['Capacete', 'Cinturão', 'Luva', 'Escada', 'Cone', 'Sinalização'],
     orientacao: 'Use para proteção e acesso ao trabalho. Priorize CA, validade e inspeção quando existirem; nunca invente uma data ausente.',
   },
+  EPI: {
+    exemplos: ['Capacete', 'Cinturão', 'Luva', 'Óculos de proteção', 'Protetor auricular', 'Calçado de segurança'],
+    orientacao: 'Categoria exclusiva de equipamento de proteção individual. Priorize o número do CA, a validade e a inspeção quando existirem.',
+  },
   'Consumíveis e limpeza': {
     exemplos: ['Álcool isopropílico', 'Lenço', 'Etiqueta', 'Fita', 'Protetor de fusão'],
     orientacao: 'Cadastre por embalagem ou apresentação. Lote e validade são opcionais e o número de série não deve ser usado.',

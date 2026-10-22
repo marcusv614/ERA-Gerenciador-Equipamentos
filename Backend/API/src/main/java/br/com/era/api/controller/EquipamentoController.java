@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 public class EquipamentoController {
     private final EquipamentoService service; public EquipamentoController(EquipamentoService service){this.service=service;}
     @GetMapping public List<EquipamentoDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
-    @GetMapping("/catalogo") public List<EquipamentoDto.ItemCatalogo> listarCatalogo(){return service.listarCatalogo();}
+    @GetMapping("/catalogo") public List<EquipamentoDto.ItemCatalogo> listarCatalogo(Authentication autenticacao){return service.listarCatalogoParaUsuario(autenticacao.getName());}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) public EquipamentoDto.Resposta cadastrar(@Valid @RequestBody EquipamentoDto.Requisicao dados){return service.cadastrar(dados);}
     @PatchMapping("/{id}") public EquipamentoDto.Resposta atualizar(@PathVariable Long id,@Valid @RequestBody EquipamentoDto.Requisicao dados){return service.atualizar(id,dados);}
     @PatchMapping("/{id}/arquivamento") public EquipamentoDto.Resposta arquivar(@PathVariable Long id,@Valid @RequestBody br.com.era.api.dto.ArquivamentoDto.Requisicao d,Authentication auth){return service.definirArquivamento(id,d.arquivado(),auth.getName());}

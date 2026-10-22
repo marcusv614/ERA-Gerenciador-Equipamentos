@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Activity, Boxes, Building2, ChevronDown, ChevronRight, ClipboardCheck, UserRound, Users, Warehouse } from 'lucide-react';
 import logoEra from '../../assets/ERALTDA.png';
 
-export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
+export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamento, obras, funcionarios, totalAtividadesPendentes, usuario, aoFechar, aoSelecionarTela, aoSelecionarTipo, aoSelecionarBusca, estilos }) {
   const [grupoExpandido, definirGrupoExpandido] = useState(null);
   const alternarGrupo = (grupo, tela) => {
     definirGrupoExpandido((grupoAtual) => grupoAtual === grupo ? null : grupo);
@@ -38,7 +38,7 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('auditorias'); }} className={`${estilos.navItem} ${telaAtual === 'auditorias' ? estilos.navItemActive : ''}`}><ClipboardCheck size={16} /> Vistorias</button>
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('deposito'); }} className={`${estilos.navItem} ${telaAtual === 'deposito' ? estilos.navItemActive : ''}`}><Warehouse size={16} /> Depósito</button>
         </nav>
-        <div className={estilos.profileWrap}><div className={estilos.profile}><div className={estilos.avatar}>GE</div><div className={estilos.profileText}><div className={estilos.profileName}>Gerente ERA</div><div className={estilos.profileRole}>Gestão de ativos</div></div></div></div>
+        <div className={estilos.profileWrap}><div className={estilos.profile}><div className={estilos.avatar}>{usuario?.perfil === 'RH' ? 'RH' : usuario?.perfil === 'ADMIN' ? 'AD' : 'GE'}</div><div className={estilos.profileText}><div className={estilos.profileName}>{usuario?.nome || 'Usuário ERA'}</div><div className={estilos.profileRole}>{usuario?.perfil === 'RH' ? 'EPIs e equipe TST' : 'Gestão de ativos'}</div></div></div></div>
       </div>
     </aside>
   </>;

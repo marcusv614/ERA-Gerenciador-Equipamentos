@@ -45,4 +45,4 @@ Execute com `./mvnw spring-boot:run`. A API fica em `http://localhost:8080/api`,
 - `GET/POST /api/auth/*`
 - `GET/POST/PUT/PATCH /api/usuarios/*`
 
-A autenticação usa sessão HTTP, cookie `JSESSIONID` protegido e token CSRF em cookie separado. O Spring Security restringe os endpoints por perfil (`ADMIN`, `GERENTE`, `ESTOQUE` e `TECNICO`) e invalida sessões de usuários desativados ou bloqueados.
+A autenticação usa sessão HTTP, cookie `JSESSIONID` protegido e token CSRF em cookie separado. O Spring Security restringe os endpoints por perfil (`ADMIN`, `GERENTE`, `RH`, `ESTOQUE`, `TECNICO` e `TST`) e invalida sessões de usuários desativados ou bloqueados. Técnicos solicitam materiais que não são EPI; TSTs solicitam exclusivamente a categoria `EPI`; e o RH acessa somente TSTs, EPIs e as solicitações correspondentes.

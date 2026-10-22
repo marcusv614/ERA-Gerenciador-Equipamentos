@@ -6,7 +6,7 @@ public class Funcionario {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @Column(nullable=false,length=150) private String nome;
     @Column(nullable=false,length=100) private String cargo;
-    @Column(nullable=false,unique=true,length=180) private String email;
+    @Column(unique=true,length=180) private String email;
     @Column(length=30) private String telefone;
     @Column(nullable=false,length=30) private String status="Ativo";
     @Column(nullable=false) private boolean arquivado=false; @Column(name="arquivado_em") private OffsetDateTime arquivadoEm; @Column(name="arquivado_por",length=120) private String arquivadoPor;

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Boxes, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
+import { Boxes, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiFuncionarios } from '../../services/api/servicoAtivosApi';
@@ -15,6 +15,7 @@ const AREAS = [
   { id: 'gerencia', rotulo: 'Gerência', icone: LayoutDashboard },
   { id: 'estoque', rotulo: 'Estoque', icone: Warehouse },
   { id: 'tecnico', rotulo: 'Técnico', icone: Wrench },
+  { id: 'tst', rotulo: 'TST', icone: HardHat },
 ];
 
 const normalizarBusca = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -86,6 +87,8 @@ export function PainelAdmin() {
       item.login,
       item.perfil,
       item.perfil === 'TECNICO' ? 'tecnico' : '',
+      item.perfil === 'TST' ? 'tst segurança do trabalho' : '',
+      item.perfil === 'RH' ? 'rh recursos humanos' : '',
       item.perfil === 'ESTOQUE' ? 'estoquista' : '',
       item.perfil === 'GERENTE' ? 'gerente' : '',
       item.perfil === 'ADMIN' ? 'administrador' : '',
@@ -148,6 +151,7 @@ export function PainelAdmin() {
     {area === 'gerencia' && <PainelControleAtivos incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'estoque' && <PainelEstoque incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de vistoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
+    {area === 'tst' && <><p className={estilos.modoAuditoria}><HardHat /> Visão do TST em modo de vistoria: somente equipamentos da categoria EPI ficam disponíveis.</p><PainelTecnico modoAdministrador perfilVisualizado="TST" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
 
     {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}
     {editandoUsuario && <ModalNovoUsuario usuario={editandoUsuario} funcionarios={funcionarios.filter((funcionario) => !funcionario.arquivado && !usuarios.some((item) => item.id !== editandoUsuario.id && item.funcionarioId === funcionario.id))} aoFechar={() => definirEditandoUsuario(null)} aoSalvar={editarUsuario} />}

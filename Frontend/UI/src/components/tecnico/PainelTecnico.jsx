@@ -13,6 +13,8 @@ const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
 const normalizarChave = (valor) => String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase('pt-BR');
 const chaveMaterial = (equipamento) => equipamento.catalogoChave || [equipamento.tipo, equipamento.modelo, equipamento.medida].map(normalizarChave).join('|');
+const tipoEpi = (tipo) => ['epi', 'segurança, epi e acesso'].includes(String(tipo || '').trim().toLocaleLowerCase('pt-BR'));
+const filtrarPorEscopo = (lista, ehTst) => lista.filter((item) => ehTst ? tipoEpi(item.tipo) : !tipoEpi(item.tipo));
 const agruparEquipamentos = (lista, prefixo = 'material') => Object.values(lista.reduce((grupos, equipamento) => {
   const chave = chaveMaterial(equipamento);
   if (!grupos[chave]) grupos[chave] = {
@@ -40,8 +42,8 @@ const rotuloStatus = (solicitacao) => ({
   Aprovada: 'Aceita',
   Concluída: 'Finalizada',
 }[solicitacao.status] || solicitacao.status || 'Atualizando');
-const descricaoStatus = (solicitacao) => ({
-  Pendente: 'Aguarde o gerente.',
+const descricaoStatus = (solicitacao, ehTst = false) => ({
+  Pendente: `Aguarde o ${ehTst ? 'RH' : 'gerente'}.`,
   Aprovada: 'O estoque está preparando.',
   'Aguardando coleta': 'O estoque está preparando.',
   'Em trânsito': solicitacao.obraDestinoId ? 'Recebeu? Confirme abaixo.' : 'O estoque está recebendo.',
@@ -61,8 +63,10 @@ const iconeEtapa = (status) => {
   return <Check />;
 };
 
-export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaControlado, aoAlternarTema } = {}) {
+export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, temaEscuro: temaControlado, aoAlternarTema } = {}) {
   const { usuario, encerrarSessao } = useAutenticacao();
+  const perfilPainel = perfilVisualizado || usuario.perfil;
+  const ehTst = perfilPainel === 'TST';
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
   const [catalogoMateriais, definirCatalogoMateriais] = useState([]);
@@ -105,8 +109,8 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       .then(([resultadoObras, resultadoEquipamentos, resultadoCatalogo, resultadoSolicitacoes]) => {
         if (!componenteAtivo) return;
         if (resultadoObras.status === 'fulfilled') definirObras(resultadoObras.value);
-        if (resultadoEquipamentos.status === 'fulfilled') definirEquipamentos(resultadoEquipamentos.value);
-        if (resultadoCatalogo.status === 'fulfilled') definirCatalogoMateriais(resultadoCatalogo.value);
+        if (resultadoEquipamentos.status === 'fulfilled') definirEquipamentos(filtrarPorEscopo(resultadoEquipamentos.value, ehTst));
+        if (resultadoCatalogo.status === 'fulfilled') definirCatalogoMateriais(filtrarPorEscopo(resultadoCatalogo.value, ehTst));
         if (resultadoSolicitacoes.status === 'fulfilled') definirSolicitacoes(resultadoSolicitacoes.value);
         const falha = [resultadoObras, resultadoEquipamentos, resultadoCatalogo, resultadoSolicitacoes]
           .find((resultado) => resultado.status === 'rejected');
@@ -114,7 +118,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       })
       .finally(() => { if (componenteAtivo) definirCarregando(false); });
     return () => { componenteAtivo = false; };
-  }, [usuario.nome]);
+  }, [ehTst, usuario.nome]);
 
   useEffect(() => {
     let componenteAtivo = true;
@@ -124,9 +128,9 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       ]);
       if (!componenteAtivo) return;
       if (resultadoSolicitacoes.status === 'fulfilled') definirSolicitacoes(resultadoSolicitacoes.value);
-      if (resultadoEquipamentos.status === 'fulfilled') definirEquipamentos(resultadoEquipamentos.value);
+      if (resultadoEquipamentos.status === 'fulfilled') definirEquipamentos(filtrarPorEscopo(resultadoEquipamentos.value, ehTst));
       if (resultadoObras.status === 'fulfilled') definirObras(resultadoObras.value);
-      if (resultadoCatalogo.status === 'fulfilled') definirCatalogoMateriais(resultadoCatalogo.value);
+      if (resultadoCatalogo.status === 'fulfilled') definirCatalogoMateriais(filtrarPorEscopo(resultadoCatalogo.value, ehTst));
     };
     const aoRetomarPainel = () => { if (document.visibilityState === 'visible') atualizarMovimentacoes(); };
     const intervalo = window.setInterval(atualizarMovimentacoes, 10_000);
@@ -138,7 +142,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
       window.removeEventListener('focus', atualizarMovimentacoes);
       document.removeEventListener('visibilitychange', aoRetomarPainel);
     };
-  }, []);
+  }, [ehTst]);
 
   const obrasAtivas = useMemo(() => obras.filter(({ status, arquivado }) => !arquivado && status !== 'Concluída'), [obras]);
   const equipamentosDaOrigem = useMemo(() => agruparEquipamentos(equipamentos.filter((equipamento) => {
@@ -273,7 +277,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
     {!modoAdministrador && <header className={estilos.cabecalho}>
       <div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>campo</span></div>
       <div className={estilos.usuario}>
-        <div><small>Olá, técnico</small><strong>{usuario.nome}</strong></div>
+        <div><small>Olá, {ehTst ? 'TST' : 'técnico'}</small><strong>{usuario.nome}</strong></div>
         <button type="button" className={estilos.botaoTema} onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun size={18} /> : <Moon size={18} />}</button>
         <button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={19} /></button>
       </div>
@@ -281,10 +285,10 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
 
     <main className={estilos.conteudo}>
       <section className={estilos.introducao}>
-        <div><span className={estilos.selo}>Área do técnico</span><h1>{modoAdministrador ? 'Pedidos do técnico' : 'O que você precisa?'}</h1></div>
+        <div><span className={estilos.selo}>Área do {ehTst ? 'TST' : 'técnico'}</span><h1>{modoAdministrador ? `Pedidos do ${ehTst ? 'TST' : 'técnico'}` : 'O que você precisa?'}</h1></div>
         {!modoAdministrador && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>Material entregue</small></span><ChevronRight /></button>}
       </section>
-      <nav className={estilos.abas} aria-label="Navegação do técnico">
+      <nav className={estilos.abas} aria-label={`Navegação do ${ehTst ? 'TST' : 'técnico'}`}>
         {!modoAdministrador && <button type="button" className={aba === 'solicitar' ? estilos.abaAtiva : ''} aria-current={aba === 'solicitar' ? 'page' : undefined} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Novo pedido</strong></span></button>}
         <button type="button" className={aba === 'materiais' ? estilos.abaAtiva : ''} aria-current={aba === 'materiais' ? 'page' : undefined} onClick={() => definirAba('materiais')}><Box /><span><strong>Materiais</strong></span></button>
         <button type="button" className={aba === 'acompanhar' ? estilos.abaAtiva : ''} aria-current={aba === 'acompanhar' ? 'page' : undefined} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Meus pedidos</strong></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
@@ -295,7 +299,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
 
       {!carregando && aba === 'solicitar' && <div className={`${estilos.gradePrincipal} ${etapaMovimentacao === 4 ? estilos.gradeRevisao : ''}`}>
         {etapaMovimentacao < 4 && <section className={estilos.formulario}>
-          {etapaMovimentacao === 1 && <div className={estilos.operacoes}><span className={estilos.selo}>Nova solicitação</span><h2>O que você precisa?</h2>{obrasAtivas.length ? <><button type="button" onClick={() => selecionarOperacao('receber')}><PackageCheck /><span><strong>Pedir Material</strong><small>Informe o que precisa na sua obra.</small></span><ChevronRight /></button><button type="button" onClick={() => selecionarOperacao('devolver')}><Box /><span><strong>Devolver material</strong><small>Peça a retirada de um material da sua obra.</small></span><ChevronRight /></button></> : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra atribuída</strong><span>Peça ao gerente para vincular uma obra ao seu usuário.</span></div>}</div>}
+          {etapaMovimentacao === 1 && <div className={estilos.operacoes}><span className={estilos.selo}>Nova solicitação</span><h2>O que você precisa?</h2>{obrasAtivas.length ? <><button type="button" onClick={() => selecionarOperacao('receber')}><PackageCheck /><span><strong>Pedir {ehTst ? 'EPI' : 'material'}</strong><small>Informe o que precisa na sua obra.</small></span><ChevronRight /></button><button type="button" onClick={() => selecionarOperacao('devolver')}><Box /><span><strong>Devolver {ehTst ? 'EPI' : 'material'}</strong><small>Peça a retirada de um item da sua obra.</small></span><ChevronRight /></button></> : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra atribuída</strong><span>Peça ao {ehTst ? 'RH' : 'gerente'} para vincular uma obra ao seu usuário.</span></div>}</div>}
           {etapaMovimentacao === 2 && <div className={estilos.escolhaObra}><span className={estilos.selo}>Escolha sua obra</span><h2>{operacao === 'receber' ? 'Destino do material:' : 'De onde o material deve ser retirado?'}</h2><div className={estilos.listaObrasEscolha}>{obrasAtivas.map((obra) => {
             const selecionada = String(obra.id) === (operacao === 'receber' ? destino : origem);
             return <button type="button" key={obra.id} className={selecionada ? estilos.obraSelecionada : ''} aria-pressed={selecionada} onClick={() => { if (operacao === 'receber') definirDestino(String(obra.id)); else trocarOrigem(String(obra.id)); }}><Building2 /><span><strong>{obra.nome}</strong><small>{obra.cidade}</small></span>{selecionada ? <Check /> : <ChevronRight />}</button>;
@@ -334,8 +338,8 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
           })}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
           {!mostrarObservacao ? <button type="button" className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
-          <button type="button" className={estilos.enviar} disabled={!podeEnviar} aria-busy={enviando} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao gerente <ChevronRight /></>}</button>
-          <p className={estilos.seguranca}><ShieldCheck /> O gerente aceitará ou rejeitará esta solicitação.</p>
+          <button type="button" className={estilos.enviar} disabled={!podeEnviar} aria-busy={enviando} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao {ehTst ? 'RH' : 'gerente'} <ChevronRight /></>}</button>
+          <p className={estilos.seguranca}><ShieldCheck /> O {ehTst ? 'RH' : 'gerente'} aceitará ou rejeitará esta solicitação.</p>
           <button type="button" className={estilos.voltarRevisao} onClick={() => definirEtapaMovimentacao(3)}>Voltar e corrigir</button>
         </aside>}
       </div>}
@@ -356,7 +360,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
               <div className={estilos.destinoSolicitacao}><MapPin /><span><small>{possuiDestino ? 'Destino' : 'Origem'}</small><strong>{localPedido}</strong></span></div>
               <time dateTime={solicitacao.dataSolicitacao || undefined}><small>Solicitado em</small>{formatarDataSolicitacao(solicitacao.dataSolicitacao)}</time>
             </div>
-            <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao)}</p>
+            <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao, ehTst)}</p>
             <section className={estilos.materiaisCartao} aria-label="Materiais do pedido">
               <header><span>Materiais</span><b>{totalMateriais} {totalMateriais === 1 ? 'item' : 'itens'}</b></header>
               <ul>{materiais.map((material) => <li key={material.chave}><span>{material.nome}</span><b>{material.quantidade}</b></li>)}</ul>
@@ -371,7 +375,7 @@ export function PainelTecnico({ modoAdministrador = false, temaEscuro: temaContr
         <div className={estilos.listaObrasMateriais}>{obrasComMateriais.length ? obrasComMateriais.map(({ obra, materiais }) => <article key={obra.id} className={estilos.obraMateriais}>
           <header><span><Building2 /></span><strong>{obra.nome}</strong><b>{materiais.reduce((total, material) => total + (material.quantidade || 1), 0)}</b></header>
           {materiais.length ? <ul>{materiais.map((material) => <li key={material.id}><div><strong>{material.modelo}</strong>{material.medida && <small>{material.medida}</small>}<IndicadorCalibracao equipamento={material}/></div><b>{material.quantidade || 1}</b></li>)}</ul> : <p>Nenhum material nesta obra.</p>}
-        </article>) : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra vinculada</strong><span>Fale com o gerente.</span></div>}</div>
+        </article>) : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra vinculada</strong><span>Fale com o {ehTst ? 'RH' : 'gerente'}.</span></div>}</div>
       </section>}
     </main>
   </div>;

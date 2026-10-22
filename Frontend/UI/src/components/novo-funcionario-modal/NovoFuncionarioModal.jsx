@@ -10,10 +10,9 @@ export function ModalNovoFuncionario({ funcionariosCadastrados, aoFechar, aoSalv
   const emailNormalizado = formulario.email.trim().toLocaleLowerCase('pt-BR');
   const nomeNormalizado = formulario.nome.trim().toLocaleLowerCase('pt-BR');
   const funcionarioJaCadastrado = funcionariosCadastrados.some(({ email, nome }) =>
-    email.trim().toLocaleLowerCase('pt-BR') === emailNormalizado ||
+    (emailNormalizado && email?.trim().toLocaleLowerCase('pt-BR') === emailNormalizado) ||
     nome.trim().toLocaleLowerCase('pt-BR') === nomeNormalizado);
-  const podeSalvar = formulario.nome.trim() && formulario.cargo.trim() &&
-    emailNormalizado && formulario.telefone.trim() && !funcionarioJaCadastrado;
+  const podeSalvar = formulario.nome.trim() && formulario.cargo.trim() && !funcionarioJaCadastrado;
   const atualizarCampo = (campo, valor) =>
     definirFormulario((dadosAtuais) => ({ ...dadosAtuais, [campo]: valor }));
 
@@ -22,8 +21,8 @@ export function ModalNovoFuncionario({ funcionariosCadastrados, aoFechar, aoSalv
       <CampoFormulario rotulo="Nome completo"><input autoFocus className={styles.input} value={formulario.nome} onChange={(evento) => atualizarCampo('nome', evento.target.value)} /></CampoFormulario>
       <CampoFormulario rotulo="Cargo ou função"><input className={styles.input} placeholder="Ex.: Técnico de campo" value={formulario.cargo} onChange={(evento) => atualizarCampo('cargo', evento.target.value)} /></CampoFormulario>
       <div className={styles.grid2}>
-        <CampoFormulario rotulo="E-mail"><input type="email" className={styles.input} value={formulario.email} onChange={(evento) => atualizarCampo('email', evento.target.value)} /></CampoFormulario>
-        <CampoFormulario rotulo="Telefone"><input type="tel" className={styles.input} placeholder="(92) 99999-9999" value={formulario.telefone} onChange={(evento) => atualizarCampo('telefone', evento.target.value)} /></CampoFormulario>
+        <CampoFormulario rotulo="E-mail (opcional)"><input type="email" className={styles.input} value={formulario.email} onChange={(evento) => atualizarCampo('email', evento.target.value)} /></CampoFormulario>
+        <CampoFormulario rotulo="Telefone (opcional)"><input type="tel" className={styles.input} placeholder="(92) 99999-9999" value={formulario.telefone} onChange={(evento) => atualizarCampo('telefone', evento.target.value)} /></CampoFormulario>
       </div>
       {funcionarioJaCadastrado && <p role="alert">Já existe um funcionário com este nome ou e-mail.</p>}
       <div className={styles.actions}>

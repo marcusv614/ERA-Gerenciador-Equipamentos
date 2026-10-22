@@ -26,7 +26,7 @@ export function criarModelosDocumentos(logoEra) {
   const camposAutoria = (pedido) => [
     ['Solicitado por', pedido.solicitante || 'Não registrado'],
     ['Conta utilizada', pedido.solicitanteLogin || 'Não registrado'],
-    ['Perfil na solicitação', ({ GERENTE: 'Gerente', ADMIN: 'Administrador', TECNICO: 'Técnico', ESTOQUE: 'Estoque' })[pedido.solicitantePerfil] || 'Não registrado'],
+    ['Perfil na solicitação', ({ GERENTE: 'Gerente', RH: 'RH', ADMIN: 'Administrador', TECNICO: 'Técnico', TST: 'TST', ESTOQUE: 'Estoque' })[pedido.solicitantePerfil] || 'Não registrado'],
   ];
   const camposPedido = (pedido, buscar) => [['Atendimento',idPedido(pedido.id)],['Pedido original',idPedido(pedido.solicitacaoPaiId ?? pedido.id)],['Operação',pedido.obraDestinoId != null ? 'Envio para obra' : 'Retirada para o depósito'],['Status do atendimento',pedido.status],['Data do pedido',data(pedido.dataSolicitacao)],['Data da decisão',data(pedido.dataDecisao)],...camposAutoria(pedido),['Técnico responsável',pedido.tecnico],['Origem da separação',origemPedido(pedido,buscar)],['Destino',local(pedido.obraDestinoId,buscar)],['Saída registrada',instante(pedido.transitoEm)],['Recebimento confirmado',instante(pedido.concluidaEm)]];
   const observacao = (pedido) => pedido.observacao ? `<h2>Observações registradas</h2>${nota(pedido.observacao)}` : '';

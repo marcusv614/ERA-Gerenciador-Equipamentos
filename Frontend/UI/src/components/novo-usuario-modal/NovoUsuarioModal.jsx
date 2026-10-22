@@ -12,21 +12,22 @@ export function ModalNovoUsuario({ funcionarios, usuario, aoFechar, aoSalvar }) 
   const selecionarPerfil = (perfil) => definirDados((atual) => ({
     ...atual,
     perfil,
-    funcionarioId: perfil === 'TECNICO' ? atual.funcionarioId : '',
+    funcionarioId: ['TECNICO', 'TST'].includes(perfil) ? atual.funcionarioId : '',
   }));
   const selecionarFuncionario = (id) => { const funcionario = funcionarios.find((item) => String(item.id) === id); definirDados((atual) => ({ ...atual, funcionarioId: id, nome: funcionario?.nome || atual.nome, login: funcionario?.email || atual.login })); };
   const salvar = async () => { definirErro(''); definirSalvando(true); try { await aoSalvar({ ...dados, funcionarioId: dados.funcionarioId ? Number(dados.funcionarioId) : null, login: dados.login.trim().toLowerCase(), senhaTemporaria: editando && !dados.senhaTemporaria ? null : dados.senhaTemporaria }); aoFechar(); } catch (excecao) { definirErro(excecao.message); } finally { definirSalvando(false); } };
   const senhaValida = editando ? !dados.senhaTemporaria || dados.senhaTemporaria.length >= 8 : dados.senhaTemporaria.length >= 8;
-  const valido = (dados.perfil !== 'TECNICO' || dados.funcionarioId) && dados.nome.trim() && dados.login.trim() && senhaValida;
+  const perfilDeCampo = ['TECNICO', 'TST'].includes(dados.perfil);
+  const valido = (!perfilDeCampo || dados.funcionarioId) && dados.nome.trim() && dados.login.trim() && senhaValida;
   const rotuloVisibilidade = senhaVisivel ? 'Ocultar senha' : 'Visualizar senha';
 
   return <EstruturaModal titulo={editando ? 'Editar usuário' : 'Novo usuário'} subtitulo={editando ? 'Atualize o acesso, a atribuição e, se necessário, a senha' : 'Conceda acesso ao painel e defina as permissões'} aoFechar={aoFechar}><div className={styles.form}>
-    {dados.perfil === 'TECNICO' && <CampoFormulario rotulo="Técnico cadastrado"><select className={styles.input} value={dados.funcionarioId} onChange={(evento) => selecionarFuncionario(evento.target.value)}><option value="">Selecione o técnico</option>{funcionarios.map((funcionario) => <option key={funcionario.id} value={funcionario.id}>{funcionario.nome}</option>)}</select></CampoFormulario>}
-    {dados.perfil === 'TECNICO' && !funcionarios.length && <p role="status">Nenhum técnico disponível para vincular. Cadastre um funcionário na Gerência ou, se ele já possui usuário, use Editar ou Redefinir senha na Administração.</p>}
+    {perfilDeCampo && <CampoFormulario rotulo={dados.perfil === 'TST' ? 'TST cadastrado' : 'Técnico cadastrado'}><select className={styles.input} value={dados.funcionarioId} onChange={(evento) => selecionarFuncionario(evento.target.value)}><option value="">Selecione o profissional</option>{funcionarios.map((funcionario) => <option key={funcionario.id} value={funcionario.id}>{funcionario.nome}</option>)}</select></CampoFormulario>}
+    {perfilDeCampo && !funcionarios.length && <p role="status">Nenhum profissional disponível para vincular. Cadastre um funcionário na Gerência ou edite o acesso existente.</p>}
     <CampoFormulario rotulo="Nome exibido"><input className={styles.input} value={dados.nome} onChange={(evento) => alterar('nome', evento.target.value)} /></CampoFormulario>
     <CampoFormulario rotulo="Login"><input autoComplete="off" className={styles.input} value={dados.login} onChange={(evento) => alterar('login', evento.target.value)} /></CampoFormulario>
     <div className={styles.grid2}>
-      <CampoFormulario rotulo="Perfil"><select className={styles.input} value={dados.perfil} onChange={(evento) => selecionarPerfil(evento.target.value)}><option value="TECNICO">Técnico</option><option value="ESTOQUE">Estoquista</option><option value="GERENTE">Gerente</option><option value="ADMIN">Administrador</option></select></CampoFormulario>
+      <CampoFormulario rotulo="Perfil"><select className={styles.input} value={dados.perfil} onChange={(evento) => selecionarPerfil(evento.target.value)}><option value="TECNICO">Técnico</option><option value="TST">Técnico de Segurança do Trabalho</option><option value="RH">RH</option><option value="ESTOQUE">Estoquista</option><option value="GERENTE">Gerente</option><option value="ADMIN">Administrador</option></select></CampoFormulario>
       <CampoFormulario rotulo={editando ? 'Nova senha temporária (opcional)' : 'Senha temporária (mínimo 8)'}><div style={{ display: 'flex', alignItems: 'center' }}><input type={senhaVisivel ? 'text' : 'password'} autoComplete="new-password" minLength={8} maxLength={128} placeholder={editando ? 'Deixe em branco para manter' : ''} className={styles.input} value={dados.senhaTemporaria} onChange={(evento) => alterar('senhaTemporaria', evento.target.value)} /><button type="button" onClick={() => definirSenhaVisivel((visivel) => !visivel)} aria-label={rotuloVisibilidade} title={rotuloVisibilidade} style={{ width: 40, height: 40, marginLeft: -44, border: 0, background: 'transparent', cursor: 'pointer' }}>{senhaVisivel ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></CampoFormulario>
     </div>
     {erro && <p role="alert">{erro}</p>}<div className={styles.actions}><button onClick={aoFechar} className={styles.cancel}>Cancelar</button><button disabled={!valido || salvando} onClick={salvar} className={styles.submit}>{salvando ? 'Salvando...' : editando ? 'Salvar alterações' : 'Criar usuário'}</button></div>

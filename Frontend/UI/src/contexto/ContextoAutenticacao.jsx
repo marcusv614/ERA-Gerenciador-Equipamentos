@@ -9,7 +9,11 @@ export function ProvedorAutenticacao({ children }) {
   const autenticar = async (credenciais) => { const sessao = await entrar(credenciais); definirUsuario(sessao); return sessao; };
   const encerrarSessao = async () => { try { await sair(); } finally { definirUsuario(null); } };
   const trocarSenha = async (dados) => { await alterarSenha(dados); definirUsuario(atual=>({...atual,deveAlterarSenha:false})); };
-  const valor = useMemo(() => ({ usuario, verificando, autenticar, encerrarSessao, trocarSenha, ehAdmin: usuario?.perfil === 'ADMIN' }), [usuario, verificando]);
+  const valor = useMemo(() => ({
+    usuario, verificando, autenticar, encerrarSessao, trocarSenha,
+    ehAdmin: usuario?.perfil === 'ADMIN',
+    podeGerenciarCadastros: ['ADMIN', 'GERENTE'].includes(usuario?.perfil),
+  }), [usuario, verificando]);
   return <ContextoAutenticacao.Provider value={valor}>{children}</ContextoAutenticacao.Provider>;
 }
 // eslint-disable-next-line react-refresh/only-export-components

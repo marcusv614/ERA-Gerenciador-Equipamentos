@@ -167,10 +167,10 @@ export function useControleAtivos() {
   async function arquivarFuncionario(id, arquivado) { try { const resposta=await apiFuncionarios.definirArquivamento(id,arquivado);definirFuncionarios((lista)=>lista.map((x)=>x.id===id?resposta:x));definirErroApi(null);return {sucesso:true}; } catch(erro){definirErroApi(erro.message);return {sucesso:false,mensagem:erro.message};} }
 
   async function cadastrarFuncionario(dadosNovoFuncionario) {
-    const emailNormalizado = dadosNovoFuncionario.email.trim().toLocaleLowerCase('pt-BR');
+    const emailNormalizado = dadosNovoFuncionario.email?.trim().toLocaleLowerCase('pt-BR') || '';
     const nomeNormalizado = dadosNovoFuncionario.nome.trim().toLocaleLowerCase('pt-BR');
     const funcionarioJaExiste = funcionarios.some(({ email, nome }) =>
-      email.trim().toLocaleLowerCase('pt-BR') === emailNormalizado ||
+      (emailNormalizado && email?.trim().toLocaleLowerCase('pt-BR') === emailNormalizado) ||
       nome.trim().toLocaleLowerCase('pt-BR') === nomeNormalizado);
     if (funcionarioJaExiste) return false;
 

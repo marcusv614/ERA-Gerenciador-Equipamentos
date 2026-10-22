@@ -27,7 +27,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
         <div className={styles.headerInfo}>
           <div className={styles.name}>{nome}</div>
           <div className={styles.roleLine}><span>{cargo}</span><b data-status={status}>{status}</b></div>
-          <div className={styles.contactList}><span><Mail size={13} />{email}</span>{telefone && <span><Phone size={13} />{telefone}</span>}</div>
+          {(email || telefone) && <div className={styles.contactList}>{email && <span><Mail size={13} />{email}</span>}{telefone && <span><Phone size={13} />{telefone}</span>}</div>}
           {!estoquista && <div className={styles.meta}>
             <span className={styles.pill}>
               <BriefcaseBusiness size={13} /><strong>{obras.length}</strong> {obras.length === 1 ? 'obra' : 'obras'}
