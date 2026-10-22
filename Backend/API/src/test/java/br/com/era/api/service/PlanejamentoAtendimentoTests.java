@@ -27,6 +27,8 @@ class PlanejamentoAtendimentoTests {
     Equipamento existente,comprado;
     Solicitacao pedido;
     final String chave="ferramentas|alicate|";
+    final java.util.Map<Long,Solicitacao> persistidas=new java.util.HashMap<>();
+    long proximoId=10,proximoMaterial=100;
 
     @BeforeEach void configurar(){
         tecnico.setNome("Ana");ReflectionTestUtils.setField(tecnico,"id",10L);
@@ -40,8 +42,10 @@ class PlanejamentoAtendimentoTests {
         when(equipamentos.findAll()).thenReturn(List.of(existente));
         pedido=new Solicitacao();ReflectionTestUtils.setField(pedido,"id",1L);pedido.setTipo("Movimentação");pedido.setStatus("Aguardando financeiro");pedido.setTecnico(tecnico);pedido.setObraDestino(destino);
         material(3);
-        when(pedidos.buscarParaAtualizacao(1L)).thenAnswer(i->Optional.of(pedido));
-        when(pedidos.save(any())).thenAnswer(i->{Solicitacao s=i.getArgument(0);if(s.getId()==null)ReflectionTestUtils.setField(s,"id",9L);return s;});
+        persistidas.put(1L,pedido);
+        when(pedidos.buscarParaAtualizacao(anyLong())).thenAnswer(i->Optional.ofNullable(persistidas.get(i.getArgument(0))));
+        org.mockito.stubbing.Answer<Solicitacao> salvar=i->{Solicitacao s=i.getArgument(0);if(s.getId()==null)ReflectionTestUtils.setField(s,"id",proximoId++);for(var m:s.getMateriais())if(m.getId()==null)ReflectionTestUtils.setField(m,"id",proximoMaterial++);persistidas.put(s.getId(),s);return s;};
+        when(pedidos.save(any())).thenAnswer(salvar);when(pedidos.saveAndFlush(any())).thenAnswer(salvar);
         when(cadastro.registrarEntradaCompra(anyString(),anyString(),anyInt(),anyString(),any(),anyLong())).thenReturn(comprado);
     }
 
@@ -140,6 +144,68 @@ class PlanejamentoAtendimentoTests {
         assertThrows(RegraNegocioException.class,()->service.atualizar(1L,new SolicitacaoDto.Atualizacao(null,null,20L,"Troca indevida",List.of(new SolicitacaoDto.MaterialRequisicao("Alicate",1,null,chave))),"ADMIN"));
     }
 
+    @Test void pedidoDeDezEnviaSeisCompradosEMantemQuatroPendentesSemDuplicarCompras(){
+        material(10);comprado.setQuantidade(6);
+        service.salvarPlanoFinanceiro(1L,plano(10,List.of()),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        assertEquals(0,existente.getQuantidadeReservada());assertEquals(5,existente.getQuantidade());
+        service.registrarAquisicao(1L,2L,6,"NF-6","COMPRA-1","ESTOQUE");
+        var resposta=service.atenderParcialmente(1L,parcial(2L,40L,6),"ESTOQUE");
+        var envio=resposta.stream().filter(s->s.id()==1L).findFirst().orElseThrow();
+        var pendente=resposta.stream().filter(s->s.id()!=1L).findFirst().orElseThrow();
+        assertEquals(6,envio.materiais().getFirst().quantidade());assertEquals("COMPRA-1",envio.materiais().getFirst().identificacao());
+        assertEquals(6,envio.compras().getFirst().quantidadeCompra());assertEquals(6,envio.compras().getFirst().quantidadeEntradaEstoque());
+        assertEquals(4,pendente.materiais().getFirst().quantidade());assertEquals(4,pendente.materiais().getFirst().quantidadeCompra());
+        assertEquals(0,pendente.materiais().getFirst().quantidadeEntradaEstoque());assertEquals(1L,pendente.solicitacaoPaiId());
+        assertEquals(10,envio.materiaisOriginais().getFirst().quantidade());assertEquals(10,pendente.materiaisOriginais().getFirst().quantidade());
+        assertEquals(6,comprado.getQuantidadeReservada());assertEquals(0,existente.getQuantidadeReservada());
+        assertTrue(persistidas.get(pendente.id()).isReservasPlanoAtivas());
+        var segundaCompra=equipamento(50L,"COMPRA-2",4,null);when(cadastro.registrarEntradaCompra(anyString(),anyString(),anyInt(),anyString(),any(),anyLong())).thenReturn(segundaCompra);
+        service.registrarAquisicao(pendente.id(),pendente.materiais().getFirst().id(),4,"NF-4","COMPRA-2","ESTOQUE");
+        var finalizado=service.executarPlano(pendente.id(),"ESTOQUE");
+        assertEquals(4,finalizado.getFirst().materiais().getFirst().quantidade());assertEquals(4,segundaCompra.getQuantidadeReservada());
+        assertThrows(RegraNegocioException.class,()->service.atenderParcialmente(1L,parcial(envio.materiais().getFirst().id(),40L,6),"ESTOQUE"));
+    }
+
+    @Test void parcialMistoPreservaReservasDasOrigensEEntradasNaoEnviadas(){
+        material(5);comprado.setQuantidade(2);
+        service.salvarPlanoFinanceiro(1L,plano(3,List.of(new SolicitacaoDto.OrigemPlano(30L,2))),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        service.registrarAquisicao(1L,2L,2,"NF-2","COMPRA-1","ESTOQUE");
+        var resposta=service.atenderParcialmente(1L,parcial(2L,40L,1),"ESTOQUE");
+        var pendente=resposta.stream().filter(s->s.id()!=1L).findFirst().orElseThrow();
+        assertEquals(4,pendente.materiais().getFirst().quantidade());assertEquals(2,pendente.materiais().getFirst().quantidadeCompra());
+        assertEquals(1,pendente.materiais().getFirst().quantidadeEntradaEstoque());assertEquals(1,pendente.entradasCompra().getFirst().quantidade());
+        assertEquals(2,existente.getQuantidadeReservada());assertEquals(2,comprado.getQuantidadeReservada());
+        assertEquals("Equipamento da obra A em uso",pendente.planoFinanceiro().getFirst().justificativa());
+    }
+
+    @Test void parcialNaoPermiteForjarEquipamentoAumentarSaldoOuEnviarCompraSemEntrada(){
+        service.salvarPlanoFinanceiro(1L,plano(3,List.of()),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        assertThrows(RegraNegocioException.class,()->service.atenderParcialmente(1L,parcial(2L,40L,1),"ESTOQUE"));
+        assertThrows(RegraNegocioException.class,()->service.atenderParcialmente(1L,parcial(2L,999L,1),"ESTOQUE"));
+        assertThrows(RegraNegocioException.class,()->service.atenderParcialmente(1L,new SolicitacaoDto.AtendimentoParcial("",List.of(new SolicitacaoDto.MaterialParcial(2L,List.of()))),"ESTOQUE"));
+        for(String perfil:List.of("TECNICO","TST","GERENTE","RH","FINANCEIRO"))assertThrows(AccessDeniedException.class,()->service.atenderParcialmente(1L,parcial(2L,40L,1),perfil));
+        assertEquals(3,pedido.getMateriais().getFirst().getQuantidade());assertTrue(pedido.getMateriaisOriginais().isEmpty());
+    }
+
+    @Test void financeiroPodeTrocarRetiradaAprovadaPorCompraSemMoverOEquipamento(){
+        service.salvarPlanoFinanceiro(1L,plano(0,List.of(new SolicitacaoDto.OrigemPlano(30L,3))),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        assertEquals(3,existente.getQuantidadeReservada());
+        var revisao=new SolicitacaoDto.PlanoFinanceiro(plano(3,List.of()).materiais(),"Preservar o equipamento na obra A.");
+        service.salvarPlanoFinanceiro(1L,revisao,"FINANCEIRO");
+        assertEquals(0,existente.getQuantidadeReservada());assertSame(origem,existente.getObra());assertEquals("Aprovada",pedido.getStatus());
+        assertEquals(3,pedido.getMateriais().getFirst().getQuantidadeCompra());assertEquals("REVISAO_PLANO",pedido.getEventosFinanceiros().getLast().tipo());
+        assertThrows(RegraNegocioException.class,()->service.salvarPlanoFinanceiro(1L,plano(3,List.of()),"FINANCEIRO"));
+        assertThrows(AccessDeniedException.class,()->service.salvarPlanoFinanceiro(1L,revisao,"ESTOQUE"));
+    }
+
+    @Test void revisaoPreservaCompraRecebidaEReservaSomenteAsNovasOrigens(){
+        service.salvarPlanoFinanceiro(1L,plano(1,List.of(new SolicitacaoDto.OrigemPlano(30L,2))),"FINANCEIRO");service.aprovar(1L,"FINANCEIRO");
+        service.registrarAquisicao(1L,2L,1,"NF-1","COMPRA-1","ESTOQUE");
+        service.salvarPlanoFinanceiro(1L,new SolicitacaoDto.PlanoFinanceiro(plano(3,List.of()).materiais(),"Comprar o restante em outro fornecedor."),"FINANCEIRO");
+        assertEquals(1,pedido.getMateriais().getFirst().getQuantidadeEntradaEstoque());assertEquals(1,comprado.getQuantidadeReservada());assertEquals(0,existente.getQuantidadeReservada());
+    }
+
+    SolicitacaoDto.AtendimentoParcial parcial(Long materialId,Long equipamentoId,int quantidade){return new SolicitacaoDto.AtendimentoParcial("Fornecedor sem o saldo completo.",List.of(new SolicitacaoDto.MaterialParcial(materialId,List.of(new SolicitacaoDto.OrigemPlano(equipamentoId,quantidade)))));}
     void material(int quantidade){var m=new MaterialSolicitado("Alicate",quantidade,null,chave);ReflectionTestUtils.setField(m,"id",2L);pedido.substituirMateriais(List.of(m));}
     SolicitacaoDto.PlanoFinanceiro plano(int comprar,List<SolicitacaoDto.OrigemPlano> origens){return new SolicitacaoDto.PlanoFinanceiro(List.of(new SolicitacaoDto.MaterialPlano(2L,comprar,"Equipamento da obra A em uso",origens)));}
     Equipamento equipamento(Long id,String serie,int quantidade,Obra obra){

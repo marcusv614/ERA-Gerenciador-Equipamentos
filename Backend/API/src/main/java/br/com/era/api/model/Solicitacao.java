@@ -32,6 +32,12 @@ public class Solicitacao {
     public List<ItemPlano> getPlanoFinanceiro(){return planoFinanceiro;}
     public void setPlanoFinanceiro(List<ItemPlano> plano){planoFinanceiro=new ArrayList<>(plano);}
     public List<OrigemPlanejada> getEntradasCompra(){return entradasCompra;}
+    public void setEntradasCompra(List<OrigemPlanejada> entradas){entradasCompra=new ArrayList<>(entradas);}
+    public record MaterialOriginal(String nome,String catalogoChave,Integer quantidade) {}
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="materiais_originais",nullable=false,columnDefinition="jsonb") private List<MaterialOriginal> materiaisOriginais=new ArrayList<>();
+    public List<MaterialOriginal> getMateriaisOriginais(){return materiaisOriginais;}
+    public void preservarPedidoOriginal(){if(materiaisOriginais.isEmpty())materiaisOriginais=materiais.stream().map(m->new MaterialOriginal(m.getNome(),m.getCatalogoChave(),m.getQuantidade())).toList();}
+    public void copiarPedidoOriginalDe(Solicitacao origem){materiaisOriginais=new ArrayList<>(origem.getMateriaisOriginais());}
     public void adicionarEntradaCompra(OrigemPlanejada entrada){entradasCompra=new ArrayList<>(entradasCompra);entradasCompra.add(entrada);}
     public boolean isReservasPlanoAtivas(){return reservasPlanoAtivas;} public void setReservasPlanoAtivas(boolean valor){reservasPlanoAtivas=valor;}
     public boolean isMovimentacaoDireta(){return movimentacaoDireta;} public void setMovimentacaoDireta(boolean valor){movimentacaoDireta=valor;}

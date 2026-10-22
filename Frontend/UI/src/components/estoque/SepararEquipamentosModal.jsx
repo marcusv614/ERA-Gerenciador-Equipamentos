@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useDialogo } from '../../hooks/useDialogo';
 import { AlertCircle, Building2, Check, MapPin, RotateCcw, Search, ShoppingCart, Truck, Warehouse, X } from 'lucide-react';
-import { alterarCompraPlano, alterarOrigemPlano, candidatosPlano, dadosPlanoFinanceiro, iniciarPlano, localEquipamento, nomeLocalPlano, preencherTransportePlano, resumoMaterialPlano, saldoPlano } from '../../utils/planoFinanceiro';
+import { alterarCompraPlano, alterarOrigemPlano, candidatosPlano, dadosPlanoFinanceiro, equipamentosParaRevisao, iniciarPlano, localEquipamento, nomeLocalPlano, preencherTransportePlano, resumoMaterialPlano, saldoPlano } from '../../utils/planoFinanceiro';
 import estilos from './SepararEquipamentosModal.module.css';
 
 const normalizar = (valor) => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
@@ -13,10 +13,13 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
   const [filtro, definirFiltro] = useState('todos');
   const [erro, definirErro] = useState('');
   const [salvando, definirSalvando] = useState(false);
+  const [motivoRevisao, definirMotivoRevisao] = useState('');
+  const revisao = solicitacao.status === 'Aprovada';
+  const equipamentosElegiveis = equipamentosParaRevisao(solicitacao, equipamentos);
   useDialogo(referencia, salvando ? () => {} : aoFechar);
 
   const itens = solicitacao.materiais.map((material) => {
-    const candidatos = candidatosPlano(material, solicitacao, equipamentos, obras);
+    const candidatos = candidatosPlano(material, solicitacao, equipamentosElegiveis, obras);
     const resumo = resumoMaterialPlano(material, plano, candidatos);
     const grupos = new Map();
     candidatos.forEach((equipamento) => {
@@ -27,7 +30,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
     return { material, candidatos, resumo, grupos: [...grupos.values()] };
   });
   const completos = itens.filter(({ resumo }) => resumo.completo).length;
-  const completo = completos === itens.length;
+  const completo = completos === itens.length && (!revisao || motivoRevisao.trim());
   const transporte = itens.reduce((soma, { resumo }) => soma + resumo.transporte, 0);
   const compra = itens.reduce((soma, { resumo }) => soma + resumo.compra, 0);
   const termo = normalizar(busca.trim());
@@ -46,7 +49,8 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
     if (!completo || salvando) return;
     definirErro(''); definirSalvando(true);
     try {
-      const dados = dadosPlanoFinanceiro(solicitacao, plano, equipamentos, obras);
+      const dados = dadosPlanoFinanceiro(solicitacao, plano, equipamentosElegiveis, obras);
+      if (revisao) dados.motivoRevisao = motivoRevisao.trim();
       if (await aoSalvarPlano(solicitacao.id, dados) === false) throw new Error('Não foi possível salvar o plano. Tente novamente.');
     } catch (falha) { definirErro(falha.message || 'Não foi possível salvar o plano financeiro.'); }
     finally { definirSalvando(false); }
@@ -59,7 +63,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
           <header className={estilos.cabecalho}>
             <div className={estilos.titulo}>
               <span className={estilos.identificacao}>Solicitação #{String(solicitacao.id).padStart(4, '0')} · Financeiro</span>
-              <h1 id="titulo-separacao">Planejar transporte e compra</h1>
+              <h1 id="titulo-separacao">{revisao ? 'Editar atendimento aprovado' : 'Planejar transporte e compra'}</h1>
               <p>{solicitacao.tecnico}</p>
             </div>
             <button type="button" className={estilos.fechar} onClick={aoFechar} aria-label="Fechar"><X size={20} /></button>
@@ -72,6 +76,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
           </div>
 
           <div className={estilos.materiais}>
+            {revisao && <label className={`${estilos.justificativa} ${estilos.revisao}`}><span>Motivo da alteração <b>*</b></span><textarea required maxLength={1000} rows={2} value={motivoRevisao} onChange={(evento) => definirMotivoRevisao(evento.target.value)} placeholder="Ex.: fornecedor sem a quantidade prevista; revisar compra ou origem." /><small>A revisão preserva as compras recebidas e atualiza as reservas. Materiais já separados ou enviados não são alterados.</small></label>}
             {visiveis.map(({ material, candidatos, grupos, resumo }) => {
               const item = plano[material.id];
               const candidatosVisiveis = grupos.flatMap((grupo) => grupo.equipamentos);
@@ -85,7 +90,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
                 <div className={estilos.decisao}>
                   <section className={estilos.transporte} aria-label={`Origens de ${material.nome}`}>
                     <div className={estilos.secaoCabecalho}><h3><Truck size={18} /> De onde retirar</h3><button type="button" className={estilos.atalho} disabled={!disponivel || resumo.faltante === 0} onClick={() => atualizar((atual) => preencherTransportePlano(atual, material, candidatosVisiveis))}>Usar saldo disponível</button></div>
-                    <p className={estilos.ajuda}>Selecione a quantidade em cada local. O depósito aparece primeiro.</p>
+                    <p className={estilos.ajuda}>O saldo é informativo. Você pode comprar e manter os equipamentos na obra de origem.</p>
                     {grupos.map((grupo) => {
                       const saldo = grupo.equipamentos.reduce((soma, e) => soma + saldoPlano(material.id, e, plano), 0);
                       return <section className={estilos.local} key={grupo.local}>
@@ -112,6 +117,7 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
                     <h3><ShoppingCart size={18} /> O que comprar</h3>
                     <label className={estilos.campoCompra}><span>Quantidade para compra</span><div><input type="number" min={material.quantidadeEntradaEstoque || 0} max={Math.max(material.quantidadeEntradaEstoque || 0, material.quantidade - resumo.transporte)} step="1" value={resumo.compra} onChange={(evento) => atualizar((atual) => alterarCompraPlano(atual, material, evento.target.value))} aria-label={`Quantidade de ${material.nome} para comprar`} /><span>un.</span></div></label>
                     <button type="button" className={estilos.atalho} disabled={!resumo.faltante} onClick={() => atualizar((atual) => alterarCompraPlano(atual, material, material.quantidade - resumo.transporte))}>Comprar as {resumo.faltante || '—'} un. restantes</button>
+                    <button type="button" className={estilos.atalho} disabled={resumo.compra === material.quantidade} onClick={() => atualizar((atual) => ({ ...atual, [material.id]: { ...atual[material.id], origens: {}, compra: material.quantidade } }))}>Comprar tudo e manter nas origens</button>
                     {material.quantidadeEntradaEstoque > 0 && <p className={estilos.recebido}><Check size={16} /> {material.quantidadeEntradaEstoque} un. já recebidas, incluídas acima. Não serão compradas novamente.</p>}
                     {resumo.compra > 0 ? <label className={estilos.justificativa}><span>Motivo da compra <b>*</b></span><textarea required maxLength={1000} rows={3} value={item.justificativa} placeholder="Ex.: preservar os equipamentos em uso na obra de origem." onChange={(evento) => atualizar((atual) => ({ ...atual, [material.id]: { ...atual[material.id], justificativa: evento.target.value } }))} /><small>Obrigatório para autorizar a compra, mesmo havendo saldo em outra obra.</small></label> : <p className={estilos.ajuda}>Pode comprar para manter os equipamentos em uso na obra de origem.</p>}
                   </section>
@@ -125,8 +131,8 @@ export function SepararEquipamentosModal({ solicitacao, obras, equipamentos, aoF
           <footer className={estilos.rodape}>
             {erro && <p role="alert" className={estilos.erro}><AlertCircle size={18} />{erro}</p>}
             <div className={estilos.resumoPlano} aria-live="polite"><strong>{completos} de {itens.length} materiais planejados</strong><span>{transporte} un. para transporte · {compra} un. para compra</span></div>
-            <div className={estilos.acoes}><button type="button" className={estilos.cancelar} onClick={aoFechar}>Cancelar</button><button type="submit" className={estilos.confirmar} disabled={!completo || salvando}>{salvando ? 'Salvando...' : 'Salvar plano financeiro'}</button></div>
-            <small>Salvar registra as instruções. A aprovação continua na solicitação.</small>
+            <div className={estilos.acoes}><button type="button" className={estilos.cancelar} onClick={aoFechar}>Cancelar</button><button type="submit" className={estilos.confirmar} disabled={!completo || salvando}>{salvando ? 'Salvando...' : revisao ? 'Salvar revisão do atendimento' : 'Salvar plano financeiro'}</button></div>
+            <small>{revisao ? 'A revisão atualiza as instruções aprovadas para o estoque e fica registrada no histórico.' : 'Salvar registra as instruções. A aprovação continua na solicitação.'}</small>
           </footer>
         </fieldset>
       </form>

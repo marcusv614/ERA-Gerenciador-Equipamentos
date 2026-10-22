@@ -355,7 +355,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
           const localPedido = possuiDestino ? nomeLocal(solicitacao.obraDestinoId) : solicitacao.obraOrigemId ? nomeLocal(solicitacao.obraOrigemId) : 'Local não disponível';
           return <article key={solicitacao.id} className={estilos.cartaoSolicitacao} data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>
             <header className={estilos.topoCartaoSolicitacao}>
-              <div className={estilos.identificacaoSolicitacao}><span>{iconeEtapa(solicitacao.status)}</span><div><small>Pedido</small><strong>#{String(solicitacao.id).padStart(4, '0')}</strong></div></div>
+              <div className={estilos.identificacaoSolicitacao}><span>{iconeEtapa(solicitacao.status)}</span><div><small>{solicitacao.solicitacaoPaiId ? `Parte do pedido #${solicitacao.solicitacaoPaiId}` : 'Pedido'}</small><strong>#{String(solicitacao.id).padStart(4, '0')}</strong></div></div>
               <span className={estilos.statusSolicitacao}>{rotuloStatus(solicitacao)}</span>
             </header>
             <div className={estilos.detalhesSolicitacao}>

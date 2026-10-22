@@ -1,4 +1,5 @@
 import { locaisDoPedido, pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
+import { AtendimentoParcialModal } from './AtendimentoParcialModal';
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Building2, CalendarDays, Check, ClipboardList, FileDown, FileText, LogOut, Moon, PackageCheck, PackagePlus, Search, ShoppingCart, Sun, Truck, Warehouse, Wrench, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
@@ -41,6 +42,13 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const [quantidadesRecebidas, definirQuantidadesRecebidas] = useState({});
   const [notasFiscaisRecebidas, definirNotasFiscaisRecebidas] = useState({});
   const [identificacoesRecebidas, definirIdentificacoesRecebidas] = useState({});
+  const [editandoAtendimento, definirEditandoAtendimento] = useState(null);
+  const ajustarAtendimento = async (id, dados) => {
+    const atualizadas = await apiAtividades.atenderParcialmente(id, dados);
+    definirSolicitacoes((atuais) => [...atuais.filter((item) => !atualizadas.some((novo) => novo.id === item.id)), ...atualizadas]);
+    definirEditandoAtendimento(null);
+    apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
+  };
   const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
     const temaSalvo = localStorage.getItem('era-tema-estoque');
     return temaSalvo ? temaSalvo === 'escuro' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
@@ -169,6 +177,8 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
     return <article className={estilos.card} key={solicitacao.id}>
       <header><span className={estilos.icone}><PackageCheck /></span><div><small>Pedido #{String(solicitacao.id).padStart(4, '0')}</small><h2>{nomeLocal(solicitacao.obraDestinoId || solicitacao.obraOrigemId)}</h2></div><b data-etapa={obterEtapaSolicitacao(solicitacao.status).chave}>{rotuloOperacional(solicitacao)}</b></header>
       <p className={estilos.instrucaoEntrega}>{tarefa}</p>
+      {solicitacao.solicitacaoPaiId && <p className={estilos.autorPedido}>Atendimento vinculado ao pedido #{solicitacao.solicitacaoPaiId}</p>}
+      {solicitacao.materiaisOriginais?.length > 0 && <p className={estilos.autorPedido}>Pedido original preservado · {solicitacao.materiaisOriginais.reduce((soma, m) => soma + m.quantidade, 0)} unidades</p>}
       <div className={estilos.metadados}><p><strong>{solicitacao.tecnico}</strong></p><time dateTime={solicitacao.dataSolicitacao}><CalendarDays /> {new Date(`${solicitacao.dataSolicitacao}T12:00:00`).toLocaleDateString('pt-BR')}</time></div>
       {solicitacao.solicitante && solicitacao.solicitante !== solicitacao.tecnico && <p className={estilos.autorPedido}>Solicitado por <strong>{solicitacao.solicitante}</strong></p>}
       {separado && <p className={estilos.instrucaoEntrega}>Coletar em <strong>{nomeLocal(solicitacao.obraOrigemId)}</strong> e entregar em <strong>{nomeLocal(solicitacao.obraDestinoId)}</strong>.</p>}
@@ -184,6 +194,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       </li>)}</ul>
       {!separado && solicitacao.planoFinanceiro?.length > 0 && <div className={estilos.planoFinanceiro}><strong>Instruções do Financeiro</strong>{solicitacao.planoFinanceiro.map((item) => <section key={item.materialId}><strong>{item.nome}</strong>{item.origens.map((origem,indice) => <p key={`${origem.equipamentoId}-${indice}`}>Buscar {origem.quantidade} un. em {nomeLocal(origem.obraOrigemId)} · {origem.identificacao}</p>)}{item.quantidadeCompra > 0 && <p>Comprar {item.quantidadeCompra} un. e registrar a entrada na aba Compras.</p>}{item.justificativa && <small>{item.justificativa}</small>}</section>)}</div>}
       <footer>
+        {solicitacao.status === 'Aprovada' && !separado && solicitacao.planoFinanceiro?.length > 0 && <button type="button" onClick={() => definirEditandoAtendimento(solicitacao)}>Editar solicitação / envio parcial</button>}
         <button onClick={() => imprimirRelatorioAuditoriaSolicitacao(solicitacao, buscarObra)}><FileText /> Relatório PDF</button>
         {solicitacao.status === 'Aprovada' && possuiSeries(solicitacao) && <button onClick={() => imprimirRomaneioSeparacao(solicitacao, buscarObra)}><FileDown /> Romaneio da separação</button>}
         {solicitacao.status === 'Aprovada' && !separado && <button className={estilos.primario} disabled={separandoId !== null || !solicitacao.planoFinanceiro?.length || solicitacao.materiais.some((material) => material.quantidadeCompra > (material.quantidadeEntradaEstoque || 0))} onClick={() => executarPlano(solicitacao)}><Box />{separandoId === solicitacao.id ? 'Confirmando...' : 'Confirmar separação do plano'}</button>}
@@ -240,6 +251,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
       </>}
     </main>
     {equipamentoParaCalibracao && <div className={estilos.temaManutencao}><ModalCalibracaoEquipamento equipamento={equipamentoParaCalibracao} buscarObraPorId={buscarObra} aoFechar={()=>definirEquipamentoParaCalibracao(null)} aoAtualizar={atualizado=>definirEquipamentos(atuais=>atuais.map(e=>e.id===atualizado.id?atualizado:e))}/></div>}
+    {editandoAtendimento && <div className={estilos.temaManutencao}><AtendimentoParcialModal solicitacao={editandoAtendimento} obras={obras} aoFechar={() => definirEditandoAtendimento(null)} aoSalvar={ajustarAtendimento} /></div>}
     {equipamentoParaManutencao && <div className={estilos.temaManutencao}><ModalManutencaoEquipamento equipamento={equipamentoParaManutencao} buscarObraPorId={buscarObra} aoFechar={() => definirEquipamentoParaManutencao(null)} aoAtualizar={e => definirEquipamentos(atuais => atuais.map(item => item.id === e.id ? e : item))} /></div>}
   </div>;
 }

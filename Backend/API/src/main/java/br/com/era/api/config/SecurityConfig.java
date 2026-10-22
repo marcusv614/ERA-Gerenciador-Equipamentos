@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/atividades/transporte-direto").hasAnyRole("ADMIN","GERENTE","RH")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/plano-financeiro").hasAnyRole("ADMIN","FINANCEIRO")
                 .requestMatchers(HttpMethod.POST,"/atividades/*/execucao-plano").hasAnyRole("ADMIN","ESTOQUE")
+                .requestMatchers(HttpMethod.POST,"/atividades/*/atendimento-parcial").hasAnyRole("ADMIN","ESTOQUE")
                 .requestMatchers(HttpMethod.PATCH,"/atividades/**").hasAnyRole("ADMIN","GERENTE","RH","FINANCEIRO")
                 .requestMatchers(HttpMethod.POST,"/equipamentos/*/movimentacoes").denyAll()
                 .requestMatchers(HttpMethod.POST,"/equipamentos/*/manutencoes","/equipamentos/*/manutencoes/*/conclusao").hasAnyRole("ADMIN","GERENTE","RH","ESTOQUE")

@@ -10,7 +10,17 @@ Na tela de planejamento, o destino aparece no cabeçalho e cada material mostra 
 
 **Usar saldo disponível** completa o transporte sem alterar escolhas manuais ou compras já definidas, priorizando o depósito. Quando há busca, usa somente as origens exibidas. **Comprar as unidades restantes** preenche apenas a diferença do pedido. Quantidades já recebidas permanecem na compra e seus lotes não aparecem novamente como transporte de outra origem. Saldo insuficiente ou origem indisponível em um plano salvo impedem o salvamento até a revisão. Falhas da API aparecem na própria janela e preservam as escolhas para nova tentativa.
 
-O estoque executa o plano: realiza as compras autorizadas, registra entradas com nota fiscal, confirma a separação e registra o transporte. Não pode mudar origens ou quantidades nem solicitar novas compras. Os lotes recebidos ficam reservados para o atendimento e são usados na execução. O técnico/TST confirma a entrega na obra; o estoque confirma o retorno ao depósito. As permissões de administração continuam disponíveis ao administrador.
+O estoque executa o plano: realiza as compras autorizadas, registra entradas com nota fiscal, confirma a separação e registra o transporte. Pode ajustar as quantidades do envio para separar somente o que está disponível, dentro das origens e compras já autorizadas. Novas compras ou mudanças de origem continuam sob decisão do Financeiro. Os lotes recebidos ficam reservados para o atendimento e são usados na execução. O técnico/TST confirma a entrega na obra; o estoque confirma o retorno ao depósito. As permissões de administração continuam disponíveis ao administrador.
+
+## Revisão e envio parcial
+
+O Financeiro pode comprar tudo, mesmo havendo saldo disponível em outra obra. O botão **Comprar tudo e manter nas origens** zera a retirada para aquele material; a justificativa continua obrigatória. Também pode usar **Editar atendimento aprovado** antes da separação para rever origens e compras, informando o motivo. A API atualiza as reservas na mesma transação e preserva unidades já recebidas. Equipamentos separados, em trânsito ou recebidos não podem ser alterados por esse formulário.
+
+O estoque usa **Editar solicitação / envio parcial** para selecionar as unidades autorizadas que consegue enviar e registrar o motivo. Compras ainda sem entrada não ficam disponíveis para seleção. A confirmação separa os itens selecionados; o transporte é confirmado depois, pelo fluxo habitual. O saldo não atendido gera um atendimento pendente vinculado ao pedido original, com suas compras e reservas restantes preservadas.
+
+Exemplo: o pedido autoriza comprar 10 unidades, mas o fornecedor entrega 6. O estoque registra a entrada de 6, informa o motivo e separa essas 6. O sistema mantém 4 pendentes para compra e envio posterior. Outra entrega pode atender uma parte ou todo o saldo. O pedido original, os autores, os motivos e os vínculos permanecem no histórico e no documento de vistoria. Compras e reservas são repartidas entre os atendimentos, sem contabilizar novamente unidades enviadas.
+
+A migração V44 adiciona o retrato dos materiais originais para atendimentos parciais. A validação integrada, com banco e API temporários, é executada pela raiz com `./scripts/validar-atendimento-parcial.ps1`.
 
 O botão **Mover** usa um fluxo próprio de transporte direto: exige um único equipamento existente, com identificação, origem e saldo validados. A Gerência/RH encaminha esse transporte diretamente ao estoque. Uma lista de catálogo continua passando pelo Financeiro, mesmo que parte ou todos os materiais já existam no depósito ou em outra obra.
 

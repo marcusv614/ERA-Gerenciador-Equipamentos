@@ -44,3 +44,9 @@ busca, filtros, erro da API, nova tentativa e bloqueio de envio duplicado.
 Também testa revisão de um plano salvo com origem indisponível e fechamento
 pelo teclado. As capturas e o relatório ficam em
 `node_modules/.cache/plano-financeiro`.
+
+Inclui revisão de um atendimento já aprovado e o botão na tela de detalhes,
+compra integral sem retirada de outras obras e edição do envio parcial pelo
+estoque. O teste integrado de permissões, reservas e compras sucessivas roda
+pela raiz com `./scripts/validar-atendimento-parcial.ps1`, sempre em uma API e
+banco temporários.

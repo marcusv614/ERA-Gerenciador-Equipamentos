@@ -31,6 +31,7 @@ export const ROTAS_API = {
   transporteDireto: '/atividades/transporte-direto',
   planoFinanceiro: (id) => `/atividades/${id}/plano-financeiro`,
   execucaoPlano: (id) => `/atividades/${id}/execucao-plano`,
+  atendimentoParcial: (id) => `/atividades/${id}/atendimento-parcial`,
   atividade: (atividadeId) => `/atividades/${atividadeId}`,
   aprovarAtividade: (atividadeId) => `/atividades/${atividadeId}/aprovacao`,
   rejeitarAtividade: (atividadeId) => `/atividades/${atividadeId}/rejeicao`,

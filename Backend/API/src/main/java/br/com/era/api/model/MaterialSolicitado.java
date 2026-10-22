@@ -15,4 +15,9 @@ public class MaterialSolicitado {
     public void solicitarCompra(int quantidade){quantidadeCompra=quantidade;quantidadeAdquirida=Math.min(quantidadeAdquirida,quantidade);quantidadeEntradaEstoque=Math.min(quantidadeEntradaEstoque,quantidadeAdquirida);compraSolicitadaEm=quantidade>0?OffsetDateTime.now():null;if(quantidadeAdquirida<quantidade)adquiridaEm=null;}
     public void registrarAquisicao(int quantidade){quantidadeAdquirida+=quantidade;adquiridaEm=OffsetDateTime.now();}
     public void registrarEntradaEstoque(int quantidade){quantidadeEntradaEstoque+=quantidade;}
+    public void copiarCompraParcial(MaterialSolicitado origem,int compra,int adquirida,int entrada){
+        if(compra<0||compra>quantidade||entrada<0||entrada>adquirida||adquirida>compra)throw new IllegalArgumentException("Quantidades de compra inconsistentes.");
+        quantidadeCompra=compra;quantidadeAdquirida=adquirida;quantidadeEntradaEstoque=entrada;
+        compraSolicitadaEm=compra>0?origem.getCompraSolicitadaEm():null;adquiridaEm=adquirida>0?origem.getAdquiridaEm():null;
+    }
 }

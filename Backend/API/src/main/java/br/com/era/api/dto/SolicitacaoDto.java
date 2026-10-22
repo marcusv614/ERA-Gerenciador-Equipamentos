@@ -20,7 +20,11 @@ public final class SolicitacaoDto {
     public record Distribuicao(@NotEmpty @Size(max=200) List<@NotNull @Valid AtendimentoOrigem> atendimentos) {}
     public record OrigemPlano(@NotNull Long equipamentoId,@NotNull @Min(1) Integer quantidade) {}
     public record MaterialPlano(@NotNull Long materialId,@NotNull @Min(0) Integer quantidadeCompra,@Size(max=1000) String justificativa,@NotNull @Size(max=500) List<@NotNull @Valid OrigemPlano> origens) {}
-    public record PlanoFinanceiro(@NotEmpty @Size(max=200) List<@NotNull @Valid MaterialPlano> materiais) {}
+    public record PlanoFinanceiro(@NotEmpty @Size(max=200) List<@NotNull @Valid MaterialPlano> materiais,@Size(max=1000) String motivoRevisao) {
+        public PlanoFinanceiro(List<MaterialPlano> materiais){this(materiais,null);}
+    }
+    public record MaterialParcial(@NotNull Long materialId,@NotNull @Size(max=500) List<@NotNull @Valid OrigemPlano> origens) {}
+    public record AtendimentoParcial(@NotBlank @Size(max=1000) String motivo,@NotEmpty @Size(max=200) List<@NotNull @Valid MaterialParcial> materiais) {}
     public record EventoFinanceiroResposta(String tipo,String descricao,String autorNome,String autorLogin,OffsetDateTime registradoEm) {}
-    public record Resposta(Long id,Long solicitacaoPaiId,String tipo,String status,String solicitante,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,OffsetDateTime transitoEm,OffsetDateTime concluidaEm,String observacao,List<MaterialResposta> materiais,String solicitanteLogin,String solicitantePerfil,List<MaterialResposta> compras,List<EventoFinanceiroResposta> eventosFinanceiros,List<br.com.era.api.model.Solicitacao.ItemPlano> planoFinanceiro,List<br.com.era.api.model.Solicitacao.OrigemPlanejada> entradasCompra,boolean movimentacaoDireta) {}
+    public record Resposta(Long id,Long solicitacaoPaiId,String tipo,String status,String solicitante,String tecnico,Long obraOrigemId,Long obraDestinoId,LocalDate dataSolicitacao,LocalDate dataDecisao,OffsetDateTime transitoEm,OffsetDateTime concluidaEm,String observacao,List<MaterialResposta> materiais,String solicitanteLogin,String solicitantePerfil,List<MaterialResposta> compras,List<EventoFinanceiroResposta> eventosFinanceiros,List<br.com.era.api.model.Solicitacao.ItemPlano> planoFinanceiro,List<br.com.era.api.model.Solicitacao.OrigemPlanejada> entradasCompra,boolean movimentacaoDireta,List<br.com.era.api.model.Solicitacao.MaterialOriginal> materiaisOriginais) {}
 }

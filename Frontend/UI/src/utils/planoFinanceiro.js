@@ -1,6 +1,12 @@
 const normalizar = (valor) => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
 export const localEquipamento = (e) => e.obraId == null ? 'deposito' : String(e.obraId);
 export const nomeLocalPlano = (id, obras) => id == null || id === 'deposito' ? 'Depósito central' : obras.find((o) => String(o.id) === String(id))?.nome || `Obra #${id}`;
+export function equipamentosParaRevisao(solicitacao, equipamentos) {
+  if (solicitacao.status !== 'Aprovada') return equipamentos;
+  const reservados = new Map();
+  (solicitacao.planoFinanceiro || []).flatMap((p) => p.origens).forEach((o) => reservados.set(String(o.equipamentoId), (reservados.get(String(o.equipamentoId)) || 0) + o.quantidade));
+  return equipamentos.map((e) => ({ ...e, quantidadeDisponivel: (e.quantidadeDisponivel ?? 1) + (reservados.get(String(e.id)) || 0) }));
+}
 const inteiro = (valor) => Number.isFinite(Number(valor)) ? Math.max(0, Math.trunc(Number(valor))) : 0;
 const soma = (valores) => Object.values(valores || {}).reduce((total, valor) => total + inteiro(valor), 0);
 

@@ -19,10 +19,11 @@ const equipamentos = [
 equipamentos.push({ id: 5, serie: 'ENTRADA-DO-PEDIDO', modelo: materiais[1].nome, catalogoChave: 'capacete', status: 'Em estoque', obraId: null, quantidadeDisponivel: 1 });
 const pasta = path.resolve('node_modules/.cache/plano-financeiro'); fs.mkdirSync(pasta, { recursive: true });
 const html = (tema, modo) => `<!doctype html><html data-theme="${tema}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module">
-import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{SepararEquipamentosModal}from'/src/components/estoque/SepararEquipamentosModal.jsx';import'/src/index.css';
+import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{SepararEquipamentosModal}from'/src/components/estoque/SepararEquipamentosModal.jsx';import{AtendimentoParcialModal}from'/src/components/estoque/AtendimentoParcialModal.jsx';import{DetalhesSolicitacao}from'/src/components/painel/DetalhesSolicitacao.jsx';import'/src/index.css';
 const solicitacao=${JSON.stringify(pedido)};if('${modo}'==='antigo')solicitacao.planoFinanceiro=[{materialId:10,quantidadeCompra:0,origens:[{equipamentoId:999,quantidade:7}]}];
+if(['parcial','revisao','detalhes'].includes('${modo}')){solicitacao.status='Aprovada';solicitacao.planoFinanceiro=[{materialId:10,quantidadeCompra:2,justificativa:'Preservar o saldo em uso.',origens:[{equipamentoId:1,identificacao:'ERA-DEP-1',obraOrigemId:null,quantidade:2,nome:solicitacao.materiais[0].nome,catalogoChave:'escada'},{equipamentoId:3,identificacao:'ERA-OBRA-3',obraOrigemId:1,quantidade:3,nome:solicitacao.materiais[0].nome,catalogoChave:'escada'}]},{materialId:11,quantidadeCompra:2,justificativa:'Comprar EPIs.',origens:[]}];solicitacao.entradasCompra=[{equipamentoId:5,identificacao:'ENTRADA-EPI',obraOrigemId:null,quantidade:1,nome:solicitacao.materiais[1].nome,catalogoChave:'capacete'},{equipamentoId:6,identificacao:'ENTRADA-ESCADA',obraOrigemId:null,quantidade:1,nome:solicitacao.materiais[0].nome,catalogoChave:'escada'}];}
 window.envios=[];window.falhar=false;
-function Pagina(){const[aberto,setAberto]=useState(true);return aberto?React.createElement(SepararEquipamentosModal,{solicitacao,obras:${JSON.stringify(obras)},equipamentos:${JSON.stringify(equipamentos)},aoFechar:()=>setAberto(false),aoSalvarPlano:async(id,dados)=>{window.envios.push(dados);const r=await fetch('/__salvar',{method:'POST',headers:{'Content-Type':'application/json','X-Teste-Falha':String(window.falhar)},body:JSON.stringify(dados)});if(!r.ok)throw Error((await r.json()).mensagem);setAberto(false);return true;}}):React.createElement('p',{role:'status'},'Plano salvo ou janela fechada');}
+function Pagina(){const[aberto,setAberto]=useState(true);const[planejando,setPlanejando]=useState('${modo}'!=='detalhes');const salvar=async(id,dados)=>{window.envios.push(dados);const r=await fetch('/__salvar',{method:'POST',headers:{'Content-Type':'application/json','X-Teste-Falha':String(window.falhar)},body:JSON.stringify(dados)});if(!r.ok)throw Error((await r.json()).mensagem);setAberto(false);return true;};return aberto?(!planejando?React.createElement(DetalhesSolicitacao,{solicitacao,perfil:'FINANCEIRO',equipamentos:${JSON.stringify(equipamentos)},buscarObraPorId:id=>${JSON.stringify(obras)}.find(o=>o.id===id),aoPlanejar:()=>setPlanejando(true)}):React.createElement('${modo}'==='parcial'?AtendimentoParcialModal:SepararEquipamentosModal,{solicitacao,obras:${JSON.stringify(obras)},equipamentos:${JSON.stringify(equipamentos)},aoFechar:()=>setAberto(false),aoSalvarPlano:salvar,aoSalvar:salvar})):React.createElement('p',{role:'status'},'Plano salvo ou janela fechada');}
 createRoot(document.getElementById('root')).render(React.createElement(Pagina));</script></body></html>`;
 const servidor = await createServer({ server: { host: '127.0.0.1', port: 0 }, plugins: [{ name: 'plano-fixtures', configureServer(s) { s.middlewares.use(async (req, res, next) => {
   if (req.url.startsWith('/__plano')) { const p = new URL(req.url, 'http://localhost').searchParams; res.setHeader('Content-Type', 'text/html'); res.end(await s.transformIndexHtml(req.url, html(p.get('tema') || 'light', p.get('modo') || 'novo'))); return; }
@@ -111,6 +112,30 @@ try {
   assert.equal(await avaliar("document.querySelector('[type=submit]').disabled"), true);
   await tocar(botao('Remover seleção #999')); await esperar("!document.querySelector('[role=alert]')");
   await cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape' }); await cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape' }); await esperar("!document.querySelector('[role=dialog]')");
+  for (const largura of [320, 390, 844, 1440]) for (const tema of ['light', 'dark']) {
+    await cdp('Emulation.setDeviceMetricsOverride', { width: largura, height: largura === 844 ? 390 : 900, deviceScaleFactor: 1, mobile: largura < 768 || largura === 844 });
+    await cdp('Page.navigate', { url: `${base}/__plano?modo=revisao&tema=${tema}` });await esperar("document.querySelector('[role=dialog] h4')");
+    await tocar(botao('Comprar tudo e manter nas origens'));
+    assert.equal(await avaliar("document.querySelector('input[aria-label$=\"(ERA-DEP-1)\"]').value"), '0');
+    assert.equal(await avaliar("document.querySelector('[type=submit]').disabled"), true, 'Revisão exige motivo');
+    await preencher("document.querySelector('textarea[placeholder^=\"Ex.: fornecedor\"]')", 'Obra de origem precisa manter os equipamentos.');
+    await inspecionar(`${largura}-${tema}-revisao`);
+    await tocar("document.querySelector('[type=submit]')");await esperar("!document.querySelector('[role=dialog]')");
+    const revisao=await avaliar('window.envios.at(-1)');assert.equal(revisao.materiais[0].quantidadeCompra,7);assert.deepEqual(revisao.materiais[0].origens,[]);assert.ok(revisao.motivoRevisao);
+    await cdp('Page.navigate', { url: `${base}/__plano?modo=parcial&tema=${tema}` });await esperar("document.querySelector('[role=dialog] textarea')");
+    const medidas=await avaliar("(()=>{const d=document.querySelector('[role=dialog]');return {pagina:document.documentElement.scrollWidth,viewport:innerWidth,problemas:[...d.querySelectorAll('*')].filter(e=>!['svg','path','input','textarea','select'].includes(e.tagName.toLowerCase())&&e.clientWidth>0&&e.scrollWidth>e.clientWidth+2&&!['auto','scroll'].includes(getComputedStyle(e).overflowX)).map(e=>String(e.className))};})()");
+    assert.ok(medidas.pagina<=medidas.viewport&&!medidas.problemas.length,JSON.stringify(medidas));resultados.push({nome:`${largura}-${tema}-parcial`,...medidas});
+    if([390,1440].includes(largura))fs.writeFileSync(path.join(pasta,`${largura}-${tema}-parcial.png`),Buffer.from((await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
+    await preencher("document.querySelector('input[aria-label$=\"ERA-DEP-1\"]')",999);assert.equal(await avaliar("document.querySelector('input[aria-label$=\"ERA-DEP-1\"]').value"),'2');
+    await preencher("document.querySelector('textarea')",'Fornecedor sem a quantidade total. Manter o restante pendente.');
+    await tocar(botao('Separar itens selecionados'));await esperar("!document.querySelector('[role=dialog]')");
+    const parcial=await avaliar('window.envios.at(-1)');assert.ok(parcial.motivo);assert.equal(parcial.materiais[0].origens.reduce((s,o)=>s+o.quantidade,0),6);assert.equal(parcial.materiais[1].origens[0].quantidade,1);
+  }
+  for(const largura of [390,1440]){
+    await cdp('Emulation.setDeviceMetricsOverride',{width:largura,height:900,deviceScaleFactor:1,mobile:largura<768});
+    await cdp('Page.navigate',{url:`${base}/__plano?modo=detalhes`});await esperar(`${botao('Editar atendimento aprovado')}`);
+    await tocar(botao('Editar atendimento aprovado'));await esperar("document.querySelector('[role=dialog] h4')");await inspecionar(`${largura}-botao-revisao-acessivel`);
+  }
   fs.writeFileSync(path.join(pasta, 'relatorio.json'), JSON.stringify(resultados, null, 2));
   console.log(JSON.stringify({ cenarios: resultados.length, falhas: 0, artefatos: pasta }, null, 2));
 } finally {

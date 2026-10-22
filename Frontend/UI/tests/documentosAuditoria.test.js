@@ -10,6 +10,12 @@ const buscar=(id)=>({id,nome:id===1?'Obra A':'Obra B'});
 const material={nome:'Escada',quantidade:2,catalogoChave:'ferramentas|escada|',identificacao:null};
 const pedido={id:3,obraOrigemId:null,obraDestinoId:2,tecnico:'João',status:'Pendente',materiais:[material]};
 
+test('envio parcial preserva o pedido de dez e distingue as seis unidades deste atendimento',()=>{
+  const html=modelos.auditoriaSolicitacao({...pedido,materiais:[{...material,quantidade:6}],materiaisOriginais:[{...material,quantidade:10}],eventosFinanceiros:[{tipo:'ATENDIMENTO_PARCIAL',autorNome:'Estoque',descricao:'4 unidades pendentes no atendimento #5.'}]},buscar).conteudo;
+  assert.match(html,/Pedido original preservado/);assert.match(html,/<td>Escada<\/td><td>10<\/td>/);assert.match(html,/4 unidades pendentes/);
+  assert.match(html,/<td>Escada<\/td><td>6<\/td>/);
+});
+
 test('auditoria mantém compras do pedido original após separar materiais por origem',()=>{
   const separado={...pedido,status:'Concluída',materiais:[{...material,identificacao:'ESC-1',quantidadeCompra:0}],compras:[{...material,quantidadeCompra:3,quantidadeAdquirida:3,quantidadeEntradaEstoque:3}]};
   const html=modelos.auditoriaSolicitacao(separado,buscar).conteudo;
