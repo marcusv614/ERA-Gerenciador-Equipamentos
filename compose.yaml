@@ -32,6 +32,12 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:?Defina ADMIN_INITIAL_PASSWORD no arquivo .env}
       SESSION_COOKIE_SECURE: "false"
       SESSION_TIMEOUT: ${SESSION_TIMEOUT:-30m}
+      RECOVERY_ENABLED: ${RECOVERY_ENABLED:-false}
+      RECOVERY_PUBLIC_URL: ${RECOVERY_PUBLIC_URL:-}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       TZ: ${APP_TIMEZONE:-America/Manaus}
       JAVA_TOOL_OPTIONS: -Duser.timezone=${APP_TIMEZONE:-America/Manaus}
     depends_on:

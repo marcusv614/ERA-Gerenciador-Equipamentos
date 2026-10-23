@@ -21,14 +21,20 @@ public class Usuario {
     @Column(name = "versao_sessao", nullable = false) private long versaoSessao;
     @Column(name = "criado_em", nullable = false) private OffsetDateTime criadoEm;
     @Column(name = "atualizado_em", nullable = false) private OffsetDateTime atualizadoEm;
+    @Column(name = "email_recuperacao", length = 254) private String emailRecuperacao;
+    @Column(name = "email_recuperacao_verificado_em") private OffsetDateTime emailRecuperacaoVerificadoEm;
     public Usuario() {}
     @PrePersist void criarDatas(){criadoEm=OffsetDateTime.now();atualizadoEm=criadoEm;} @PreUpdate void atualizarData(){atualizadoEm=OffsetDateTime.now();}
     public Long getId(){return id;} public Funcionario getFuncionario(){return funcionario;} public void setFuncionario(Funcionario v){if(!Objects.equals(funcionario==null?null:funcionario.getId(),v==null?null:v.getId()))versaoSessao++;funcionario=v;}
     public String getNome(){return nome;} public void setNome(String v){nome=v;} public String getLogin(){return login;} public void setLogin(String v){if(!Objects.equals(login,v))versaoSessao++;login=v;}
-    public String getSenhaHash(){return senhaHash;} public void setSenhaHash(String v){if(!Objects.equals(senhaHash,v))versaoSessao++;senhaHash=v;} public PerfilUsuario getPerfil(){return perfil;} public void setPerfil(PerfilUsuario v){if(perfil!=v)versaoSessao++;perfil=v;}
+    public String getSenhaHash(){return senhaHash;} public void setSenhaHash(String v){if(!Objects.equals(senhaHash,v))versaoSessao++;senhaHash=v;} public PerfilUsuario getPerfil(){return perfil;} public void setPerfil(PerfilUsuario v){if(perfil!=v){versaoSessao++;emailRecuperacao=null;emailRecuperacaoVerificadoEm=null;}perfil=v;}
     public boolean isAtivo(){return ativo;} public void setAtivo(boolean v){if(ativo!=v)versaoSessao++;ativo=v;} public boolean isDeveAlterarSenha(){return deveAlterarSenha;} public void setDeveAlterarSenha(boolean v){if(deveAlterarSenha!=v)versaoSessao++;deveAlterarSenha=v;}
     public long getVersaoSessao(){return versaoSessao;}
     public int getTentativasFalhas(){return tentativasFalhas;} public void setTentativasFalhas(int v){tentativasFalhas=v;} public OffsetDateTime getBloqueadoAte(){return bloqueadoAte;} public void setBloqueadoAte(OffsetDateTime v){bloqueadoAte=v;}
     public OffsetDateTime getUltimoLogin(){return ultimoLogin;} public void setUltimoLogin(OffsetDateTime v){ultimoLogin=v;} public OffsetDateTime getSenhaAlteradaEm(){return senhaAlteradaEm;} public void setSenhaAlteradaEm(OffsetDateTime v){senhaAlteradaEm=v;}
     public OffsetDateTime getCriadoEm(){return criadoEm;}
+    public String getEmailRecuperacao(){return emailRecuperacao;}
+    public OffsetDateTime getEmailRecuperacaoVerificadoEm(){return emailRecuperacaoVerificadoEm;}
+    public void confirmarEmailRecuperacao(String email,OffsetDateTime agora){emailRecuperacao=email;emailRecuperacaoVerificadoEm=agora;}
+    public boolean precisaCadastrarEmailRecuperacao(){return perfil==PerfilUsuario.ADMIN&&emailRecuperacaoVerificadoEm==null;}
 }

@@ -18,7 +18,8 @@ import static org.mockito.Mockito.when;
 
 class ValidacaoSessaoFilterTests {
     private final UsuarioService usuarios = mock(UsuarioService.class);
-    private final ValidacaoSessaoFilter filter = new ValidacaoSessaoFilter(usuarios);
+    private final br.com.era.api.service.RecuperacaoContaService recuperacao = mock(br.com.era.api.service.RecuperacaoContaService.class);
+    private final ValidacaoSessaoFilter filter = new ValidacaoSessaoFilter(usuarios,recuperacao);
 
     @AfterEach
     void limparContexto() {
@@ -34,6 +35,23 @@ class ValidacaoSessaoFilterTests {
 
         assertEquals(403, response.getStatus());
         assertTrue(response.getContentAsString().contains("Altere a senha temporária"));
+    }
+
+    @Test
+    void deveExigirEmailConfirmadoNaApiParaAdminSemCadastro() throws Exception {
+        Usuario usuario=usuario(true,false);usuario.setPerfil(PerfilUsuario.ADMIN);autenticar(usuario);
+        when(recuperacao.exigeCadastro(usuario)).thenReturn(true);
+        assertEquals(403,executar("GET","/usuarios").getStatus());
+        assertEquals(200,executar("GET","/auth/recuperacao/configuracao").getStatus());
+        assertEquals(200,executar("POST","/auth/recuperacao/email").getStatus());
+        assertEquals(200,executar("POST","/auth/recuperacao/confirmar-email").getStatus());
+        assertEquals(200,executar("POST","/auth/logout").getStatus());
+    }
+
+    @Test
+    void devePermitirAcessoQuandoRecuperacaoNaoExigeCadastro() throws Exception {
+        Usuario usuario=usuario(true,false);usuario.setPerfil(PerfilUsuario.ADMIN);autenticar(usuario);
+        assertEquals(200,executar("GET","/usuarios").getStatus());
     }
 
     @Test

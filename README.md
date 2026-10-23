@@ -91,6 +91,8 @@ A migration `V26__limpar_dados_para_inicio_oficial.sql` remove uma única vez os
 
 ## Serviços
 
+Para habilitar a recuperação de contas **somente de administradores**, com confirmação de e-mail no primeiro acesso e envio por Gmail, consulte [Configuração e segurança da recuperação de conta](docs/recuperacao-conta-admin.md). O recurso vem desabilitado até configurar o remetente; os demais perfis continuam sob gestão do administrador.
+
 - `ui`: build React servido por Nginx, que encaminha `/api` para a API.
 - `api`: aplicação Spring Boot executada com Java 21.
 - `database`: PostgreSQL com volume persistente.

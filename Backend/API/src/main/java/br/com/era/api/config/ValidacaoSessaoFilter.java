@@ -2,6 +2,7 @@ package br.com.era.api.config;
 
 import br.com.era.api.model.Usuario;
 import br.com.era.api.service.UsuarioService;
+import br.com.era.api.service.RecuperacaoContaService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,9 +23,11 @@ public class ValidacaoSessaoFilter extends OncePerRequestFilter {
     );
 
     private final UsuarioService usuarios;
+    private final RecuperacaoContaService recuperacao;
 
-    public ValidacaoSessaoFilter(UsuarioService usuarios) {
+    public ValidacaoSessaoFilter(UsuarioService usuarios,RecuperacaoContaService recuperacao) {
         this.usuarios = usuarios;
+        this.recuperacao = recuperacao;
     }
 
     @Override
@@ -49,6 +52,12 @@ public class ValidacaoSessaoFilter extends OncePerRequestFilter {
 
         if (usuario.isDeveAlterarSenha() && !ROTAS_PERMITIDAS_PARA_TROCA.contains(request.getServletPath())) {
             escreverErro(response, HttpServletResponse.SC_FORBIDDEN, "Altere a senha temporária antes de acessar o sistema.");
+            return;
+        }
+
+        if(recuperacao.exigeCadastro(usuario)&&!ROTAS_PERMITIDAS_PARA_TROCA.contains(request.getServletPath())
+            &&!Set.of("/auth/recuperacao/configuracao","/auth/recuperacao/email","/auth/recuperacao/confirmar-email").contains(request.getServletPath())){
+            escreverErro(response,HttpServletResponse.SC_FORBIDDEN,"Confirme seu e-mail de recuperação antes de acessar o sistema.");
             return;
         }
 

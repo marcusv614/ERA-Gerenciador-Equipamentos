@@ -4,6 +4,7 @@ import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import logoEra from '../../assets/ERALTDA.png';
 import estilos from './TelaLogin.module.css';
 import './VisualizacaoSenha.css';
+import { TelaRecuperarSenha } from './TelaRecuperarSenha';
 
 export function TelaLogin() {
   const { autenticar } = useAutenticacao();
@@ -12,6 +13,7 @@ export function TelaLogin() {
   const [senhaVisivel, definirSenhaVisivel] = useState(false);
   const [erro, definirErro] = useState('');
   const [enviando, definirEnviando] = useState(false);
+  const [recuperando, definirRecuperando] = useState(false);
   const rotuloVisibilidade = senhaVisivel ? 'Ocultar senha' : 'Visualizar senha';
 
   const enviar = async (evento) => {
@@ -27,6 +29,7 @@ export function TelaLogin() {
     finally { definirEnviando(false); }
   };
 
+  if (recuperando) return <TelaRecuperarSenha aoVoltar={()=>definirRecuperando(false)}/>;
   return <main className={estilos.pagina}><section className={estilos.cartao} aria-labelledby="titulo-login">
     <img src={logoEra} alt="ERA" className={estilos.logo} />
     <div><p className={estilos.sobretitulo}>Gestão de equipamentos</p><h1 id="titulo-login">Acesse o painel</h1><p className={estilos.descricao}>Use as credenciais fornecidas pelo administrador.</p></div>
@@ -35,6 +38,7 @@ export function TelaLogin() {
       <label>Senha<div className={estilos.campo}><LockKeyhole size={18}/><input type={senhaVisivel ? 'text' : 'password'} autoComplete="current-password" value={senha} onChange={(evento)=>definirSenha(evento.target.value)} required /><button type="button" className={estilos.visualizarSenha} onClick={()=>definirSenhaVisivel((visivel)=>!visivel)} aria-label={rotuloVisibilidade} title={rotuloVisibilidade}>{senhaVisivel?<EyeOff size={18}/>:<Eye size={18}/>}</button></div></label>
       {erro&&<p className={estilos.erro} role="alert">{erro}</p>}
       <button disabled={enviando}>{enviando?'Entrando...':'Entrar'}</button>
+      <button type="button" className={estilos.secundario} disabled={enviando} onClick={()=>definirRecuperando(true)}>Esqueci minha senha</button>
     </form>
   </section></main>;
 }

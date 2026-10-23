@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CircleDollarSign, Eye, EyeOff, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, RefreshCw, Search, ShieldCheck, Sun, UserCheck, UserPlus, Users, Warehouse, Wrench, X } from 'lucide-react';
+import { CircleDollarSign, Eye, EyeOff, HardHat, KeyRound, LayoutDashboard, LogOut, Mail, Moon, RefreshCw, Search, ShieldCheck, Sun, UserCheck, UserPlus, Users, Warehouse, Wrench, X } from 'lucide-react';
 import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
@@ -13,6 +13,7 @@ import { ListaUsuariosAdmin, ListaFuncionariosAdmin } from './ListasAdministraca
 import { DetalhesUsuarioAdmin } from './DetalhesUsuarioAdmin';
 import { PERFIS_USUARIO, funcionarioAtivo, filtrarUsuariosAdmin, filtrarFuncionariosAdmin, formatarInstanteAdmin } from '../../utils/administracaoUsuarios';
 import estilos from './PainelAdmin.module.css';
+import { FormularioEmailRecuperacao } from '../login/TelaEmailRecuperacao';
 
 const AREAS = [
   { id:'usuarios', rotulo:'Administração', icone:ShieldCheck },
@@ -27,6 +28,7 @@ const AREAS = [
 export function PainelAdmin() {
   const { usuario, encerrarSessao } = useAutenticacao();
   const [area, definirArea] = useState('usuarios');
+  const [gerenciandoRecuperacao, definirGerenciandoRecuperacao] = useState(false);
   const [usuarios, definirUsuarios] = useState([]), [funcionarios, definirFuncionarios] = useState([]);
   const [carregando, definirCarregando] = useState(true), [erro, definirErro] = useState(''), [atualizadoEm, definirAtualizadoEm] = useState(null);
   const [lista, definirLista] = useState('usuarios'), [busca, definirBusca] = useState(''), [situacao, definirSituacao] = useState('todos');
@@ -99,8 +101,10 @@ export function PainelAdmin() {
       <nav aria-label="Áreas administrativas">{AREAS.map(({id,rotulo,icone:Icone})=><button type="button" key={id} aria-current={area===id?'page':undefined} className={area===id?estilos.ativo:''} onClick={()=>selecionarArea(id)}><Icone size={16}/><span>{rotulo}</span></button>)}</nav>
       <div className={estilos.acoesCabecalho}><SinoNotificacoes temaEscuro={modoEscuro}/><button type="button" onClick={alternarTema} aria-label={modoEscuro?'Ativar tema claro':'Ativar tema escuro'}>{modoEscuro?<Sun size={18}/>:<Moon size={18}/>}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={18}/></button></div>
     </header>
+    {gerenciandoRecuperacao&&<EstruturaModal titulo="Meu e-mail de recuperação" subtitulo="Configuração exclusiva da sua conta de administrador" aoFechar={()=>definirGerenciandoRecuperacao(false)}><FormularioEmailRecuperacao aoConcluir={()=>definirGerenciandoRecuperacao(false)}/></EstruturaModal>}
     {area==='usuarios'&&<main className={estilos.conteudo}>
       <section className={estilos.titulo}><div><span className={estilos.sobretitulo}>Segurança e acessos</span><h1>Administração</h1><p>Usuários, perfis e vínculos de funcionários em um só lugar.</p><small>Conectado como <strong>{usuario.nome}</strong> · {usuario.login}</small></div><button type="button" className={estilos.primario} onClick={()=>abrirCriacao()} disabled={carregando}><UserPlus size={18}/>Criar usuário</button></section>
+      <section className={estilos.recuperacaoConta} aria-label="Recuperação da sua conta"><div><strong>Recuperação da sua conta</strong><p>{usuario.recuperacao?.emailVerificado ? `E-mail confirmado: ${usuario.recuperacao.emailVerificado}` : 'Envio por Gmail ainda não habilitado no servidor. O acesso com login e senha permanece disponível.'}</p></div><button type="button" onClick={()=>definirGerenciandoRecuperacao(true)}><Mail size={17}/>Meu e-mail de recuperação</button></section>
       <section className={estilos.estatisticas} aria-label="Resumo de acessos">{estatisticas.map(({nome,valor,nota,Icone,acao})=><button type="button" key={nome} onClick={acao} disabled={carregando}><span className={estilos.estatisticaTopo}>{nome}<Icone size={18}/></span><strong>{carregando?'—':valor}</strong><small>{nota}</small></button>)}</section>
       <section className={estilos.registros} aria-label="Gestão de acessos">
         <div className={estilos.barraRegistros}><div className={estilos.abas} role="group" aria-label="Listas administrativas"><button type="button" aria-pressed={lista==='usuarios'} onClick={()=>definirLista('usuarios')}>Usuários <b>{usuarios.length}</b></button><button type="button" aria-pressed={lista==='funcionarios'} onClick={()=>definirLista('funcionarios')}>Funcionários <b>{funcionarios.length}</b></button></div><button type="button" className={estilos.atualizar} onClick={carregar} disabled={carregando}><RefreshCw size={15}/>Atualizar</button></div>

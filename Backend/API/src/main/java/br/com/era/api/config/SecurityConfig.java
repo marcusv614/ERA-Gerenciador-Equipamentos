@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/auth/csrf","/actuator/health").permitAll()
                 .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST,"/auth/recuperacao/solicitar","/auth/recuperacao/redefinir").permitAll()
+                .requestMatchers("/auth/recuperacao/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,"/auth/me").authenticated()
                 .requestMatchers(HttpMethod.POST,"/auth/alterar-senha","/auth/logout").authenticated()
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")

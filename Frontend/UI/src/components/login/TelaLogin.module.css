@@ -80,6 +80,7 @@
 .campo svg { color: #8c7d68; }
 
 .campo input {
+  min-width: 0;
   width: 100%;
   height: 48px;
   border: 0;
@@ -90,7 +91,8 @@
 }
 
 .formulario button {
-  height: 50px;
+  min-height: 50px;
+  padding: 10px 14px;
   border: 0;
   border-radius: 12px;
   background: #c66d00;
@@ -119,6 +121,12 @@
   font-size: 13px;
   text-align: left;
 }
+
+.recuperacao { display: grid; gap: 16px; color: var(--text, #282725); text-align: left; }
+.recuperacao .campo { color-scheme: light; }
+.informacao { margin: 0; padding: 12px; background: #f6f2e9; border: 1px solid #e7ddc8; border-radius: 10px; color: #5a5041; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; text-align: left; }
+.recuperacao .campo input { color: #282725; }
+.formulario button:focus-visible { outline: 3px solid #994d00; outline-offset: 3px; }
 
 @media (max-width: 520px) {
   .cartao {
