@@ -6,6 +6,8 @@ Implementado pela migração V49, sem alterar migrações já aplicadas. Não h�
 
 Abra um atendimento e selecione **Cancelamento e histórico**. Informe motivo/parecer (5–1000 caracteres) e confirme a declaração. A opção existe nas visões de Gerência, RH, Financeiro e Estoque; o solicitante pode cancelar seu próprio pedido pendente. A API aplica as permissões e o escopo independentemente da interface.
 
+A justificativa é obrigatória para **todos os perfis**, inclusive ADMIN, tanto para iniciar quanto para confirmar um cancelamento. Cada confirmação registra seu próprio parecer sem substituir o motivo de quem solicitou. O botão **Rejeitar** também exige justificativa (5–1000 caracteres) na Gerência, RH e Financeiro: abre um formulário e só encerra o pedido após a confirmação. O motivo, autor e data ficam no histórico; técnicos/TSTs veem a justificativa da rejeição e os PDFs de auditoria incluem o registro. Pedidos antigos não recebem motivos inventados ou retroativos.
+
 - Pendente: solicitante ou gestor do setor pode cancelar; Estoque não consulta pedidos ainda não aprovados.
 - Aguardando Financeiro: o gestor pode solicitar a retirada; Financeiro confirma. Enquanto isso, o pedido fica suspenso.
 - Aprovado sem execução: Financeiro confirma e libera reservas. Transporte direto é confirmado pelo gestor, sem aprovação financeira.
@@ -28,6 +30,8 @@ Motivo, estado anterior, autor, login, data e pareceres ficam no histórico. Avi
 O acesso **RH · EPIs** no cabeçalho do Admin abre a mesma dashboard usada por contas RH. Reutiliza o layout de pedidos do Financeiro: Kanban, agrupamento por técnico/obra, compras e PDF. Acrescenta a etapa inicial de aprovação do RH e o acompanhamento de envio/entrega por atendimento. O histórico completo de cada atendimento pode ser exportado em PDF.
 
 `GET /atividades/pedidos-rh` aceita somente RH/ADMIN e restringe os registros a pedidos de EPI dos TSTs. O filtro do servidor também vale para compras, saldos parciais e histórico; não se trata apenas de ocultar ferramentas na interface. RH continua sem permissão para cadastrar funcionários ou equipamentos e sem poder decidir o plano financeiro.
+
+A Gerência não lista pedidos de EPI e não pode criá-los, editá-los, aprová-los, rejeitá-los, solicitar transporte direto ou consultar/confirmar seu cancelamento, mesmo informando o ID pela API. O bloqueio considera materiais atuais e registros originais/compras preservadas. A visão de Gerência incorporada no Admin oculta esses pedidos, mas o perfil ADMIN mantém acesso geral nas áreas apropriadas. Financeiro e Estoque continuam autorizados nas etapas seguintes à aprovação do RH. Permissões gerais de cadastro não foram alteradas.
 
 ## Verificação
 

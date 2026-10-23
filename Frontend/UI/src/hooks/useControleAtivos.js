@@ -230,11 +230,11 @@ export function useControleAtivos(perfil) {
     return obterHistoricoEquipamento(equipamento, buscarObraPorId);
   }
 
-  async function definirStatusSolicitacao(identificador, status) {
+  async function definirStatusSolicitacao(identificador, status, motivo) {
     try {
       const resposta = status === 'Aprovada'
         ? await apiAtividades.aprovar(identificador)
-        : await apiAtividades.rejeitar(identificador);
+        : await apiAtividades.rejeitar(identificador, motivo);
       if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
       definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
         solicitacao.id === identificador ? resposta : solicitacao));

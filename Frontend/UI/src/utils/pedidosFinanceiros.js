@@ -7,7 +7,7 @@ export const COLUNAS_FINANCEIRAS = [
   { id:'finalizada', titulo:'Compras concluídas', rotulo:'Compras concluídas', descricao:'Aquisição dos itens registrada' },
   { id:'rejeitada', titulo:'Rejeitados', rotulo:'Rejeitados', descricao:'Pedidos não autorizados' },
 ];
-export const rotuloDecisaoFinanceira = tipo => ({ APROVACAO_INICIAL:'Aprovado pela Gerência / RH', APROVACAO:'Aprovado pelo Financeiro', REJEICAO:'Rejeitado pelo Financeiro', ALTERACAO:'Ajuste do pedido', REVISAO_PLANO:'Revisão do planejamento', CANCELAMENTO_SOLICITADO:'Cancelamento solicitado', CANCELAMENTO_CONFIRMADO:'Cancelamento confirmado', CANCELAMENTO_FINANCEIRO:'Parecer financeiro', CANCELAMENTO_CONFERENCIA:'Conferência física' })[tipo] || 'Decisão registrada';
+export const rotuloDecisaoFinanceira = tipo => ({ APROVACAO_INICIAL:'Aprovado pela Gerência / RH', APROVACAO:'Aprovado pelo Financeiro', REJEICAO:'Rejeitado pelo Financeiro', REJEICAO_INICIAL:'Rejeitado pela Gerência / RH', ALTERACAO:'Ajuste do pedido', REVISAO_PLANO:'Revisão do planejamento', CANCELAMENTO_SOLICITADO:'Cancelamento solicitado', CANCELAMENTO_CONFIRMADO:'Cancelamento confirmado', CANCELAMENTO_FINANCEIRO:'Parecer financeiro', CANCELAMENTO_CONFERENCIA:'Conferência física' })[tipo] || 'Decisão registrada';
 export function adaptarPedidoFinanceiro(pedido) {
   return {...pedido,financeiro:true,tipo:'Pedido de materiais',eventosFinanceiros:pedido.decisoes,materiais:pedido.materiais.map(m=>({...m,quantidade:m.quantidadeSolicitada})),analises:pedido.analises||[]};
 }

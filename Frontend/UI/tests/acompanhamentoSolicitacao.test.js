@@ -6,7 +6,7 @@ const pedido = { id:1, status:'Pendente', materiais:[material], tecnico:'Ana', o
 test('Financeiro e sua prévia excluem pedidos pendentes e rejeitados na primeira etapa', () => {
   const recebidas = [pedido,{...pedido,id:2,status:'Aguardando financeiro'},{...pedido,id:3,status:'Rejeitada',eventosFinanceiros:[{tipo:'ALTERACAO'}]},{...pedido,id:4,status:'Rejeitada',eventosFinanceiros:[{tipo:'REJEICAO'}]}];
   assert.deepEqual(pedidosDoPerfil(recebidas,'FINANCEIRO').map(p=>p.id),[2,4]);
-  assert.equal(pedidosDoPerfil(recebidas,'GERENTE'),recebidas);assert.equal(pedidosDoPerfil(recebidas,'ADMIN'),recebidas);
+  assert.deepEqual(pedidosDoPerfil(recebidas,'GERENTE'),recebidas);assert.equal(pedidosDoPerfil(recebidas,'ADMIN'),recebidas);
   assert.equal(visivelNoFinanceiro({...pedido,status:'Aprovada',movimentacaoDireta:true}),false);
 });
 test('aprovação da Gerência coloca o pedido no Financeiro e o plano salvo indica preparação', () => {

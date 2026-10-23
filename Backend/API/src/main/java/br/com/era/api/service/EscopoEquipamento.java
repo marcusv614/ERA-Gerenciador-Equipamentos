@@ -8,6 +8,11 @@ public final class EscopoEquipamento {
     public static final String CATEGORIA_EPI = "EPI";
 
     private EscopoEquipamento() {}
+    public static boolean pedidoContemEpi(br.com.era.api.model.Solicitacao pedido) {
+        return pedido.getMateriais().stream().anyMatch(m->catalogoEhEpi(m.getCatalogoChave()))
+            ||pedido.getMateriaisOriginais().stream().anyMatch(m->catalogoEhEpi(m.catalogoChave()))
+            ||pedido.getCompras().stream().anyMatch(m->catalogoEhEpi(m.catalogoChave()));
+    }
 
     public static boolean ehEpi(String categoria) {
         String normalizada=normalizar(categoria);

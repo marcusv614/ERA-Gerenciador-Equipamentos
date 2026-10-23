@@ -23,6 +23,7 @@ public class CancelamentoSolicitacaoService {
     private boolean epi(Solicitacao s){return !s.getMateriais().isEmpty()&&s.getMateriais().stream().allMatch(m->EscopoEquipamento.catalogoEhEpi(m.getCatalogoChave()));}
     private void escopo(Solicitacao s,Usuario u){
         if(!u.isAtivo())throw new AccessDeniedException("Conta inativa.");
+        if(u.getPerfil()==PerfilUsuario.GERENTE&&EscopoEquipamento.pedidoContemEpi(s))throw new RecursoNaoEncontradoException("Solicitação não encontrada.");
         if(u.getPerfil()==PerfilUsuario.ESTOQUE&&Set.of("Pendente","Aguardando financeiro").contains(s.getStatus()))throw new RecursoNaoEncontradoException("Solicitação não encontrada.");
         if(u.getPerfil()==PerfilUsuario.RH&&!epi(s))throw new RecursoNaoEncontradoException("Solicitação não encontrada.");
         if(u.getPerfil().ehProfissionalDeCampo()&&(u.getFuncionario()==null||!Objects.equals(u.getFuncionario().getId(),s.getTecnico().getId())||(u.getPerfil()==PerfilUsuario.TST)!=epi(s)))throw new RecursoNaoEncontradoException("Solicitação não encontrada.");
@@ -46,6 +47,7 @@ public class CancelamentoSolicitacaoService {
         s.registrarEventoFinanceiro("CANCELAMENTO_SOLICITADO","Atendimento suspenso. Estado anterior: "+s.getStatusAntesCancelamento()+". Motivo: "+motivo.trim(),u);
         boolean inicial="Pendente".equals(s.getStatusAntesCancelamento());
         s.setFinanceiroCancelamentoConfirmado((inicial&&!estoque(u))||financeiro(s,u));
+        if(financeiro(s,u)&&!s.isMovimentacaoDireta()&&!inicial)s.registrarEventoFinanceiro("CANCELAMENTO_FINANCEIRO","Justificativa do responsável financeiro pelo cancelamento: "+motivo.trim(),u);
         avisos.notificarCancelamento(s,"CANCELAMENTO_SOLICITADO","Cancelamento solicitado: "+motivo.trim());
         finalizarSePossivel(s,u);return estado(s,u);
     }

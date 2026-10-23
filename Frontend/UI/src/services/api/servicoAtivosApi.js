@@ -83,7 +83,7 @@ export const apiAtividades = {
   cadastrar: (dados) => avisarAposSucesso(criar(ROTAS_API.atividades, dados), (pedido) => pedido.status === 'Pendente' ? 'Pedido enviado para a primeira análise.' : 'Pedido criado e encaminhado ao Financeiro.'),
   atualizar: (atividadeId, dados) => avisarAposSucesso(atualizar(ROTAS_API.atividade(atividadeId), dados), 'Alterações da solicitação salvas.'),
   aprovar: (atividadeId) => avisarAposSucesso(criar(ROTAS_API.aprovarAtividade(atividadeId)), (pedido) => pedido.status === 'Aguardando financeiro' ? 'Pedido aprovado e encaminhado ao Financeiro.' : 'Pedido aprovado e liberado para o estoque.'),
-  rejeitar: (atividadeId) => avisarAposSucesso(criar(ROTAS_API.rejeitarAtividade(atividadeId)), 'Pedido rejeitado.'),
+  rejeitar: (atividadeId, motivo) => avisarAposSucesso(criar(ROTAS_API.rejeitarAtividade(atividadeId), { motivo }), 'Pedido rejeitado.'),
   solicitarCompra: (atividadeId, materialId, quantidade) => avisarAposSucesso(criar(ROTAS_API.solicitarCompraMaterial(atividadeId, materialId), { quantidade }), 'Solicitação de compra registrada.'),
   registrarAquisicao: (atividadeId, materialId, quantidade, numeroNota, identificacao) => avisarAposSucesso(criar(ROTAS_API.registrarAquisicaoMaterial(atividadeId, materialId), { quantidade, numeroNota, identificacao }), 'Entrada dos materiais registrada no estoque.'),
   distribuir: (atividadeId, atendimentos) => avisarAposSucesso(criar(ROTAS_API.distribuirAtividade(atividadeId), { atendimentos }), 'Materiais separados e reservados para atendimento.'),

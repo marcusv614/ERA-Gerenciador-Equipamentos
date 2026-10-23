@@ -16,7 +16,11 @@ export function visivelNoFinanceiro(pedido) {
     (pedido.status === 'Rejeitada' && (pedido.eventosFinanceiros || []).some((e) => e.tipo === 'REJEICAO'));
 }
 
-export const pedidosDoPerfil = (pedidos, perfil) => perfil === 'FINANCEIRO' ? pedidos.filter(visivelNoFinanceiro) : pedidos;
+export const pedidosDoPerfil = (pedidos, perfil) => {
+  if(perfil==='FINANCEIRO')return pedidos.filter(visivelNoFinanceiro);
+  if(perfil==='GERENTE')return pedidos.filter(p=>![...(p.materiais||[]),...(p.materiaisOriginais||[]),...(p.compras||[])].some(m=>['epi','seguranca, epi e acesso'].includes(String(m.catalogoChave||'').split('|')[0].normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().trim())));
+  return pedidos;
+};
 
 export function acompanhamentoSolicitacao(pedido) {
   if(pedido.financeiro)return acompanhamentoPedidoFinanceiro(pedido);

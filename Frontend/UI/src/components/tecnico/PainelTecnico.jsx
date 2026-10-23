@@ -373,7 +373,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
               <time dateTime={solicitacao.dataSolicitacao || undefined}><small>Solicitado em</small>{formatarDataSolicitacao(solicitacao.dataSolicitacao)}</time>
             </div>
             {!modoAdministrador&&<CancelamentoPedido pedidoId={solicitacao.id}/>}
-            <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao, ehTst)}</p>
+            <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao, ehTst)}</p>{(solicitacao.eventosFinanceiros||[]).filter(e=>['REJEICAO','REJEICAO_INICIAL'].includes(e.tipo)).map((e,i)=><p className={estilos.fluxoSolicitacao} key={i}>{e.descricao} · {e.autorNome}</p>)}
             <section className={estilos.materiaisCartao} aria-label="Materiais do pedido">
               <header><span>Materiais</span><b>{totalMateriais} {totalMateriais === 1 ? 'item' : 'itens'}</b></header>
               <ul>{materiais.map((material) => <li key={material.chave}><span>{material.nome}</span><b>{material.quantidade}</b></li>)}</ul>

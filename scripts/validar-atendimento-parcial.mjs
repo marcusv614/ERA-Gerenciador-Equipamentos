@@ -182,7 +182,7 @@ let ajustado=await novoPedido(3);
 await financeiro.req('PATCH',`/atividades/${ajustado.id}`,{tecnico:b.nome,obraDestinoId:ob.id,observacao:'Ajustado para duas unidades',materiais:[{nome:equipamento.modelo,catalogoChave:equipamento.catalogoChave,quantidade:2}]});
 assert.equal((await historicoFinanceiro()).find(p=>p.id===ajustado.id).materiais[0].quantidadeSolicitada,3);
 assert.equal((await localizar(ajustado.id)).materiais[0].quantidade,2);
-await financeiro.req('POST',`/atividades/${ajustado.id}/rejeicao`,{});
+await financeiro.req('POST',`/atividades/${ajustado.id}/rejeicao`,{motivo:'Material não necessário nesta etapa de teste'});
 assert.equal((await historicoFinanceiro()).find(p=>p.id===ajustado.id).status,'Rejeitada');
 
 const loteObraB=inventario.find(e=>e.obraId===ob.id&&e.catalogoChave===equipamento.catalogoChave);

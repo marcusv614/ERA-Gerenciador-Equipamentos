@@ -4,6 +4,7 @@ import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Colu
 import { formatarData } from '../../utils/datas';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { acompanhamentoSolicitacao, COLUNAS_ACOMPANHAMENTO, pedidosDoPerfil } from '../../utils/acompanhamentoSolicitacao';
+import { JustificarRejeicaoModal } from './JustificarRejeicaoModal';
 import { DetalhesSolicitacao } from './DetalhesSolicitacao';
 import { SepararEquipamentosModal } from '../estoque/SepararEquipamentosModal';
 import { DetalhesPedidoFinanceiro } from './DetalhesPedidoFinanceiro';
@@ -72,6 +73,8 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
   const [processando, definirProcessando] = useState(false);
   const [planejando, definirPlanejando] = useState(false);
   const [erro, definirErro] = useState('');
+  const [rejeicaoPendente,definirRejeicaoPendente]=useState(null);
+  const pedirJustificativa=id=>{definirErro('');definirRejeicaoPendente({id,voltar:selecionadaId});selecionar(null);};
   const emProcessamento = useRef(false);
   const [fechar] = useState(() => () => selecionar(null));
   const selecionada = todasSolicitacoes.find(({ id }) => id === selecionadaId);
@@ -174,10 +177,11 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
           </section>;
         })}
       </div>}
+    {rejeicaoPendente&&<JustificarRejeicaoModal pedidoId={rejeicaoPendente.id} processando={processando} erro={erro||erroApi} aoFechar={()=>{selecionar(rejeicaoPendente.voltar);definirRejeicaoPendente(null);}} aoConfirmar={motivo=>decidir(async id=>{const ok=await aoRejeitar(id,motivo);if(ok)definirRejeicaoPendente(null);return ok;},rejeicaoPendente.id)}/>}
     {selecionada && !planejando && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
-      {financeiro ? <DetalhesPedidoFinanceiro rh={perfil==='RH'} solicitacao={selecionada} processando={processando} buscarObraPorId={buscarObraPorId} aoPlanejar={aoSalvarPlano ? definirPlanejando : undefined} aoAprovar={(id)=>decidir(aoAprovar,id)} aoRejeitar={(id)=>decidir(aoRejeitar,id)} aoEditar={(pedido)=>{selecionar(null);aoEditar(pedido);}} aoExportarAuditoria={aoExportarAuditoria}/> : <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
-        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />}
+      {financeiro ? <DetalhesPedidoFinanceiro rh={perfil==='RH'} solicitacao={selecionada} processando={processando} buscarObraPorId={buscarObraPorId} aoPlanejar={aoSalvarPlano ? definirPlanejando : undefined} aoAprovar={(id)=>decidir(aoAprovar,id)} aoRejeitar={(id)=>pedirJustificativa(id)} aoEditar={(pedido)=>{selecionar(null);aoEditar(pedido);}} aoExportarAuditoria={aoExportarAuditoria}/> : <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
+        aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => pedirJustificativa(id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />}
     </JanelaSolicitacao>}
     {selecionada && planejando && <SepararEquipamentosModal key={planejando.id || selecionada.id} solicitacao={planejando === true ? selecionada : planejando} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { const salvo = await aoSalvarPlano(id,dados); if (salvo) definirPlanejando(false); return salvo; }} />}
   </section>;

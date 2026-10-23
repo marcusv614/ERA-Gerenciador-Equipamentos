@@ -33,6 +33,9 @@ class PerfisTstRhTests {
         when(usuarios.buscarPorLogin("tecnico")).thenReturn(usuario(PerfilUsuario.TECNICO,tecnico));
         when(usuarios.buscarPorLogin("tst")).thenReturn(usuario(PerfilUsuario.TST,tst));
         when(usuarios.buscarPorLogin("rh")).thenReturn(usuario(PerfilUsuario.RH,null));
+        when(usuarios.buscarPorLogin("gerente")).thenReturn(usuario(PerfilUsuario.GERENTE,null));
+        when(usuarios.buscarPorLogin("admin")).thenReturn(usuario(PerfilUsuario.ADMIN,null));
+        when(usuarios.buscarPorLogin("financeiro")).thenReturn(usuario(PerfilUsuario.FINANCEIRO,null));
         when(usuarios.perfilAtivoDoFuncionario(tecnico)).thenReturn(PerfilUsuario.TECNICO);
         when(usuarios.perfilAtivoDoFuncionario(tst)).thenReturn(PerfilUsuario.TST);
         when(obras.idsPermitidos(anyString())).thenReturn(Set.of(10L));
@@ -44,6 +47,17 @@ class PerfisTstRhTests {
         assertTrue(EscopoEquipamento.ehEpi("Segurança, EPI e acesso"));
         assertTrue(EscopoEquipamento.ehEpi("EPI"));
         assertFalse(EscopoEquipamento.ehEpi("Ferramentas manuais"));
+    }
+    @Test void todaRejeicaoAutenticadaExigeJustificativaERegistraAutor(){
+        for(String login:List.of("gerente","rh","financeiro","admin")){
+            boolean rh=login.equals("rh");var p=pedido(rh?tst:tecnico,rh?"EPI":"Ferramentas",rh?"Capacete":"Alicate");
+            p.setStatus(login.equals("financeiro")?"Aguardando financeiro":"Pendente");String antes=p.getStatus();
+            when(pedidos.buscarParaAtualizacao(1L)).thenReturn(Optional.of(p));when(usuarios.funcionarioTemPerfilAtivo(tst,PerfilUsuario.TST)).thenReturn(true);
+            for(String motivo:java.util.Arrays.asList(null,"","    ","abcd","x".repeat(1001)))assertThrows(RegraNegocioException.class,()->service.rejeitar(1L,login,motivo));
+            assertEquals(antes,p.getStatus());assertTrue(p.getEventosFinanceiros().isEmpty());
+            assertEquals("Rejeitada",service.rejeitar(1L,login,"Material não necessário nesta etapa").status());
+            assertTrue(p.getEventosFinanceiros().stream().anyMatch(e->e.descricao().contains("Material não necessário")&&e.autorLogin().equals(login)));
+        }
     }
 
     @Test void tecnicoNaoPodePedirEpi(){
@@ -82,6 +96,36 @@ class PerfisTstRhTests {
         when(pedidos.buscarParaAtualizacao(1L)).thenReturn(Optional.of(pedido));
         assertThrows(AccessDeniedException.class,()->service.aprovar(1L,"rh"));
         assertEquals("Pendente",pedido.getStatus());
+    }
+    @Test void gerenteNaoListaPedidosEpiMasAdminPreservaAcesso(){
+        var epi=pedido(tst,"EPI","Capacete");var comum=pedido(tecnico,"Ferramentas","Alicate");
+        when(pedidos.findAll()).thenReturn(List.of(epi,comum));
+        assertEquals(1,service.listarParaUsuario("gerente").size());assertEquals("Técnico",service.listarParaUsuario("gerente").getFirst().tecnico());
+        assertEquals(2,service.listarParaUsuario("admin").size());
+    }
+    @Test void gerenteNaoPodeAprovarRejeitarOuEditarPedidoEpiPorId(){
+        var p=pedido(tst,"EPI","Capacete");when(pedidos.buscarParaAtualizacao(1L)).thenReturn(Optional.of(p));
+        assertThrows(AccessDeniedException.class,()->service.aprovar(1L,"gerente"));
+        assertThrows(AccessDeniedException.class,()->service.rejeitar(1L,"gerente"));
+        assertThrows(AccessDeniedException.class,()->service.atualizar(1L,new SolicitacaoDto.Atualizacao(null,null,10L,"Tentativa",null),"gerente"));
+        assertEquals("Pendente",p.getStatus());assertNull(p.getObservacao());
+    }
+    @Test void gerenteNaoPodeCriarPedidoEpiNemTransporteDireto(){
+        when(funcionarios.buscarPorNome("TST")).thenReturn(tst);when(equipamentos.findAll()).thenReturn(List.of(epi));
+        assertThrows(AccessDeniedException.class,()->service.cadastrar(requisicao("TST","Capacete","epi|capacete|"),"gerente"));
+        epi.setSerie("EPI-1");when(equipamentos.buscarPorSerieParaAtualizacao("EPI-1")).thenReturn(Optional.of(epi));
+        var d=new SolicitacaoDto.Requisicao(null,"TST",null,10L,LocalDate.now(),null,List.of(new SolicitacaoDto.MaterialRequisicao("Capacete",1,"EPI-1","epi|capacete|")));
+        assertThrows(AccessDeniedException.class,()->service.cadastrarTransporteDireto(d,"gerente"));
+        verify(pedidos,never()).save(any());assertEquals(0,epi.getQuantidadeReservada());
+    }
+    @Test void rhContinuaSendoResponsavelPelaAprovacaoInicial(){
+        var p=pedido(tst,"EPI","Capacete");when(pedidos.buscarParaAtualizacao(1L)).thenReturn(Optional.of(p));
+        when(usuarios.funcionarioTemPerfilAtivo(tst,PerfilUsuario.TST)).thenReturn(true);
+        assertEquals("Aguardando financeiro",service.aprovar(1L,"rh").status());
+    }
+    @Test void registrosOriginaisDeEpiTambemImpedemAcessoGerente(){
+        var p=pedido(tst,"EPI","Capacete");p.preservarPedidoOriginal();p.substituirMateriais(List.of(new MaterialSolicitado("Alicate",1,null,"ferramentas|alicate|")));
+        when(pedidos.findAll()).thenReturn(List.of(p));assertTrue(service.listarParaUsuario("gerente").isEmpty());
     }
     @Test void dashboardRhConsolidaSomenteEpiComHistoricoDoAtendimento(){
         var pedidoTst=pedido(tst,"EPI","Capacete");

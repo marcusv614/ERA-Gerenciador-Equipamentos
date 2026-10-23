@@ -33,7 +33,37 @@ class CancelamentoSolicitacaoTests {
         assertEquals(2,resultado.historico().size());verify(pedidos,never()).delete(any());
     }
     @Test void motivoObrigatorio(){assertThrows(RegraNegocioException.class,()->service.solicitar(10L," ","GERENTE"));assertEquals("Pendente",s.getStatus());}
+    @Test void todosOsPerfisPrecisamJustificarSemAlterarPedidoQuandoMotivoInvalido(){
+        for(var perfil:PerfilUsuario.values()){
+            boolean epi=perfil==PerfilUsuario.RH||perfil==PerfilUsuario.TST;
+            s.substituirMateriais(List.of(new MaterialSolicitado("Material",2,null,epi?"epi|capacete|":"ferramentas|alicate|")));
+            s.setStatus(perfil==PerfilUsuario.FINANCEIRO?"Aguardando financeiro":perfil==PerfilUsuario.ESTOQUE?"Aprovada":"Pendente");
+            String antes=s.getStatus();
+            for(String motivo:Arrays.asList(null,"","     ","abcd","x".repeat(1001)))assertThrows(RegraNegocioException.class,()->service.solicitar(10L,motivo,perfil.name()),perfil.name());
+            assertEquals(antes,s.getStatus());assertTrue(s.getEventosFinanceiros().isEmpty());
+        }
+        verifyNoInteractions(avisos);
+    }
+    @Test void confirmacoesTambemExigemJustificativaPropria(){
+        s.setStatus("Aguardando financeiro");service.solicitar(10L,"Obra suspensa pelo cliente","GERENTE");
+        assertThrows(RegraNegocioException.class,()->service.confirmar(10L,"  ",false,"FINANCEIRO"));
+        assertFalse(s.isFinanceiroCancelamentoConfirmado());assertEquals("Cancelamento solicitado",s.getStatus());
+        var r=service.confirmar(10L,"Fornecedor confirmou a interrupção da compra",false,"FINANCEIRO");
+        assertEquals("Obra suspensa pelo cliente",r.motivo());
+        assertTrue(r.historico().stream().anyMatch(e->e.tipo().equals("CANCELAMENTO_FINANCEIRO")&&e.descricao().contains("Fornecedor confirmou")&&e.autorLogin().equals("FINANCEIRO")));
+    }
+    @Test void financeiroQueIniciaOCancelamentoRegistraSeuParecer(){
+        s.setStatus("Aguardando financeiro");var r=service.solicitar(10L,"Orçamento não autorizado pelo cliente","FINANCEIRO");
+        assertEquals("Cancelada",r.status());assertTrue(r.historico().stream().anyMatch(e->e.tipo().equals("CANCELAMENTO_FINANCEIRO")&&e.descricao().contains("Orçamento não autorizado")));
+    }
     @Test void rhNaoAcessaFerramentasNemPorId(){assertThrows(RecursoNaoEncontradoException.class,()->service.consultar(10L,"RH"));}
+    @Test void gerenteNaoConsultaNemCancelaEpiMesmoSeFoiAutorAntigo(){
+        s.substituirMateriais(List.of(new MaterialSolicitado("Capacete",2,null,"epi|capacete|")));s.setSolicitanteLogin("GERENTE");
+        assertThrows(RecursoNaoEncontradoException.class,()->service.consultar(10L,"GERENTE"));
+        assertThrows(RecursoNaoEncontradoException.class,()->service.solicitar(10L,"Tentativa indevida","GERENTE"));
+        assertThrows(RecursoNaoEncontradoException.class,()->service.confirmar(10L,"Tentativa indevida",false,"GERENTE"));
+        assertEquals("Pendente",s.getStatus());
+    }
     @Test void tstNaoAcessaPedidoDeFerramentas(){assertThrows(RecursoNaoEncontradoException.class,()->service.solicitar(10L,"Duplicado","TST"));}
     @Test void outroTecnicoNaoAcessa(){var outro=new Funcionario();ReflectionTestUtils.setField(outro,"id",99L);usuarios.buscarPorLogin("TECNICO").setFuncionario(outro);assertThrows(RecursoNaoEncontradoException.class,()->service.consultar(10L,"TECNICO"));}
     @Test void estoqueNaoConsultaPendente(){assertThrows(RecursoNaoEncontradoException.class,()->service.consultar(10L,"ESTOQUE"));}

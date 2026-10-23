@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
-import { Boxes, CircleDollarSign, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
+import { CircleDollarSign, HardHat, KeyRound, LayoutDashboard, LogOut, Moon, Pencil, Search, ShieldCheck, Sun, UserPlus, Users, Warehouse, Wrench } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiUsuarios } from '../../services/api/servicoAutenticacaoApi';
 import { apiFuncionarios } from '../../services/api/servicoAtivosApi';
@@ -154,11 +154,11 @@ export function PainelAdmin() {
     </main>}
 
     {area === 'gerencia' && <PainelControleAtivos incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
-    {area === 'rh' && <><p className={estilos.modoAuditoria}>Visão do RH: pedidos, compras e auditoria exclusivamente de EPIs.</p><PainelControleAtivos incorporado perfilVisualizado="RH" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
-    {area === 'financeiro' && <><p className={estilos.modoAuditoria}><CircleDollarSign /> Visão financeira reutilizando o painel e o Kanban da Gerência, com operações restritas à etapa financeira.</p><PainelControleAtivos incorporado perfilVisualizado="FINANCEIRO" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
+    {area === 'rh' && <PainelControleAtivos incorporado perfilVisualizado="RH" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
+    {area === 'financeiro' && <PainelControleAtivos incorporado perfilVisualizado="FINANCEIRO" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'estoque' && <PainelEstoque incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
-    {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de vistoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
-    {area === 'tst' && <><p className={estilos.modoAuditoria}><HardHat /> Visão do TST em modo de vistoria: somente equipamentos da categoria EPI ficam disponíveis.</p><PainelTecnico modoAdministrador perfilVisualizado="TST" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
+    {area === 'tecnico' && <PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
+    {area === 'tst' && <PainelTecnico modoAdministrador perfilVisualizado="TST" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
 
     {criandoUsuario && <ModalNovoUsuario funcionarios={funcionariosSemAcesso} aoFechar={() => definirCriandoUsuario(false)} aoSalvar={criarUsuario} />}
     {editandoUsuario && <ModalNovoUsuario usuario={editandoUsuario} funcionarios={funcionarios.filter((funcionario) => !funcionario.arquivado && !usuarios.some((item) => item.id !== editandoUsuario.id && item.funcionarioId === funcionario.id))} aoFechar={() => definirEditandoUsuario(null)} aoSalvar={editarUsuario} />}

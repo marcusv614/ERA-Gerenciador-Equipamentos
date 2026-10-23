@@ -171,7 +171,7 @@ assert.ok(equipamentos.some(e => e.serie.startsWith(`${campo.serie}-M`) && e.qua
 assert.equal(equipamentos.filter(e => e.modelo === 'Alicate').reduce((n, e) => n + e.quantidade, 0), 12);
 assert.equal((await gerente.requisicao('GET', `${rotaAuditoria(t2)}/${ficha.id}`)).itens.find(i => i.equipamentoId === campo.id).quantidade, 4);
 const rejeitada = await tecnicoB.requisicao('POST', '/atividades', { tecnico: t2.nome, obraOrigemId: b.id, dataSolicitacao: hoje, materiais: [material(campo, 1, true)] }, 201);
-await gerente.requisicao('POST', `/atividades/${rejeitada.id}/rejeicao`, {});
+await gerente.requisicao('POST', `/atividades/${rejeitada.id}/rejeicao`, {motivo:'Material não necessário nesta etapa de teste'});
 assert.equal((await admin.requisicao('GET', '/equipamentos')).find(e => e.id === campo.id).quantidadeReservada, 0);
 await gerente.requisicao('POST', rotaAuditoria(t2), { equipamentoIds: [campo.id] }, 201);
 assert.equal((await gerente.requisicao('GET', '/auditorias')).length, 3);

@@ -9,6 +9,10 @@ const obra={id:1,nome:'Obra A',inicio:'2026-01-01',responsaveis:['Maria']};
 const buscar=(id)=>({id,nome:id===1?'Obra A':'Obra B'});
 const material={nome:'Escada',quantidade:2,catalogoChave:'ferramentas|escada|',identificacao:null};
 const pedido={id:3,obraOrigemId:null,obraDestinoId:2,tecnico:'João',status:'Pendente',materiais:[material]};
+test('PDF financeiro preserva justificativa e escapa conteúdo informado pelo usuário',()=>{
+  const html=modelos.pedidosFinanceiros([{...pedido,status:'Rejeitada',decisoes:[{tipo:'REJEICAO',autorNome:'Financeiro',autorLogin:'fin',descricao:'Sem orçamento <script>alert(1)</script>'}]}],buscar).conteudo;
+  assert.match(html,/Justificativa/);assert.match(html,/Sem orçamento &lt;script&gt;/);assert.doesNotMatch(html,/<script>/);
+});
 
 test('envio parcial preserva o pedido de dez e distingue as seis unidades deste atendimento',()=>{
   const html=modelos.auditoriaSolicitacao({...pedido,materiais:[{...material,quantidade:6}],materiaisOriginais:[{...material,quantidade:10}],eventosFinanceiros:[{tipo:'ATENDIMENTO_PARCIAL',autorNome:'Estoque',descricao:'4 unidades pendentes no atendimento #5.'}]},buscar).conteudo;

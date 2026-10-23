@@ -89,7 +89,7 @@ const criar = async(e,q,etapa,epi=false,origem=null,compra=q) => {
   let p=await clientes[nome].req('POST','/atividades',{tecnico:funcionarios[nome].nome,obraDestinoId:obras[2].id,
     dataSolicitacao:hoje,materiais:[{nome:e.modelo,catalogoChave:e.catalogoChave,quantidade:q}],observacao:`DEMO — cenário ${etapa}`});
   if(etapa==='Pendente') return p;
-  if(etapa==='Rejeitada') return analista.req('POST',`/atividades/${p.id}/rejeicao`,{});
+  if(etapa==='Rejeitada') return analista.req('POST',`/atividades/${p.id}/rejeicao`,{motivo:'Material não necessário nesta etapa de teste'});
   p=await analista.req('POST',`/atividades/${p.id}/aprovacao`,{});
   if(etapa==='Aguardando financeiro')return p;
   await clientes.financeiro.req('POST',`/atividades/${p.id}/plano-financeiro`,{materiais:[{
