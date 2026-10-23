@@ -27,7 +27,7 @@ class RecuperacaoContaServiceTests {
     final EmailRecuperacaoService email=mock(EmailRecuperacaoService.class);
     final LimitesRecuperacao limites=mock(LimitesRecuperacao.class);
     final JdbcTemplate jdbc=mock(JdbcTemplate.class);
-    final RecuperacaoContaService service=new RecuperacaoContaService(usuarios,tokens,encoder,email,limites,new RecuperacaoProperties(true,"https://era.example"),jdbc);
+    final RecuperacaoContaService service=new RecuperacaoContaService(usuarios,tokens,encoder,email,limites,new RecuperacaoProperties(true,"https://era.example"),jdbc,mock(AuditoriaSegurancaService.class));
     Usuario admin;
     @BeforeEach void preparar(){
         admin=new Usuario();ReflectionTestUtils.setField(admin,"id",1L);
@@ -47,7 +47,7 @@ class RecuperacaoContaServiceTests {
         admin.setPerfil(PerfilUsuario.ADMIN);confirmarEndereco();assertFalse(service.exigeCadastro(admin));
     }
     @Test void recursoDesabilitadoNaoBloqueiaAdministrador(){
-        var desligado=new RecuperacaoContaService(usuarios,tokens,encoder,email,limites,new RecuperacaoProperties(false,""),jdbc);
+        var desligado=new RecuperacaoContaService(usuarios,tokens,encoder,email,limites,new RecuperacaoProperties(false,""),jdbc,mock(AuditoriaSegurancaService.class));
         assertFalse(desligado.exigeCadastro(admin));
         desligado.processarSolicitacao("admin");verifyNoInteractions(email);
         assertThrows(RegraNegocioException.class,()->desligado.cadastrarEmail(1L,admin.getVersaoSessao(),cadastro()));
@@ -113,11 +113,11 @@ class RecuperacaoContaServiceTests {
     }
     @Test void redefineSenhaRevogaSessoesConsomeLinkENaoAutentica(){
         TokenRecuperacao token=prepararLink();long versao=admin.getVersaoSessao();
-        service.redefinir(new RecuperacaoDto.Redefinir("a".repeat(43),"Nova#Segura123"));
+        service.redefinir(new RecuperacaoDto.Redefinir("a".repeat(43),"Nova#Segura1234567"));
         assertEquals("novo-hash",admin.getSenhaHash());assertTrue(admin.getVersaoSessao()>versao);
         assertFalse(admin.isDeveAlterarSenha());assertNotNull(admin.getSenhaAlteradaEm());
         assertFalse(token.valido(OffsetDateTime.now()));
-        assertThrows(RegraNegocioException.class,()->service.redefinir(new RecuperacaoDto.Redefinir("a".repeat(43),"Outra#Senha123")));
+        assertThrows(RegraNegocioException.class,()->service.redefinir(new RecuperacaoDto.Redefinir("a".repeat(43),"Outra#Senha1234567")));
         verify(email).avisarSemInterromper(eq("original@gmail.com"),eq("Senha redefinida"),anyString());
     }
     @Test void rejeitaTokenExpiradoSemAlterarSenha(){
@@ -162,5 +162,5 @@ class RecuperacaoContaServiceTests {
         TokenRecuperacao token=new TokenRecuperacao(admin,REDEFINIR_SENHA,admin.getEmailRecuperacao(),hash,OffsetDateTime.now());
         when(tokens.buscarUsuarioPeloHash(hash)).thenReturn(Optional.of(1L));when(tokens.buscarParaAtualizacao(hash)).thenReturn(Optional.of(token));return token;
     }
-    private void rejeitaLink(){assertThrows(RegraNegocioException.class,()->service.redefinir(new RecuperacaoDto.Redefinir("a".repeat(43),"Nova#Segura123")));}
+    private void rejeitaLink(){assertThrows(RegraNegocioException.class,()->service.redefinir(new RecuperacaoDto.Redefinir("a".repeat(43),"Nova#Segura1234567")));}
 }

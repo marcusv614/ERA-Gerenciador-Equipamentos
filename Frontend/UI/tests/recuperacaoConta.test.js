@@ -10,8 +10,9 @@ test('aceita apenas tokens de 256 bits no fragmento da recuperação', () => {
   }
 });
 test('valida tamanho e confirmação da nova senha', () => {
+  assert.equal(validarNovaSenhaRecuperacao('Bico#123','Bico#123'),'');
   assert.ok(validarNovaSenhaRecuperacao('curta', 'curta'));
-  assert.ok(validarNovaSenhaRecuperacao('Senha#12345', 'diferente'));
+  assert.ok(validarNovaSenhaRecuperacao('Uma frase de senha 12345', 'diferente'));
   assert.ok(validarNovaSenhaRecuperacao('a'.repeat(129), 'a'.repeat(129)));
-  assert.equal(validarNovaSenhaRecuperacao('Senha#12345', 'Senha#12345'), '');
+  assert.equal(validarNovaSenhaRecuperacao('Uma frase de senha 12345', 'Uma frase de senha 12345'), '');
 });

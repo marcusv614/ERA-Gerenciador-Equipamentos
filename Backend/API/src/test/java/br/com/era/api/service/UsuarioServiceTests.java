@@ -21,6 +21,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsuarioServiceTests {
+    @Test void loginDesconhecidoNaoRegistraLoginDigitado(){
+        service.registrarFalha("valor-que-pode-conter-dado-pessoal");
+        verify(auditoria).registrar(AuditoriaSegurancaService.Tipo.LOGIN_FALHA,null,null);
+    }
+    @Test void quintoErroGeraEventoDeBloqueio(){
+        var usuario=new Usuario();org.springframework.test.util.ReflectionTestUtils.setField(usuario,"id",9L);usuario.setTentativasFalhas(4);
+        when(repository.buscarLoginParaAtualizacao("tecnico")).thenReturn(Optional.of(usuario));service.registrarFalha("tecnico");
+        verify(auditoria).registrar(AuditoriaSegurancaService.Tipo.LOGIN_BLOQUEADO,null,9L);assertEquals(5,usuario.getTentativasFalhas());
+    }
     @Test void listaMetadadosAdministrativosSemExporCredenciais() {
         var u=new Usuario();u.setNome("Administrador");u.setLogin("admin");u.setPerfil(PerfilUsuario.ADMIN);u.setSenhaHash("SEGREDO-QUE-NAO-DEVE-SER-EXPOSTO");
         var login=java.time.OffsetDateTime.parse("2026-10-23T09:00:00-04:00");u.setUltimoLogin(login);u.setBloqueadoAte(login.plusMinutes(15));
@@ -37,7 +46,7 @@ class UsuarioServiceTests {
         usuario.setSenhaHash("hash-redefinido");
         when(repository.buscarIdParaAtualizacao(1L)).thenReturn(Optional.of(usuario));
         assertThrows(org.springframework.security.access.AccessDeniedException.class,()->service.alterarSenha(
-            1L,new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaSenha#123"),versaoAnterior));
+            1L,new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaUmaFrase#Senha123456456789"),versaoAnterior));
         assertEquals("hash-redefinido",usuario.getSenhaHash());
     }
 
@@ -55,8 +64,8 @@ class UsuarioServiceTests {
         Usuario usuario = new Usuario(); usuario.setLogin("tecnico"); usuario.setSenhaHash("hash-antigo"); usuario.setDeveAlterarSenha(true);
         usuario.setPerfil(PerfilUsuario.TECNICO);
         when(repository.buscarIdParaAtualizacao(1L)).thenReturn(Optional.of(usuario));
-        when(encoder.encode("NovaSenha#123")).thenReturn("hash-novo");
-        service.alterarSenha(1L, new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaSenha#123"),usuario.getVersaoSessao());
+        when(encoder.encode("NovaUmaFrase#Senha123456456789")).thenReturn("hash-novo");
+        service.alterarSenha(1L, new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaUmaFrase#Senha123456456789"),usuario.getVersaoSessao());
         assertEquals("hash-novo",usuario.getSenhaHash());
         org.junit.jupiter.api.Assertions.assertFalse(usuario.isDeveAlterarSenha());
         org.junit.jupiter.api.Assertions.assertNotNull(usuario.getSenhaAlteradaEm());
@@ -65,21 +74,22 @@ class UsuarioServiceTests {
     void trocaNormalContinuaExigindoSenhaAtual() {
         Usuario usuario = new Usuario(); usuario.setLogin("tecnico"); usuario.setSenhaHash("hash-antigo"); usuario.setDeveAlterarSenha(false);
         when(repository.buscarIdParaAtualizacao(1L)).thenReturn(Optional.of(usuario));
-        assertThrows(RegraNegocioException.class,()->service.alterarSenha(1L,new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaSenha#123"),usuario.getVersaoSessao()));
+        assertThrows(RegraNegocioException.class,()->service.alterarSenha(1L,new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"NovaUmaFrase#Senha123456456789"),usuario.getVersaoSessao()));
         assertEquals("hash-antigo",usuario.getSenhaHash());
     }
     @Test
     void trocaObrigatoriaRejeitaReutilizarSenhaTemporaria() {
         Usuario usuario = new Usuario(); usuario.setLogin("tecnico"); usuario.setSenhaHash("hash-antigo"); usuario.setDeveAlterarSenha(true);
         when(repository.buscarIdParaAtualizacao(1L)).thenReturn(Optional.of(usuario));
-        when(encoder.matches("Temporaria#123","hash-antigo")).thenReturn(true);
-        assertThrows(RegraNegocioException.class,()->service.alterarSenha(1L,new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"Temporaria#123"),usuario.getVersaoSessao()));
+        when(encoder.matches("Temporaria#123456789","hash-antigo")).thenReturn(true);
+        assertThrows(RegraNegocioException.class,()->service.alterarSenha(1L,new br.com.era.api.dto.AutenticacaoDto.AlterarSenha(null,"Temporaria#123456789"),usuario.getVersaoSessao()));
         assertTrue(usuario.isDeveAlterarSenha());
     }
     private final UsuarioRepository repository = mock(UsuarioRepository.class);
     private final FuncionarioRepository funcionarios = mock(FuncionarioRepository.class);
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);
-    private final UsuarioService service = new UsuarioService(repository, funcionarios, encoder);
+    private final AuditoriaSegurancaService auditoria=mock(AuditoriaSegurancaService.class);
+    private final UsuarioService service = new UsuarioService(repository, funcionarios, encoder,auditoria);
 
     @Test
     void deveCriarAcessoTecnicoVinculadoComSenhaHasheada() {
@@ -87,16 +97,16 @@ class UsuarioServiceTests {
         tecnico.setNome("Técnico Teste");
         when(repository.existsByLoginIgnoreCase("tecnico@era.com")).thenReturn(false);
         when(funcionarios.findById(10L)).thenReturn(Optional.of(tecnico));
-        when(encoder.encode("Senha#123")).thenReturn("hash-argon2");
+        when(encoder.encode("UmaFrase#Senha123456")).thenReturn("hash-argon2");
         when(repository.save(any(Usuario.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
 
         UsuarioDto.Resposta resposta = service.cadastrar(new UsuarioDto.Cadastro(
-            10L, "Técnico Teste", "TECNICO@ERA.COM", "Senha#123", PerfilUsuario.TECNICO
+            10L, "Técnico Teste", "TECNICO@ERA.COM", "UmaFrase#Senha123456", PerfilUsuario.TECNICO
         ));
 
         assertEquals(PerfilUsuario.TECNICO, resposta.perfil());
         assertTrue(resposta.deveAlterarSenha());
-        verify(encoder).encode("Senha#123");
+        verify(encoder).encode("UmaFrase#Senha123456");
         verify(repository).save(any(Usuario.class));
     }
 
@@ -108,7 +118,7 @@ class UsuarioServiceTests {
             new UsuarioDto.Cadastro(null, "Gerente", "gerente", "1234567", PerfilUsuario.GERENTE)
         ));
 
-        assertTrue(erro.getMessage().contains("8 caracteres"));
+        assertTrue(erro.getMessage().contains("8 a 128"));
     }
 
     @Test
@@ -116,7 +126,7 @@ class UsuarioServiceTests {
         when(repository.existsByLoginIgnoreCase("tecnico")).thenReturn(false);
 
         RegraNegocioException erro = assertThrows(RegraNegocioException.class, () -> service.cadastrar(
-            new UsuarioDto.Cadastro(null, "Técnico", "tecnico", "Senha#123", PerfilUsuario.TECNICO)
+            new UsuarioDto.Cadastro(null, "Técnico", "tecnico", "UmaFrase#Senha123456", PerfilUsuario.TECNICO)
         ));
 
         assertTrue(erro.getMessage().contains("vinculado"));
@@ -149,16 +159,16 @@ class UsuarioServiceTests {
         when(repository.existsByLoginIgnoreCaseAndIdNot("novo.login", 2L)).thenReturn(false);
         when(repository.existsByFuncionarioIdAndIdNot(10L, 2L)).thenReturn(false);
         when(funcionarios.findById(10L)).thenReturn(Optional.of(tecnico));
-        when(encoder.encode("Senha#Nova123")).thenReturn("novo-hash");
+        when(encoder.encode("UmaSenha#Nova123456")).thenReturn("novo-hash");
 
         UsuarioDto.Resposta resposta = service.atualizar(2L, new UsuarioDto.Atualizacao(
-            10L, "Nome atualizado", "NOVO.LOGIN", PerfilUsuario.TECNICO, "Senha#Nova123"
+            10L, "Nome atualizado", "NOVO.LOGIN", PerfilUsuario.TECNICO, "UmaSenha#Nova123456"
         ));
 
         assertEquals("novo.login", resposta.login());
         assertEquals(PerfilUsuario.TECNICO, resposta.perfil());
         assertTrue(resposta.deveAlterarSenha());
-        verify(encoder).encode("Senha#Nova123");
+        verify(encoder).encode("UmaSenha#Nova123456");
     }
 
     @Test
@@ -184,6 +194,6 @@ class UsuarioServiceTests {
         RegraNegocioException erro = assertThrows(RegraNegocioException.class,
                 () -> service.criarAdminInicial("Administrador", "admin", "1234567"));
 
-        assertTrue(erro.getMessage().contains("8 caracteres"));
+        assertTrue(erro.getMessage().contains("8 a 128"));
     }
 }

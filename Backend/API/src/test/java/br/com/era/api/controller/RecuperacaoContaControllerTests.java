@@ -49,7 +49,7 @@ class RecuperacaoContaControllerTests {
         assertEquals(normal,controller.solicitar(new RecuperacaoDto.Solicitar("tecnico"),request).mensagem());
     }
     @Test void rejeitaLinkMalformadoECodigoInvalidoAntesDoServico() throws Exception {
-        mvc.perform(post("/auth/recuperacao/redefinir").contentType("application/json").content("{\"token\":\"123\",\"novaSenha\":\"Nova#Senha123\"}"))
+        mvc.perform(post("/auth/recuperacao/redefinir").contentType("application/json").content("{\"token\":\"123\",\"novaSenha\":\"Nova#Senha1234567\"}"))
             .andExpect(status().isBadRequest());
         mvc.perform(post("/auth/recuperacao/confirmar-email").contentType("application/json").content("{\"codigo\":\"123\"}"))
             .andExpect(status().isBadRequest());
@@ -66,7 +66,7 @@ class RecuperacaoContaControllerTests {
     @Test void limitaTentativasDeRedefinicao() throws Exception {
         when(limites.permitir(anyString(),anyString(),anyInt())).thenReturn(false);
         mvc.perform(post("/auth/recuperacao/redefinir").contentType("application/json")
-            .content("{\"token\":\""+"a".repeat(43)+"\",\"novaSenha\":\"Nova#Senha123\"}"))
+            .content("{\"token\":\""+"a".repeat(43)+"\",\"novaSenha\":\"Nova#Senha1234567\"}"))
             .andExpect(status().isTooManyRequests());verify(service,never()).redefinir(any());
     }
 }

@@ -22,7 +22,7 @@ class PedidoGerenciaTests {
     final FuncionarioService funcionarios = mock(FuncionarioService.class);
     final EquipamentoService equipamentoService = mock(EquipamentoService.class);
     final UsuarioRepository acessos = mock(UsuarioRepository.class);
-    final UsuarioService usuarios = new UsuarioService(acessos, mock(FuncionarioRepository.class), mock(PasswordEncoder.class));
+    final UsuarioService usuarios = new UsuarioService(acessos, mock(FuncionarioRepository.class), mock(PasswordEncoder.class),mock(AuditoriaSegurancaService.class));
     final SolicitacaoService service = new SolicitacaoService(pedidos, equipamentos, movimentos, obras, funcionarios, equipamentoService, usuarios, mock(InventarioHistoricoService.class),mock(NotificacaoMovimentacaoService.class));
     final Funcionario tecnico = new Funcionario();
     final Usuario gerente = new Usuario();

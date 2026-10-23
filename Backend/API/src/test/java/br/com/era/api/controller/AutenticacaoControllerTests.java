@@ -41,10 +41,12 @@ class AutenticacaoControllerTests {
         when(usuarios.registrarSucesso(1L,principal.getVersaoSessao())).thenReturn(usuario);
         when(usuarios.sessao(usuario)).thenReturn(sessao);
 
-        var resultado = new AutenticacaoController(authenticationManager, usuarios, new ChangeSessionIdAuthenticationStrategy())
+        var auditoria=mock(br.com.era.api.service.AuditoriaSegurancaService.class);
+        var resultado = new AutenticacaoController(authenticationManager, usuarios, new ChangeSessionIdAuthenticationStrategy(),auditoria)
             .login(new AutenticacaoDto.Login("admin", "senha-segura"), request, response);
 
         verify(request).changeSessionId();
+        verify(auditoria).registrar(br.com.era.api.service.AuditoriaSegurancaService.Tipo.LOGIN_SUCESSO,1L,1L);
         assertSame(sessao, resultado);
     }
 }

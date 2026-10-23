@@ -33,12 +33,14 @@ public class RecuperacaoContaService {
     private final LimitesRecuperacao limites;
     private final RecuperacaoProperties config;
     private final JdbcTemplate jdbc;
+    private final AuditoriaSegurancaService auditoria;
     private final SecureRandom random=new SecureRandom();
 
     public RecuperacaoContaService(UsuarioRepository usuarios,TokenRecuperacaoRepository tokens,PasswordEncoder encoder,
-        EmailRecuperacaoService email,LimitesRecuperacao limites,RecuperacaoProperties config,JdbcTemplate jdbc){
+        EmailRecuperacaoService email,LimitesRecuperacao limites,RecuperacaoProperties config,JdbcTemplate jdbc,AuditoriaSegurancaService auditoria){
         this.usuarios=usuarios;this.tokens=tokens;this.encoder=encoder;this.email=email;
         this.limites=limites;this.config=config;this.jdbc=jdbc;
+        this.auditoria=auditoria;
     }
     public boolean habilitada(){return config.habilitada();}
     public boolean exigeCadastro(Usuario usuario){return habilitada()&&usuario.precisaCadastrarEmailRecuperacao();}
@@ -130,9 +132,7 @@ public class RecuperacaoContaService {
         if(!usuario.isAtivo()||usuario.getPerfil()!=PerfilUsuario.ADMIN||usuario.getEmailRecuperacaoVerificadoEm()==null
             ||token.getFinalidade()!=REDEFINIR_SENHA||!token.valido(OffsetDateTime.now())
             ||token.getVersaoSessao()!=usuario.getVersaoSessao()||!token.getEmail().equals(usuario.getEmailRecuperacao()))throw linkInvalido();
-        if(dados.novaSenha().length()<8||dados.novaSenha().length()>128
-            ||dados.novaSenha().toLowerCase(Locale.ROOT).contains(usuario.getLogin().toLowerCase(Locale.ROOT)))
-            throw new RegraNegocioException("A senha precisa ter de 8 a 128 caracteres e não pode conter seu login.");
+        br.com.era.api.config.PoliticaSenha.validar(usuario.getLogin(),dados.novaSenha());
         if(encoder.matches(dados.novaSenha(),usuario.getSenhaHash()))throw new RegraNegocioException("A nova senha deve ser diferente da atual.");
         OffsetDateTime agora=OffsetDateTime.now();
         usuario.setSenhaHash(encoder.encode(dados.novaSenha()));usuario.setDeveAlterarSenha(false);
@@ -151,7 +151,11 @@ public class RecuperacaoContaService {
     }
     private void exigirHabilitada(){if(!habilitada())throw new RegraNegocioException("A recuperação por e-mail ainda não foi configurada no servidor.");}
     private RegraNegocioException linkInvalido(){return new RegraNegocioException("Link inválido ou expirado. Solicite uma nova recuperação.");}
-    private void auditar(Long id,String tipo){jdbc.update("INSERT INTO recuperacao_eventos(usuario_id,tipo) VALUES (?,?)",id,tipo);}
+    private void auditar(Long id,String tipo){
+        jdbc.update("INSERT INTO recuperacao_eventos(usuario_id,tipo) VALUES (?,?)",id,tipo);
+        if("EMAIL_RECUPERACAO_CONFIRMADO".equals(tipo))auditoria.registrar(AuditoriaSegurancaService.Tipo.EMAIL_RECUPERACAO_CONFIRMADO,id,id);
+        if("SENHA_RECUPERADA".equals(tipo))auditoria.registrar(AuditoriaSegurancaService.Tipo.SENHA_RECUPERADA,null,id);
+    }
     private String hashCodigo(Long id,OffsetDateTime agora,String codigo){return hash(id+":"+agora.toInstant()+":"+codigo);}
     private void aposConfirmacao(Runnable acao){
         if(TransactionSynchronizationManager.isSynchronizationActive())TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization(){

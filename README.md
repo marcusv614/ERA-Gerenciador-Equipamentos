@@ -91,6 +91,8 @@ A migration `V26__limpar_dados_para_inicio_oficial.sql` remove uma única vez os
 
 ## Serviços
 
+A primeira etapa de reforço de segurança (logs, eventos administrativos e verificações antes da publicação) está documentada em [Segurança — etapa 1](docs/seguranca-etapa-1.md). O mínimo de senha permanece em 8 caracteres, sem redefinir senhas existentes.
+
 Para habilitar a recuperação de contas **somente de administradores**, com confirmação de e-mail no primeiro acesso e envio por Gmail, consulte [Configuração e segurança da recuperação de conta](docs/recuperacao-conta-admin.md). O recurso vem desabilitado até configurar o remetente; os demais perfis continuam sob gestão do administrador.
 
 - `ui`: build React servido por Nginx, que encaminha `/api` para a API.

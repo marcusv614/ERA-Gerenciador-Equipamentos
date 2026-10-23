@@ -1,0 +1,94 @@
+name: Verificar seguranca
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    - cron: '17 8 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  java:
+    name: API - testes e vulnerabilidades Maven
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: Backend/API/pom.xml
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Testar e resolver dependencias efetivas
+        working-directory: Backend/API
+        run: sh mvnw -B -ntp test dependency:tree -DoutputType=json -DoutputFile=target/security-dependencies.json -Dscope=runtime
+      - name: Consultar vulnerabilidades Maven na OSV
+        run: node scripts/verificar-dependencias-java.mjs
+
+  interface:
+    name: UI - testes, lint, build e npm audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: Frontend/UI
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Frontend/UI/package-lock.json
+      - run: npm ci
+      - run: node --test --test-isolation=none tests/*.test.js
+      - run: npm run lint
+      - run: npm run build
+        env:
+          VITE_API_URL: /api
+      - run: npm audit --audit-level=high
+
+  imagens:
+    name: Imagem ${{ matrix.nome }} - vulnerabilidades
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nome: api
+            contexto: Backend/API
+          - nome: ui
+            contexto: Frontend/UI
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ${{ matrix.contexto }}
+          load: true
+          push: false
+          tags: era-security-${{ matrix.nome }}:${{ github.sha }}
+      - name: Bloquear vulnerabilidades altas e criticas
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
+        with:
+          image-ref: era-security-${{ matrix.nome }}:${{ github.sha }}
+          version: v0.76.1
+          scanners: vuln
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: false
+          timeout: 10m

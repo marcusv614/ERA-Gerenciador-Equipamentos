@@ -32,11 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties="app.cors.allowed-origins=http://localhost:5173")
 class SegurancaRecuperacaoTests {
     @Configuration @EnableWebMvc @EnableWebSecurity
-    @Import({SecurityConfig.class,ValidacaoSessaoFilter.class,RecuperacaoContaController.class})
+    @Import({SecurityConfig.class,ValidacaoSessaoFilter.class,RecuperacaoContaController.class,br.com.era.api.controller.EventosSegurancaController.class})
     static class Config {
         @Bean UsuarioService usuarios(){return mock(UsuarioService.class);}
         @Bean RecuperacaoContaService recuperacao(){return mock(RecuperacaoContaService.class);}
         @Bean LimitesRecuperacao limites(){return mock(LimitesRecuperacao.class);}
+        @Bean AuditoriaSegurancaService auditoria(){return mock(AuditoriaSegurancaService.class);}
         @Bean("recuperacaoExecutor") TaskExecutor executor(){return mock(TaskExecutor.class);}
     }
     @Autowired WebApplicationContext contexto;
@@ -67,6 +68,7 @@ class SegurancaRecuperacaoTests {
         for(PerfilUsuario perfil:PerfilUsuario.values()){
             if(perfil==PerfilUsuario.ADMIN)continue;
             var auth=autenticar(perfil);
+            mvc.perform(get("/usuarios/eventos-seguranca").with(authentication(auth))).andExpect(status().isForbidden());
             mvc.perform(get("/auth/recuperacao/configuracao").with(authentication(auth))).andExpect(status().isForbidden());
             mvc.perform(post("/auth/recuperacao/email").with(authentication(auth)).with(csrf()).contentType("application/json")
                 .content("{\"email\":\"teste@gmail.com\",\"senhaAtual\":\"Senha#Atual123\"}")).andExpect(status().isForbidden());
