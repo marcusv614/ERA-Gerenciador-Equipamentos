@@ -19,7 +19,7 @@ A migração V50 adiciona comprovantes de aquisição ao pedido, preservando mat
 
 Entradas legadas vinculadas a lote e a aprovação financeira são sinalizadas; nota/fornecedor eventualmente consultados no cadastro atual não são apresentados como retrato histórico. Contadores sem documentação suficiente não são classificados como compras homologadas.
 
-A API verifica o usuário autenticado: Gerência não exporta EPI; RH exporta exclusivamente EPI; Financeiro não acessa pedidos ainda na primeira etapa nem transporte direto; Estoque não consulta listagens amplas nem pedidos não liberados. Técnicos/TSTs exportam apenas os dados de pedidos já autorizados em sua própria tela, sem acesso à consulta ampla. CSV neutraliza conteúdo que poderia virar fórmula; HTML escapa conteúdo informado pelos usuários.
+A API verifica o usuário autenticado: Gerência não exporta EPI; RH exporta exclusivamente EPI; Financeiro não acessa pedidos ainda na primeira etapa nem transporte direto; Estoque não consulta listagens amplas nem pedidos não liberados. Técnicos e TSTs não possuem ações de exportação nem o modal de PDF/planilha e não acessam a API de relatórios. CSV neutraliza conteúdo que poderia virar fórmula; HTML escapa conteúdo informado pelos usuários.
 
 Como referência de rastreabilidade (ação, data/hora e responsável), foi consultado o [e-ARQ Brasil v2 — Arquivo Nacional](https://www.gov.br/arquivonacional/pt-br/servicos/publicacoes/e-arq-brasil_v2.pdf). Os relatórios auxiliam a conferência operacional e não constituem certificação de conformidade nem substituem documentos fiscais originais.
 

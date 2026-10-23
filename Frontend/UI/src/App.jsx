@@ -20,7 +20,7 @@ function ConteudoAutenticado() {
 }
 function ExportacaoAutenticada() {
   const { usuario } = useAutenticacao();
-  return usuario && !usuario.deveAlterarSenha ? <ExportarRelatorioModal key={usuario.id || usuario.login}/> : null;
+  return usuario && !usuario.deveAlterarSenha && !['TECNICO', 'TST'].includes(usuario.perfil) ? <ExportarRelatorioModal key={usuario.id || usuario.login}/> : null;
 }
 function App() { return <ProvedorAutenticacao><ConteudoAutenticado /><Notificacoes /><ExportacaoAutenticada /></ProvedorAutenticacao>; }
 
