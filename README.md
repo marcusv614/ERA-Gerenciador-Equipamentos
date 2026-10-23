@@ -96,3 +96,5 @@ A migration `V26__limpar_dados_para_inicio_oficial.sql` remove uma única vez os
 - `database`: PostgreSQL com volume persistente.
 
 O Flyway aplica as migrations automaticamente quando a API inicia.
+
+Antes de atualizar um banco existente, confira o [histórico de migrações e as orientações de deploy](docs/historico-migracoes.md). Históricos divergentes de desenvolvimento exigem conferência antes do deploy na Hostinger; não use `repair` para contornar a validação.

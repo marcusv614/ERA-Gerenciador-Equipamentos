@@ -2,6 +2,7 @@ import { Box, ChevronRight, FileDown, FileText, MapPin, PackageCheck, ShoppingCa
 import { EstruturaModal } from '../modal-shell/ModalShell';
 import { formatarData } from '../../utils/datas';
 import { etapaEstoque, itensOperacionais } from '../../utils/operacaoEstoque';
+import { CancelamentoPedido } from '../painel/CancelamentoPedido';
 import css from './OperacaoEstoque.module.css';
 
 export function LinhaPedidoEstoque({ pedido, nomeLocal, aoAbrir }) {
@@ -21,13 +22,13 @@ export function PedidoOperacional({ pedido, nomeLocal, processando, erro, aoFech
   const historico = ['Concluída','Rejeitada','Em trânsito'].includes(pedido.status);
   const aprovacoes = (pedido.eventosFinanceiros||[]).filter(e=>['APROVACAO_INICIAL','APROVACAO'].includes(e.tipo));
   return <EstruturaModal titulo={`Pedido #${String(pedido.id).padStart(4,'0')}`} subtitulo={`${nomeLocal(pedido.obraDestinoId)} · ${pedido.tecnico}`} aoFechar={processando ? () => {} : aoFechar} largo>
-    <div className={css.detalhes} aria-busy={processando}>
+    <div className={css.detalhes} aria-busy={processando}><CancelamentoPedido pedidoId={pedido.id}/>
       <div className={css.contexto}><span className={css.situacao} data-etapa={etapa.chave}>{etapa.titulo}</span><p>{etapa.descricao}</p></div>
       <section aria-label="Materiais e instruções"><header className={css.tituloMateriais}><h3>Materiais do pedido</h3><span>{itens.reduce((s,m)=>s+m.quantidade,0)} un.</span></header>
         <div className={css.itens}>{itens.map(m=><article className={css.item} key={m.chave}><header><strong>{m.nome}</strong><b>{m.quantidade} un.</b></header>
           {m.origens.map((o,i)=><div key={`${o.identificacao}-${i}`} className={css.retirada}><MapPin size={19}/><div><small>{historico?'Origem':'Retirar'} · {o.quantidade} un.</small><strong>{nomeLocal(o.obraOrigemId)}</strong>{o.identificacao&&<span>{o.identificacao}</span>}</div></div>)}
           {!separado&&m.recebida>0&&<div className={css.retirada}><PackageCheck size={19}/><div><small>Compra recebida · {m.recebida} un.</small><strong>Depósito central</strong></div></div>}
-          {!separado&&m.materiais.filter(i=>i.quantidadeCompra>(i.quantidadeEntradaEstoque||0)).map(i=><div className={css.compra} key={i.id}><ShoppingCart size={19}/><div><strong>{i.quantidadeCompra-(i.quantidadeEntradaEstoque||0)} un. pendentes da compra</strong>{i.quantidadeEntradaEstoque>0&&<span>{i.quantidadeEntradaEstoque} de {i.quantidadeCompra} un. já recebidas</span>}</div><button type="button" disabled={processando} onClick={()=>aoComprar(i)}>Registrar compra</button></div>)}
+          {pedido.status==='Aprovada'&&!separado&&m.materiais.filter(i=>i.quantidadeCompra>(i.quantidadeEntradaEstoque||0)).map(i=><div className={css.compra} key={i.id}><ShoppingCart size={19}/><div><strong>{i.quantidadeCompra-(i.quantidadeEntradaEstoque||0)} un. pendentes da compra</strong>{i.quantidadeEntradaEstoque>0&&<span>{i.quantidadeEntradaEstoque} de {i.quantidadeCompra} un. já recebidas</span>}</div><button type="button" disabled={processando} onClick={()=>aoComprar(i)}>Registrar compra</button></div>)}
           {!m.origens.length&&!m.compra&&<p className={css.nota}>Origem ainda não definida pelo Financeiro.</p>}
         </article>)}</div>
       </section>

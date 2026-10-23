@@ -14,6 +14,7 @@ import estilos from './PainelAdmin.module.css';
 const AREAS = [
   { id: 'usuarios', rotulo: 'Administração', icone: ShieldCheck },
   { id: 'gerencia', rotulo: 'Gerência', icone: LayoutDashboard },
+  { id: 'rh', rotulo: 'RH · EPIs', icone: Users },
   { id: 'financeiro', rotulo: 'Financeiro', icone: CircleDollarSign },
   { id: 'estoque', rotulo: 'Estoque', icone: Warehouse },
   { id: 'tecnico', rotulo: 'Técnico', icone: Wrench },
@@ -153,6 +154,7 @@ export function PainelAdmin() {
     </main>}
 
     {area === 'gerencia' && <PainelControleAtivos incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
+    {area === 'rh' && <><p className={estilos.modoAuditoria}>Visão do RH: pedidos, compras e auditoria exclusivamente de EPIs.</p><PainelControleAtivos incorporado perfilVisualizado="RH" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
     {area === 'financeiro' && <><p className={estilos.modoAuditoria}><CircleDollarSign /> Visão financeira reutilizando o painel e o Kanban da Gerência, com operações restritas à etapa financeira.</p><PainelControleAtivos incorporado perfilVisualizado="FINANCEIRO" temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}
     {area === 'estoque' && <PainelEstoque incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema} />}
     {area === 'tecnico' && <><p className={estilos.modoAuditoria}><Boxes /> Visão técnica em modo de vistoria: solicitações devem ser criadas pelo próprio técnico.</p><PainelTecnico modoAdministrador temaEscuro={modoEscuro} aoAlternarTema={alternarTema} /></>}

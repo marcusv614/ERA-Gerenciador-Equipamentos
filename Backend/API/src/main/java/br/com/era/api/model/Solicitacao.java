@@ -8,6 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 @Entity @Table(name="solicitacoes")
 public class Solicitacao {
+    @Column(name="status_antes_cancelamento") private String statusAntesCancelamento;
+    @Column(name="financeiro_cancelamento_confirmado",nullable=false) private boolean financeiroCancelamentoConfirmado;
+    @Column(name="estoque_cancelamento_confirmado",nullable=false) private boolean estoqueCancelamentoConfirmado;
+    @Column(name="motivo_cancelamento") private String motivoCancelamento;
+    public String getStatusAntesCancelamento(){return statusAntesCancelamento;}
+    public void setStatusAntesCancelamento(String v){statusAntesCancelamento=v;}
+    public boolean isFinanceiroCancelamentoConfirmado(){return financeiroCancelamentoConfirmado;}
+    public void setFinanceiroCancelamentoConfirmado(boolean v){financeiroCancelamentoConfirmado=v;}
+    public boolean isEstoqueCancelamentoConfirmado(){return estoqueCancelamentoConfirmado;}
+    public void setEstoqueCancelamentoConfirmado(boolean v){estoqueCancelamentoConfirmado=v;}
+    public String getMotivoCancelamento(){return motivoCancelamento;}
+    public void setMotivoCancelamento(String v){motivoCancelamento=v;}
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @Column(nullable=false,length=40) private String tipo; @Column(nullable=false,length=30) private String status="Pendente";
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="solicitante_id") private Funcionario solicitante;

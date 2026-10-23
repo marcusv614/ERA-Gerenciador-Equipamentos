@@ -116,10 +116,9 @@ await estoque.req('POST',`/atividades/${envioSeis.id}/transito`,{});
 let caixaB=await tecnicoB.req('GET','/notificacoes'),caixaC=await colega.req('GET','/notificacoes');
 assert.equal(caixaB.naoLidas,1);assert.equal(caixaC.naoLidas,1);
 for(const u of [admin,gerente,financeiro,estoque]){
-  const caixa=await u.req('GET','/notificacoes');assert.equal(caixa.naoLidas,1);assert.equal(caixa.itens[0].destinatario,false);
+  const caixa=await u.req('GET','/notificacoes');assert.ok(caixa.itens.every(n=>n.tipo!=='ENVIO'),'Envio avisa somente responsáveis do setor na obra');
   await u.req('POST',`/notificacoes/${caixaB.itens[0].id}/leitura`,{},404);
-  await u.req('POST',`/notificacoes/${caixa.itens[0].id}/leitura`,{});
-  assert.equal((await u.req('GET','/notificacoes')).naoLidas,0);
+  for(const aviso of caixa.itens)await u.req('POST',`/notificacoes/${aviso.id}/leitura`,{});
 }
 assert.equal((await rh.req('GET','/notificacoes')).itens.length,0,'RH não recebe ferramentas');
 assert.equal(caixaB.itens[0].destinatario,true);assert.equal(caixaC.itens[0].destinatario,false);
@@ -210,12 +209,12 @@ const epis = await estoque.req('POST',`/atividades/${epiPedido.id}/atendimento-p
 assert.equal(epis.length,2);assert.ok(epis.every(p=>p.materiaisOriginais[0].quantidade===3));
 await estoque.req('POST',`/atividades/${epiPedido.id}/transito`,{});await tecnicoB.req('POST',`/atividades/${epiPedido.id}/conclusao`,{},[403,404,409]);await tst.req('POST',`/atividades/${epiPedido.id}/conclusao`,{});
 const caixaEpi=await tst.req('GET','/notificacoes');assert.equal(caixaEpi.naoLidas,1);assert.equal(caixaEpi.itens[0].obraId,oe.id);
-const avisosRh=await rh.req('GET','/notificacoes');assert.equal(avisosRh.itens.length,1);assert.equal(avisosRh.itens[0].obraId,oe.id);assert.equal(avisosRh.itens[0].destinatario,false);
+const avisosRh=await rh.req('GET','/notificacoes');assert.ok(avisosRh.itens.every(n=>n.tipo!=='ENVIO'));assert.ok(avisosRh.itens.some(n=>n.obraId===oe.id&&n.tipo==='AJUSTE_FINANCEIRO'));
 const totalFinanceiroAntes=(await financeiro.req('GET','/notificacoes')).itens.length;
 const direto=await gerente.req('POST','/atividades/transporte-direto',{tecnico:b.nome,obraOrigemId:oa.id,obraDestinoId:ob.id,dataSolicitacao:hoje,observacao:'Transporte direto autorizado',materiais:[{nome:equipamento.modelo,catalogoChave:equipamento.catalogoChave,quantidade:1,identificacao:equipamento.serie}]},201);
 await estoque.req('POST',`/atividades/${direto.id}/transito`,{});
 assert.equal((await financeiro.req('GET','/notificacoes')).itens.length,totalFinanceiroAntes,'Financeiro não recebe movimentação direta');
-assert.ok((await gerente.req('GET','/notificacoes')).itens.some(n=>n.solicitacaoId===direto.id));
+assert.ok((await estoque.req('GET','/notificacoes')).itens.some(n=>n.solicitacaoId===direto.id&&n.tipo==='ATENDIMENTO_LIBERADO'));
 assert.ok(!(await colega.req('GET','/notificacoes')).itens.some(n=>n.obraId===oe.id),'Colega técnico não recebe EPI destinado ao setor TST');
 console.log('Notificações: equipe da obra, setores, leitura persistente, CSRF, isolamento por conta e revogação de vínculo: OK');
 console.log('Revisão de aprovação, liberação de reservas e atendimento parcial de EPI/TST: OK');

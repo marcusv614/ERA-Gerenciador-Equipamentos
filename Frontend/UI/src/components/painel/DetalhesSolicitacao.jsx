@@ -1,4 +1,5 @@
 import { BellRing, Building2, Check, CircleDollarSign, FileText, History, MapPin, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
+import { CancelamentoPedido } from './CancelamentoPedido';
 import css from './DetalhesSolicitacao.module.css';
 import { AndamentoSolicitacao } from './AndamentoSolicitacao';
 
@@ -36,7 +37,7 @@ export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId,
   };
 
   return <article className={css.detalhes} aria-label="Conteúdo da solicitação">
-    <div className={css.conteudo}>
+    <div className={css.conteudo}><CancelamentoPedido pedidoId={solicitacao.id}/>
       <AndamentoSolicitacao solicitacao={solicitacao} />
       <section className={css.destino} aria-label="Destino do pedido">
         <span className={css.iconeDestino}><Building2 size={22} aria-hidden="true" /></span>

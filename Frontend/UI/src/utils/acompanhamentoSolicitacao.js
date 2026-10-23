@@ -1,6 +1,7 @@
 import { acompanhamentoPedidoFinanceiro } from './pedidosFinanceiros.js';
 
 export const COLUNAS_ACOMPANHAMENTO = [
+  {id:'cancelamento',titulo:'Cancelamentos',rotulo:'Cancelamentos',descricao:'Atendimentos suspensos ou cancelados'},
   { id: 'gerencia', titulo: 'Aguardando aprovação', rotulo: 'Gerência / RH', descricao: 'Primeira análise do pedido' },
   { id: 'financeiro', titulo: 'No Financeiro', rotulo: 'Financeiro', descricao: 'Análise e planejamento' },
   { id: 'providencias', titulo: 'Compra e separação', rotulo: 'Providências', descricao: 'Atendimento pelo estoque' },
@@ -11,7 +12,7 @@ export const COLUNAS_ACOMPANHAMENTO = [
 
 export function visivelNoFinanceiro(pedido) {
   if (pedido.movimentacaoDireta) return false;
-  return ['Aguardando financeiro', 'Aprovada', 'Aguardando coleta', 'Em trânsito', 'Concluída'].includes(pedido.status) ||
+  return ['Cancelada', 'Cancelamento solicitado', 'Aguardando financeiro', 'Aprovada', 'Aguardando coleta', 'Em trânsito', 'Concluída'].includes(pedido.status) ||
     (pedido.status === 'Rejeitada' && (pedido.eventosFinanceiros || []).some((e) => e.tipo === 'REJEICAO'));
 }
 
@@ -32,6 +33,7 @@ export function acompanhamentoSolicitacao(pedido) {
   const gestor = epi ? 'RH' : 'Gerência';
   let etapa;
   switch (pedido.status) {
+    case 'Cancelada': case 'Cancelamento solicitado': etapa={grupo:'cancelamento',passo:0,rotulo:pedido.status,responsavel:'Financeiro / Estoque',detalhe:'Consulte o motivo e as conferências no histórico. Compras e entregas anteriores são preservadas.'}; break;
     case 'Pendente': etapa = { grupo: 'gerencia', passo: 0, rotulo: `Aguardando ${gestor}`, responsavel: gestor, detalhe: 'O pedido ainda não foi liberado para o Financeiro.' }; break;
     case 'Aguardando financeiro': etapa = { grupo: 'financeiro', passo: 1, rotulo: pedido.planoFinanceiro?.length ? 'Plano financeiro em preparação' : 'Aguardando análise financeira', responsavel: 'Financeiro', detalhe: 'Primeira aprovação concluída. O Financeiro definirá transporte e compra antes de liberar ao estoque.' }; break;
     case 'Aprovada':

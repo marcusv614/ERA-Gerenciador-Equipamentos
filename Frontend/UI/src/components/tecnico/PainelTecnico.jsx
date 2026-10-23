@@ -4,6 +4,7 @@ import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
 import logoEra from '../../assets/ERALTDA.png';
+import { CancelamentoPedido } from '../painel/CancelamentoPedido';
 import estilos from './PainelTecnico.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
@@ -371,6 +372,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
               <div className={estilos.destinoSolicitacao}><MapPin /><span><small>{possuiDestino ? 'Destino' : 'Origem'}</small><strong>{localPedido}</strong></span></div>
               <time dateTime={solicitacao.dataSolicitacao || undefined}><small>Solicitado em</small>{formatarDataSolicitacao(solicitacao.dataSolicitacao)}</time>
             </div>
+            {!modoAdministrador&&<CancelamentoPedido pedidoId={solicitacao.id}/>}
             <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao, ehTst)}</p>
             <section className={estilos.materiaisCartao} aria-label="Materiais do pedido">
               <header><span>Materiais</span><b>{totalMateriais} {totalMateriais === 1 ? 'item' : 'itens'}</b></header>

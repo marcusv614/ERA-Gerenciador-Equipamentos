@@ -5,6 +5,7 @@ export function locaisOperacaoEstoque(pedido) {
 }
 
 export function etapaEstoque(pedido) {
+  if(['Cancelada','Cancelamento solicitado'].includes(pedido.status))return {chave:'cancelamento',titulo:pedido.status,descricao:'Consulte o cancelamento e as conferências. Nenhuma execução é permitida.',prioridade:0};
   const materiais = pedido.materiais || [];
   const separado = materiais.length > 0 && materiais.every(m => m.identificacao?.trim());
   const faltaCompra = materiais.reduce((s, m) => s + Math.max(0, (m.quantidadeCompra || 0) - (m.quantidadeEntradaEstoque || 0)), 0);

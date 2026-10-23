@@ -7,7 +7,7 @@ import { apiAtividades, apiCategoriasEquipamento, apiEquipamentos, apiFuncionari
 import { financeiroApi } from '../services/api/financeiroApi';
 
 export function useControleAtivos(perfil) {
-  const financeiro = perfil === 'FINANCEIRO';
+  const financeiro = ['FINANCEIRO','RH'].includes(perfil);
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
   const [funcionarios, definirFuncionarios] = useState([]);
@@ -18,12 +18,12 @@ export function useControleAtivos(perfil) {
 
   useEffect(() => {
     let deveAtualizar = true;
-    (financeiro ? Promise.all([apiObras.listar(),financeiroApi.disponibilidade(),apiFuncionarios.listar(),financeiroApi.pedidos()]).then(([obras,equipamentos,funcionarios,solicitacoes])=>({obras,equipamentos,funcionarios,solicitacoes,categoriasEquipamento:[]})) : carregarDadosIniciaisApi())
+    (financeiro ? Promise.all([apiObras.listar(),financeiroApi.disponibilidade(perfil),apiFuncionarios.listar(),financeiroApi.pedidos(perfil)]).then(([obras,equipamentos,funcionarios,solicitacoes])=>({obras,equipamentos,funcionarios,solicitacoes,categoriasEquipamento:[]})) : carregarDadosIniciaisApi())
       .then((dados) => {
         if (!deveAtualizar) return;
         if (Array.isArray(dados.obras)) definirObras(dados.obras);
         if (Array.isArray(dados.equipamentos)) definirEquipamentos(dados.equipamentos);
-        if (Array.isArray(dados.funcionarios)) definirFuncionarios(dados.funcionarios);
+        if (Array.isArray(dados.funcionarios)) definirFuncionarios(perfil==='RH'?dados.funcionarios.filter(f=>dados.solicitacoes.some(p=>p.tecnico===f.nome)):dados.funcionarios);
         if (Array.isArray(dados.solicitacoes)) definirSolicitacoes(dados.solicitacoes);
         if (Array.isArray(dados.categoriasEquipamento)) definirCategoriasEquipamento(dados.categoriasEquipamento);
         definirErroApi(null);
@@ -31,7 +31,7 @@ export function useControleAtivos(perfil) {
       .catch((erro) => { if (deveAtualizar) definirErroApi(erro.message); })
       .finally(() => { if (deveAtualizar) definirCarregandoDados(false); });
     return () => { deveAtualizar = false; };
-  }, [financeiro]);
+  }, [financeiro, perfil]);
 
   const buscarObraPorId = (identificador) =>
     obras.find((obra) => obra.id === identificador);
@@ -43,7 +43,7 @@ export function useControleAtivos(perfil) {
       if (document.visibilityState === 'hidden' || atualizando) return;
       atualizando = true;
       try {
-        const [itens, pedidos] = await Promise.all([financeiro ? financeiroApi.disponibilidade() : apiEquipamentos.listar(), financeiro ? financeiroApi.pedidos() : apiAtividades.listar()]);
+        const [itens, pedidos] = await Promise.all([financeiro ? financeiroApi.disponibilidade(perfil) : apiEquipamentos.listar(), financeiro ? financeiroApi.pedidos(perfil) : apiAtividades.listar()]);
         if (ativo) { definirEquipamentos(itens); definirSolicitacoes(pedidos); }
       } catch {
         // Mantém os dados atuais e tenta novamente ao retomar o painel.
@@ -53,7 +53,7 @@ export function useControleAtivos(perfil) {
     window.addEventListener('focus', atualizar);
     document.addEventListener('visibilitychange', atualizar);
     return () => { ativo = false; window.clearInterval(intervalo); window.removeEventListener('focus', atualizar); document.removeEventListener('visibilitychange', atualizar); };
-  }, [financeiro]);
+  }, [financeiro, perfil]);
 
   const equipamentosLocalizados = useMemo(() => financeiro ? equipamentos : localizarEquipamentos(equipamentos, solicitacoes), [equipamentos, solicitacoes, financeiro]);
 
@@ -235,7 +235,7 @@ export function useControleAtivos(perfil) {
       const resposta = status === 'Aprovada'
         ? await apiAtividades.aprovar(identificador)
         : await apiAtividades.rejeitar(identificador);
-      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos());definirErroApi(null);return true;}
+      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
       definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
         solicitacao.id === identificador ? resposta : solicitacao));
       definirErroApi(null);
@@ -261,7 +261,7 @@ export function useControleAtivos(perfil) {
   async function editarSolicitacao(identificador, dadosAtualizados) {
     try {
       const resposta = await apiAtividades.atualizar(identificador, dadosAtualizados);
-      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos());definirErroApi(null);return true;}
+      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
       definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === identificador ? resposta : pedido));
       definirErroApi(null);
       return true;
@@ -270,7 +270,7 @@ export function useControleAtivos(perfil) {
   async function salvarPlanoFinanceiro(id,dados) {
     try {
       const resposta = await apiAtividades.salvarPlanoFinanceiro(id,dados);
-      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos());definirErroApi(null);return true;}
+      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
       definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === id ? resposta : pedido));
       definirErroApi(null);
       return true;

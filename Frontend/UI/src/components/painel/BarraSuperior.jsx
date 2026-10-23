@@ -11,7 +11,7 @@ const INFORMACOES_TELA = {
   deposito: ['Depósito', 'Itens fora de campo — estoque, manutenção e trânsito', 'Buscar item, série...'],
 };
 
-export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos, mostrarNotificacoes = true, financeiro = false }) {
+export function BarraSuperior({ aoVerPedidos, telaAtual, recolhida, modoEscuro, termoBusca, resultadoBusca, ehAdmin, aoSair, aoAlternarRecolhimento, aoAlternarTema, aoBuscar, aoAbrirNovoEquipamento, aoAbrirNovaObra, aoAbrirNovoFuncionario, estilos, mostrarNotificacoes = true, financeiro = false }) {
   const [titulo, subtituloOriginal, buscaOriginal] = INFORMACOES_TELA[telaAtual];
   const subtitulo=financeiro?({atividades:'Pedidos, aprovações e compras',obras:'Consulta dos pedidos e compras por obra',funcionarios:'Consulta dos pedidos por técnico',deposito:'Pedidos destinados ao depósito'})[telaAtual]:subtituloOriginal;
   const textoBusca=financeiro?'Código, técnico, obra, material ou aprovador…':buscaOriginal;
@@ -21,7 +21,7 @@ export function BarraSuperior({ telaAtual, recolhida, modoEscuro, termoBusca, re
     <div><h1 className={estilos.title}>{titulo}</h1><p className={estilos.subtitle}>{subtitulo}</p></div>
     <button type="button" onClick={aoAlternarRecolhimento} className={estilos.topbarCollapseBtn} aria-label={recolhida ? 'Expandir barra superior' : 'Retrair barra superior'} aria-expanded={!recolhida}>{recolhida ? <ChevronDown size={16} /> : <ChevronUp size={16} />}</button>
     <div className={estilos.topbarRight}>
-      {mostrarNotificacoes && <SinoNotificacoes temaEscuro={modoEscuro} />}
+      {mostrarNotificacoes && <SinoNotificacoes temaEscuro={modoEscuro} aoVerPedidos={aoVerPedidos} />}
       <button type="button" aria-label={modoEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={modoEscuro ? 'Tema claro' : 'Tema escuro'} onClick={aoAlternarTema} className={estilos.themeButton}>{modoEscuro ? <Sun size={17} /> : <Moon size={17} />}</button>
       <div className={`${estilos.searchBox} ${buscaAtiva ? estilos.searchBoxActive : ''} ${buscaAtiva && resultadoBusca === 0 ? estilos.searchBoxEmpty : ''}`}>
         <Search size={15} className={estilos.searchIcon} />

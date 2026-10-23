@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { tituloNotificacao } from '../src/utils/titulosNotificacao.js';
+import { pesquisarPedidosFinanceiros } from '../src/utils/pedidosFinanceiros.js';
+assert.match(tituloNotificacao({tipo:'NOVO_PEDIDO',status:'Concluída'}),/sua análise/);
+assert.match(tituloNotificacao({tipo:'ANALISE_FINANCEIRA'}),/financeira/);
+assert.match(tituloNotificacao({tipo:'ATENDIMENTO_LIBERADO'}),/estoque/);
+assert.match(tituloNotificacao({tipo:'AJUSTE_FINANCEIRO'}),/atualizou/);
+assert.match(tituloNotificacao({tipo:'ENVIO',destinatario:true,status:'Em trânsito'}),/Confirme/);
+assert.match(tituloNotificacao({tipo:'ENVIO',destinatario:false,status:'Em trânsito'}),/Envio/);
+assert.match(tituloNotificacao({tipo:'RECEBIMENTO_CONFIRMADO'}),/Recebimento/);
+assert.match(tituloNotificacao({tipo:'CANCELAMENTO_CONFIRMADO'}),/Cancelamento/);
+assert.equal(pesquisarPedidosFinanceiros([{id:1,analises:[{id:12}]}],'#12').length,1);

@@ -34,4 +34,4 @@ A migração V44 adiciona o retrato dos materiais originais para atendimentos pa
 
 O botão **Mover** usa um fluxo próprio de transporte direto: exige um único equipamento existente, com identificação, origem e saldo validados. A Gerência/RH encaminha esse transporte diretamente ao estoque. Uma lista de catálogo continua passando pelo Financeiro, mesmo que parte ou todos os materiais já existam no depósito ou em outra obra.
 
-Pedidos ainda não separados são encaminhados à análise financeira pela migração V43. Compras já recebidas são preservadas e reaproveitadas pelo plano; equipamentos já separados continuam no fluxo de execução existente.
+Pedidos ainda não separados são encaminhados à análise financeira pela migração V39. Compras já recebidas são preservadas e reaproveitadas pelo plano; equipamentos já separados continuam no fluxo de execução existente.

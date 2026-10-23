@@ -42,6 +42,8 @@
 .historico > h3 { margin:0 0 3px; display:flex; align-items:center; gap:8px; font:600 13px/1.5 var(--font-display); }
 .historico > h3 svg { color:var(--text-muted); }
 .historico article { display:grid; justify-content:stretch; gap:3px; }
+.historico > button { min-height:44px; padding:10px 14px; border-radius:8px; cursor:pointer; font:inherit; }
+.historico .acoes { position:static; }
 .acoes { position:sticky; bottom:-24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin:24px 0 0; padding:18px 0; border-top:1px solid var(--border); background:var(--surface); }
 .acoesSecundarias, .acoesDecisao { display:flex; flex-wrap:wrap; gap:8px; }
 .acoesDecisao { margin-left:auto; }

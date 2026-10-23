@@ -83,6 +83,17 @@ class PerfisTstRhTests {
         assertThrows(AccessDeniedException.class,()->service.aprovar(1L,"rh"));
         assertEquals("Pendente",pedido.getStatus());
     }
+    @Test void dashboardRhConsolidaSomenteEpiComHistoricoDoAtendimento(){
+        var pedidoTst=pedido(tst,"EPI","Capacete");
+        var outro=pedido(tecnico,"Ferramentas manuais","Alicate");
+        when(pedidos.findAll()).thenReturn(List.of(pedidoTst,outro));
+        when(usuarios.funcionarioTemPerfilAtivo(tst,PerfilUsuario.TST)).thenReturn(true);
+        var resultado=service.listarPedidosRh("rh");
+        assertEquals(1,resultado.size());assertEquals("Pendente",resultado.getFirst().status());
+        assertEquals("Capacete",resultado.getFirst().materiais().getFirst().nome());
+        assertEquals(1,resultado.getFirst().analises().size());
+        assertThrows(AccessDeniedException.class,()->service.listarPedidosRh("tecnico"));
+    }
 
     private SolicitacaoDto.Requisicao requisicao(String responsavel,String nome,String chave){return new SolicitacaoDto.Requisicao(null,responsavel,null,10L,LocalDate.now(),null,List.of(new SolicitacaoDto.MaterialRequisicao(nome,1,null,chave)));}
     private Solicitacao pedido(Funcionario responsavel,String tipo,String modelo){Solicitacao pedido=new Solicitacao();ReflectionTestUtils.setField(pedido,"id",1L);pedido.setTipo("Movimentação");pedido.setStatus("Pendente");pedido.setTecnico(responsavel);pedido.setSolicitante(responsavel);pedido.substituirMateriais(List.of(new MaterialSolicitado(modelo,1,null,CatalogoChave.criar(tipo,modelo,null))));return pedido;}

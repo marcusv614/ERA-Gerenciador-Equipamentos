@@ -35,6 +35,11 @@ public class SolicitacaoService {
         if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(usuarios.buscarPorLogin(login).getPerfil()))throw new AccessDeniedException("Somente o Financeiro e o administrador podem consultar os pedidos financeiros.");
         return PedidosFinanceiros.consolidar(repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::visivelFinanceiro).toList(),this::respostaFinanceira);
     }
+    @Transactional(readOnly=true) public List<br.com.era.api.dto.PedidoFinanceiroDto.Resposta> listarPedidosRh(String login){
+        var perfil=usuarios.buscarPorLogin(login).getPerfil();
+        if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.RH).contains(perfil))throw new AccessDeniedException("Consulta exclusiva do RH.");
+        return PedidosFinanceiros.consolidar(repository.findAll().stream().filter(s->"Movimentação".equals(s.getTipo())).filter(this::pertenceAoRh).toList(),this::resposta,true);
+    }
     @Transactional
     public SolicitacaoDto.Resposta cadastrar(SolicitacaoDto.Requisicao d, String login) {
         return cadastrar(d,login,false);
@@ -93,6 +98,7 @@ public class SolicitacaoService {
             s.registrarEventoFinanceiro("APROVACAO_INICIAL",transporteDireto?"Transporte direto autorizado pela Gerência/RH; não exige análise financeira.":"Pedido criado e aprovado na primeira etapa pela Gerência/RH, encaminhado ao Financeiro.",usuario);
         }
         Solicitacao salva = repository.save(s);
+        notificacoes.notificarNovoPedido(salva);
         return gerencia ? resposta(salva) : respostaTecnico(salva, obras.idsPermitidos(login));
     }
     @Transactional
@@ -135,8 +141,10 @@ public class SolicitacaoService {
         atualizar(id,d);
         s=buscarParaAtualizacao(id);validarEscopoRh(s,autor);
         if(!antes.equals(resumoParaAuditoria(s))&&"Aguardando financeiro".equals(s.getStatus())){s.setPlanoFinanceiro(List.of());if(s.getMateriais().stream().noneMatch(m->m.getQuantidadeEntradaEstoque()>0))s.getMateriais().forEach(m->m.solicitarCompra(0));}
-        if(autor.getPerfil()==PerfilUsuario.FINANCEIRO&&!antes.equals(resumoParaAuditoria(s)))
+        if(autor.getPerfil()==PerfilUsuario.FINANCEIRO&&!antes.equals(resumoParaAuditoria(s))){
             s.registrarEventoFinanceiro("ALTERACAO","O Financeiro alterou dados ou incluiu uma observação neste pedido. Revise os dados antes de acompanhar o atendimento.",autor);
+            notificacoes.notificarAlteracaoFinanceira(s);
+        }
         return respostaParaUsuario(s,login);
     }
     @Transactional public SolicitacaoDto.Resposta aprovar(Long id){Solicitacao s=buscarParaAtualizacao(id);return aprovarPrimeiraEtapa(s);}
@@ -146,6 +154,7 @@ public class SolicitacaoService {
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(autor.getPerfil()))throw new AccessDeniedException("A primeira análise cabe à Gerência ou ao RH.");
             aprovarPrimeiraEtapa(s);
             s.registrarEventoFinanceiro("APROVACAO_INICIAL","Pedido aprovado pela Gerência/RH e encaminhado ao Financeiro.",autor);
+            notificacoes.notificarAnaliseFinanceira(s);
             return respostaParaUsuario(s,login);
         }
         if("Aguardando financeiro".equals(s.getStatus())){
@@ -154,6 +163,7 @@ public class SolicitacaoService {
             s.setStatus(s.getObraDestino()==null?"Aguardando coleta":"Aprovada");
             if("Aguardando coleta".equals(s.getStatus())&&s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("Defina os equipamentos antes de aprovar a retirada.");
             s.registrarEventoFinanceiro("APROVACAO","Pedido aprovado pelo Financeiro e liberado para separação ou compra.",autor);
+            notificacoes.notificarPlanoLiberado(s);
             return respostaParaUsuario(s,login);
         }
         throw new RegraNegocioException("A solicitação já foi analisada nesta etapa.");
@@ -163,11 +173,11 @@ public class SolicitacaoService {
         Solicitacao s=buscarParaAtualizacao(id);Usuario autor=usuarios.buscarPorLogin(login);validarEscopoRh(s,autor);
         if("Pendente".equals(s.getStatus())){
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.GERENTE,PerfilUsuario.RH).contains(autor.getPerfil()))throw new AccessDeniedException("A primeira análise cabe à Gerência ou ao RH.");
-            return rejeitar(id);
+            var resultado=rejeitar(id);notificacoes.notificarRejeicao(s,false);return resultado;
         }
         if("Aguardando financeiro".equals(s.getStatus())){
             if(!Set.of(PerfilUsuario.ADMIN,PerfilUsuario.FINANCEIRO).contains(autor.getPerfil()))throw new AccessDeniedException("A análise financeira cabe ao Financeiro.");
-            liberarReservas(s);s.setStatus("Rejeitada");s.registrarEventoFinanceiro("REJEICAO","Pedido rejeitado pelo Financeiro. Consulte a observação e o histórico financeiro.",autor);return respostaParaUsuario(s,login);
+            liberarReservas(s);s.setStatus("Rejeitada");s.registrarEventoFinanceiro("REJEICAO","Pedido rejeitado pelo Financeiro. Consulte a observação e o histórico financeiro.",autor);notificacoes.notificarRejeicao(s,true);return respostaParaUsuario(s,login);
         }
         throw new RegraNegocioException("A solicitação já foi analisada nesta etapa.");
     }
@@ -247,8 +257,9 @@ public class SolicitacaoService {
             for(Solicitacao.ItemPlano item:plano)s.getMateriais().stream().filter(m->Objects.equals(m.getId(),item.materialId())).findFirst().orElseThrow().solicitarCompra(item.quantidadeCompra());
             String descricao=plano.stream().map(item->item.nome()+": "+item.origens().stream().mapToInt(Solicitacao.OrigemPlanejada::quantidade).sum()+" para transportar, "+item.quantidadeCompra()+" para comprar"+(item.justificativa()==null||item.justificativa().isBlank()?"":". Motivo: "+item.justificativa())).collect(java.util.stream.Collectors.joining("; "));
             s.registrarEventoFinanceiro("ALTERACAO","Plano de atendimento definido pelo Financeiro. "+descricao,autor);
+            notificacoes.notificarAlteracaoFinanceira(s);
         }
-        if(revisao){validarEReservarPlano(s);s.registrarEventoFinanceiro("REVISAO_PLANO","O Financeiro revisou o atendimento antes da separação. Motivo: "+dados.motivoRevisao().trim(),autor);}
+        if(revisao){validarEReservarPlano(s);s.registrarEventoFinanceiro("REVISAO_PLANO","O Financeiro revisou o atendimento antes da separação. Motivo: "+dados.motivoRevisao().trim(),autor);notificacoes.notificarAlteracaoFinanceira(s);}
         return respostaParaUsuario(s,login);
     }
 
@@ -333,7 +344,7 @@ public class SolicitacaoService {
         List<Solicitacao.ItemPlano> plano=new java.util.ArrayList<>();for(int indice=0;indice<materiais.size();indice++){var m=materiais.get(indice);var d=divisoes.get(indice);plano.add(new Solicitacao.ItemPlano(m.getId(),m.getNome(),m.getCatalogoChave(),m.getQuantidade(),m.getQuantidadeCompra(),d.justificativa(),envio?d.origensEnvio():d.origensPendentes()));}return plano;
     }
     @Transactional public SolicitacaoDto.Resposta iniciarTransito(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarInicioTransito(s,login);if(!Set.of("Aprovada","Aguardando coleta").contains(s.getStatus()))throw new RegraNegocioException("A movimentação ainda não pode iniciar o transporte.");if(s.getMateriais().stream().anyMatch(m->m.getIdentificacao()==null||m.getIdentificacao().isBlank()))throw new RegraNegocioException("O estoque precisa definir os equipamentos antes do envio.");s.setStatus("Em trânsito");s.setTransitoEm(OffsetDateTime.now());notificacoes.notificarEnvio(s);return respostaParaUsuario(s,login);}
-    @Transactional public SolicitacaoDto.Resposta concluir(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarConclusao(s,login);if(!"Em trânsito".equals(s.getStatus()))throw new RegraNegocioException("A movimentação precisa estar em trânsito para confirmar o recebimento.");s.setConcluidaEm(OffsetDateTime.now());sincronizarMovimentacoes(s);if(s.getObraOrigem()!=null)inventarioHistorico.registrar(s.getObraOrigem());if(s.getObraDestino()!=null&&(s.getObraOrigem()==null||!s.getObraDestino().getId().equals(s.getObraOrigem().getId())))inventarioHistorico.registrar(s.getObraDestino());s.setStatus("Concluída");return respostaParaUsuario(s,login);}
+    @Transactional public SolicitacaoDto.Resposta concluir(Long id,String login){Solicitacao s=buscarParaAtualizacao(id);validarConclusao(s,login);if(!"Em trânsito".equals(s.getStatus()))throw new RegraNegocioException("A movimentação precisa estar em trânsito para confirmar o recebimento.");s.setConcluidaEm(OffsetDateTime.now());sincronizarMovimentacoes(s);if(s.getObraOrigem()!=null)inventarioHistorico.registrar(s.getObraOrigem());if(s.getObraDestino()!=null&&(s.getObraOrigem()==null||!s.getObraDestino().getId().equals(s.getObraOrigem().getId())))inventarioHistorico.registrar(s.getObraDestino());s.setStatus("Concluída");notificacoes.notificarRecebimento(s);return respostaParaUsuario(s,login);}
     @Transactional(readOnly=true) public Solicitacao buscar(Long id){return repository.findById(id).filter(s->"Movimentação".equals(s.getTipo())).orElseThrow(()->new RecursoNaoEncontradoException("Movimentação não encontrada."));}
     private Solicitacao buscarParaAtualizacao(Long id){return repository.buscarParaAtualizacao(id).filter(s->"Movimentação".equals(s.getTipo())).orElseThrow(()->new RecursoNaoEncontradoException("Movimentação não encontrada."));}
     private void sincronizarMovimentacoes(Solicitacao s){LocalDate dataRecebimento=s.getConcluidaEm().atZoneSameInstant(java.time.ZoneId.of("America/Manaus")).toLocalDate();Set<Long> idsAtuais=new HashSet<>();Map<String,Integer> quantidadesPorSerie=new LinkedHashMap<>();Map<String,String> seriesOriginais=new LinkedHashMap<>();for(MaterialSolicitado material:s.getMateriais()){if(material.getIdentificacao()==null||material.getIdentificacao().isBlank())throw new RegraNegocioException("Todo equipamento movimentado precisa de identificação/série.");String chave=material.getIdentificacao().trim().toLowerCase();seriesOriginais.putIfAbsent(chave,material.getIdentificacao().trim());quantidadesPorSerie.merge(chave,material.getQuantidade(),Integer::sum);}for(Map.Entry<String,Integer> item:quantidadesPorSerie.entrySet()){String serie=seriesOriginais.get(item.getKey());Equipamento e=equipamentos.buscarPorSerieParaAtualizacao(serie).orElseThrow(()->new RecursoNaoEncontradoException("Equipamento não encontrado pela série: "+serie));int quantidade=item.getValue();if(e.getQuantidadeReservada()<quantidade)throw new RegraNegocioException("A reserva do item "+e.getModelo()+" não está mais disponível.");e.setQuantidadeReservada(e.getQuantidadeReservada()-quantidade);String status=s.getObraDestino()==null?"Em estoque":"Em campo";Equipamento movimentado=e;if(e.isLote()&&quantidade<e.getQuantidade()){e.setQuantidade(e.getQuantidade()-quantidade);movimentado=equipamentoService.criarLoteDerivado(e,quantidade,s.getObraDestino(),s.getTecnico(),status,dataRecebimento,s.getId());}else{equipamentoService.aplicarDestino(e,s.getObraDestino(),s.getTecnico(),status,dataRecebimento);}movimentado.setDataSaida(s.getTransitoEm()==null?null:s.getTransitoEm().atZoneSameInstant(java.time.ZoneId.of("America/Manaus")).toLocalDate());Equipamento loteMovimentado=movimentado;idsAtuais.add(loteMovimentado.getId());Movimentacao m=movimentacoes.findBySolicitacaoIdAndEquipamentoId(s.getId(),loteMovimentado.getId()).orElseGet(()->equipamentoService.novaMovimentacao(loteMovimentado,s,s.getObraOrigem(),s.getObraDestino(),s.getTecnico(),status,quantidade,dataRecebimento));m.reativar();m.setObraOrigem(s.getObraOrigem());m.setObraDestino(s.getObraDestino());m.setTecnico(s.getTecnico());m.setStatus(status);m.setQuantidade(quantidade);m.setDataMovimentacao(dataRecebimento);movimentacoes.save(m);}
@@ -444,7 +455,7 @@ public class SolicitacaoService {
     private void validarRota(Long origemId,Long destinoId){if(origemId==null&&destinoId==null)throw new RegraNegocioException("Informe a origem ou o destino da movimentação.");if(Objects.equals(origemId,destinoId))throw new RegraNegocioException("A origem e o destino da movimentação precisam ser diferentes.");}
     private Solicitacao copiarParaAtendimento(Solicitacao base,Solicitacao raiz){Solicitacao copia=new Solicitacao();copia.setTipo(base.getTipo());copia.setStatus("Aprovada");copia.setSolicitante(base.getSolicitante());copia.setSolicitanteUsuario(base.getSolicitanteUsuario());copia.setSolicitanteNome(base.getSolicitanteNome());copia.setSolicitanteLogin(base.getSolicitanteLogin());copia.setSolicitantePerfil(base.getSolicitantePerfil());copia.setTecnico(base.getTecnico());copia.setObraDestino(base.getObraDestino());copia.setDataSolicitacao(base.getDataSolicitacao());copia.setDataDecisao(base.getDataDecisao());copia.setObservacao(base.getObservacao());copia.setSolicitacaoPai(raiz);copia.copiarEventosFinanceirosDe(base);copia.copiarPedidoOriginalDe(base);copia.setPlanoFinanceiro(base.getPlanoFinanceiro());copia.setMovimentacaoDireta(base.isMovimentacaoDireta());return copia;}
     private SolicitacaoDto.Resposta resposta(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),s.getObraOrigem()==null?null:s.getObraOrigem().getId(),s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),comprasPreservadas(s),eventosFinanceiros(s),s.getPlanoFinanceiro(),s.getEntradasCompra(),s.isMovimentacaoDireta(),s.getMateriaisOriginais());}
-    private SolicitacaoDto.Resposta respostaFinanceira(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),null,s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),null,s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),null,null,s.getObservacao(),s.getMateriais().stream().map(m->new SolicitacaoDto.MaterialResposta(m.getId(),m.getNome(),m.getQuantidade(),"Aguardando financeiro".equals(s.getStatus())?m.getIdentificacao():null,m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm())).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of(),eventosFinanceiros(s).stream().filter(e->Set.of("APROVACAO_INICIAL","APROVACAO","REJEICAO","ALTERACAO","REVISAO_PLANO").contains(e.tipo())).toList(),PedidosFinanceiros.permiteAnalise(s)?s.getPlanoFinanceiro():List.of(),PedidosFinanceiros.permiteAnalise(s)?s.getEntradasCompra():List.of(),false,List.of());}
+    private SolicitacaoDto.Resposta respostaFinanceira(Solicitacao s){return new SolicitacaoDto.Resposta(s.getId(),null,s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),null,s.getObraDestino()==null?null:s.getObraDestino().getId(),s.getDataSolicitacao(),s.getDataDecisao(),null,null,s.getObservacao(),s.getMateriais().stream().map(m->new SolicitacaoDto.MaterialResposta(m.getId(),m.getNome(),m.getQuantidade(),"Aguardando financeiro".equals(s.getStatus())?m.getIdentificacao():null,m.getCatalogoChave(),m.getQuantidadeCompra(),m.getCompraSolicitadaEm(),m.getQuantidadeAdquirida(),m.getQuantidadeEntradaEstoque(),m.getAdquiridaEm())).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of(),eventosFinanceiros(s).stream().filter(e->e.tipo().startsWith("CANCELAMENTO")||Set.of("APROVACAO_INICIAL","APROVACAO","REJEICAO","ALTERACAO","REVISAO_PLANO").contains(e.tipo())).toList(),PedidosFinanceiros.permiteAnalise(s)?s.getPlanoFinanceiro():List.of(),PedidosFinanceiros.permiteAnalise(s)?s.getEntradasCompra():List.of(),false,List.of());}
     private SolicitacaoDto.Resposta respostaParaUsuario(Solicitacao s,String login){Usuario usuario=usuarios.buscarPorLogin(login);if(usuario.getPerfil()==PerfilUsuario.FINANCEIRO)return respostaFinanceira(s);return usuario.getPerfil().ehProfissionalDeCampo()?respostaTecnico(s,obras.idsPermitidos(login)):resposta(s);}
     private SolicitacaoDto.Resposta respostaTecnico(Solicitacao s,Set<Long> permitidas){Long origem=s.getObraOrigem()!=null&&permitidas.contains(s.getObraOrigem().getId())?s.getObraOrigem().getId():null;Long destino=s.getObraDestino()!=null&&permitidas.contains(s.getObraDestino().getId())?s.getObraDestino().getId():null;return new SolicitacaoDto.Resposta(s.getId(),s.getSolicitacaoPai()==null?null:s.getSolicitacaoPai().getId(),s.getTipo(),s.getStatus(),s.nomeSolicitante(),s.getTecnico().getNome(),origem,destino,s.getDataSolicitacao(),s.getDataDecisao(),s.getTransitoEm(),s.getConcluidaEm(),s.getObservacao(),s.getMateriais().stream().map(this::respostaMaterial).toList(),s.getSolicitanteLogin(),s.getSolicitantePerfil()==null?null:s.getSolicitantePerfil().name(),List.of(),List.of(),List.of(),List.of(),s.isMovimentacaoDireta(),s.getMateriaisOriginais());}
     private List<SolicitacaoDto.MaterialResposta> comprasPreservadas(Solicitacao s){return s.getCompras().stream().map(c->new SolicitacaoDto.MaterialResposta(c.id(),c.nome(),c.quantidade(),c.identificacao(),c.catalogoChave(),c.quantidadeCompra(),c.compraSolicitadaEm(),c.quantidadeAdquirida(),c.quantidadeEntradaEstoque(),c.adquiridaEm())).toList();}
@@ -465,8 +476,8 @@ public class SolicitacaoService {
     }
     private boolean solicitacaoEhEpi(Solicitacao solicitacao){return !solicitacao.getMateriais().isEmpty()&&solicitacao.getMateriais().stream().allMatch(m->EscopoEquipamento.catalogoEhEpi(m.getCatalogoChave()));}
     private boolean pertenceAoRh(Solicitacao solicitacao){return solicitacaoEhEpi(solicitacao)&&usuarios.funcionarioTemPerfilAtivo(solicitacao.getTecnico(),PerfilUsuario.TST);}
-    private boolean visivelFinanceiro(Solicitacao s){return !s.isMovimentacaoDireta()&&(Set.of("Aguardando financeiro","Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus())||("Rejeitada".equals(s.getStatus())&&s.getEventosFinanceiros().stream().anyMatch(e->"REJEICAO".equals(e.tipo()))));}
-    private boolean liberadaParaEstoque(Solicitacao s){return Set.of("Aprovada","Aguardando coleta","Em trânsito","Concluída").contains(s.getStatus());}
+    private boolean visivelFinanceiro(Solicitacao s){return !s.isMovimentacaoDireta()&&(Set.of("Aguardando financeiro","Aprovada","Aguardando coleta","Em trânsito","Concluída","Cancelada","Cancelamento solicitado").contains(s.getStatus())||("Rejeitada".equals(s.getStatus())&&s.getEventosFinanceiros().stream().anyMatch(e->"REJEICAO".equals(e.tipo()))));}
+    private boolean liberadaParaEstoque(Solicitacao s){return Set.of("Aprovada","Aguardando coleta","Em trânsito","Concluída","Cancelamento solicitado","Cancelada").contains(s.getStatus());}
     private void validarEscopoRh(Solicitacao solicitacao,String login){validarEscopoRh(solicitacao,usuarios.buscarPorLogin(login));}
     private void validarEscopoRh(Solicitacao solicitacao,Usuario usuario){if(usuario.getPerfil()==PerfilUsuario.RH&&!pertenceAoRh(solicitacao))throw new AccessDeniedException("O RH pode operar somente solicitações de EPI dos TSTs.");}
     private void validarPermissaoEdicao(Solicitacao s,Usuario usuario){

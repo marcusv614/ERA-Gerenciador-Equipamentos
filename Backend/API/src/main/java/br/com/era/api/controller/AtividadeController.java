@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.security.core.Authentication;
 @RestController @RequestMapping("/atividades")
 public class AtividadeController {
+    @GetMapping("/pedidos-rh") public java.util.List<br.com.era.api.dto.PedidoFinanceiroDto.Resposta> pedidosRh(Authentication a){return service.listarPedidosRh(a.getName());}
     private final SolicitacaoService service; public AtividadeController(SolicitacaoService service){this.service=service;}
     @GetMapping public List<SolicitacaoDto.Resposta> listar(Authentication autenticacao){return service.listarParaUsuario(autenticacao.getName());}
     @GetMapping("/pedidos-financeiros") public List<br.com.era.api.dto.PedidoFinanceiroDto.Resposta> pedidosFinanceiros(Authentication auth){return service.listarPedidosFinanceiros(auth.getName());}

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ArrowRight, Bell, Check, MapPin, Package, X } from 'lucide-react';
 import { notificacoesApi } from '../../services/api/notificacoesApi';
 import estilos from './SinoNotificacoes.module.css';
+import { tituloNotificacao } from '../../utils/titulosNotificacao';
 
 const horario = (valor) => new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(valor));
 
@@ -70,10 +71,11 @@ export function SinoNotificacoes({ temaEscuro = false, aoVerPedidos }) {
       <div className={estilos.lista} aria-busy={carregando}>
         {!caixa.itens.length && <p className={estilos.vazio}>{carregando ? 'Carregando…' : erro ? 'Tente novamente.' : 'Nenhum aviso por aqui.'}</p>}
         {caixa.itens.map(aviso => <article key={aviso.id} className={aviso.lidaEm ? estilos.lida : estilos.nova}>
-          <div className={estilos.linha}><strong><Package size={18} />{aviso.status === 'Concluída' ? 'Material recebido' : 'Material a caminho'}</strong>{!aviso.lidaEm && <span aria-label="Não lida" />}</div>
-          <h3><MapPin size={16} />{aviso.obraNome}</h3>
-          <time className={estilos.referencia} dateTime={aviso.criadaEm}>Enviado em {horario(aviso.criadaEm)}</time>
-          <footer>{aviso.destinatario && aoVerPedidos ? <button type="button" className={estilos.verEntrega} disabled={lendo !== null} onClick={() => verEntrega(aviso)}>{lendo === aviso.id ? 'Abrindo…' : 'Ver entrega'}<ArrowRight size={18} /></button> : !aviso.lidaEm ? <button type="button" disabled={lendo !== null} onClick={() => ler(aviso)}><Check size={18} />{lendo === aviso.id ? 'Salvando…' : 'Entendi'}</button> : <span className={estilos.visto}><Check size={16} />Visto</span>}</footer>
+          <div className={estilos.linha}><strong><Package size={18} />{tituloNotificacao(aviso)}</strong>{!aviso.lidaEm && <span aria-label="Não lida" />}</div>
+          <h3><MapPin size={16} />{aviso.obraNome}</h3>{aviso.mensagem&&<p>{aviso.mensagem}</p>}
+          <time className={estilos.referencia} dateTime={aviso.criadaEm}>Registrado em {horario(aviso.criadaEm)}</time>
+          <p>Pedido #{aviso.solicitacaoId} · Situação atual: {aviso.status}</p>
+          <footer>{aoVerPedidos && (aviso.tipo !== 'ENVIO' || aviso.destinatario) ? <button type="button" className={estilos.verEntrega} disabled={lendo !== null} onClick={() => verEntrega(aviso)}>{lendo === aviso.id ? 'Abrindo…' : 'Ver pedido'}<ArrowRight size={18} /></button> : !aviso.lidaEm ? <button type="button" disabled={lendo !== null} onClick={() => ler(aviso)}><Check size={18} />{lendo === aviso.id ? 'Salvando…' : 'Entendi'}</button> : <span className={estilos.visto}><Check size={16} />Visto</span>}</footer>
         </article>)}
       </div>
       {(pagina > 0 || caixa.temMais) && <nav aria-label="Páginas de notificações"><button type="button" disabled={pagina === 0 || carregando} onClick={() => definirPagina(n => n - 1)}>Anteriores</button><span>Página {pagina + 1}</span><button type="button" disabled={!caixa.temMais || carregando} onClick={() => definirPagina(n => n + 1)}>Próximas</button></nav>}

@@ -31,13 +31,13 @@ public class AuditoriaTecnicoService {
     }
     @Transactional(readOnly=true) public List<AuditoriaTecnicoDto.Resposta> listar(Long tecnicoId,String login) {
         Usuario autor=autor(login);Funcionario funcionario=funcionarios.buscar(tecnicoId);validarEscopoRh(autor,funcionario);
-        return auditorias.findByFuncionarioIdOrderByCriadoEmDescIdDesc(tecnicoId).stream().map(this::resposta).toList();
+        return auditorias.findByFuncionarioIdOrderByCriadoEmDescIdDesc(tecnicoId).stream().filter(a->auditoriaPermitida(autor,a)).map(this::resposta).toList();
     }
     @Transactional(readOnly=true) public List<AuditoriaTecnicoDto.Resposta> listarTodas(String login) {
-        Usuario autor=autor(login);return auditorias.findAllByOrderByCriadoEmDescIdDesc().stream().filter(a->autor.getPerfil()!=PerfilUsuario.RH||usuarios.funcionarioTemPerfilAtivo(a.getFuncionario(),PerfilUsuario.TST)).map(this::resposta).toList();
+        Usuario autor=autor(login);return auditorias.findAllByOrderByCriadoEmDescIdDesc().stream().filter(a->autor.getPerfil()!=PerfilUsuario.RH||usuarios.funcionarioTemPerfilAtivo(a.getFuncionario(),PerfilUsuario.TST)).filter(a->auditoriaPermitida(autor,a)).map(this::resposta).toList();
     }
     @Transactional(readOnly=true) public AuditoriaTecnicoDto.Resposta consultar(Long tecnicoId,Long id,String login) {
-        Usuario autor=autor(login);Funcionario funcionario=funcionarios.buscar(tecnicoId);validarEscopoRh(autor,funcionario);return resposta(auditorias.findByIdAndFuncionarioId(id,tecnicoId).orElseThrow(()->new RecursoNaoEncontradoException("Vistoria não encontrada para este técnico.")));
+        Usuario autor=autor(login);Funcionario funcionario=funcionarios.buscar(tecnicoId);validarEscopoRh(autor,funcionario);return resposta(auditorias.findByIdAndFuncionarioId(id,tecnicoId).filter(a->auditoriaPermitida(autor,a)).orElseThrow(()->new RecursoNaoEncontradoException("Vistoria não encontrada para este técnico.")));
     }
     @Transactional(readOnly=true) public List<AuditoriaTecnico.Item> materiais(Long tecnicoId,String login) {
         Usuario autor=autor(login);Funcionario funcionario=funcionarios.buscar(tecnicoId);validarEscopoRh(autor,funcionario);return materiaisPermitidos(tecnicoId,autor);
@@ -66,6 +66,7 @@ public class AuditoriaTecnicoService {
     @Transactional public AuditoriaTecnicoDto.Resposta registrar(Long tecnicoId,Long id,AuditoriaTecnicoDto.Registro dados,String login) {
         Usuario autor=autor(login);Funcionario tecnico=funcionarios.buscar(tecnicoId);validarEscopoRh(autor,tecnico);
         AuditoriaTecnico a=auditorias.buscarParaAtualizacao(id,tecnicoId).orElseThrow(()->new RecursoNaoEncontradoException("Vistoria não encontrada para este técnico."));
+        if(!auditoriaPermitida(autor,a))throw new RecursoNaoEncontradoException("Vistoria não encontrada.");
         if(!"ABERTA".equals(a.getStatus()))throw new RegraNegocioException("A vistoria concluída está preservada e não pode ser alterada. Crie uma nova vistoria.");
         if(!Objects.equals(dados.versao(),a.getVersao()))throw new RegraNegocioException("Esta vistoria foi atualizada por outra pessoa. Reabra o registro antes de salvar.");
         if(dados.dataVistoria()!=null&&dados.dataVistoria().isAfter(LocalDate.now()))throw new RegraNegocioException("A data da vistoria não pode estar no futuro.");
@@ -85,6 +86,7 @@ public class AuditoriaTecnicoService {
         a.registrar(dados.dataVistoria(),limpar(dados.fiscal()),limpar(dados.observacoes()),resultado,autor,dados.concluir());
         auditorias.flush();return resposta(a);
     }
+    private boolean auditoriaPermitida(Usuario autor,AuditoriaTecnico a){return autor.getPerfil()!=PerfilUsuario.RH||a.getItens().stream().allMatch(i->EscopoEquipamento.ehEpi(i.tipo()));}
     private String limpar(String valor){return valor==null||valor.isBlank()?null:valor.trim();}
     private AuditoriaTecnicoDto.Resposta resposta(AuditoriaTecnico a) {
         return new AuditoriaTecnicoDto.Resposta(a.getId(),a.getVersao(),a.getFuncionario().getId(),a.getTecnicoNome(),a.getStatus(),a.getCriadoEm(),a.getCriadoPorNome(),a.getCriadoPorLogin(),a.getDataVistoria(),a.getFiscal(),a.getObservacoes(),a.getRegistradoPorNome(),a.getRegistradoPorLogin(),a.getAtualizadoEm(),a.getConcluidaEm(),a.getItens());

@@ -13,6 +13,6 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao,Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Solicitacao s where s.id=:id")
     Optional<Solicitacao> buscarParaAtualizacao(@Param("id") Long id);
-    @Query("select (count(s)>0) from Solicitacao s left join s.solicitante autor where (s.tecnico.id=:id or autor.id=:id) and s.status not in ('Concluída','Rejeitada')") boolean existeAbertaParaFuncionario(@Param("id") Long id);
-    @Query("select (count(s)>0) from Solicitacao s where (s.obraOrigem.id=:id or s.obraDestino.id=:id) and s.status not in ('Concluída','Rejeitada')") boolean existeAbertaParaObra(@Param("id") Long id);
+    @Query("select (count(s)>0) from Solicitacao s left join s.solicitante autor where (s.tecnico.id=:id or autor.id=:id) and s.status not in ('Concluída','Rejeitada','Cancelada')") boolean existeAbertaParaFuncionario(@Param("id") Long id);
+    @Query("select (count(s)>0) from Solicitacao s where (s.obraOrigem.id=:id or s.obraDestino.id=:id) and s.status not in ('Concluída','Rejeitada','Cancelada')") boolean existeAbertaParaObra(@Param("id") Long id);
 }

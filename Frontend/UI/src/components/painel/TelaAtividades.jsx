@@ -59,8 +59,8 @@ function JanelaSolicitacao({ solicitacao, aoFechar, children }) {
 export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: todasRecebidas = recebidas, tecnicos = [], equipamentos = [], obras = [], termoBusca = '', erroApi, buscarObraPorId, statusDecisao = 'Pendente', perfil, aoSalvarPlano, aoNovaSolicitacao, aoAprovar, aoRejeitar, aoEditar, aoExportarRomaneio, aoExportarAuditoria, aoExportarPedidos }) {
   const solicitacoes = pedidosDoPerfil(recebidas, perfil);
   const todasSolicitacoes = pedidosDoPerfil(todasRecebidas, perfil);
-  const financeiro=perfil==='FINANCEIRO';
-  const colunasKanban = financeiro ? COLUNAS_FINANCEIRAS : COLUNAS_ACOMPANHAMENTO;
+  const financeiro=['FINANCEIRO','RH'].includes(perfil);
+  const colunasKanban = perfil==='RH' ? [{id:'gerencia',titulo:'Análise do RH',rotulo:'RH',descricao:'Pedidos de EPI aguardando aprovação'},...COLUNAS_FINANCEIRAS] : financeiro ? COLUNAS_FINANCEIRAS : COLUNAS_ACOMPANHAMENTO;
   const filtrosEtapa = [{ id: 'todas', rotulo: 'Todas' }, ...colunasKanban.map((c) => ({ id: c.id, rotulo: c.rotulo }))];
   const [tecnicoAberto, definirTecnicoAberto] = useState(null);
   const [visualizacao, definirVisualizacao] = useState(obterVisualizacaoInicial);
@@ -176,7 +176,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
       </div>}
     {selecionada && !planejando && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}
-      {financeiro ? <DetalhesPedidoFinanceiro solicitacao={selecionada} processando={processando} buscarObraPorId={buscarObraPorId} aoPlanejar={aoSalvarPlano ? definirPlanejando : undefined} aoAprovar={(id)=>decidir(aoAprovar,id)} aoRejeitar={(id)=>decidir(aoRejeitar,id)} aoEditar={(pedido)=>{selecionar(null);aoEditar(pedido);}} aoExportarAuditoria={aoExportarAuditoria}/> : <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
+      {financeiro ? <DetalhesPedidoFinanceiro rh={perfil==='RH'} solicitacao={selecionada} processando={processando} buscarObraPorId={buscarObraPorId} aoPlanejar={aoSalvarPlano ? definirPlanejando : undefined} aoAprovar={(id)=>decidir(aoAprovar,id)} aoRejeitar={(id)=>decidir(aoRejeitar,id)} aoEditar={(pedido)=>{selecionar(null);aoEditar(pedido);}} aoExportarAuditoria={aoExportarAuditoria}/> : <DetalhesSolicitacao solicitacao={selecionada} buscarObraPorId={buscarObraPorId} equipamentos={equipamentos} statusDecisao={statusDecisao} perfil={perfil} processando={processando} aoPlanejar={aoSalvarPlano ? () => definirPlanejando(true) : undefined}
         aoAprovar={(id) => decidir(aoAprovar, id)} aoRejeitar={(id) => decidir(aoRejeitar, id)} aoEditar={(pedido) => { selecionar(null); aoEditar(pedido); }} aoExportarRomaneio={aoExportarRomaneio} aoExportarAuditoria={aoExportarAuditoria} />}
     </JanelaSolicitacao>}
     {selecionada && planejando && <SepararEquipamentosModal key={planejando.id || selecionada.id} solicitacao={planejando === true ? selecionada : planejando} obras={obras} equipamentos={equipamentos} aoFechar={() => definirPlanejando(false)} aoSalvarPlano={async (id,dados) => { const salvo = await aoSalvarPlano(id,dados); if (salvo) definirPlanejando(false); return salvo; }} />}

@@ -50,11 +50,11 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const pedidoAberto = solicitacoes.find(p=>p.id===pedidoId);
   const abrirPedido = id => { definirMensagem(null); definirPedidoId(id); };
   const corresponde = pedido => (obraFiltrada==='todas'||locaisOperacaoEstoque(pedido).includes(obraFiltrada))&&pesquisarSolicitacoes([pedido,...locaisOperacaoEstoque(pedido).map(id=>({...pedido,obraOrigemId:id==='deposito'?null:Number(id)}))],busca,buscarObra).length>0;
-  const pendentes = solicitacoes.filter(p=>['Aprovada','Aguardando coleta','Em trânsito'].includes(p.status));
+  const pendentes = solicitacoes.filter(p=>['Aprovada','Aguardando coleta','Em trânsito','Cancelamento solicitado'].includes(p.status));
   const paraAtender = pendentes.filter(p=>!(p.status==='Em trânsito'&&p.obraDestinoId!=null));
   const enviados = pendentes.filter(p=>p.status==='Em trânsito'&&p.obraDestinoId!=null);
   const listaFila = ordenarFilaEstoque((fila==='enviados'?enviados:paraAtender).filter(corresponde));
-  const concluidas = solicitacoes.filter(p=>['Concluída','Rejeitada'].includes(p.status)).sort((a,b)=>String(b.dataSolicitacao).localeCompare(String(a.dataSolicitacao))||b.id-a.id);
+  const concluidas = solicitacoes.filter(p=>['Concluída','Rejeitada','Cancelada'].includes(p.status)).sort((a,b)=>String(b.dataSolicitacao).localeCompare(String(a.dataSolicitacao))||b.id-a.id);
   const aquisicoes = comprasOperacionais(solicitacoes);
   const comprasPendentes = aquisicoes.filter(c=>c.pendenteEntrada>0);
   const comprasFiltradas = comprasPendentes.filter(c=>corresponde(c.solicitacao));
@@ -86,7 +86,7 @@ export function PainelEstoque({ temaEscuro: temaControlado, aoAlternarTema, inco
   const renderizarPedido=pedido=><LinhaPedidoEstoque key={pedido.id} pedido={pedido} nomeLocal={nomeLocal} aoAbrir={()=>abrirPedido(pedido.id)}/>;
 
   return <div className={estilos.pagina} data-theme={temaEscuro?'dark':'light'} data-incorporado={incorporado}>
-    {!incorporado&&<header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA"/><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><SinoNotificacoes temaEscuro={temaEscuro}/><button type="button" onClick={alternarTema} aria-label={temaEscuro?'Ativar tema claro':'Ativar tema escuro'}>{temaEscuro?<Sun/>:<Moon/>}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema"><LogOut/></button></div></header>}
+    {!incorporado&&<header className={estilos.cabecalho}><div className={estilos.marca}><img src={logoEra} alt="ERA"/><span>Estoque</span></div><div className={estilos.usuario}><div><small>Operação de materiais</small><strong>{usuario.nome}</strong></div><SinoNotificacoes temaEscuro={temaEscuro} aoVerPedidos={abrirPedido}/><button type="button" onClick={alternarTema} aria-label={temaEscuro?'Ativar tema claro':'Ativar tema escuro'}>{temaEscuro?<Sun/>:<Moon/>}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema"><LogOut/></button></div></header>}
     <main className={estilos.conteudo}>
       <section className={estilos.titulo}><div><h1>Estoque</h1><p>Confira o pedido, separe os materiais e confirme o envio.</p></div></section>
       {mensagem&&!pedidoAberto&&!compraAtiva&&!editandoAtendimento&&<div role="alert" className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`}><X/>{mensagem.texto}<button type="button" aria-label="Fechar aviso" onClick={()=>definirMensagem(null)}><X/></button><button type="button" className={estilos.tentarNovamente} onClick={()=>{definirMensagem(null);definirTentativa(n=>n+1);}}>Tentar novamente</button></div>}

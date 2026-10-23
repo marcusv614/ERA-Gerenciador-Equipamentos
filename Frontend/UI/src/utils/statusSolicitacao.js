@@ -1,4 +1,6 @@
 const ETAPAS_POR_STATUS = {
+  Cancelada: {chave:'rejeitada',rotulo:'Cancelada'},
+  'Cancelamento solicitado': {chave:'pendente',rotulo:'Cancelamento solicitado'},
   Pendente: { chave: 'pendente', rotulo: 'Pendente' },
   'Aguardando financeiro': { chave: 'pendente', rotulo: 'Aguardando financeiro' },
   Aprovada: { chave: 'aceita', rotulo: 'Aceita' },
