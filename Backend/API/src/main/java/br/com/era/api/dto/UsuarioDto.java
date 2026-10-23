@@ -7,7 +7,7 @@ public final class UsuarioDto {
     private UsuarioDto() {}
     public record Cadastro(Long funcionarioId,@NotBlank @Size(max=150) String nome,@NotBlank @Size(max=120) String login,@NotBlank @Size(min=8,max=128) String senhaTemporaria,@NotNull PerfilUsuario perfil) {}
     public record Atualizacao(Long funcionarioId,@NotBlank @Size(max=150) String nome,@NotBlank @Size(max=120) String login,@NotNull PerfilUsuario perfil,@Size(min=8,max=128) String senhaTemporaria) {}
-    public record Resposta(Long id,Long funcionarioId,String nome,String login,PerfilUsuario perfil,boolean ativo,boolean deveAlterarSenha) {}
+    public record Resposta(Long id,Long funcionarioId,String nome,String login,PerfilUsuario perfil,boolean ativo,boolean deveAlterarSenha,java.time.OffsetDateTime ultimoLogin,java.time.OffsetDateTime criadoEm,java.time.OffsetDateTime senhaAlteradaEm,java.time.OffsetDateTime bloqueadoAte) {}
     public record Status(@NotNull Boolean ativo) {}
     public record RedefinirSenha(@NotBlank @Size(min=8,max=128) String senhaTemporaria) {}
 }

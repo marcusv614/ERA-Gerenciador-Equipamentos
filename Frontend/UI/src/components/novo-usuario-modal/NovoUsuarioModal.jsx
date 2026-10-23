@@ -3,10 +3,11 @@ import { Eye, EyeOff } from 'lucide-react';
 import { CampoFormulario } from '../field/Field';
 import { EstruturaModal } from '../modal-shell/ModalShell';
 import styles from '../nova-obra-modal/NovaObraModal.module.css';
+import { PERFIS_USUARIO } from '../../utils/administracaoUsuarios';
 
-export function ModalNovoUsuario({ funcionarios, usuario, aoFechar, aoSalvar }) {
+export function ModalNovoUsuario({ funcionarios, usuario, funcionarioInicial, aoFechar, aoSalvar }) {
   const editando = Boolean(usuario);
-  const [dados, definirDados] = useState({ funcionarioId: usuario?.funcionarioId || '', nome: usuario?.nome || '', login: usuario?.login || '', senhaTemporaria: '', perfil: usuario?.perfil || 'TECNICO' });
+  const [dados, definirDados] = useState({ funcionarioId: usuario?.funcionarioId || funcionarioInicial?.id || '', nome: usuario?.nome || funcionarioInicial?.nome || '', login: usuario?.login || funcionarioInicial?.email || '', senhaTemporaria: '', perfil: usuario?.perfil || 'TECNICO' });
   const [senhaVisivel, definirSenhaVisivel] = useState(false); const [erro, definirErro] = useState(''); const [salvando, definirSalvando] = useState(false);
   const alterar = (campo, valor) => definirDados((atual) => ({ ...atual, [campo]: valor }));
   const selecionarPerfil = (perfil) => definirDados((atual) => ({
@@ -22,14 +23,13 @@ export function ModalNovoUsuario({ funcionarios, usuario, aoFechar, aoSalvar }) 
   const rotuloVisibilidade = senhaVisivel ? 'Ocultar senha' : 'Visualizar senha';
 
   return <EstruturaModal titulo={editando ? 'Editar usuário' : 'Novo usuário'} subtitulo={editando ? 'Atualize o acesso, a atribuição e, se necessário, a senha' : 'Conceda acesso ao painel e defina as permissões'} aoFechar={aoFechar}><div className={styles.form}>
+    <CampoFormulario rotulo="Perfil de acesso"><select className={styles.input} value={dados.perfil} onChange={(evento) => selecionarPerfil(evento.target.value)}>{Object.entries(PERFIS_USUARIO).map(([valor,{nome}])=><option key={valor} value={valor}>{nome}</option>)}</select></CampoFormulario>
+    <p style={{margin:0,fontSize:12,lineHeight:1.6,color:'var(--text-muted)'}}>{PERFIS_USUARIO[dados.perfil]?.descricao}</p>
     {perfilDeCampo && <CampoFormulario rotulo={dados.perfil === 'TST' ? 'TST cadastrado' : 'Técnico cadastrado'}><select className={styles.input} value={dados.funcionarioId} onChange={(evento) => selecionarFuncionario(evento.target.value)}><option value="">Selecione o profissional</option>{funcionarios.map((funcionario) => <option key={funcionario.id} value={funcionario.id}>{funcionario.nome}</option>)}</select></CampoFormulario>}
     {perfilDeCampo && !funcionarios.length && <p role="status">Nenhum profissional disponível para vincular. Cadastre um funcionário na Gerência ou edite o acesso existente.</p>}
     <CampoFormulario rotulo="Nome exibido"><input className={styles.input} value={dados.nome} onChange={(evento) => alterar('nome', evento.target.value)} /></CampoFormulario>
     <CampoFormulario rotulo="Login"><input autoComplete="off" className={styles.input} value={dados.login} onChange={(evento) => alterar('login', evento.target.value)} /></CampoFormulario>
-    <div className={styles.grid2}>
-      <CampoFormulario rotulo="Perfil"><select className={styles.input} value={dados.perfil} onChange={(evento) => selecionarPerfil(evento.target.value)}><option value="TECNICO">Técnico</option><option value="TST">Técnico de Segurança do Trabalho</option><option value="RH">RH</option><option value="FINANCEIRO">Financeiro</option><option value="ESTOQUE">Estoquista</option><option value="GERENTE">Gerente</option><option value="ADMIN">Administrador</option></select></CampoFormulario>
       <CampoFormulario rotulo={editando ? 'Nova senha temporária (opcional)' : 'Senha temporária (mínimo 8)'}><div style={{ display: 'flex', alignItems: 'center' }}><input type={senhaVisivel ? 'text' : 'password'} autoComplete="new-password" minLength={8} maxLength={128} placeholder={editando ? 'Deixe em branco para manter' : ''} className={styles.input} value={dados.senhaTemporaria} onChange={(evento) => alterar('senhaTemporaria', evento.target.value)} /><button type="button" onClick={() => definirSenhaVisivel((visivel) => !visivel)} aria-label={rotuloVisibilidade} title={rotuloVisibilidade} style={{ width: 40, height: 40, marginLeft: -44, border: 0, background: 'transparent', cursor: 'pointer' }}>{senhaVisivel ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></CampoFormulario>
-    </div>
     {erro && <p role="alert">{erro}</p>}<div className={styles.actions}><button onClick={aoFechar} className={styles.cancel}>Cancelar</button><button disabled={!valido || salvando} onClick={salvar} className={styles.submit}>{salvando ? 'Salvando...' : editando ? 'Salvar alterações' : 'Criar usuário'}</button></div>
   </div></EstruturaModal>;
 }

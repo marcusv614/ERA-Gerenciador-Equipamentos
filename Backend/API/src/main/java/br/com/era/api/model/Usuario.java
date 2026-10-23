@@ -30,4 +30,5 @@ public class Usuario {
     public long getVersaoSessao(){return versaoSessao;}
     public int getTentativasFalhas(){return tentativasFalhas;} public void setTentativasFalhas(int v){tentativasFalhas=v;} public OffsetDateTime getBloqueadoAte(){return bloqueadoAte;} public void setBloqueadoAte(OffsetDateTime v){bloqueadoAte=v;}
     public OffsetDateTime getUltimoLogin(){return ultimoLogin;} public void setUltimoLogin(OffsetDateTime v){ultimoLogin=v;} public OffsetDateTime getSenhaAlteradaEm(){return senhaAlteradaEm;} public void setSenhaAlteradaEm(OffsetDateTime v){senhaAlteradaEm=v;}
+    public OffsetDateTime getCriadoEm(){return criadoEm;}
 }

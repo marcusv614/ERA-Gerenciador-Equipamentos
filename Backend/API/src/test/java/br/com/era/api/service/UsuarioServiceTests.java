@@ -21,6 +21,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsuarioServiceTests {
+    @Test void listaMetadadosAdministrativosSemExporCredenciais() {
+        var u=new Usuario();u.setNome("Administrador");u.setLogin("admin");u.setPerfil(PerfilUsuario.ADMIN);u.setSenhaHash("SEGREDO-QUE-NAO-DEVE-SER-EXPOSTO");
+        var login=java.time.OffsetDateTime.parse("2026-10-23T09:00:00-04:00");u.setUltimoLogin(login);u.setBloqueadoAte(login.plusMinutes(15));
+        when(repository.findAll()).thenReturn(java.util.List.of(u));
+        var resposta=service.listar().getFirst();assertEquals(login,resposta.ultimoLogin());assertEquals(login.plusMinutes(15),resposta.bloqueadoAte());
+        var campos=java.util.Arrays.stream(UsuarioDto.Resposta.class.getRecordComponents()).map(java.lang.reflect.RecordComponent::getName).toList();
+        assertTrue(campos.contains("criadoEm"));assertTrue(campos.contains("senhaAlteradaEm"));
+        org.junit.jupiter.api.Assertions.assertFalse(campos.stream().anyMatch(c->java.util.Set.of("senha","senhaHash","senhaTemporaria","versaoSessao").contains(c)));
+    }
     @Test
     void impedeTrocaDeSenhaQuandoRedefinicaoOcorreDuranteARequisicao() {
         Usuario usuario=new Usuario();usuario.setLogin("tecnico");usuario.setSenhaHash("hash");
