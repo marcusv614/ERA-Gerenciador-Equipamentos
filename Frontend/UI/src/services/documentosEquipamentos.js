@@ -1,5 +1,6 @@
 import logoEra from '../assets/ERALTDA.png?inline';
 import { criarModelosDocumentos } from './modelosDocumentos';
+import { EVENTO_EXPORTACAO } from './controlesExportacao';
 
 const ESTILOS_DOCUMENTO = `
   @page{size:A4 landscape;margin:10mm}thead{display:table-header-group}tr{break-inside:avoid}
@@ -25,44 +26,45 @@ const ESTILOS_DOCUMENTO = `
     .replaceAll("'", '&#039;');
 }
 
-function imprimirAposCarregarImagens(janela) {
-  const imagens = [...janela.document.images];
-  const carregamentos = imagens.map((imagem) => imagem.complete
-    ? Promise.resolve()
-    : new Promise((concluir) => {
-      imagem.addEventListener('load', concluir, { once: true });
-      imagem.addEventListener('error', concluir, { once: true });
-    }));
-  Promise.race([
-    Promise.all(carregamentos),
-    new Promise((concluir) => setTimeout(concluir, 2000)),
-  ]).then(() => {
-    janela.focus();
-    janela.print();
+function imprimirDocumento(titulo, conteudo, retrato) {
+  const documentoHtml = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${textoSeguro(titulo)}</title><style>${ESTILOS_DOCUMENTO}${retrato ? '@page{size:A4 portrait;margin:14mm}body{padding:0}' : ''}</style></head><body>${conteudo}</body></html>`;
+  const janelaImpressao = window.open('', '_blank');
+  let quadroImpressao;
+  if (!janelaImpressao) {
+    quadroImpressao = document.createElement('iframe');
+    quadroImpressao.title = titulo;
+    quadroImpressao.setAttribute('aria-hidden', 'true');
+    Object.assign(quadroImpressao.style, { position: 'fixed', width: '0', height: '0', border: '0', pointerEvents: 'none' });
+    document.body.appendChild(quadroImpressao);
+  }
+  const janela = janelaImpressao || quadroImpressao.contentWindow;
+  janela.document.open();
+  janela.document.write(documentoHtml);
+  janela.document.close();
+  if (janelaImpressao) janelaImpressao.opener = null;
+  const imagens = [...janela.document.images].map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+    img.addEventListener('load', resolve, { once: true }); img.addEventListener('error', resolve, { once: true });
+  }));
+  Promise.race([Promise.all(imagens), new Promise(resolve => setTimeout(resolve, 2000))]).then(() => {
+    if (janela.closed) return;
+    if (quadroImpressao) {
+      janela.addEventListener('afterprint', () => quadroImpressao.remove(), { once: true });
+      setTimeout(() => quadroImpressao.remove(), 60000);
+    }
+    janela.focus(); janela.print();
   });
 }
 
+let sequenciaExportacao = 0;
 function abrirJanelaDeImpressao(titulo, conteudo, retrato = false) {
-  const documentoHtml = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${textoSeguro(titulo)}</title><style>${ESTILOS_DOCUMENTO}${retrato ? '@page{size:A4 portrait;margin:14mm}body{padding:0}' : ''}</style></head><body>${conteudo}</body></html>`;
-  const janelaImpressao = window.open('', '_blank');
+  window.dispatchEvent(new CustomEvent(EVENTO_EXPORTACAO, { detail: {
+    chave: ++sequenciaExportacao, titulo, conteudo,
+    imprimir: filtrado => imprimirDocumento(titulo, filtrado, retrato),
+  } }));
+}
 
-  if (janelaImpressao) {
-    janelaImpressao.document.write(documentoHtml);
-    janelaImpressao.document.close();
-    imprimirAposCarregarImagens(janelaImpressao);
-    return;
-  }
-
-  const quadroImpressao = document.createElement('iframe');
-  Object.assign(quadroImpressao.style, {
-    position: 'fixed', width: '0', height: '0', border: '0', opacity: '0', pointerEvents: 'none',
-  });
-  document.body.appendChild(quadroImpressao);
-  quadroImpressao.contentWindow.document.open();
-  quadroImpressao.contentWindow.document.write(documentoHtml);
-  quadroImpressao.contentWindow.document.close();
-  imprimirAposCarregarImagens(quadroImpressao.contentWindow);
-  setTimeout(() => quadroImpressao.remove(), 5000);
+export function abrirDocumentoExportavel({ titulo, conteudo }) {
+  abrirJanelaDeImpressao(titulo, conteudo);
 }
 
 const modelos = criarModelosDocumentos(logoEra);

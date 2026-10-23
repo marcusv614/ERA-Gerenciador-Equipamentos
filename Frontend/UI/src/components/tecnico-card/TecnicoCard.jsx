@@ -1,4 +1,5 @@
-import { BriefcaseBusiness, ClipboardCheck, FileText, Mail, PackageSearch, Pencil, Phone } from 'lucide-react';
+import { ExportarAuditoria } from '../painel/ExportarAuditoria';
+import { BriefcaseBusiness, ClipboardCheck, Mail, PackageSearch, Pencil, Phone } from 'lucide-react';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { IndicadorStatusObra } from '../obra-status-badge/ObraStatusBadge';
 import { formatarData } from '../../utils/datas';
@@ -6,7 +7,7 @@ import styles from './TecnicoCard.module.css';
 import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { ehFuncionarioEstoquista } from '../../utils/classificacaoFuncionario';
 
-export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar, aoAuditar, pedidosFinanceiros, aoExportarPedidos, aoVerPedidos }) {
+export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, podeEditar, aoEditar, aoAuditar, pedidosFinanceiros, aoVerPedidos }) {
   const financeiro=Array.isArray(pedidosFinanceiros);
   const { nome, cargo, email, telefone, status } = funcionario;
   const initials = nome
@@ -53,7 +54,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
         </div> : <div className={styles.empty}>Nenhuma obra atribuída no momento.</div>}
       </div>}
 
-      {financeiro&&!estoquista&&<section className={styles.section}><div className={styles.sectionHeading}><div className={styles.sectionTitle}>Pedidos do técnico</div><span>{pedidosFinanceiros.length}</span></div>{pedidosFinanceiros.length?<><div className={styles.tableWrap}><div className={styles.table}><div className={styles.rowHead}><span>Pedido</span><span>Solicitante</span><span>Situação</span><span>Obra</span><span>Data</span></div>{pedidosFinanceiros.map(p=><div className={styles.row} key={p.id}><span className={styles.rowModel} data-label="Pedido">#{String(p.id).padStart(4,'0')}</span><span className={styles.rowSerie} data-label="Solicitante">{p.solicitante}</span><span className={styles.rowStatus} data-label="Situação">{p.status==='Aprovada'?'Aprovado':p.status}</span><span className={styles.rowLocal} data-label="Obra">{p.obra}</span><span className={styles.rowData} data-label="Data">{formatarData(p.dataSolicitacao)}</span></div>)}</div></div><button type="button" className={styles.auditButton} onClick={()=>aoVerPedidos(nome)}>Consultar pedidos</button><button type="button" className={styles.auditButton} onClick={()=>aoExportarPedidos(pedidosFinanceiros,`Pedidos de ${nome}`)}><FileText size={16}/>PDF dos pedidos</button></>:<div className={styles.empty}>Nenhum pedido registrado.</div>}</section>}
+      {financeiro&&!estoquista&&<section className={styles.section}><div className={styles.sectionHeading}><div className={styles.sectionTitle}>Pedidos do técnico</div><span>{pedidosFinanceiros.length}</span></div>{pedidosFinanceiros.length?<><div className={styles.tableWrap}><div className={styles.table}><div className={styles.rowHead}><span>Pedido</span><span>Solicitante</span><span>Situação</span><span>Obra</span><span>Data</span></div>{pedidosFinanceiros.map(p=><div className={styles.row} key={p.id}><span className={styles.rowModel} data-label="Pedido">#{String(p.id).padStart(4,'0')}</span><span className={styles.rowSerie} data-label="Solicitante">{p.solicitante}</span><span className={styles.rowStatus} data-label="Situação">{p.status==='Aprovada'?'Aprovado':p.status}</span><span className={styles.rowLocal} data-label="Obra">{p.obra}</span><span className={styles.rowData} data-label="Data">{formatarData(p.dataSolicitacao)}</span></div>)}</div></div><button type="button" className={styles.auditButton} onClick={()=>aoVerPedidos(nome)}>Consultar pedidos</button></>:<div className={styles.empty}>Nenhum pedido registrado.</div>}</section>}
       {!financeiro&&!estoquista && <div className={styles.section}>
         <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Materiais registrados com o técnico</div><span>{equipamentos.length}</span></div>
         {equipamentos.length === 0 ? (
@@ -92,6 +93,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
           </div>
         )}
       </div>}
+      {status==='Ativo'&&!funcionario.arquivado&&<section className={styles.section}><ExportarAuditoria tipo="funcionario" id={funcionario.id} nome={nome}>Auditoria do funcionário · PDF / Planilha</ExportarAuditoria></section>}
       {!estoquista && aoAuditar && <section className={`${styles.section} ${styles.auditSection}`}>
         <div className={styles.auditContent}><span className={styles.auditIcon}><ClipboardCheck size={18} aria-hidden="true" /></span><div><div className={styles.sectionTitle}>Vistorias dos materiais</div><p className={styles.auditHint}>{equipamentosAuditaveis === 0 ? 'Nenhum material marcado para vistoria.' : `${equipamentosAuditaveis} ${equipamentosAuditaveis === 1 ? 'material marcado' : 'materiais marcados'} para vistoria.`} Gere a ficha e registre as condições encontradas.</p></div></div>
         <button type="button" className={styles.auditButton} onClick={() => aoAuditar(funcionario)}><ClipboardCheck size={16} aria-hidden="true" /> Gerenciar vistorias</button>

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.*;
 class PedidoMateriaisTests {
     @Test void separacaoPreservaComprasNoPedidoSemAtribuirCompraAOutraOrigem() {
         Solicitacao s=pedido("Aprovada");Obra destino=new Obra();org.springframework.test.util.ReflectionTestUtils.setField(destino,"id",5L);s.setObraDestino(destino);MaterialSolicitado m=materialComId(s);
+        when(equipamentoService.registrarEntradaCompra(anyString(),anyString(),anyInt(),anyString(),isNull(),any())).thenReturn(new Equipamento());
         service.solicitarCompra(1L,2L,3);service.registrarAquisicao(1L,2L,3,"NF-1",null);
         Equipamento e=new Equipamento();e.setTipo("Manual");e.setModelo("Alicate");e.setSerie("SERIE");e.setStatus("Em estoque");e.setQuantidade(10);e.setControleQuantidade("LOTE");
         when(equipamentos.buscarPorSerieParaAtualizacao("SERIE")).thenReturn(Optional.of(e));
@@ -158,12 +159,15 @@ class PedidoMateriaisTests {
     }
     @Test void compraAceitaEntradasParciaisComNotasDiferentes() {
         Solicitacao s=pedido("Aprovada");org.springframework.test.util.ReflectionTestUtils.setField(s,"id",1L);MaterialSolicitado m=materialComId(s);
+        when(equipamentoService.registrarEntradaCompra(anyString(),anyString(),anyInt(),anyString(),isNull(),eq(1L))).thenReturn(new Equipamento());
         assertThrows(RegraNegocioException.class,()->service.solicitarCompra(1L,2L,11));
         service.solicitarCompra(1L,2L,5);
         service.registrarAquisicao(1L,2L,3,"NF-123",null);
         assertEquals(3,m.getQuantidadeEntradaEstoque());
         service.registrarAquisicao(1L,2L,2,"NF-456",null);
         assertEquals(5,m.getQuantidadeEntradaEstoque());
+        assertEquals(List.of("NF-123","NF-456"),s.getAquisicoesAuditadas().stream().map(Solicitacao.AquisicaoAuditada::notaFiscal).toList());
+        assertEquals(List.of(3,2),s.getAquisicoesAuditadas().stream().map(Solicitacao.AquisicaoAuditada::quantidade).toList());
         verify(equipamentoService).registrarEntradaCompra("Alicate","manual|alicate|",3,"NF-123",null,1L);
         verify(equipamentoService).registrarEntradaCompra("Alicate","manual|alicate|",2,"NF-456",null,1L);
         assertThrows(RegraNegocioException.class,()->service.registrarAquisicao(1L,2L,1,"NF-789",null));

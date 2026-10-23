@@ -8,6 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 @Entity @Table(name="solicitacoes")
 public class Solicitacao {
+    public record AquisicaoAuditada(Long equipamentoId,String material,String catalogoChave,int quantidade,String notaFiscal,String fornecedor,OffsetDateTime registradaEm,String autorNome,String autorLogin) {}
+    @JdbcTypeCode(SqlTypes.JSON) @Column(name="aquisicoes_auditadas",nullable=false,columnDefinition="jsonb") private List<AquisicaoAuditada> aquisicoesAuditadas=new ArrayList<>();
+    public List<AquisicaoAuditada> getAquisicoesAuditadas(){return aquisicoesAuditadas;}
+    public void registrarAquisicaoAuditada(Equipamento e,String nome,String chave,int quantidade,String nota,Usuario autor){
+        aquisicoesAuditadas=new ArrayList<>(aquisicoesAuditadas);aquisicoesAuditadas.add(new AquisicaoAuditada(e.getId(),nome,chave,quantidade,nota,e.getFornecedor(),OffsetDateTime.now(),autor==null?null:autor.getNome(),autor==null?null:autor.getLogin()));
+    }
+    public OffsetDateTime getCriadoEm(){return criadoEm;}
     @Column(name="status_antes_cancelamento") private String statusAntesCancelamento;
     @Column(name="financeiro_cancelamento_confirmado",nullable=false) private boolean financeiroCancelamentoConfirmado;
     @Column(name="estoque_cancelamento_confirmado",nullable=false) private boolean estoqueCancelamentoConfirmado;

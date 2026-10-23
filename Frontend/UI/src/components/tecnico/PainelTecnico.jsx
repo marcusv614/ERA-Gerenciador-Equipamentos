@@ -10,6 +10,7 @@ import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
 import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
+import { imprimirRelatorioAuditoriaSolicitacao } from '../../services/documentosEquipamentos';
 
 const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
@@ -373,6 +374,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
               <time dateTime={solicitacao.dataSolicitacao || undefined}><small>Solicitado em</small>{formatarDataSolicitacao(solicitacao.dataSolicitacao)}</time>
             </div>
             {!modoAdministrador&&<CancelamentoPedido pedidoId={solicitacao.id}/>}
+            <button type="button" className={estilos.acaoMovimentacao} onClick={()=>imprimirRelatorioAuditoriaSolicitacao(solicitacao,id=>obras.find(o=>o.id===id))}>Auditoria · PDF / Planilha</button>
             <p className={estilos.fluxoSolicitacao}>{descricaoStatus(solicitacao, ehTst)}</p>{(solicitacao.eventosFinanceiros||[]).filter(e=>['REJEICAO','REJEICAO_INICIAL'].includes(e.tipo)).map((e,i)=><p className={estilos.fluxoSolicitacao} key={i}>{e.descricao} · {e.autorNome}</p>)}
             <section className={estilos.materiaisCartao} aria-label="Materiais do pedido">
               <header><span>Materiais</span><b>{totalMateriais} {totalMateriais === 1 ? 'item' : 'itens'}</b></header>

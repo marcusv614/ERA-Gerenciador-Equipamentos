@@ -1,6 +1,7 @@
+import { ExportarAuditoria } from './ExportarAuditoria';
 import { filtrarSolicitacoes, locaisDoPedido, normalizarPesquisa } from '../../utils/pesquisaSolicitacoes';
 import { useEffect, useRef, useState } from 'react';
-import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, FileText, List, Package2, Plus, RotateCcw, UserRound, X } from 'lucide-react';
+import { Building2, CalendarDays, ChevronDown, ChevronRight, ClipboardList, Columns3, List, Package2, Plus, RotateCcw, UserRound, X } from 'lucide-react';
 import { formatarData } from '../../utils/datas';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { acompanhamentoSolicitacao, COLUNAS_ACOMPANHAMENTO, pedidosDoPerfil } from '../../utils/acompanhamentoSolicitacao';
@@ -113,7 +114,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
       <div><h2>Solicitações</h2><p>{visualizacao === 'kanban' ? 'Acompanhe os pedidos por etapa do fluxo.' : 'Selecione um técnico. Os pedidos mais recentes aparecem primeiro.'}</p></div>
       <div className={css.cabecalhoAcoes}>
         {aoNovaSolicitacao && <button type="button" className={css.novoPedido} onClick={aoNovaSolicitacao}><Plus size={16} />Nova solicitação</button>}
-        {aoExportarPedidos && <button type="button" className={css.novoPedido} onClick={()=>aoExportarPedidos(solicitacoesPorTecnico)} disabled={!solicitacoesPorTecnico.length}><FileText size={16}/>PDF dos pedidos</button>}
+        {aoExportarPedidos && solicitacoesPorTecnico.length>0 && <ExportarAuditoria tipo="conjunto" id={solicitacoesPorTecnico.map(p=>p.id)}>Pedidos · PDF / Planilha</ExportarAuditoria>}
         <span className={css.total}>{solicitacoesPorTecnico.length} {solicitacoesPorTecnico.length === 1 ? 'solicitação' : 'solicitações'}</span>
         <div className={css.alternador} role="group" aria-label="Forma de visualizar as solicitações">
           <button type="button" aria-pressed={visualizacao === 'tecnicos'} className={visualizacao === 'tecnicos' ? css.alternadorAtivo : ''} onClick={() => alterarVisualizacao('tecnicos')}><List size={15} /><span>Por técnico</span></button>
@@ -145,11 +146,11 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
         </button>
         {aberto && <div id={painelId} className={css.lista} role="region" aria-label={`Solicitações de ${nome}`} tabIndex={0}>
           {pedidos.length ? <><div className={css.colunas} aria-hidden="true"><span>Solicitação / data</span><span>Obra</span><span>Status</span><span /></div>
-            {pedidos.map((pedido) => <button key={pedido.id} type="button" className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
+            {pedidos.map((pedido) => <div key={pedido.id} style={{display:'grid',gap:6,minWidth:0}}><button type="button" className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
               <span className={css.identificador}><strong>#{String(pedido.id).padStart(4, '0')}</strong><small>{formatarData(pedido.dataSolicitacao)}</small>{pedido.solicitacaoPaiId != null && <small>Pedido original #{String(pedido.solicitacaoPaiId).padStart(4, '0')}</small>}</span>
               <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{financeiro?'Pedido de materiais':pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
               <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span><ChevronRight size={16} />
-            </button>)}
+            </button><ExportarAuditoria id={pedido.id}/></div>)}
           </> : <div className={css.vazio}><ClipboardList size={24} /><p>Nenhuma solicitação deste técnico{termo ? ' para esta busca' : ''}.</p></div>}
         </div>}
       </section>;

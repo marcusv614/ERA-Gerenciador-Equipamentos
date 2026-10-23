@@ -1,3 +1,4 @@
+import { ContextoEscopoAuditoria } from '../../contexto/ContextoEscopoAuditoria';
 import { TelaAuditorias } from '../auditorias-tecnico/TelaAuditorias';
 import { AuditoriasTecnicoModal } from '../auditorias-tecnico/AuditoriasTecnicoModal';
 import { pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
@@ -148,7 +149,7 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   const buscaAtiva = Boolean(filtros.termoBusca.trim());
   const quantidadeResultados = resultadosPorTela[telaAtual];
 
-  return <div className={estilos.root} data-incorporado={incorporado} data-financeiro={ehResumo} data-theme={modoEscuro ? 'dark' : 'light'}>
+  return <ContextoEscopoAuditoria.Provider value={perfilPainel}><div className={estilos.root} data-incorporado={incorporado} data-financeiro={ehResumo} data-theme={modoEscuro ? 'dark' : 'light'}>
     <MenuLateral aberto={menuLateralAberto} telaAtual={telaAtual} tipoSelecionado={filtros.tipoSelecionado} tiposEquipamento={tiposEquipamentoDisponiveis} obras={controleAtivos.obras} funcionarios={controleAtivos.funcionarios} totalAtividadesPendentes={totalAtividadesPendentes} usuario={usuarioPainel} ocultarVistorias={ehResumo} ocultarEquipamentos={ehResumo} aoFechar={() => definirMenuLateralAberto(false)} aoSelecionarTela={selecionarTela} aoSelecionarTipo={selecionarTipoNoMenu} aoSelecionarBusca={filtros.definirTermoBusca} estilos={estilos} />
     <button type="button" onClick={() => definirMenuLateralAberto((aberto) => !aberto)} className={`${estilos.sidebarEdgeToggle} ${menuLateralAberto ? estilos.sidebarEdgeToggleOpen : ''}`} aria-expanded={menuLateralAberto} aria-label={menuLateralAberto ? 'Recolher menu lateral' : 'Expandir menu lateral'}>
       {menuLateralAberto ? <ChevronLeft size={18} strokeWidth={2.2} /> : <ChevronRight size={18} strokeWidth={2.2} />}
@@ -181,5 +182,5 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     {novaSolicitacaoAberta && <ModalEditarSolicitacao nova solicitante={usuario.nome} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras} erroApi={controleAtivos.erroApi} equipamentos={equipamentosParaSolicitacao} aoFechar={() => definirNovaSolicitacaoAberta(false)} aoSalvar={cadastrarSolicitacao} />}
     {tecnicoEmAuditoria && <AuditoriasTecnicoModal funcionario={tecnicoEmAuditoria} aoFechar={() => definirTecnicoEmAuditoria(null)} />}
     <ModalHistoricoEquipamento equipamento={equipamentoComHistoricoAberto} historico={equipamentoComHistoricoAberto ? controleAtivos.consultarHistorico(equipamentoComHistoricoAberto) : []} buscarObraPorId={controleAtivos.buscarObraPorId} aoFechar={() => definirEquipamentoComHistoricoAberto(null)} aoImprimir={() => imprimirHistoricoDoEquipamento(equipamentoComHistoricoAberto)} estilos={estilos} />
-  </div>;
+  </div></ContextoEscopoAuditoria.Provider>;
 }

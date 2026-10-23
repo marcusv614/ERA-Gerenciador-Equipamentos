@@ -81,7 +81,7 @@ export function DetalhesSolicitacao({ solicitacao, processando, buscarObraPorId,
 
     {(podeEditar || aoExportarAuditoria || (financeiro && aoPlanejar) || (solicitacao.status === 'Aprovada' && separado)) && <footer className={css.acoes}>
       <div className={css.acoesSecundarias}>
-        {aoExportarAuditoria && <button type="button" disabled={processando} onClick={() => aoExportarAuditoria(solicitacao)} className={css.editar}><FileText size={15} />Vistoria</button>}
+        {aoExportarAuditoria && <button type="button" disabled={processando} onClick={() => aoExportarAuditoria(solicitacao)} className={css.editar}><FileText size={15} />Auditoria · PDF / Planilha</button>}
         {podeEditar && <button type="button" disabled={processando} onClick={() => aoEditar(solicitacao)} className={css.editar}><Pencil size={15} />Editar</button>}
         {financeiro && !separado && aoPlanejar && <button type="button" disabled={processando} onClick={aoPlanejar} className={css.editar}><CircleDollarSign size={15} />{solicitacao.status === 'Aprovada' ? 'Editar atendimento aprovado' : plano.length ? 'Revisar plano' : 'Definir transporte e compra'}</button>}
         {solicitacao.status === 'Aprovada' && separado && <button type="button" disabled={processando} onClick={() => aoExportarRomaneio(solicitacao)} className={css.editar}><FileText size={15} />Romaneio</button>}

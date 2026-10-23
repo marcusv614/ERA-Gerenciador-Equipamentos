@@ -6,6 +6,7 @@ import { PainelTecnico } from './components/tecnico/PainelTecnico';
 import { PainelEstoque } from './components/estoque/PainelEstoque';
 import { PainelAdmin } from './components/admin/PainelAdmin';
 import { Notificacoes } from './components/notificacoes/Notificacoes';
+import { ExportarRelatorioModal } from './components/painel/ExportarRelatorioModal';
 
 function ConteudoAutenticado() {
   const { usuario, verificando } = useAutenticacao();
@@ -17,6 +18,10 @@ function ConteudoAutenticado() {
   if (usuario.perfil === 'ESTOQUE') return <PainelEstoque />;
   return <PainelControleAtivos />;
 }
-function App() { return <ProvedorAutenticacao><ConteudoAutenticado /><Notificacoes /></ProvedorAutenticacao>; }
+function ExportacaoAutenticada() {
+  const { usuario } = useAutenticacao();
+  return usuario && !usuario.deveAlterarSenha ? <ExportarRelatorioModal key={usuario.id || usuario.login}/> : null;
+}
+function App() { return <ProvedorAutenticacao><ConteudoAutenticado /><Notificacoes /><ExportacaoAutenticada /></ProvedorAutenticacao>; }
 
 export default App;

@@ -1,11 +1,12 @@
-import { Building2, Check, CircleDollarSign, FileText, History, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
+import { ExportarAuditoria } from './ExportarAuditoria';
+import { Building2, Check, CircleDollarSign, History, MessageSquareText, Package2, Pencil, UserRound, X } from 'lucide-react';
 import { rotuloDecisaoFinanceira } from '../../utils/pedidosFinanceiros';
 import { CancelamentoPedido } from './CancelamentoPedido';
 import { imprimirRelatorioAuditoriaSolicitacao } from '../../services/documentosEquipamentos';
 import css from './DetalhesSolicitacao.module.css';
 const instante=valor=>valor?new Date(valor).toLocaleString('pt-BR',{timeZone:'America/Manaus'}):'Não registrado';
 
-export function DetalhesPedidoFinanceiro({rh=false,solicitacao,processando,buscarObraPorId,aoPlanejar,aoAprovar,aoRejeitar,aoEditar,aoExportarAuditoria}) {
+export function DetalhesPedidoFinanceiro({rh=false,solicitacao,processando,buscarObraPorId,aoPlanejar,aoAprovar,aoRejeitar,aoEditar}) {
   const destino=solicitacao.obra||buscarObraPorId(solicitacao.obraDestinoId)?.nome||'Depósito central';
   return <article className={css.detalhes} aria-label="Dados do pedido financeiro"><div className={css.conteudo}>
     <section className={css.destino}><span className={css.iconeDestino}><Building2 size={22}/></span><div><h3>Obra do pedido</h3><p>{destino}</p></div></section>
@@ -17,5 +18,5 @@ export function DetalhesPedidoFinanceiro({rh=false,solicitacao,processando,busca
       const pendente=a.status===(rh?'Pendente':'Aguardando financeiro'),identificado=a.materiais.every(m=>m.identificacao);
       return <section key={a.id} className={css.historico} aria-label="Análise financeira"><h3><CircleDollarSign size={16}/>{a.id===solicitacao.id?'Análise do pedido':'Saldo pendente do pedido'}</h3><p>{a.materiais.map(m=>`${m.quantidade}× ${m.nome}`).join(' · ')}</p>{rh&&<><p>Status: {a.status} · Responsável: {a.tecnico}</p>{a.transitoEm&&<p>Enviado: {instante(a.transitoEm)}</p>}{a.concluidaEm&&<p>Entrega confirmada: {instante(a.concluidaEm)}</p>}{(a.eventosFinanceiros||[]).map((e,i)=><article key={i}><strong>{e.autorNome}</strong><p>{e.descricao}</p><small>{instante(e.registradoEm)}</small></article>)}<button type="button" className={css.editar} onClick={()=>imprimirRelatorioAuditoriaSolicitacao(a,buscarObraPorId)}>Auditoria deste atendimento (PDF)</button></>}<CancelamentoPedido pedidoId={a.id}/><div className={css.acoes}><div className={css.acoesSecundarias}>{pendente&&!identificado&&<button type="button" className={css.editar} disabled={processando} onClick={()=>aoEditar(a)}><Pencil size={15}/>Editar</button>}{!identificado&&['Aprovada','Aguardando financeiro'].includes(a.status)&&aoPlanejar&&<button type="button" className={css.editar} disabled={processando} onClick={()=>aoPlanejar(a)}><CircleDollarSign size={15}/>{a.status==='Aprovada'?'Editar atendimento aprovado':a.planoFinanceiro?.length?'Revisar plano':'Definir transporte e compra'}</button>}</div>{pendente&&<div className={css.acoesDecisao}><button type="button" className={css.rejeitar} disabled={processando} onClick={()=>aoRejeitar(a.id)}><X size={16}/>Rejeitar</button><button type="button" className={css.aceitar} disabled={processando||(!rh&&!identificado&&!a.planoFinanceiro?.length)} onClick={()=>aoAprovar(a.id)}><Check size={16}/>{rh?'Aprovar e enviar ao Financeiro':'Aprovar plano e enviar ao estoque'}</button></div>}</div></section>;
     })}
-  </div><footer className={css.acoes}><div className={css.acoesSecundarias}><button type="button" className={css.editar} disabled={processando} onClick={()=>aoExportarAuditoria(solicitacao)}><FileText size={15}/>PDF do pedido</button></div></footer></article>;
+  </div><footer className={css.acoes}><div className={css.acoesSecundarias}><ExportarAuditoria id={solicitacao.id}/></div></footer></article>;
 }
