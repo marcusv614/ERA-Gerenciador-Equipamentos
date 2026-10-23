@@ -24,7 +24,7 @@
   --info: #79b89d;
 }
 .root[data-incorporado='true'] { height:calc(100dvh - 72px); min-height:0; }
-@media (max-width:900px) {
+@media (max-width:1280px) {
   .root[data-incorporado='true'] { height:calc(100dvh - 64px); }
 }
 
@@ -38,6 +38,7 @@
 .sidebar {
   flex-shrink: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -259,6 +260,7 @@
 .avatar {
   width: 28px;
   height: 28px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -270,8 +272,10 @@
 }
 
 .profileText {
+  min-width: 0;
   font-size: 12px;
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .profileName {
@@ -600,6 +604,8 @@
 .btnGhost {
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-height: 44px;
   gap: 6px;
   border-radius: 8px;
   padding: 8px 14px;
@@ -614,6 +620,8 @@
 .btnPrimary {
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-height: 44px;
   gap: 6px;
   border-radius: 8px;
   padding: 8px 14px;
@@ -878,6 +886,10 @@
 }
 
 .filterChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 12px;
@@ -905,6 +917,40 @@
   background: var(--surface-2);
   color: var(--text);
   border-color: var(--border);
+}
+
+.filterChip[data-status='Em campo'] {
+  --chip-text: var(--status-campo-text); --chip-bg: var(--status-campo-bg); --chip-border: var(--status-campo-border);
+}
+.filterChip[data-status='Em estoque'] {
+  --chip-text: var(--status-estoque-text); --chip-bg: var(--status-estoque-bg); --chip-border: var(--status-estoque-border);
+}
+.filterChip[data-status='Em manutenção'] {
+  --chip-text: var(--status-manutencao-text); --chip-bg: var(--status-manutencao-bg); --chip-border: var(--status-manutencao-border);
+}
+.filterChip[data-status='Em trânsito'] {
+  --chip-text: var(--status-transito-text); --chip-bg: var(--status-transito-bg); --chip-border: var(--status-transito-border);
+}
+.filterChip[data-status='Em calibração'] {
+  --chip-text: var(--status-calibracao-text); --chip-bg: var(--status-calibracao-bg); --chip-border: var(--status-calibracao-border);
+}
+.filterChip[data-status] {
+  background: var(--chip-bg, var(--surface));
+  color: var(--chip-text, var(--text));
+  border-color: var(--chip-border, var(--border));
+}
+.filterChip[data-status][aria-pressed='true'] {
+  background: var(--chip-text, var(--accent));
+  border-color: var(--chip-text, var(--accent));
+  color: #fff;
+  font-weight: 700;
+}
+.root[data-theme='dark'] .filterChip[data-status][aria-pressed='true'] {
+  color: #101713;
+}
+.filterChip:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
 }
 
 .filterDivider {
@@ -1476,6 +1522,13 @@ button.equipCard {
   gap: 8px;
 }
 
+.obraExportActions > button,
+.obraExportActions > [data-exportar-auditoria] > button {
+  min-height: 44px;
+}
+
+.obraExportActions > [data-exportar-auditoria] { align-self: stretch; }
+
 .obraExportBtn,
 .obraExportBtnSecondary {
   display: inline-flex;
@@ -1666,6 +1719,7 @@ button.equipCard {
 
 @media (max-width: 560px) {
   .obraExportActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .obraExportActions > [data-exportar-auditoria] { width:100%; }
   .obraExportBtn, .obraExportBtnSecondary, .obraArchiveBtn { width: 100%; min-height: 44px; }
   .obraConsultaTopo { align-items: flex-start; }
   .obraConsultaForm { grid-template-columns: 1fr; }

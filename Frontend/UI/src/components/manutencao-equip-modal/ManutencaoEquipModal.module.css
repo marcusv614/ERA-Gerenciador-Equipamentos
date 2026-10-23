@@ -16,7 +16,7 @@
 .registro { display:grid; gap:10px; min-width:0; padding:16px; border:1px solid var(--border); border-radius:10px; }
 .registro header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; font-size:13px; color:var(--text); }
 .registro header b { padding:5px 8px; border-radius:6px; color:var(--accent); background:var(--surface-2); font-size:11px; }
-.registro header b[data-aberta='true'] { color:var(--warn); }
+.registro header b[data-aberta='true'] { color:var(--status-manutencao-text); background:var(--status-manutencao-bg); }
 .registro small { color:var(--text-muted); font-size:12px; overflow-wrap:anywhere; }
 .motivo { margin:0; color:var(--text); font-size:13px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; }
 .confirmacao { display:grid; gap:10px; border-top:1px solid var(--border); padding-top:14px; }

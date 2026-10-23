@@ -20,3 +20,6 @@
   .campos input, .campos select { font-size: 16px; }
   .atalhos button { flex: 1 1 auto; }
 }
+@media (max-width: 380px) {
+  .campos { grid-template-columns: minmax(0, 1fr); }
+}

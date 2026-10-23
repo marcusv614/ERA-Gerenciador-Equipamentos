@@ -503,6 +503,8 @@
   bottom: -20px;
   z-index: 2;
   display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   justify-content: flex-end;
   gap: 8px;
   margin: 2px 0 0;
@@ -511,6 +513,8 @@
   background: color-mix(in srgb, var(--surface) 94%, transparent);
   backdrop-filter: blur(8px);
 }
+.actions > button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; }
+.actions > button svg { flex-shrink:0; }
 
 .actionsSpacer {
   flex: 1;

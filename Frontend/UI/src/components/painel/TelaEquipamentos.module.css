@@ -1,7 +1,8 @@
 .barraFiltros { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:12px 20px; margin-bottom:18px; min-width:0; }
 .barraFiltros > div:first-child { flex:1 1 650px; min-width:0; margin-bottom:0; }
+.barraFiltros select { min-height:44px; }
 .alternador { display:flex; flex-shrink:0; gap:3px; padding:3px; border:1px solid var(--border); border-radius:10px; background:var(--surface-2); }
-.alternador button { min-height:38px; display:flex; align-items:center; justify-content:center; gap:7px; padding:8px 12px; border:0; border-radius:7px; background:transparent; color:var(--text-muted); font:600 12px var(--font-body); cursor:pointer; }
+.alternador button { min-height:36px; display:flex; align-items:center; justify-content:center; gap:7px; padding:8px 12px; border:0; border-radius:7px; background:transparent; color:var(--text-muted); font:600 12px var(--font-body); cursor:pointer; }
 .alternador button[aria-pressed='true'] { background:var(--surface); color:var(--accent); box-shadow:0 1px 4px rgba(0,0,0,.08); }
 .alternador button:hover { color:var(--text); }
 .alternador button:focus-visible, .tabela button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }

@@ -13,7 +13,8 @@
 .formulario textarea { resize:vertical; }
 .duasColunas { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 .alternador,.acoes { display:flex; flex-wrap:wrap; gap:8px; }
-.formulario button { min-height:44px; padding:10px 14px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font:600 12px var(--font-body); cursor:pointer; }
+.formulario button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; padding:10px 14px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font:600 12px/1.4 var(--font-body); cursor:pointer; }
+.formulario button svg { flex-shrink:0; }
 .formulario button:disabled,.formulario:disabled { opacity:.55; cursor:not-allowed; }
 .formulario .primario,.alternador button[aria-pressed='true'] { background:var(--accent); border-color:transparent; color:var(--on-accent,#fffaf0); }
 .formulario .secundario { justify-self:start; }
@@ -29,4 +30,5 @@
 .indicador { margin:10px 0 0; font-size:12px; line-height:1.5; color:var(--text-muted); overflow-wrap:anywhere; }
 .indicador[data-situacao='VENCIDA'] { color:var(--danger,#b94737); font-weight:600; }
 .indicador[data-situacao='A_VENCER'] { color:var(--warn,#996819); font-weight:600; }
+.indicador[data-situacao='ATENDIMENTO'] { color:var(--status-calibracao-text); }
 @media(max-width:600px) { .duasColunas { grid-template-columns:minmax(0,1fr); }.alternador,.acoes { flex-direction:column; }.formulario button,.formulario .secundario { width:100%; justify-self:stretch; }.formulario input,.formulario textarea { font-size:16px; } }

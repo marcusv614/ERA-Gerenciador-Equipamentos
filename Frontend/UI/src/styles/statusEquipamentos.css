@@ -1,0 +1,37 @@
+/* Paleta compartilhada pelos filtros, etiquetas e resumos de equipamentos. */
+:root,
+[data-theme='light'] {
+  --status-campo-text: #1d4ed8;
+  --status-campo-bg: #eff6ff;
+  --status-campo-border: #bfdbfe;
+  --status-estoque-text: #166534;
+  --status-estoque-bg: #f0fdf4;
+  --status-estoque-border: #bbf7d0;
+  --status-manutencao-text: #92400e;
+  --status-manutencao-bg: #fffbeb;
+  --status-manutencao-border: #fde68a;
+  --status-transito-text: #6d28d9;
+  --status-transito-bg: #f5f3ff;
+  --status-transito-border: #ddd6fe;
+  --status-calibracao-text: #155e75;
+  --status-calibracao-bg: #ecfeff;
+  --status-calibracao-border: #a5f3fc;
+}
+
+[data-theme='dark'] {
+  --status-campo-text: #93c5fd;
+  --status-campo-bg: #172a46;
+  --status-campo-border: #35567f;
+  --status-estoque-text: #86efac;
+  --status-estoque-bg: #163523;
+  --status-estoque-border: #326347;
+  --status-manutencao-text: #fcd34d;
+  --status-manutencao-bg: #3b2e16;
+  --status-manutencao-border: #735b25;
+  --status-transito-text: #c4b5fd;
+  --status-transito-bg: #2d2346;
+  --status-transito-border: #5b4785;
+  --status-calibracao-text: #67e8f9;
+  --status-calibracao-bg: #14343b;
+  --status-calibracao-border: #2a6370;
+}

@@ -107,12 +107,14 @@
   .cabecalhoAcoes { align-items:stretch; flex-direction:column; gap:9px; }
   .total { align-self:flex-start; }
   .alternador { width:100%; }
-  .alternador button { flex:1; }
+  .alternador button { flex:1; min-height:44px; }
   .filtrosTecnicos { align-items:stretch; flex-direction:column; gap:10px; padding:14px 12px; }
-  .camposFiltro { display:grid; grid-template-columns:1fr 1fr; }
+  .camposFiltro { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .camposFiltro label { min-width:0; }
   .camposFiltro label:last-child { grid-column:1 / -1; }
-  .camposFiltro input, .camposFiltro select { width:100%; min-width:0; }
+  .camposFiltro input, .camposFiltro select { width:100%; min-width:0; min-height:44px; font-size:16px; }
   .filtrosEtapa { width:100%; }
+  .filtrosEtapa button, .limparFiltros { min-height:44px; }
   .limparFiltros { align-self:flex-start; }
   .tecnicos { padding:4px 12px 12px; }
   .kanban { grid-auto-columns:minmax(260px,calc(100vw - 62px)); padding:12px; scroll-padding-inline:12px; }
@@ -126,5 +128,8 @@
   .overlay { padding:12px; }
   .janela { max-height:calc(100dvh - 24px); }
   .janelaCabecalho, .janelaConteudo { padding:16px; }
+}
+@media(max-width:380px) {
+  .camposFiltro { grid-template-columns:minmax(0,1fr); }
 }
 @media(prefers-reduced-motion:reduce) { .tecnicoBotao > svg, .kanbanCartao { transition:none; } }

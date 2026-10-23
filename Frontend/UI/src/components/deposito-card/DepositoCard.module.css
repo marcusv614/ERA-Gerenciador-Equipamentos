@@ -58,13 +58,13 @@
   flex-shrink: 0;
 }
 .dotEstoque {
-  background: var(--info);
+  background: var(--status-estoque-text);
 }
 .dotManutencao {
-  background: var(--warn);
+  background: var(--status-manutencao-text);
 }
 .dotTransito {
-  background: var(--era-orange);
+  background: var(--status-transito-text);
 }
 
 .scroll {

@@ -164,10 +164,14 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
 }
+.actions > button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; }
+.actions > button svg { flex-shrink:0; }
 .actionsSpacer{flex:1}.archive{padding:8px 12px;border:1px solid rgba(185,71,55,.28);border-radius:8px;background:rgba(185,71,55,.08);color:#b94737;font-size:13px;font-weight:700;cursor:pointer}
 
 .cancel {

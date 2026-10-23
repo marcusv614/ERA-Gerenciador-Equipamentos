@@ -146,11 +146,11 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
         </button>
         {aberto && <div id={painelId} className={css.lista} role="region" aria-label={`Solicitações de ${nome}`} tabIndex={0}>
           {pedidos.length ? <><div className={css.colunas} aria-hidden="true"><span>Solicitação / data</span><span>Obra</span><span>Status</span><span /></div>
-            {pedidos.map((pedido) => <div key={pedido.id} style={{display:'grid',gap:6,minWidth:0}}><button type="button" className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
+            {pedidos.map((pedido) => <button type="button" key={pedido.id} className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
               <span className={css.identificador}><strong>#{String(pedido.id).padStart(4, '0')}</strong><small>{formatarData(pedido.dataSolicitacao)}</small>{pedido.solicitacaoPaiId != null && <small>Pedido original #{String(pedido.solicitacaoPaiId).padStart(4, '0')}</small>}</span>
               <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{financeiro?'Pedido de materiais':pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
               <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span><ChevronRight size={16} />
-            </button><ExportarAuditoria id={pedido.id}/></div>)}
+            </button>)}
           </> : <div className={css.vazio}><ClipboardList size={24} /><p>Nenhuma solicitação deste técnico{termo ? ' para esta busca' : ''}.</p></div>}
         </div>}
       </section>;

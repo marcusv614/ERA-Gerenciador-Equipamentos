@@ -68,9 +68,9 @@
 .pagina *::before,
 .pagina *::after { box-sizing: border-box; }
 
-.pagina button,
-.pagina input,
-.pagina select { font: inherit; }
+:where(.pagina) button,
+:where(.pagina) input,
+:where(.pagina) select { font: inherit; }
 
 .pagina button {
   transition: opacity 160ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease;

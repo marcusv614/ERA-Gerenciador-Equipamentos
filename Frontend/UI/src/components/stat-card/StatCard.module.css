@@ -22,14 +22,3 @@
   color: var(--text);
   font-family: var(--font-display);
 }
-
-.accent {
-  color: var(--accent);
-}
-.info {
-  color: var(--info);
-}
-.warn {
-  color: var(--warn);
-  font-weight: 700;
-}
