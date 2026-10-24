@@ -30,9 +30,18 @@ jobs:
           node-version: '24'
       - name: Testar e resolver dependencias efetivas
         working-directory: Backend/API
-        run: sh mvnw -B -ntp test dependency:tree -DoutputType=json -DoutputFile=target/security-dependencies.json -Dscope=runtime
+        run: sh mvnw -B -ntp -Pcoverage verify dependency:tree -DoutputType=json -DoutputFile=target/security-dependencies.json -Dscope=runtime
       - name: Consultar vulnerabilidades Maven na OSV
         run: node scripts/verificar-dependencias-java.mjs
+      - name: Guardar cobertura e resultados Java
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cobertura-api
+          path: |
+            Backend/API/target/site/jacoco/
+            Backend/API/target/surefire-reports/
+          retention-days: 7
 
   interface:
     name: UI - testes, lint, build e npm audit
@@ -51,12 +60,42 @@ jobs:
           cache: npm
           cache-dependency-path: Frontend/UI/package-lock.json
       - run: npm ci
-      - run: node --test --test-isolation=none tests/*.test.js
+      - run: npm test
       - run: npm run lint
       - run: npm run build
         env:
           VITE_API_URL: /api
       - run: npm audit --audit-level=high
+
+  integracao:
+    name: Fluxos reais - API, PostgreSQL e navegador desktop/mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Frontend/UI/package-lock.json
+      - run: npm ci
+        working-directory: Frontend/UI
+      - run: npx playwright install --with-deps chromium
+        working-directory: Frontend/UI
+      - name: Executar em bancos descartáveis (nunca .env ou serviços habituais)
+        run: node scripts/testar-integracao.mjs
+      - name: Guardar relatório e evidências por sete dias
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: regressao-integracao
+          path: |
+            test-results/
+            Frontend/UI/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
 
   imagens:
     name: Imagem ${{ matrix.nome }} - vulnerabilidades

@@ -1,11 +1,12 @@
-// Executar somente contra API de cópia descartável local na porta 18089.
-import fs from 'node:fs';
+// Executar somente contra API descartável gerada pelo executor isolado.
+import { configuracaoTeste } from './testes/cliente.mjs';
 import assert from 'node:assert/strict';
 assert.ok(process.argv.includes('--banco-descartavel'));
-const contas=JSON.parse(fs.readFileSync(process.argv[2],'utf8')).contas;
+const config=configuracaoTeste();
+const contas=config.contas;
 const limite=Date.now()+120000;
 for(;;){
-  try{if((await fetch('http://127.0.0.1:18089/api/actuator/health',{signal:AbortSignal.timeout(2000)})).ok)break;}catch{ /* API temporária em inicialização */ }
+  try{if((await fetch(config.url+'/api/actuator/health',{signal:AbortSignal.timeout(2000)})).ok)break;}catch{ /* API temporária em inicialização */ }
   if(Date.now()>limite)throw Error('API temporária não iniciou.');
   await new Promise(r=>setTimeout(r,1000));
 }
@@ -13,7 +14,7 @@ let verificacoes=0;
 class Cliente{
   cookies=new Map();csrf='';
   async req(method,path,body,status=200){
-    const r=await fetch('http://127.0.0.1:18089/api'+path,{method,headers:{'Content-Type':'application/json',Cookie:[...this.cookies].map(([k,v])=>`${k}=${v}`).join('; '),'X-XSRF-TOKEN':this.csrf},body:body==null?undefined:JSON.stringify(body)});
+    const r=await fetch(config.url+'/api'+path,{method,headers:{'Content-Type':'application/json',Cookie:[...this.cookies].map(([k,v])=>`${k}=${v}`).join('; '),'X-XSRF-TOKEN':this.csrf},body:body==null?undefined:JSON.stringify(body),signal:AbortSignal.timeout(20000)});
     for(const c of r.headers.getSetCookie()){const p=c.split(';')[0],i=p.indexOf('=');this.cookies.set(p.slice(0,i),p.slice(i+1));}
     const text=await r.text(),data=text?JSON.parse(text):null;assert.equal(r.status,status,`${method} ${path}: ${data?.mensagem||''}`);verificacoes++;return data;
   }

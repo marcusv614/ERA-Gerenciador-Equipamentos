@@ -1,0 +1,57 @@
+# Exclusivo dos testes. Sem .env, volumes persistentes ou rede da aplicação habitual.
+services:
+  database:
+    image: postgres:16-bookworm
+    restart: "no"
+    labels:
+      era.test: "true"
+    environment:
+      POSTGRES_DB: era_test
+      POSTGRES_USER: era_test
+      POSTGRES_PASSWORD: SomenteTesteDescartavel!42
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U era_test -d era_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    image: era-tests-api:local
+    build:
+      context: ./Backend/API
+    restart: "no"
+    labels:
+      era.test: "true"
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/era_test
+      DB_USERNAME: era_test
+      DB_PASSWORD: SomenteTesteDescartavel!42
+      ADMIN_INITIAL_NAME: Administrador de testes
+      ADMIN_INITIAL_LOGIN: audit-smoke-admin
+      ADMIN_INITIAL_PASSWORD: TempCheck#578943
+      RECOVERY_ENABLED: "false"
+      MAIL_HOST: "127.0.0.1"
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      CORS_ALLOWED_ORIGINS: ${ERA_TEST_ORIGIN:-http://localhost:5173}
+      SESSION_COOKIE_SECURE: "false"
+      TZ: America/Manaus
+    ports:
+      - "127.0.0.1::8080"
+    depends_on:
+      database:
+        condition: service_healthy
+  ui:
+    image: era-tests-ui:local
+    build:
+      context: ./Frontend/UI
+      args:
+        VITE_API_URL: /api
+    restart: "no"
+    labels:
+      era.test: "true"
+    ports:
+      - "127.0.0.1::80"
+    depends_on:
+      - api

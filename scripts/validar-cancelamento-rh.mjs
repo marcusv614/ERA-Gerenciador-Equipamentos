@@ -1,14 +1,15 @@
 // Somente contra a cópia descartável local, nunca contra o banco principal.
-import fs from 'node:fs';
+import { configuracaoTeste } from './testes/cliente.mjs';
 import assert from 'node:assert/strict';
-const base='http://127.0.0.1:18089/api';
+const config=configuracaoTeste();
+const base=config.url+'/api';
 assert.ok(process.argv.includes('--banco-descartavel'));
-const {contas}=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+const {contas}=config;
 let verificacoes=0;
 class Cliente {
   cookies=new Map();csrf='';
   async req(method,path,body,status=200){
-    const r=await fetch(base+path,{method,headers:{'Content-Type':'application/json',Cookie:[...this.cookies].map(([k,v])=>`${k}=${v}`).join('; '),'X-XSRF-TOKEN':this.csrf},body:body==null?undefined:JSON.stringify(body)});
+    const r=await fetch(base+path,{method,headers:{'Content-Type':'application/json',Cookie:[...this.cookies].map(([k,v])=>`${k}=${v}`).join('; '),'X-XSRF-TOKEN':this.csrf},body:body==null?undefined:JSON.stringify(body),signal:AbortSignal.timeout(20000)});
     for(const c of r.headers.getSetCookie()){const p=c.split(';')[0],i=p.indexOf('=');this.cookies.set(p.slice(0,i),p.slice(i+1));}
     const text=await r.text(),data=text?JSON.parse(text):null;
     assert.equal(r.status,status,`${method} ${path}: ${data?.mensagem||''}`);verificacoes++;return data;

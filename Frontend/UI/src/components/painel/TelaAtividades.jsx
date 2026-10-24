@@ -10,6 +10,7 @@ import { DetalhesSolicitacao } from './DetalhesSolicitacao';
 import { SepararEquipamentosModal } from '../estoque/SepararEquipamentosModal';
 import { DetalhesPedidoFinanceiro } from './DetalhesPedidoFinanceiro';
 import { COLUNAS_FINANCEIRAS } from '../../utils/pedidosFinanceiros';
+import { KanbanRolavel } from './KanbanRolavel';
 import css from './TelaAtividades.module.css';
 
 const CHAVE_VISUALIZACAO = 'era-atividades-visualizacao';
@@ -155,7 +156,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
         </div>}
       </section>;
     })}{!grupos.length && <div className={css.vazio}><ClipboardList size={28} /><p>{termo || filtrosLocaisAtivos ? 'Nenhuma solicitação encontrada com os filtros selecionados.' : 'Nenhum técnico cadastrado ou solicitação recebida.'}</p></div>}</div></> :
-      <div className={css.kanban} aria-label="Kanban de solicitações">
+      <KanbanRolavel className={css.kanban}>
         {colunasKanban.map((coluna) => {
           const pedidos = pedidosOrdenados(coluna.id);
           return <section key={coluna.id} className={css.kanbanColuna} data-etapa={coluna.id} aria-labelledby={`kanban-${coluna.id}`}>
@@ -177,7 +178,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
             </div>
           </section>;
         })}
-      </div>}
+      </KanbanRolavel>}
     {rejeicaoPendente&&<JustificarRejeicaoModal pedidoId={rejeicaoPendente.id} processando={processando} erro={erro||erroApi} aoFechar={()=>{selecionar(rejeicaoPendente.voltar);definirRejeicaoPendente(null);}} aoConfirmar={motivo=>decidir(async id=>{const ok=await aoRejeitar(id,motivo);if(ok)definirRejeicaoPendente(null);return ok;},rejeicaoPendente.id)}/>}
     {selecionada && !planejando && <JanelaSolicitacao solicitacao={selecionada} aoFechar={fechar}>
       {erro && <p role="alert" className={css.erro}>{erroApi || erro}</p>}{processando && <p role="status" className={css.processando}>Atualizando solicitação...</p>}

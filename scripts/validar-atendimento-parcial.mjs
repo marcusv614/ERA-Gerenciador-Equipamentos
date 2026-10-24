@@ -1,15 +1,14 @@
-// Recebe somente a configuração de uma API/banco descartáveis criados pelo roteiro PowerShell.
-import fs from 'node:fs';
+// Recebe somente configuração de API/banco isolados do executor multiplataforma.
+import { configuracaoTeste } from './testes/cliente.mjs';
 import assert from 'node:assert/strict';
-const config = JSON.parse(fs.readFileSync(process.argv[2], 'utf8').replace(/^\uFEFF/, ''));
-assert.match(config.container, /^era-auditoria-smoke-\d{14}$/);assert.match(config.database, /^era_auditoria_smoke_\d{14}$/);assert.match(config.url, /^http:\/\/127\.0\.0\.1:\d+$/);
+const config = configuracaoTeste();
 let verificacoes = 0;
 class Cliente {
   cookies = new Map(); csrf = '';
   async req(method, rota, body, status = 200) {
     const headers = { 'Content-Type': 'application/json', Cookie: [...this.cookies].map(([k,v]) => `${k}=${v}`).join('; ') };
     if (method !== 'GET') headers['X-XSRF-TOKEN'] = this.csrf;
-    const r = await fetch(`${config.url}/api${rota}`, { method, headers, body: body == null ? undefined : JSON.stringify(body) });
+    const r = await fetch(`${config.url}/api${rota}`, { method, headers, body: body == null ? undefined : JSON.stringify(body), signal:AbortSignal.timeout(20000) });
     for (const c of r.headers.getSetCookie()) { const p = c.split(';')[0], n = p.indexOf('='); this.cookies.set(p.slice(0,n),p.slice(n+1)); }
     const texto = await r.text(), dados = texto ? JSON.parse(texto) : null;
     assert.ok((Array.isArray(status) ? status : [status]).includes(r.status), `${method} ${rota}: esperado ${status}, recebido ${r.status}: ${dados?.mensagem || ''}`);
@@ -190,6 +189,13 @@ let retorno=await gerente.req('POST','/atividades',{tecnico:b.nome,obraOrigemId:
 const retornoFinanceiro=(await historicoFinanceiro()).find(p=>p.id===retorno.id);
 assert.equal(retornoFinanceiro.analises[0].materiais[0].identificacao,loteObraB.serie);
 retorno=await financeiro.req('POST',`/atividades/${retorno.id}/aprovacao`,{});assert.equal(retorno.status,'Aguardando coleta');
+await estoque.req('POST',`/atividades/${retorno.id}/transito`,{});
+await tecnicoB.req('POST',`/atividades/${retorno.id}/conclusao`,{},409);
+retorno=await estoque.req('POST',`/atividades/${retorno.id}/conclusao`,{});
+assert.equal(retorno.status,'Concluída');
+await estoque.req('POST',`/atividades/${retorno.id}/conclusao`,{},409);
+const devolvido=(await admin.req('GET','/equipamentos')).filter(e=>e.obraId===null&&e.catalogoChave===loteObraB.catalogoChave);
+assert.ok(devolvido.some(e=>e.quantidade>=1&&e.quantidadeReservada===0),'Retorno conferido precisa aparecer disponível no depósito');
 console.log('Histórico financeiro: pedidos consolidados, autores, compras sem duplicação, ajustes, retorno e permissões: OK');
 
 let revisao = await novoPedido(3);
@@ -216,6 +222,8 @@ await estoque.req('POST',`/atividades/${direto.id}/transito`,{});
 assert.equal((await financeiro.req('GET','/notificacoes')).itens.length,totalFinanceiroAntes,'Financeiro não recebe movimentação direta');
 assert.ok((await estoque.req('GET','/notificacoes')).itens.some(n=>n.solicitacaoId===direto.id&&n.tipo==='ATENDIMENTO_LIBERADO'));
 assert.ok(!(await colega.req('GET','/notificacoes')).itens.some(n=>n.obraId===oe.id),'Colega técnico não recebe EPI destinado ao setor TST');
+await tecnicoB.req('POST',`/atividades/${direto.id}/conclusao`,{});
+assert.equal((await localizar(direto.id,gerente)).status,'Concluída');
 console.log('Notificações: equipe da obra, setores, leitura persistente, CSRF, isolamento por conta e revogação de vínculo: OK');
 console.log('Revisão de aprovação, liberação de reservas e atendimento parcial de EPI/TST: OK');
 console.log(`${verificacoes} requisições HTTP verificadas; banco e API descartáveis.`);

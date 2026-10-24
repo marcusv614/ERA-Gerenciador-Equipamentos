@@ -22,7 +22,7 @@ class CalibracaoServiceTests {
     final Equipamento e=new Equipamento();
     final Obra obra=new Obra();
     final Funcionario tecnico=new Funcionario();
-    final LocalDate hoje=LocalDate.now();
+    final LocalDate hoje=LocalDate.now(java.time.ZoneId.of("America/Manaus"));
     CalibracaoServiceTests(){
         e.setTipo("Fluke");e.setModelo("DSX-5000");e.setSerie("FLUKE-1");e.setStatus("Em campo");e.setQuantidade(1);e.setControleQuantidade("INDIVIDUAL");
         ReflectionTestUtils.setField(e,"id",1L);ReflectionTestUtils.setField(obra,"id",2L);obra.setNome("Obra A");tecnico.setNome("Ana");e.setObra(obra);e.setTecnico(tecnico);
@@ -31,6 +31,25 @@ class CalibracaoServiceTests {
     }
     CalibracaoEquipamento solicitar(){service.solicitar(1L,new CalibracaoDto.Solicitacao("Laboratório A","Calibração periódica"),"GERENTE");var c=e.getCalibracoes().getFirst();ReflectionTestUtils.setField(c,"id",10L);return c;}
     void enviar(){service.retirar(1L,10L,new CalibracaoDto.Retirada(hoje),"ESTOQUE");service.enviar(1L,10L,new CalibracaoDto.Envio("Laboratório A",hoje,hoje.plusDays(10)),"ESTOQUE");}
+    @Test void retiradaUsaDiaDeManausMesmoQuandoBancoDevolveInstanteEmUtc(){
+        var c=solicitar();var dia=LocalDate.now(java.time.ZoneId.of("America/Manaus")).minusDays(1);
+        var instante=dia.atTime(23,30).atZone(java.time.ZoneId.of("America/Manaus")).toOffsetDateTime().withOffsetSameInstant(java.time.ZoneOffset.UTC);
+        ReflectionTestUtils.setField(c,"criadoEm",instante);
+        service.retirar(1L,10L,new CalibracaoDto.Retirada(dia),"ESTOQUE");
+        assertEquals(dia,c.getDataRetirada());
+    }
+    @Test void envioDoDepositoUsaDiaDeManausMesmoQuandoBancoDevolveUtc(){
+        e.setObra(null);var c=solicitar();var dia=LocalDate.now(java.time.ZoneId.of("America/Manaus")).minusDays(1);
+        ReflectionTestUtils.setField(c,"criadoEm",dia.atTime(23,30).atZone(java.time.ZoneId.of("America/Manaus")).toOffsetDateTime().withOffsetSameInstant(java.time.ZoneOffset.UTC));
+        service.enviar(1L,10L,new CalibracaoDto.Envio("Lab",dia,null),"ESTOQUE");
+        assertEquals(dia,c.getDataEnvio());
+    }
+    @Test void retiradaRealmenteAnteriorContinuaBloqueadaMesmoComOffsetUtc(){
+        var c=solicitar();var dia=LocalDate.now(java.time.ZoneId.of("America/Manaus")).minusDays(1);
+        ReflectionTestUtils.setField(c,"criadoEm",dia.atTime(23,30).atZone(java.time.ZoneId.of("America/Manaus")).toOffsetDateTime().withOffsetSameInstant(java.time.ZoneOffset.UTC));
+        assertThrows(RegraNegocioException.class,()->service.retirar(1L,10L,new CalibracaoDto.Retirada(dia.minusDays(1)),"ESTOQUE"));
+        assertNull(c.getDataRetirada());
+    }
     @Test void retiradaEnvioRetornoPreservamOrigemDatasAutoriaECertificado(){
         var c=solicitar();assertEquals(0,e.getQuantidadeDisponivel());assertEquals("Em campo",e.getStatus());assertSame(obra,e.getObra());assertEquals("Ana",c.getTecnicoOrigem());
         enviar();assertNull(e.getObra());assertNull(e.getTecnico());assertEquals("Em calibração",e.getStatus());assertEquals(0,e.getQuantidadeDisponivel());

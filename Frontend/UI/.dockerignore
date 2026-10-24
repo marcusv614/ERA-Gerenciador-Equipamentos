@@ -6,4 +6,6 @@ dist/
 .idea/
 .env*
 .cache/
+test-results/
+playwright-report/
 *.log

@@ -13,6 +13,7 @@ import java.util.Set;
 
 @Service
 public class CalibracaoService {
+    private static final java.time.ZoneId FUSO_OPERACIONAL=java.time.ZoneId.of("America/Manaus");
     private final EquipamentoRepository equipamentos;
     private final EquipamentoService equipamentoService;
     private final UsuarioService usuarios;
@@ -28,7 +29,9 @@ public class CalibracaoService {
     }
     private CalibracaoEquipamento registro(Equipamento e,Long id){return e.getCalibracoes().stream().filter(c->Objects.equals(c.getId(),id)).findFirst().orElseThrow(()->new RecursoNaoEncontradoException("Calibração não encontrada para este equipamento."));}
     private void fase(CalibracaoEquipamento c,String status){if(!status.equals(c.getStatus()))throw new RegraNegocioException("A calibração não está na etapa necessária para esta operação. Atualize os dados.");}
-    private void passada(LocalDate data,String campo){if(data==null||data.isAfter(LocalDate.now()))throw new RegraNegocioException("Informe "+campo+" até a data de hoje.");}
+    // TIMESTAMPTZ preserva o instante, não o offset original: o JDBC pode devolver UTC.
+    private LocalDate dataSolicitacao(CalibracaoEquipamento c){return c.getCriadoEm().atZoneSameInstant(FUSO_OPERACIONAL).toLocalDate();}
+    private void passada(LocalDate data,String campo){if(data==null||data.isAfter(LocalDate.now(FUSO_OPERACIONAL)))throw new RegraNegocioException("Informe "+campo+" até a data de hoje.");}
     private void certificado(LocalDate data,LocalDate validade){passada(data,"a data da calibração");if(validade==null||validade.isBefore(data))throw new RegraNegocioException("A validade do certificado não pode ser anterior à data da calibração.");}
     private EquipamentoDto.Resposta salvar(Equipamento e){equipamentos.saveAndFlush(e);return equipamentoService.respostaOperacional(e);}
     @Transactional public EquipamentoDto.Resposta solicitar(Long id,CalibracaoDto.Solicitacao dados,String login){
@@ -40,7 +43,7 @@ public class CalibracaoService {
     }
     @Transactional public EquipamentoDto.Resposta retirar(Long id,Long calibracaoId,CalibracaoDto.Retirada dados,String login){
         Usuario u=autor(login,true);Equipamento e=buscar(id);CalibracaoEquipamento c=registro(e,calibracaoId);fase(c,"AGUARDANDO_RETIRADA");
-        passada(dados.dataRetirada(),"a data da retirada");if(dados.dataRetirada().isBefore(c.getCriadoEm().toLocalDate()))throw new RegraNegocioException("A retirada não pode ser anterior à solicitação da calibração.");
+        passada(dados.dataRetirada(),"a data da retirada");if(dados.dataRetirada().isBefore(dataSolicitacao(c)))throw new RegraNegocioException("A retirada não pode ser anterior à solicitação da calibração.");
         Obra origem=e.getObra();if(origem==null||!Objects.equals(origem.getId(),c.getObraOrigem().getId()))throw new RegraNegocioException("A localização atual não corresponde à obra da retirada.");
         movimentacoes.save(equipamentoService.novaMovimentacao(e,null,origem,null,e.getTecnico(),"Em estoque",1,dados.dataRetirada()));
         c.retirar(dados.dataRetirada(),u);equipamentoService.aplicarDestino(e,null,null,"Em estoque",dados.dataRetirada());
@@ -49,7 +52,7 @@ public class CalibracaoService {
     @Transactional public EquipamentoDto.Resposta enviar(Long id,Long calibracaoId,CalibracaoDto.Envio dados,String login){
         Usuario u=autor(login,true);Equipamento e=buscar(id);CalibracaoEquipamento c=registro(e,calibracaoId);fase(c,"AGUARDANDO_ENVIO");
         if(e.getObra()!=null)throw new RegraNegocioException("Confirme a retirada da obra antes de enviar ao laboratório.");
-        passada(dados.dataEnvio(),"a data de envio");LocalDate inicio=c.getDataRetirada()==null?c.getCriadoEm().toLocalDate():c.getDataRetirada();
+        passada(dados.dataEnvio(),"a data de envio");LocalDate inicio=c.getDataRetirada()==null?dataSolicitacao(c):c.getDataRetirada();
         if(dados.dataEnvio().isBefore(inicio))throw new RegraNegocioException("O envio não pode ser anterior à retirada ou à solicitação.");
         if(dados.previsaoRetorno()!=null&&dados.previsaoRetorno().isBefore(dados.dataEnvio()))throw new RegraNegocioException("A previsão de retorno não pode ser anterior ao envio.");
         c.enviar(dados.laboratorio().trim(),dados.dataEnvio(),dados.previsaoRetorno(),u);return salvar(e);

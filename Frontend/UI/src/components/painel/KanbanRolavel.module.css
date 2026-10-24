@@ -1,0 +1,24 @@
+.quadro { min-width: 0; }
+.controles {
+  padding: 3px 20px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.controles[hidden] { display: none; }
+.barra {
+  min-width: 0;
+  height: 18px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+}
+.trilho { height: 1px; }
+.barra, .conteudo {
+  scrollbar-width: auto;
+  scrollbar-color: var(--text-muted) var(--surface);
+}
+.barra::-webkit-scrollbar, .conteudo::-webkit-scrollbar { height: 14px; }
+.barra::-webkit-scrollbar-track, .conteudo::-webkit-scrollbar-track { background: var(--surface); border-radius: 9px; }
+.barra::-webkit-scrollbar-thumb, .conteudo::-webkit-scrollbar-thumb { background: var(--text-muted); border: 3px solid var(--surface); border-radius: 9px; }
+.barra:focus-visible, .conteudo:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+@media (max-width: 640px) { .controles { padding-inline: 12px; } }

@@ -6,3 +6,6 @@
 Frontend/UI/node_modules/
 Frontend/UI/dist/
 Backend/API/target/
+test-results/
+Frontend/UI/test-results/
+Frontend/UI/playwright-report/

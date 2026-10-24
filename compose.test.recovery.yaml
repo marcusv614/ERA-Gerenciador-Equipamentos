@@ -1,0 +1,25 @@
+# Override exclusivo do SMTP fictício: TLS desabilitado apenas na rede de teste isolada.
+services:
+  api:
+    environment:
+      RECOVERY_ENABLED: "true"
+      RECOVERY_PUBLIC_URL: http://localhost:5173
+      MAIL_HOST: mail
+      MAIL_PORT: "2525"
+      MAIL_USERNAME: remetente@example.invalid
+      MAIL_PASSWORD: ApenasFicticio!42
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: "false"
+    depends_on:
+      - mail
+  mail:
+    image: node:22-bookworm-slim
+    restart: "no"
+    labels:
+      era.test: "true"
+    command: ["node", "/smtp-ficticio.mjs"]
+    volumes:
+      - ./scripts/testes/smtp-ficticio.mjs:/smtp-ficticio.mjs:ro
+    ports:
+      - "127.0.0.1::8025"

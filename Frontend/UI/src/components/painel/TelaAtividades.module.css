@@ -57,7 +57,7 @@
 .status[data-etapa='aceita'] { color:#4088bf; background:rgba(64,136,191,.13); }
 .status[data-etapa='finalizada'] { color:#27845a; background:rgba(47,158,104,.13); }
 .status[data-etapa='rejeitada'] { color:#c44444; background:rgba(209,84,84,.12); }
-.kanban { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(270px,310px); gap:14px; padding:18px 20px 22px; overflow-x:auto; overscroll-behavior-inline:contain; scrollbar-gutter:stable; background:var(--surface-2); }
+.kanban { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(270px,310px); gap:14px; padding:18px 20px 22px; overflow-x:auto; overscroll-behavior-inline:contain; background:var(--surface-2); }
 .kanbanColuna { min-height:470px; display:flex; flex-direction:column; overflow:hidden; border:1px solid var(--border); border-radius:13px; background:var(--surface); }
 .kanbanCabecalho { min-height:74px; display:grid; grid-template-columns:4px minmax(0,1fr) auto; align-items:center; gap:11px; padding:14px; border-bottom:1px solid var(--border); }
 .kanbanIndicador { width:4px; height:36px; border-radius:4px; background:var(--text-muted); }

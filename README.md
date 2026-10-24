@@ -2,6 +2,8 @@
 
 Monorepo do painel de gestão de equipamentos e obras da ERA.
 
+Testes automatizados, matriz de cobertura e execução isolada: [guia de testes](docs/TESTES.md).
+
 ## Estrutura
 
 ```text
