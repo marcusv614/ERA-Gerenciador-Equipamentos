@@ -7,9 +7,16 @@ export function estadoRolagemKanban({ scrollLeft = 0, scrollWidth = 0, clientWid
   };
 }
 
-// A barra superior é menor que o quadro por causa do espaçamento lateral.
-// As duas áreas precisam ter o mesmo percurso, não a mesma largura total.
-export function larguraConteudoBarraKanban(maximo, larguraBarra) {
-  return Math.max(0, maximo) + Math.max(0, larguraBarra);
+export function geometriaBarraKanban(area, larguraTrilho, minimoIndicador = 44) {
+  const { maximo, posicao } = estadoRolagemKanban(area);
+  const trilho = Math.max(0, larguraTrilho);
+  const proporcao = area.scrollWidth > 0 ? Math.min(1, Math.max(0, area.clientWidth / area.scrollWidth)) : 1;
+  const larguraIndicador = Math.min(trilho, Math.max(minimoIndicador, trilho * proporcao));
+  const percurso = trilho - larguraIndicador;
+  return { maximo, posicao, larguraIndicador, percurso, deslocamento: maximo > 0 ? posicao / maximo * percurso : 0 };
 }
 
+export function posicaoDoQuadroKanban(posicaoIndicador, maximo, percurso) {
+  if (maximo <= 0 || percurso <= 0) return 0;
+  return Math.max(0, Math.min(percurso, posicaoIndicador)) / percurso * maximo;
+}

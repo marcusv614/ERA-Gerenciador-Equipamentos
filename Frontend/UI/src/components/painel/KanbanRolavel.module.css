@@ -1,24 +1,39 @@
-.quadro { min-width: 0; }
-.controles {
-  padding: 3px 20px;
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--border);
-}
-.controles[hidden] { display: none; }
+.quadro { position: relative; min-width: 0; }
 .barra {
-  min-width: 0;
-  height: 18px;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  overscroll-behavior-inline: contain;
+  position: absolute;
+  inset: 0 20px auto;
+  z-index: 1;
+  height: 24px;
+  cursor: pointer;
+  touch-action: pan-y;
+  user-select: none;
+  border-radius: 8px;
 }
-.trilho { height: 1px; }
-.barra, .conteudo {
-  scrollbar-width: auto;
-  scrollbar-color: var(--text-muted) var(--surface);
+.barra[hidden] { display: none; }
+.trilho, .indicador {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  height: 8px;
+  border-radius: 999px;
+  pointer-events: none;
 }
-.barra::-webkit-scrollbar, .conteudo::-webkit-scrollbar { height: 14px; }
-.barra::-webkit-scrollbar-track, .conteudo::-webkit-scrollbar-track { background: var(--surface); border-radius: 9px; }
-.barra::-webkit-scrollbar-thumb, .conteudo::-webkit-scrollbar-thumb { background: var(--text-muted); border: 3px solid var(--surface); border-radius: 9px; }
-.barra:focus-visible, .conteudo:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-@media (max-width: 640px) { .controles { padding-inline: 12px; } }
+.trilho { width: 100%; background: var(--border); }
+.indicador { background: var(--text-muted); }
+.barra:hover .indicador, .barra:focus-visible .indicador,
+.barra[data-arrastando='true'] .indicador { background: var(--accent); }
+.barra[data-arrastando='true'] { cursor: grabbing; }
+.barra:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.quadro[data-rolavel='true'] .conteudo { padding-top: 30px; }
+.conteudo { scrollbar-width: none; }
+.conteudo::-webkit-scrollbar { display: none; }
+.conteudo:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+@media (max-width: 640px) { .barra { inset-inline: 12px; } }
+@media (hover: none) {
+  .trilho, .indicador { top: 9px; height: 6px; }
+}
+@media (forced-colors: active) {
+  .trilho { background: Canvas; border: 1px solid ButtonText; }
+  .indicador, .barra:hover .indicador, .barra:focus-visible .indicador,
+  .barra[data-arrastando='true'] .indicador { background: ButtonText; }
+}

@@ -40,10 +40,11 @@ for (const nome of ['admin','gerente','rh','financeiro','estoque','tecnico2','ts
       const board = page.getByRole('region',{name:'Kanban de solicitações',exact:true});
       await expect(board).toBeVisible();
       await expect(page.getByRole('button',{name:/Rolar Kanban/})).toHaveCount(0);
-      const barra = page.getByRole('region',{name:'Barra de rolagem horizontal do Kanban',exact:true});
+      const barra = page.getByRole('scrollbar',{name:'Barra de rolagem horizontal do Kanban',exact:true});
       if (await barra.isVisible()) {
-        expect(await barra.evaluate(e=>e.parentElement.getBoundingClientRect().height)).toBeLessThanOrEqual(26);
-        await barra.evaluate(e=>{e.scrollLeft=e.scrollWidth;});
+        expect(await barra.evaluate(e=>e.getBoundingClientRect().height)).toBeLessThanOrEqual(24);
+        await barra.focus();
+        await barra.press('End');
         await expect.poll(()=>board.evaluate(e=>Math.abs(e.scrollLeft-(e.scrollWidth-e.clientWidth)))).toBeLessThanOrEqual(2);
       }
       await semOverflow(page);
@@ -67,6 +68,89 @@ for (const nome of ['admin','gerente','rh','financeiro','estoque','tecnico2','ts
     await expect(page.getByRole('heading',{name:'Acesse o painel'})).toBeVisible();
   });
 }
+
+test('Kanban: barra integrada, mouse, teclado, gestos e redimensionamento',async({page,isMobile},testInfo)=>{
+  await entrar(page,'gerente');
+  await atividades(page);
+  await page.getByRole('button',{name:'Kanban',exact:true}).click();
+  const board = page.getByRole('region',{name:'Kanban de solicitações',exact:true});
+  const barra = page.getByRole('scrollbar',{name:'Barra de rolagem horizontal do Kanban',exact:true});
+  const indicador = barra.locator('[data-indicador-rolagem]');
+  await expect(barra).toBeVisible();
+  await expect(barra).toHaveCount(1);
+  await expect(barra).toHaveAttribute('aria-controls',await board.getAttribute('id'));
+  await expect(barra).toHaveAttribute('aria-orientation','horizontal');
+  expect(await board.evaluate(e=>getComputedStyle(e).scrollbarWidth)).toBe('none');
+  // O trilho usa o próprio espaço superior do quadro, sem faixa adicional.
+  const caixaQuadro = await board.boundingBox();
+  const caixaBarra = await barra.boundingBox();
+  expect(Math.abs(caixaBarra.y-caixaQuadro.y)).toBeLessThanOrEqual(1);
+  expect(caixaBarra.height).toBe(24);
+  expect(await indicador.evaluate(e=>e.getBoundingClientRect().height)).toBeLessThanOrEqual(8);
+
+  await barra.focus();
+  await barra.press('Home');
+  await expect(barra).toHaveAttribute('aria-valuenow','0');
+  await barra.press('ArrowRight');
+  await expect.poll(()=>board.evaluate(e=>e.scrollLeft)).toBe(40);
+  await barra.press('End');
+  await expect.poll(async()=>Number(await barra.getAttribute('aria-valuenow'))===Number(await barra.getAttribute('aria-valuemax'))).toBe(true);
+  await barra.press('ArrowRight');
+  await expect.poll(()=>board.evaluate(e=>Math.abs(e.scrollLeft-(e.scrollWidth-e.clientWidth)))).toBeLessThanOrEqual(1);
+  await barra.press('PageUp');
+  await expect.poll(()=>board.evaluate(e=>e.scrollLeft<e.scrollWidth-e.clientWidth)).toBe(true);
+  await barra.press('Home');
+
+  // Clique no trilho vai ao ponto; captura mantém o arraste fora da barra.
+  await page.mouse.click(caixaBarra.x+caixaBarra.width-2,caixaBarra.y+12);
+  await expect.poll(()=>board.evaluate(e=>Math.abs(e.scrollLeft-(e.scrollWidth-e.clientWidth)))).toBeLessThanOrEqual(1);
+  await barra.press('Home');
+  await expect(barra).toHaveAttribute('aria-valuenow','0');
+  const caixaIndicador = await indicador.boundingBox();
+  await page.mouse.move(caixaIndicador.x+caixaIndicador.width/2,caixaBarra.y+12);
+  await page.mouse.down();
+  await expect(barra).toHaveAttribute('data-arrastando','true');
+  await page.mouse.move(caixaBarra.x+caixaBarra.width+30,caixaBarra.y+70,{steps:8});
+  await page.mouse.up();
+  await expect(barra).toHaveAttribute('data-arrastando','false');
+  await expect.poll(()=>board.evaluate(e=>Math.abs(e.scrollLeft-(e.scrollWidth-e.clientWidth)))).toBeLessThanOrEqual(1);
+  await barra.press('Home');
+  await expect(barra).toHaveAttribute('aria-valuenow','0');
+
+  if (isMobile) {
+    // Eventos de toque reais do Chromium: o quadro mantém o swipe nativo.
+    const sessao = await page.context().newCDPSession(page);
+    const x = caixaQuadro.x+caixaQuadro.width-30;
+    const y = Math.min(caixaQuadro.y+180,page.viewportSize().height-100);
+    await sessao.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+    for (let passo=1;passo<=10;passo++) {
+      await sessao.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-passo*20,y}]});
+    }
+    await sessao.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+    await expect.poll(()=>board.evaluate(e=>e.scrollLeft)).toBeGreaterThan(20);
+    await sessao.detach();
+  } else {
+    await page.mouse.move(caixaQuadro.x+100,caixaQuadro.y+100);
+    await page.mouse.wheel(160,0);
+    await expect.poll(()=>board.evaluate(e=>e.scrollLeft)).toBeGreaterThan(20);
+    // A roda vertical não é convertida em movimento horizontal.
+    await expect.poll(()=>board.evaluate(e=>Math.round(e.scrollLeft))).toBe(160);
+    await page.mouse.wheel(0,100);
+    await expect.poll(()=>board.evaluate(e=>Math.round(e.scrollLeft))).toBe(160);
+  }
+  await semOverflow(page);
+  await page.screenshot({path:testInfo.outputPath('kanban-refinado.png'),fullPage:true});
+
+  await page.setViewportSize({width:3200,height:1000});
+  await expect(barra).toBeHidden();
+  await page.setViewportSize({width:320,height:900});
+  await expect(barra).toBeVisible();
+  await expect.poll(()=>indicador.evaluate(e=>e.getBoundingClientRect().width)).toBeGreaterThanOrEqual(44);
+  await barra.focus();
+  await barra.press('End');
+  await expect.poll(()=>board.evaluate(e=>Math.abs(e.scrollLeft-(e.scrollWidth-e.clientWidth)))).toBeLessThanOrEqual(1);
+  await semOverflow(page);
+});
 
 for (const [nome,material,proibido] of [['tecnico2','DEMO Alicate','DEMO Luva'],['tst','DEMO Luva','DEMO Alicate']]) {
   test(`${nome}: criar pedido pela interface com catálogo restrito`,async({page})=>{
