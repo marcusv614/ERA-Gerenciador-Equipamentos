@@ -1,0 +1,3462 @@
+[
+  {
+    "classe": "br.com.era.api.EraApiApplicationTests",
+    "teste": "devePreservarMovimentacaoCanceladaParaAuditoria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.HistoricoMigracoesTests",
+    "teste": "preservaChecksumsDasMigracoesJaAplicadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.PoliticaSenhaTests",
+    "teste": "aceitaExatamenteOitoCaracteresSemExigirSimbolos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.PoliticaSenhaTests",
+    "teste": "rejeitaPadroesObviosELogin",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.PoliticaSenhaTests",
+    "teste": "rejeitaTamanhoForaDoLimite",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "respostasDaCadeiaTrazemHeadersDeSeguranca",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "csrfAusenteOuInvalidoBloqueiaAdmin",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[1]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[2]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[3]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[4]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[5]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[6]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[7]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[8]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[9]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[10]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[11]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[12]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[13]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[14]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[15]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[16]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[17]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[18]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[19]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[20]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[21]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[22]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[23]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[24]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[25]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[26]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[27]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[28]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[29]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[30]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[31]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[32]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[33]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[34]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[35]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[36]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[37]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[38]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[39]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[40]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[41]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[42]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[43]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[44]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[45]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[46]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[47]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[48]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[49]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[50]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[51]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[52]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[53]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[54]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[55]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[56]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[57]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[58]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[59]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[60]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[61]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[62]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[63]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[64]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[65]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[66]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[67]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[68]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[69]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[70]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[71]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[72]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[73]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[74]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[75]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[76]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[77]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[78]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[79]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[80]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[81]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[82]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[83]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[84]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[85]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[86]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[87]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[88]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[89]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[90]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[91]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[92]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[93]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[94]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[95]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[96]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[97]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[98]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[99]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[100]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[101]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[102]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[103]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[104]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[105]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[106]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[107]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[108]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[109]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[110]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[111]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[112]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[113]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[114]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[115]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[116]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[117]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[118]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[119]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[120]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[121]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[122]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[123]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[124]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[125]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[126]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[127]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[128]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[129]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[130]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[131]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[132]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[133]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[134]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[135]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[136]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[137]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[138]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[139]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[140]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[141]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[142]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[143]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[144]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[145]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[146]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[147]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[148]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[149]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[150]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[151]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[152]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[153]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[154]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[155]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[156]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[157]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[158]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[159]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[160]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[161]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[162]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[163]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[164]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[165]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[166]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[167]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[168]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[169]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[170]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[171]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[172]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[173]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[174]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[175]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[176]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[177]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[178]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[179]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[180]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[181]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[182]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[183]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[184]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[185]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[186]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[187]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[188]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[189]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[190]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[191]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[192]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[193]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[194]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[195]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[196]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[197]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[198]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[199]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[200]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[201]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[202]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[203]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[204]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[205]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[206]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[207]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[208]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[209]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[210]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[211]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[212]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[213]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[214]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[215]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[216]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[217]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[218]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[219]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[220]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[221]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[222]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[223]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[224]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[225]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[226]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[227]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[228]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[229]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[230]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[231]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[232]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[233]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[234]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[235]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[236]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[237]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[238]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[239]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[240]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[241]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[242]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[243]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[244]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[245]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[246]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[247]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[248]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[249]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[250]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[251]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[252]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[253]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[254]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[255]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[256]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[257]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[258]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[259]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[260]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[261]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[262]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[263]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[264]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[265]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[266]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[267]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[268]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[269]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[270]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[271]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[272]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[273]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[274]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[275]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[276]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[277]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[278]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[279]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[280]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[281]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[282]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[283]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[284]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[285]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[286]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[287]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[288]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[289]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[290]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[291]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[292]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[293]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[294]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[295]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[296]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[297]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[298]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[299]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[300]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[301]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[302]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[303]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[304]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[305]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[306]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[307]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[308]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[309]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[310]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[311]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "perfilPorRotaEMetodo()[312]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.QaMatrizAutorizacaoTests",
+    "teste": "preflightPermiteSomenteOrigemConfigurada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SaudeSemSmtpTests",
+    "teste": "oscilacaoDoGmailNaoPodeBloquearApiMesmoComRecuperacaoHabilitada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SaudeSemSmtpTests",
+    "teste": "gmailNaoConfiguradoNaoPodeDerrubarHealthcheck",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SaudeSemSmtpTests",
+    "teste": "testeDeControleConfirmaQueIndicadorSeriaAtivadoSemACorrecao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SegurancaRecuperacaoTests",
+    "teste": "configuracaoNaoPodeSerConsultadaAnonimamente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SegurancaRecuperacaoTests",
+    "teste": "rotasPublicasContinuamExigindoCsrf",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SegurancaRecuperacaoTests",
+    "teste": "adminSemCadastroPodeConfigurarMasNaoPodeContornarEtapa",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SegurancaRecuperacaoTests",
+    "teste": "permiteSolicitarSemLoginComCsrfERespostaGenerica",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.SegurancaRecuperacaoTests",
+    "teste": "todosOsPerfisNaoAdminSaoBloqueadosNaCadeiaRealDeSeguranca",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "deveEncerrarAcessoDeUsuarioDesativado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "deveExigirEmailConfirmadoNaApiParaAdminSemCadastro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "devePermitirAcessoQuandoRecuperacaoNaoExigeCadastro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "sessaoAntigaNaoPodeTrocarSenhaRedefinidaPeloAdministrador",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "devePermitirEndpointDeAlteracaoDaSenhaTemporaria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "sessaoDeContaRemovidaNaoPodeAssumirOutroUsuarioComMesmoLogin",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "deveBloquearRecursosEnquantoSenhaForTemporaria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "deveRevogarPermissoesAntigasAposRebaixarAdministrador",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "desativarEReativarNaoRestauraSessaoAnterior",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.config.ValidacaoSessaoFilterTests",
+    "teste": "loginOuVinculoAlteradoRevogaSessao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.AuditoriaErrosHttpTests",
+    "teste": "naoCriaFichaSemEquipamentos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.AuditoriaErrosHttpTests",
+    "teste": "rejeitaQuantidadesNegativasSemDetalhesInternos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.AuditoriaErrosHttpTests",
+    "teste": "naoConsultaFichaDeOutroTecnico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.AutenticacaoControllerTests",
+    "teste": "deveTrocarIdentificadorDaSessaoDepoisDoLogin",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.CalibracaoErrosHttpTests",
+    "teste": "envioExigeLaboratorioEDataSemStackTrace",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.CalibracaoErrosHttpTests",
+    "teste": "retornoExigeDatasECertificado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.CalibracaoErrosHttpTests",
+    "teste": "etapaRepetidaRetorna409",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.CalibracaoErrosHttpTests",
+    "teste": "dataInvalidaNaoChegaAoServico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "metodoInvalidoNaoViraErroInterno",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "regraDeNegocioMantemMensagemUtil",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "concorrenciaRetornaConflitoSemDetalhesDoBanco",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "erroInesperadoTemCodigoSemExporMensagemInterna",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "integridadeNaoExpoeSqlOuDadosDaCausa",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "acessoNegadoNaoExpoeMensagemDaExcecao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "statusCincoXxNaoExpoeReasonInterno",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ExcecoesSegurasTests",
+    "teste": "recursoAusenteTemContratoEstavel",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.LogsSegurosTests",
+    "teste": "preservaCodigoDoErroSemRegistrarMensagemCausaOuUriBruta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ManutencaoErrosHttpTests",
+    "teste": "conclusaoExigeDescricaoDoServico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ManutencaoErrosHttpTests",
+    "teste": "quantidadeEMotivoSaoObrigatorios",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.ManutencaoErrosHttpTests",
+    "teste": "saldoInsuficienteRetornaConflitoSemStackTrace",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "conflitoConcorrenteRetorna409",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "retorna409ParaTransicaoInvalida",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "retorna404ParaPedidoInexistente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "rejeitaQuantidadeForaDoInteiro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "rejeitaItemNulo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "erroInesperadoTemCodigoSemStackTrace",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "rejeitaJsonInvalidoSemExporDetalhesInternos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "rejeitaQuantidadeZero",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.PedidoErrosHttpTests",
+    "teste": "formatoIncorretoRetorna415",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.QaCategoriaHttpTests",
+    "teste": "campoAninhadoSemRotuloEhRejeitadoSemPersistir",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.QaCategoriaHttpTests",
+    "teste": "QA_BUG_001_campoNuloDeveSerErro400EmVezDe500",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.QaCategoriaHttpTests",
+    "teste": "cadastroValidoResponde201",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.RecuperacaoContaControllerTests",
+    "teste": "cadastroUsaIdentidadeDaSessaoNuncaIdEnviadoPeloCliente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.RecuperacaoContaControllerTests",
+    "teste": "limiteFilaCheiaERecursoDesligadoMantemMensagemGenerica",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.RecuperacaoContaControllerTests",
+    "teste": "rejeitaLinkMalformadoECodigoInvalidoAntesDoServico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.RecuperacaoContaControllerTests",
+    "teste": "limitaTentativasDeRedefinicao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.controller.RecuperacaoContaControllerTests",
+    "teste": "solicitacaoPublicaNaoRevelaExistenciaOuPerfilNemConsultaContaNaResposta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[1]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[2]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[3]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[4]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[5]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[6]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[7]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[8]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[9]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[10]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[11]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[12]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[13]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[14]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[15]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[16]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[17]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[18]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[19]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[20]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[21]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[22]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[23]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[24]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[25]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[26]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[27]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[28]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[29]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[30]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[31]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[32]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[33]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[34]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[35]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[36]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[37]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.dto.QaValidacaoDtoTests",
+    "teste": "equivalenciasELimites()[38]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaMovimentacaoTests",
+    "teste": "consultaHistoricaExplicitaADataRealDoRetrato",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaMovimentacaoTests",
+    "teste": "legadoSemPedidoNaoGanhaDatasInventadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaMovimentacaoTests",
+    "teste": "datasRespeitamManausNaViradaDoDiaUTC",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaMovimentacaoTests",
+    "teste": "datasReaisVemDaSaidaEDoRecebimentoRegistrados",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaSegurancaServiceTests",
+    "teste": "rejeitaIntervaloInvertidoEPaginaInvalida",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaSegurancaServiceTests",
+    "teste": "registraSomenteTipoEIdsComParametros",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaSegurancaServiceTests",
+    "teste": "consultaTemLimiteEOrdenacaoEstaveis",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaSegurancaServiceTests",
+    "teste": "somenteAdminPodeConsultar",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "recusaSomaExcessivaNegativaOuEstouro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoAceitaItemArquivadoOuTotalmenteEmTransito",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoAceitaItemDeOutroTecnico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoSobrescreveVersaoAntiga",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "preservaResultadosConcluidosEAutorDoLancamento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoAceitaItemNaoAuditavel",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "fichaGuardaIdentificacaoLocalResponsavelEQuantidadeSemAvaliarAutomaticamente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoAceitaIdsDuplicados",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoIncluiUnidadesEmTransitoMasMantemReservadasNoLocal",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "exigeFiscalEDataENaoAceitaDataFutura",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoPermiteTrocarItensDaFicha",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "naoAcessaFichaDeOutroTecnico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "permiteRascunhoSemClassificarTodasAsUnidades",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "exigeTodasAsUnidadesParaConcluir",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "somenteGerenciaPodeAcessarOuRegistrarAuditorias",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.AuditoriaTecnicoServiceTests",
+    "teste": "fichaContinuaValidaSeEquipamentoForMovidoOuDesmarcadoDepois",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "naoEnviaSemConfirmarRetiradaNemRetornaSemEnvio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "retiradaEnvioRetornoPreservamOrigemDatasAutoriaECertificado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "bloqueiaSolicitacaoDuplicadaEManutencaoDuranteCalibracao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "calibraSomenteFlukeIndividualSemReservaOuManutencao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "datasDoCertificadoPrecisamRespeitarEnvioRetornoEValidade",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "noDepositoNaoExigeRetiradaFicticia",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "naoCancelaEquipamentoQueContinuaNoLaboratorio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "envioDoDepositoUsaDiaDeManausMesmoQuandoBancoDevolveUtc",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "retiradaRealmenteAnteriorContinuaBloqueadaMesmoComOffsetUtc",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "gerenteSolicitaMasNaoConfirmaMovimentosFisicos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "retiradaUsaDiaDeManausMesmoQuandoBancoDevolveInstanteEmUtc",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "cancelaAntesDoEnvioSemInventarRetornoOuRemoverOrigem",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CalibracaoServiceTests",
+    "teste": "certificadoAnteriorNaoInventaMovimentacaoNemRetorno",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "estoqueNaoConsultaPendente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "todosOsPerfisPrecisamJustificarSemAlterarPedidoQuandoMotivoInvalido",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "rhNaoAcessaFerramentasNemPorId",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "reservaInconsistenteImpedeEncerramento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "financeiroQueIniciaOCancelamentoRegistraSeuParecer",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "motivoObrigatorio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "outroTecnicoNaoAcessa",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "gerenteNaoConsultaNemCancelaEpiMesmoSeFoiAutorAntigo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "tstNaoAcessaPedidoDeFerramentas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "solicitanteCancelaPendenteComHistoricoSemExcluir",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "transporteDiretoNaoExigeFinanceiro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "comprasRecebidasPreservadasEOutrasReservasNaoLiberadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "confirmacoesTambemExigemJustificativaPropria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "gerenteSuspendeEFinanceiroConfirma",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "entregaConcluidaExigeDevolucaoNaoCancelamento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.CancelamentoSolicitacaoTests",
+    "teste": "transitoMantemReservaAteRetornoFisico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ConsultaObrasAuditoriaTests",
+    "teste": "gerenciaEEstoqueConsultamNomeDeObraArquivadaParaAuditoria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ConsultaObrasAuditoriaTests",
+    "teste": "listagemOperacionalDeObrasAtivasContinuaExcluindoArquivadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ConsultaObrasAuditoriaTests",
+    "teste": "tecnicoNaoGanhaAcessoAObraArquivada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "alteraPedidoSemEscolherSerieOuOrigemMesmoSemSaldo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "rejeitaOrigemGlobalParaPedidoDeCatalogo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "estoquePodeSepararMesmoPedidoEntreDepositoEOutraObra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "naoAceitaEscolhaDeSerieNaEdicaoDoPedido",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "preservaReservaAoEditarObservacaoDePedidoSeparado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "naoMudaDestinoDePedidoSeparado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "preservaContadoresDeCompraEEntrada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "naoApagaReservasSubstituindoMateriais",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "edicaoNaoEncaminhaMateriaisParaObraEncerrada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "naoAceitaCatalogoInventado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "naoAceitaPedidoVazio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EdicaoPedidoTests",
+    "teste": "rejeitaEdicaoDepoisDoEnvio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "marcaAuditavelNoCadastroEPreservaAoDividirLote",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "deveRegistrarNotaFiscalNaEntradaDeCompra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "deveImpedirQuantidadeMenorQueUnidadesReservadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "reservaPreservaSerieECatalogoAteConfirmarEntrega",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "deveAtualizarQuantidadeEConverterRegistroParaLote",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "divisaoDeLoteComSerieLongaOuRepetidaGeraIdentificacaoValida",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "devePreservarEquipamentoComHistoricoDeMovimentacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "deveImpedirAlteracaoDiretaDeLocalizacaoForaDoFluxoDeMovimentacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "deveExcluirEquipamentoSemReservasOuHistorico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.EquipamentoServiceTests",
+    "teste": "devePersistirEdicaoDoEquipamentoComDataETecnicoOpcional",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "estoqueNaoRecebePedidoAntesDaAprovacaoFinanceira",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "consultaFinanceiraNaoPerdePedidosEncerradosNemExpoeMovimentacoes",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "financeiroSoRecebePedidoDepoisDaPrimeiraAprovacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "financeiroNaoRecebeTransporteDiretoNemRejeicaoDaGerencia",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "consultaFinanceiraExigePerfilAdequadoAntesDeLerPedidos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "edicaoFinanceiraFicaRegistradaParaGerenciaOuRh",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "financeiroNaoPodeEditarPedidoAindaPendente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "exigeAsDuasAprovacoesNaOrdemCorreta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FluxoFinanceiroTests",
+    "teste": "analiseFinanceiraOcultaOrigemEHistoricoFisico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.FuncionarioServiceTests",
+    "teste": "cadastraFuncionarioSemEmailNemTelefone",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "manutencaoTotalMudaSituacaoEConclusaoLiberaAsUnidades",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "rejeitaExcedenteEUnidadesReservadasParaTransporte",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "bloqueiaSomenteQuantidadeSelecionadaEPreservaLocal",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "naoConcluiRegistroDeOutroEquipamento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "protegeQuantidadeIdentificacaoEArquivamentoDuranteManutencao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "mantemOutrosRegistrosAbertosAoConcluirUmServico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.ManutencaoEquipamentoTests",
+    "teste": "rejeitaEquipamentoArquivadoETecnico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "contaDesativadaNaoConsultaAvisos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "aprovacaoInicialNotificaSomenteFinanceiro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "listagemLimitaPaginaEConsultaSomenteTitular",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "leituraNaoAceitaIdDeOutraConta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "pedidoNovoVaiSomenteGerenteSemAvisarFinanceiroEstoqueAdmin",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "ajusteFinanceiroDeEpiVaiAoRhSemFerramentas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "planoLiberadoNotificaSomenteEstoque",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "epiConsultaSomenteResponsaveisTst",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "envioNaoDistribuiAvisosParaGestoresFinanceiroOuEstoque",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "ajusteRepetidoRenovaAvisoSemDuplicarEReabreLeitura",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "financeiroNaoPodeMarcarAvisoDeOutraConta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "pedidoEpiNovoVaiSomenteRh",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "transporteDiretoPulaAvisoDoFinanceiro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "rejeicaoInicialNotificaSomenteSolicitante",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "retiradaParaDepositoNaoGeraAvisoDeEntregaEmObra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "leituraRepetidaPreservaPrimeiroHorario",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.NotificacaoMovimentacaoServiceTests",
+    "teste": "envioNotificaTodosOsResponsaveisDoMesmoSetorComResumoSemDadosFinanceiros",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "pedidoDaGerenciaSoTerminaComRecebimentoPeloTecnico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "naoAceitaObraConcluida",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "tecnicoSeguePrecisandoDeAprovacaoEAutoriaNaoPodeSerForjada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "naoAceitaFuncionarioSemContaOuComOutroPerfil",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "administradorTambemPodeCriarPedidoAutorizado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "auditoriaPreservaAutoriaMesmoDepoisDeAlterarContaETecnicoResponsavel",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "naoAceitaTecnicoSemAcessoAtivo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "naoAceitaMaterialForaDoCatalogo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "gerenteSemFuncionarioCriaPedidoAutorizadoComAutoriaAutenticada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoGerenciaTests",
+    "teste": "naoAceitaResponsavelInativoOuDeOutraObra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "tecnicoNaoPodeDefinirSerieNoPedido",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "aprovaUmaUnicaVez",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "separacaoPreservaComprasNoPedidoSemAtribuirCompraAOutraOrigem",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "compraExigeAprovacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "distribuicaoNaoPodeAlterarQuantidadeSolicitada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "tecnicoNaoEnviaMaterial",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "compraAceitaEntradasParciaisComNotasDiferentes",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "outroTecnicoNaoPodeConfirmarRecebimento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "aceitaQuantidadeAcimaDoEstoqueSemReservar",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "distribuicaoNaoPodeSairDoProprioDestino",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "rejeitaMaterialInventado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "gerenciaEstoqueEAdminNaoConfirmamEntregaNaObra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "distribuicaoRejeitaSomaQueEstouraInteiro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "exigeChaveMesmoComNomeExistente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "distribuicaoExigeAprovacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "rejeitaMaterialArquivado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "fluxoCompletoReservaEnviaEConfirmaUmaUnicaVez",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "separacaoNaoApagaCompraComEntregaAindaPendente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "naoEnviaAntesDaSeparacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidoMateriaisTests",
+    "teste": "rejeitaUmaUnicaVez",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidosFinanceirosTests",
+    "teste": "decisoesCopiadasSaoUnicasEEventosFisicosFicamFora",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidosFinanceirosTests",
+    "teste": "retornoIdentificadoContinuaNaFilaDeAprovacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidosFinanceirosTests",
+    "teste": "recompõeQuantidadeLegadaPelasPartesDoPedido",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidosFinanceirosTests",
+    "teste": "consolidaComprasEEnviosSemDuplicarPedidoOriginal",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidosFinanceirosTests",
+    "teste": "retratoFinanceiroNaoExpoeCamposFisicos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PedidosFinanceirosTests",
+    "teste": "quantidadeUsaLongParaNaoEstourarASomaDeLotes",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "rhContinuaSendoResponsavelPelaAprovacaoInicial",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "rhListaSomentePedidosEpiDeTsts",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "dashboardRhConsolidaSomenteEpiComHistoricoDoAtendimento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "tecnicoNaoPodePedirEpi",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "gerenteNaoPodeAprovarRejeitarOuEditarPedidoEpiPorId",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "gerenteNaoListaPedidosEpiMasAdminPreservaAcesso",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "gerenteNaoPodeCriarPedidoEpiNemTransporteDireto",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "registrosOriginaisDeEpiTambemImpedemAcessoGerente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "tstPodePedirEpi",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "reconheceCategoriaLegadaComoEpiDuranteAMigracao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "rhNaoPodeAprovarPedidoForaDoEscopo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "tstNaoPodePedirEquipamentoForaDeEpi",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PerfisTstRhTests",
+    "teste": "todaRejeicaoAutenticadaExigeJustificativaERegistraAutor",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "entradaAnteriorEhReaproveitadaSemComprarOuReservarEmDobro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "listaComMaterialExistenteContinuaPassandoPeloFinanceiro",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "entradaDeCompraTambemRegistraOInicioSemExigirCliqueAnterior",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "moverDaGerenciaSegueDiretoAoEstoqueSemAutorizarCompras",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "estoqueNaoPodeTrocarOrigemNemQuantidadeAutorizada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "somenteCompraGeraTransporteDoLoteQueRealmenteFoiRecebido",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "parcialNaoPermiteForjarEquipamentoAumentarSaldoOuEnviarCompraSemEntrada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "parcialMistoPreservaReservasDasOrigensEEntradasNaoEnviadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "observacaoAdministrativaNaoDescartaPlanoOuReservasAprovados",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "atendimentoMistoPreservaOrigensEComprasSemDuplicarReservas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "revisaoPreservaCompraRecebidaEReservaSomenteAsNovasOrigens",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "financeiroPodeTrocarRetiradaAprovadaPorCompraSemMoverOEquipamento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "exigePlanoCompletoSaldoAtualEJustificativa",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "somenteFinanceiroDefinePlanoOuDecideCompra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "inicioDeCompraExigePlanoAprovadoERegistraUmUnicoEvento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "pedidoDeDezEnviaSeisCompradosEMantemQuatroPendentesSemDuplicarCompras",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.PlanejamentoAtendimentoTests",
+    "teste": "compraPodePreservarSaldoEmUsoNaObra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposDesconhecidosNaoPersistem(String)[1]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposDesconhecidosNaoPersistem(String)[2]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposDesconhecidosNaoPersistem(String)[3]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposDesconhecidosNaoPersistem(String)[4]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "colisaoDeSlugUsaPrimeiroSufixoLivre",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "listagemUsaSomenteCategoriasAtivasOrdenadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "nomeSemCaracteresLatinosTemSlugDeFallback",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "categoriaNormalizaNomeSlugDescricaoECampos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposPermitidosSaoAceitos(String)[1]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposPermitidosSaoAceitos(String)[2]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "tiposPermitidosSaoAceitos(String)[3]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "nomeDuplicadoNaoPersiste",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "chaveDuplicadaAposTrimNaoPersiste",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaCategoriaEquipamentoTests",
+    "teste": "chaveNaoPermitidaNaoPersiste",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "arquivamentoComPedidoAbertoEhBloqueado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "arquivamentoComEquipamentoEhBloqueado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "adminConsultaArquivadosGerenciaSomenteAtivos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "cadastroNormalizaContatoEAplicaStatusPadrao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "reativarRegistroNaoReativaContaAutomaticamente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "editarRecusaEmailDeOutroFuncionario",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "arquivamentoDesativaContaRemoveResponsabilidadeEIdempotenciaPreservaHistorico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "emailDuplicadoNaoPersiste",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "buscaPorNomeNaoRetornaArquivadoENaoInventaFuncionario",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "atualizarResponsabilidadesRegistraSomenteObrasAfetadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "editarPreservaStatusQuandoOmitidoEAceitaEmailDaPropriaConta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaFuncionarioServiceTests",
+    "teste": "rhListaSomenteTstComContaAtivaENaoArquivado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "novosSnapshotsPreservamAspasVirgulasQuebrasEOrdenacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "consultaPreservaDataSolicitadaESnapshotDeDataAnterior",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "legadoQuePareceJsonPermaneceTextoLegado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "futuroEhRecusadoAntesDeConsultarBanco",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "consultaContinuaLendoFormatoLegadoSemReescreverSnapshot",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "ausenciaDeSnapshotNaoInventaHistorico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "snapshotVersionadoCorrompidoNaoInventaResponsaveis",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "novoSnapshotSemResponsavelContinuaVazio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "snapshotCopiaSaldoESerieSemAlterarEquipamento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+    "teste": "QA_BUG_002_snapshotDevePreservarNomeComVirgula",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "reativacaoNaoExigeRetornoDeEquipamentos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "arquivamentoExigeConclusao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "campoSemFuncionarioNaoRecebeObras",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "arquivarERepetirNaoDuplicaSnapshot",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "arquivamentoExigeRetornoDosEquipamentos",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "arquivamentoExigePedidosEncerrados",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "tecnicoSoConsultaObrasDeSuaResponsabilidade",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "cadastroNormalizaTextosDeduplicaResponsaveisERegistraHistorico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "obraInexistenteTemErroDeDominio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaObraServiceTests",
+    "teste": "obraOpcionalNulaRepresentaDepositoEArquivadaEhRecusada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "limiteAceitaAteMaximoInclusive(int)[1]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "limiteAceitaAteMaximoInclusive(int)[2]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "limiteAceitaAteMaximoInclusive(int)[3]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "limiteAceitaAteMaximoInclusive(int)[4]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "limiteAceitaAteMaximoInclusive(int)[5]",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "hashSha256TemVetorConhecidoENaoIncluiIdentificador",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "erroDoProvedorNaoVazaCredenciaisENotificacaoAuxiliarNaoDesfazOperacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "smtpConfiguradoExigeRemetenteESegredo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "mensagemTemRemetenteDestinoAssuntoETextoSemEnviarParaRede",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.QaRecursosRecuperacaoTests",
+    "teste": "retornoNuloDoContadorNaoLiberaTentativa",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "cincoErrosInvalidamCodigo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "exigeCadastroSomenteDeAdministradorSemEmailConfirmado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "codigoSoConfirmaEmailDepoisDeValidacaoEMantemHashNoBanco",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "exigeSenhaAtualELimitaEnvios",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "validacaoDeOrigemExigeHttpsERejeitaCredenciaisParametrosFragmento",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "rejeitaTokenAposTrocaDeSenhaDesativacaoOuTrocaDePerfil",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "recursoDesabilitadoNaoBloqueiaAdministrador",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "contaSemEmailOuInexistenteNaoRecebeRecuperacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "naoPermiteCadastroComSenhaTemporariaOuSessaoAntiga",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "configuracaoPrivadaExibeApenasEmailDoProprioAdmin",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "rejeitaTokenDeOutroEmailOuFinalidade",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "rejeitaTokenExpiradoSemAlterarSenha",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "redefineSenhaRevogaSessoesConsomeLinkENaoAutentica",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "trocaDeEmailPreservaAnteriorAteConfirmarENotificaAntigo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "linkTem256BitsSemSegredoPersistidoEOrigemControlada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "contaNaoAdminOuInativaNaoRecebeRecuperacao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RecuperacaoContaServiceTests",
+    "teste": "rejeitaSenhaFracaReutilizadaOuComLoginSemConsumirToken",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "separaEscopoRhEGerenciaEmListasEConsultaIndividual",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "contaInativaEProfissionaisDeCampoNaoAcessamRelatorioAmplo",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "filtraFuncionarioPorIdENaoPorNomeEObraPorId",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "familiaParcialNaoDuplicaEventosNemEntradasAuditadas",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "previaDoAdminTambemRespeitaEscopoSemAmpliarPermissoesReais",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "estoqueSomenteExportaPedidoLiberadoSemConsultaAmpla",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "cancelamentoNaPrimeiraEtapaNaoVazaParaFinanceiroOuEstoque",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "financeiroNaoVeEtapaInicialNemMovimentacaoDireta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "comprasExigemAprovacaoFinanceiraEEntradaComprovada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.RelatorioPedidoServiceTests",
+    "teste": "legadoNaoInventaDataNemResponsavelDeConferencia",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.SolicitacaoServiceTests",
+    "teste": "deveRejeitarMovimentacaoParaOMesmoLocal",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.SolicitacaoServiceTests",
+    "teste": "deveExigirTecnicoParaConfirmarRecebimentoNaObra",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.SolicitacaoServiceTests",
+    "teste": "deveRejeitarMovimentacaoSemOrigemEDestino",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveCriarAcessoTecnicoVinculadoComSenhaHasheada",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "trocaObrigatoriaRejeitaReutilizarSenhaTemporaria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "quintoErroGeraEventoDeBloqueio",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveAtualizarLoginPerfilVinculoESenha",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveValidarSenhaDoAdministradorInicial",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "tentativaDuranteBloqueioNaoProrrogaBloqueioIndefinidamente",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveRejeitarSenhaComMenosDeOitoCaracteres",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "trocaNormalContinuaExigindoSenhaAtual",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "loginDesconhecidoNaoRegistraLoginDigitado",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveImpedirAdministradorDeDesativarPropriaConta",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveExigirFuncionarioParaPerfilTecnico",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "trocaObrigatoriaDispensaRepetirSenhaTemporaria",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "listaMetadadosAdministrativosSemExporCredenciais",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "impedeTrocaDeSenhaQuandoRedefinicaoOcorreDuranteARequisicao",
+    "resultado": "APROVADO"
+  },
+  {
+    "classe": "br.com.era.api.service.UsuarioServiceTests",
+    "teste": "deveImpedirRebaixamentoDoUltimoAdministradorAtivo",
+    "resultado": "APROVADO"
+  }
+]

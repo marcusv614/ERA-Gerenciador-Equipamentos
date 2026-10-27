@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 // Não aceitar URL arbitrária: evita testes destrutivos no ambiente habitual.
 const config = JSON.parse(readFileSync(process.env.ERA_TEST_CONFIG, 'utf8'));
@@ -16,7 +17,8 @@ export default defineConfig({
   retries: 0,
   timeout: 45000,
   globalTimeout: 600000,
-  reporter: [['list'],['html',{outputFolder:process.env.ERA_TEST_ARTIFACTS || 'playwright-report',open:'never'}]],
+  reporter: [['list'],['html',{outputFolder:process.env.ERA_TEST_ARTIFACTS || 'playwright-report',open:'never'}],
+    ['json',{outputFile:path.join(process.env.ERA_TEST_ARTIFACTS || 'playwright-report','resultados.json')}]],
   use: {
     baseURL: config.ui,
     colorScheme: 'light',

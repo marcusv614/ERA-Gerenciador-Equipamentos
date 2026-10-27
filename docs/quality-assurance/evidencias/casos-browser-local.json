@@ -1,0 +1,152 @@
+[
+  {
+    "teste": "QA-UI-01: labels, teclado, senha e layout do acesso",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-02: login trata HTTP 401 e permite nova tentativa",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-02: login trata HTTP 403 e permite nova tentativa",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-02: login trata HTTP 500 e permite nova tentativa",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-03: envio usa CSRF e bloqueia clique duplicado durante a resposta",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-04: campos obrigatórios impedem requisição vazia",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-05: recuperação mantém resposta genérica e permite voltar",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-06: token sai da URL e confirmação divergente não chama a API",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-07: redefinição válida transmite token, encerra sessão e limpa campos",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-08: sessão com senha temporária obriga troca e compara confirmação",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-09: administrador exige e-mail e confirmação só aceita oito dígitos",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-10: indisponibilidade da configuração do admin exibe nova tentativa",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-01: labels, teclado, senha e layout do acesso",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-02: login trata HTTP 401 e permite nova tentativa",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-02: login trata HTTP 403 e permite nova tentativa",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-02: login trata HTTP 500 e permite nova tentativa",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-03: envio usa CSRF e bloqueia clique duplicado durante a resposta",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-04: campos obrigatórios impedem requisição vazia",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-05: recuperação mantém resposta genérica e permite voltar",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-06: token sai da URL e confirmação divergente não chama a API",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-07: redefinição válida transmite token, encerra sessão e limpa campos",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-08: sessão com senha temporária obriga troca e compara confirmação",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-09: administrador exige e-mail e confirmação só aceita oito dígitos",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-UI-10: indisponibilidade da configuração do admin exibe nova tentativa",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-A11Y-01: modal captura Tab e Shift+Tab e restaura foco ao fechar",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-A11Y-02: Escape fecha somente o modal superior e mantém rolagem bloqueada",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-A11Y-03: abertura repetida não deixa listeners ou bloqueio de rolagem",
+    "projeto": "qa-desktop",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-A11Y-01: modal captura Tab e Shift+Tab e restaura foco ao fechar",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-A11Y-02: Escape fecha somente o modal superior e mantém rolagem bloqueada",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  },
+  {
+    "teste": "QA-A11Y-03: abertura repetida não deixa listeners ou bloqueio de rolagem",
+    "projeto": "qa-mobile",
+    "resultado": "expected"
+  }
+]

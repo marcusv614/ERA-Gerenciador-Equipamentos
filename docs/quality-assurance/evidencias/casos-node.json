@@ -1,0 +1,569 @@
+[
+  {
+    "teste": "Financeiro e sua prévia excluem pedidos pendentes e rejeitados na primeira etapa"
+  },
+  {
+    "teste": "aprovação da Gerência coloca o pedido no Financeiro e o plano salvo indica preparação"
+  },
+  {
+    "teste": "compra autorizada não é apresentada como iniciada antes do registro real"
+  },
+  {
+    "teste": "compras parciais, recebimento da compra e separação são estados distintos"
+  },
+  {
+    "teste": "providenciar transporte sem compra exige início registrado"
+  },
+  {
+    "teste": "transporte e recebimento representam o andamento do atendimento, não da compra"
+  },
+  {
+    "teste": "rejeição financeira é distinguida da decisão da Gerência e do RH"
+  },
+  {
+    "teste": "Usuários ativos e inativos nunca são misturados nos grupos"
+  },
+  {
+    "teste": "Funcionários arquivados com status Ativo não aparecem no grupo ativo"
+  },
+  {
+    "teste": "Pesquisa combina nome do funcionário, cargo, perfil e login sem exigir acentos"
+  },
+  {
+    "teste": "Perfil, situação e troca pendente são combinados sem perder a separação de grupos"
+  },
+  {
+    "teste": "Ausência de vínculo não é apontada como problema para perfis administrativos"
+  },
+  {
+    "teste": "Filtros de funcionário distinguem ausência de usuário de acesso inativo"
+  },
+  {
+    "teste": "Bloqueio vencido não é apresentado como vigente e data ausente não é inventada"
+  },
+  {
+    "teste": "Todos os perfis existentes continuam disponíveis e as listas originais são preservadas"
+  },
+  {
+    "teste": "estoque envia seis recebidos e mantém quatro pendentes; compra sem entrada não entra nas origens"
+  },
+  {
+    "teste": "não permite enviar mais que a entrada, fracionar unidades ou confirmar sem motivo e sem material"
+  },
+  {
+    "teste": "materiais indisponíveis continuam no ajuste com zero envio"
+  },
+  {
+    "teste": "revisão financeira oferece as próprias reservas sem usar reservas de outro pedido"
+  },
+  {
+    "teste": "identifica Fluke por categoria, modelo ou marca cadastrada"
+  },
+  {
+    "teste": "validade é inclusiva, indica vencimento e avisa com trinta dias"
+  },
+  {
+    "teste": "certificado anterior lançado depois não substitui uma calibração mais recente"
+  },
+  {
+    "teste": "situação em atendimento prevalece e laboratório não aparece como depósito"
+  },
+  {
+    "teste": "PDF preserva origem, datas, certificado e autoria sem executar HTML"
+  },
+  {
+    "teste": "certificado anterior não inventa retirada, envio ou retorno no documento"
+  },
+  {
+    "teste": "tests/cancelamento.test.js"
+  },
+  {
+    "teste": "PDF financeiro preserva justificativa e escapa conteúdo informado pelo usuário"
+  },
+  {
+    "teste": "envio parcial preserva o pedido de dez e distingue as seis unidades deste atendimento"
+  },
+  {
+    "teste": "auditoria mantém compras do pedido original após separar materiais por origem"
+  },
+  {
+    "teste": "pedido não separado não é apresentado como material saindo do depósito"
+  },
+  {
+    "teste": "relatório identifica pedido original e horários reais de saída e recebimento"
+  },
+  {
+    "teste": "inventário distingue presentes, reservas e unidades em transporte sem somar duas vezes"
+  },
+  {
+    "teste": "documentos identificam o gerente que criou o pedido e o técnico que recebe separadamente"
+  },
+  {
+    "teste": "auditoria não atribui autoria ao técnico quando faltam os dados históricos"
+  },
+  {
+    "teste": "itens arquivados não entram no inventário atual"
+  },
+  {
+    "teste": "inventário histórico diferencia consulta de retrato sem atribuir início fictício à obra"
+  },
+  {
+    "teste": "histórico da obra mantém cada transferência e quantidade movimentada"
+  },
+  {
+    "teste": "cadastro isolado não gera transferências presumidas"
+  },
+  {
+    "teste": "histórico sem horários não transforma data de referência em saída e recebimento"
+  },
+  {
+    "teste": "campos manuais de compra são identificados como preenchimento manual"
+  },
+  {
+    "teste": "dados fornecidos não são executados como HTML no documento"
+  },
+  {
+    "teste": "romaneio diferencia separação pendente e não comprova recebimento"
+  },
+  {
+    "teste": "saldo considera depósito e outras obras, exclui destino e arquivados"
+  },
+  {
+    "teste": "catálogo mantém material sem saldo e sem limitar quantidade solicitada"
+  },
+  {
+    "teste": "pedido com materiais de origens diferentes não recebe escolha automática de séries"
+  },
+  {
+    "teste": "pedido separado preserva origem e não envia substituição de materiais"
+  },
+  {
+    "teste": "compra iniciada também bloqueia substituição de itens"
+  },
+  {
+    "teste": "variantes com medidas diferentes não se misturam"
+  },
+  {
+    "teste": "validação identifica o técnico e o material recusado pela API"
+  },
+  {
+    "teste": "falha interna não expõe mensagem nem detalhes do servidor"
+  },
+  {
+    "teste": "mantém mensagens de negócio, timeout e respostas sem detalhes"
+  },
+  {
+    "teste": "tests/escopoPedidosGerencia.test.js"
+  },
+  {
+    "teste": "planilha protege fórmulas, separadores, aspas e preserva UTF-8"
+  },
+  {
+    "teste": "dia do registro respeita Manaus inclusive na virada UTC"
+  },
+  {
+    "teste": "pedidos da obra contém apenas fluxo, sem misturar compra e inventário"
+  },
+  {
+    "teste": "compras da obra usa apenas entradas homologadas e sua data de conferência"
+  },
+  {
+    "teste": "pedido individual e funcionário preservam fluxo e compras sem página por pedido"
+  },
+  {
+    "teste": "filtro da dashboard usa limites inclusivos e não apresenta contexto como saldo histórico"
+  },
+  {
+    "teste": "data de descrição livre não é usada como data do registro"
+  },
+  {
+    "teste": "Hoje usa Manaus mesmo quando a data UTC já mudou"
+  },
+  {
+    "teste": "Semana vai de segunda a domingo, incluindo virada de mês e ano"
+  },
+  {
+    "teste": "Mês respeita limites do calendário, incluindo ano bissexto"
+  },
+  {
+    "teste": "Período é inclusivo, aceita limite aberto e rejeita intervalo invertido"
+  },
+  {
+    "teste": "Ordem cronológica ignora prioridade, desempata por ID e não altera a lista original"
+  },
+  {
+    "teste": "Prioridade operacional preserva os pedidos prontos para enviar à frente"
+  },
+  {
+    "teste": "executor aceita somente configuração explícita de stack descartável"
+  },
+  {
+    "teste": "executor recusa projetos e bancos habituais antes de qualquer requisição"
+  },
+  {
+    "teste": "executor recusa endereços públicos, credenciais e caminhos arbitrários"
+  },
+  {
+    "teste": "reserva mantém origem e identifica destino antes da coleta"
+  },
+  {
+    "teste": "coleta mostra transporte A para B sem declarar recebimento"
+  },
+  {
+    "teste": "lote parcial conserva saldo na origem e soma rotas distintas"
+  },
+  {
+    "teste": "conclusão usa cadastro atualizado em B sem manter reserva antiga"
+  },
+  {
+    "teste": "pedido rejeitado e material não separado não inventam localização"
+  },
+  {
+    "teste": "retorno ao depósito não pede confirmação de técnico"
+  },
+  {
+    "teste": "PDF do equipamento preserva quantidade, motivo, datas reais, autores e resultado da manutenção"
+  },
+  {
+    "teste": "histórico não inventa abertura de manutenção anterior e escapa o conteúdo informado"
+  },
+  {
+    "teste": "inventário informa o bloqueio de manutenção dentro do total presente na obra"
+  },
+  {
+    "teste": "sucesso só é anunciado após a operação terminar e preserva resposta da API"
+  },
+  {
+    "teste": "falha da API não gera confirmação e preserva a exceção"
+  },
+  {
+    "teste": "notificação continua disponível após troca de tela e pode ser fechada individualmente"
+  },
+  {
+    "teste": "avisos em espera não são descartados quando três já estão visíveis"
+  },
+  {
+    "teste": "contagem fecha ao completar o tempo e não fica negativa"
+  },
+  {
+    "teste": "mouse, foco e aba oculta pausam o tempo restante"
+  },
+  {
+    "teste": "observadores são removidos ao desmontar a central"
+  },
+  {
+    "teste": "recebimento exige funcionário ativo e vinculado à obra escolhida"
+  },
+  {
+    "teste": "obra encerrada, arquivada ou não selecionada não oferece responsáveis"
+  },
+  {
+    "teste": "compra recebida deixa de ser apresentada como necessidade de comprar"
+  },
+  {
+    "teste": "compras parciais mantêm somente o saldo pendente"
+  },
+  {
+    "teste": "início de compra ou retirada é registrado uma única vez antes da conclusão"
+  },
+  {
+    "teste": "o estoque confirma envio e aguarda recebimento pelo técnico"
+  },
+  {
+    "teste": "retorno ao depósito é recebido pelo estoque; encerrados não têm ações"
+  },
+  {
+    "teste": "fila prioriza o que pode sair e depois os pedidos mais antigos dentro da etapa"
+  },
+  {
+    "teste": "o mesmo material aparece agrupado com as quantidades e origens corretas"
+  },
+  {
+    "teste": "compras históricas não viram novas entradas de estoque"
+  },
+  {
+    "teste": "ordem destaca destino, agrupa retiradas por local e usa datas reais de aprovação"
+  },
+  {
+    "teste": "ordem calcula apenas o saldo a comprar e separa compras que aguardam entrada"
+  },
+  {
+    "teste": "após separação imprime apenas origens reais deste lote, sem repetir plano e compras"
+  },
+  {
+    "teste": "ordem pendente não autoriza compras ou coleta nem inventa data de aprovação"
+  },
+  {
+    "teste": "ordem concluída previne nova execução e texto livre permanece escapado"
+  },
+  {
+    "teste": "relatório não duplica o resumo nem inclui um plano antigo após separação"
+  },
+  {
+    "teste": "devolução ao depósito preserva o técnico de origem mesmo se a seleção vier nula"
+  },
+  {
+    "teste": "transferência para outra obra usa o técnico destinatário selecionado"
+  },
+  {
+    "teste": "item sem custódia exige selecionar responsável e não envia técnico nulo"
+  },
+  {
+    "teste": "quantidade da movimentação respeita inteiros e o saldo disponível"
+  },
+  {
+    "teste": "pesquisa futura por código exato, técnico, obra, material, solicitante e aprovador"
+  },
+  {
+    "teste": "pesquisa abrange pedidos antigos e filtros de período e obra se combinam"
+  },
+  {
+    "teste": "fases financeiras usam compras e aprovações e não transporte"
+  },
+  {
+    "teste": "PDF contém pedidos, compras e autores; não inclui rastreamento físico"
+  },
+  {
+    "teste": "código aceita hash, zeros e número simples sem confundir 1 com 11"
+  },
+  {
+    "teste": "código próprio de atendimento continua pesquisável"
+  },
+  {
+    "teste": "obra de origem e destino participam da busca sem acentos"
+  },
+  {
+    "teste": "permite combinar código com material e técnico em qualquer ordem"
+  },
+  {
+    "teste": "busca inclui série, observação, data brasileira e status mostrado na tela"
+  },
+  {
+    "teste": "filtro de obra considera origem e destino sem declarar depósito para pedido ainda não separado"
+  },
+  {
+    "teste": "período é inclusivo e combina com obra e situação"
+  },
+  {
+    "teste": "pedidos concluídos e rejeitados permanecem disponíveis sem filtro de situação"
+  },
+  {
+    "teste": "pesquisa vazia e sem resultado não alteram a lista original"
+  },
+  {
+    "teste": "origens mostram depósito primeiro e excluem destino, manutenção, reservas, arquivados e compras do próprio pedido"
+  },
+  {
+    "teste": "quantidade digitada respeita saldo, inteiro positivo e soma do pedido"
+  },
+  {
+    "teste": "saldo compartilhado não pode ser usado por dois materiais ao mesmo tempo"
+  },
+  {
+    "teste": "preencher transporte prioriza depósito e preserva a compra já planejada"
+  },
+  {
+    "teste": "compra respeita o restante e preserva unidades que já tiveram entrada"
+  },
+  {
+    "teste": "preenchimento mantém escolhas manuais e usa somente as origens visíveis na busca"
+  },
+  {
+    "teste": "ativos individuais permitem no máximo uma unidade"
+  },
+  {
+    "teste": "plano salvo com origem excluída ou saldo reduzido permanece bloqueado para revisão"
+  },
+  {
+    "teste": "comprar para preservar equipamento em uso exige motivo e mantém o contrato da API"
+  },
+  {
+    "teste": "sem saldo, compra cobre o pedido; transporte parcial e compra somam exatamente o solicitado"
+  },
+  {
+    "teste": "QA datas: null"
+  },
+  {
+    "teste": "QA datas: undefined"
+  },
+  {
+    "teste": "QA datas: "
+  },
+  {
+    "teste": "QA datas: 2024-02-29"
+  },
+  {
+    "teste": "QA datas: 2026-12-31"
+  },
+  {
+    "teste": "QA datas: texto"
+  },
+  {
+    "teste": "QA datas: Thu Jan 01 2026 00:00:00 GMT-0400 (Amazon Standard Time)"
+  },
+  {
+    "teste": "QA data atual usa calendário local sem deslocar o dia"
+  },
+  {
+    "teste": "QA identificação: categoria sem série Ferramentas"
+  },
+  {
+    "teste": "QA identificação: categoria sem série  ALICATES "
+  },
+  {
+    "teste": "QA identificação: categoria sem série Brocas aço rápido"
+  },
+  {
+    "teste": "QA identificação: categoria sem série Cabos e fibras"
+  },
+  {
+    "teste": "QA identificação: categoria sem série Consumíveis e limpeza"
+  },
+  {
+    "teste": "QA identificação distingue ferramentas de equipamentos serializados"
+  },
+  {
+    "teste": "QA classificação de funcionário: Estoquista"
+  },
+  {
+    "teste": "QA classificação de funcionário: Auxiliar de ESTOQUE"
+  },
+  {
+    "teste": "QA classificação de funcionário:   Supervisor   de estoque "
+  },
+  {
+    "teste": "QA classificação de funcionário: estoqueiro"
+  },
+  {
+    "teste": "QA classificação de funcionário: Técnico"
+  },
+  {
+    "teste": "QA classificação de funcionário: "
+  },
+  {
+    "teste": "QA classificação de funcionário: null"
+  },
+  {
+    "teste": "QA transição de apresentação: Pendente"
+  },
+  {
+    "teste": "QA transição de apresentação: Aguardando financeiro"
+  },
+  {
+    "teste": "QA transição de apresentação: Aprovada"
+  },
+  {
+    "teste": "QA transição de apresentação: Aguardando coleta"
+  },
+  {
+    "teste": "QA transição de apresentação: Em trânsito"
+  },
+  {
+    "teste": "QA transição de apresentação: Rejeitada"
+  },
+  {
+    "teste": "QA transição de apresentação: Cancelada"
+  },
+  {
+    "teste": "QA transição de apresentação: Cancelamento solicitado"
+  },
+  {
+    "teste": "QA transição de apresentação: Concluída"
+  },
+  {
+    "teste": "QA transição de apresentação: desconhecido"
+  },
+  {
+    "teste": "QA transição de apresentação: null"
+  },
+  {
+    "teste": "QA histórico não sintetiza movimentos e preserva registros reais"
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \"=SUM(A1:A2)\""
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \" +cmd\""
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \"\\\\t=1\""
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \"\\\\r=1\""
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \"@SUM(A1)\""
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \"-1\""
+  },
+  {
+    "teste": "QA CSV neutraliza fórmula \"﻿=1\""
+  },
+  {
+    "teste": "QA CSV preserva aspas, delimitador e quebra de linha dentro da célula"
+  },
+  {
+    "teste": "aceita apenas tokens de 256 bits no fragmento da recuperação"
+  },
+  {
+    "teste": "valida tamanho e confirmação da nova senha"
+  },
+  {
+    "teste": "Kanban que cabe na tela não oferece rolagem lateral"
+  },
+  {
+    "teste": "posição da barra acompanha o início, meio e fim do quadro"
+  },
+  {
+    "teste": "preserva posições fracionárias e limita o overscroll"
+  },
+  {
+    "teste": "indicador proporcional acompanha início, meio e fim sem ultrapassar o trilho"
+  },
+  {
+    "teste": "indicador tem tamanho mínimo confortável, limitado à largura disponível"
+  },
+  {
+    "teste": "clique e arraste convertem a posição do indicador sem exceder os limites"
+  },
+  {
+    "teste": "redimensionamento recalcula o percurso e mantém a posição dentro dos novos limites"
+  },
+  {
+    "teste": "geometria inicial sem medidas é finita e não cria rolagem"
+  },
+  {
+    "teste": "tests/titulosNotificacao.test.js"
+  },
+  {
+    "teste": "ficha para impressão tem três estados em branco, observações e assinaturas"
+  },
+  {
+    "teste": "resultado concluído preserva ficha, fiscal, autor do lançamento e contagens"
+  },
+  {
+    "teste": "auditoria aberta não é impressa como resultado definitivo"
+  },
+  {
+    "teste": "dados de vistoria são escapados no documento"
+  },
+  {
+    "teste": "lotes permitem estados mistos sem classificar unidades ausentes"
+  },
+  {
+    "teste": "edição não aumenta a soma de 1 bom, 4 com avaria e 2 quebrados acima das 7 unidades"
+  },
+  {
+    "teste": "quantidades só aceitam inteiros no saldo disponível e permitem limpar para redistribuir"
+  },
+  {
+    "teste": "filtro de obra usa a ficha histórica e exporta apenas os materiais daquele local"
+  },
+  {
+    "teste": "pesquisa combina técnico, obra, código e data e período usa criação em fichas abertas"
+  },
+  {
+    "teste": "planilha não executa fórmulas vindas de observações e preserva quebras e separadores"
+  }
+]

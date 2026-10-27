@@ -84,6 +84,9 @@ jobs:
         working-directory: Frontend/UI
       - run: npx playwright install --with-deps chromium
         working-directory: Frontend/UI
+      - name: Formularios e acessibilidade com API simulada
+        run: node node_modules/@playwright/test/cli.js test --config=qa-browser/playwright.config.mjs
+        working-directory: Frontend/UI
       - name: Executar em bancos descartáveis (nunca .env ou serviços habituais)
         run: node scripts/testar-integracao.mjs
       - name: Guardar relatório e evidências por sete dias

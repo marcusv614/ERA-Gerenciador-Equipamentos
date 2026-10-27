@@ -1,0 +1,870 @@
+{
+  "coletadoEm": "2026-10-27T01:20:01.288Z",
+  "java": {
+    "suites": 43,
+    "testes": 687,
+    "falhas": 2,
+    "erros": 0,
+    "ignorados": 0,
+    "novosQa": 407,
+    "defeitos": [
+      {
+        "classe": "br.com.era.api.controller.QaCategoriaHttpTests",
+        "teste": "QA_BUG_001_campoNuloDeveSerErro400EmVezDe500",
+        "arquivo": "Backend/API/target/surefire-reports/TEST-br.com.era.api.controller.QaCategoriaHttpTests.xml"
+      },
+      {
+        "classe": "br.com.era.api.service.QaInventarioHistoricoTests",
+        "teste": "QA_BUG_002_snapshotDevePreservarNomeComVirgula",
+        "arquivo": "Backend/API/target/surefire-reports/TEST-br.com.era.api.service.QaInventarioHistoricoTests.xml"
+      }
+    ],
+    "aprovados": 685,
+    "taxaAprovacao": 99.71
+  },
+  "jacoco": {
+    "INSTRUCTION": {
+      "missed": 3922,
+      "covered": 18649,
+      "total": 22571,
+      "percentual": 82.62
+    },
+    "LINE": {
+      "missed": 209,
+      "covered": 1504,
+      "total": 1713,
+      "percentual": 87.8
+    },
+    "COMPLEXITY": {
+      "missed": 812,
+      "covered": 1456,
+      "total": 2268,
+      "percentual": 64.2
+    },
+    "METHOD": {
+      "missed": 242,
+      "covered": 929,
+      "total": 1171,
+      "percentual": 79.33
+    },
+    "CLASS": {
+      "missed": 23,
+      "covered": 131,
+      "total": 154,
+      "percentual": 85.06
+    },
+    "BRANCH": {
+      "missed": 725,
+      "covered": 1464,
+      "total": 2189,
+      "percentual": 66.88
+    }
+  },
+  "classesServico": [
+    {
+      "classe": "br/com/era/api/service/CategoriaEquipamentoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 0,
+          "covered": 350,
+          "percentual": 100
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 53,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 1,
+          "covered": 22,
+          "percentual": 95.65
+        },
+        "METHOD": {
+          "missed": 0,
+          "covered": 10,
+          "percentual": 100
+        },
+        "BRANCH": {
+          "missed": 1,
+          "covered": 25,
+          "percentual": 96.15
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/UsuarioService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 304,
+          "covered": 559,
+          "percentual": 64.77
+        },
+        "LINE": {
+          "missed": 9,
+          "covered": 53,
+          "percentual": 85.48
+        },
+        "COMPLEXITY": {
+          "missed": 57,
+          "covered": 35,
+          "percentual": 38.04
+        },
+        "METHOD": {
+          "missed": 13,
+          "covered": 22,
+          "percentual": 62.86
+        },
+        "BRANCH": {
+          "missed": 62,
+          "covered": 52,
+          "percentual": 45.61
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/AuditoriaTecnicoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 178,
+          "covered": 573,
+          "percentual": 76.3
+        },
+        "LINE": {
+          "missed": 5,
+          "covered": 50,
+          "percentual": 90.91
+        },
+        "COMPLEXITY": {
+          "missed": 33,
+          "covered": 39,
+          "percentual": 54.17
+        },
+        "METHOD": {
+          "missed": 9,
+          "covered": 19,
+          "percentual": 67.86
+        },
+        "BRANCH": {
+          "missed": 29,
+          "covered": 59,
+          "percentual": 67.05
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/LimitesRecuperacao",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 17,
+          "covered": 41,
+          "percentual": 70.69
+        },
+        "LINE": {
+          "missed": 4,
+          "covered": 5,
+          "percentual": 55.56
+        },
+        "COMPLEXITY": {
+          "missed": 1,
+          "covered": 5,
+          "percentual": 83.33
+        },
+        "METHOD": {
+          "missed": 1,
+          "covered": 3,
+          "percentual": 75
+        },
+        "BRANCH": {
+          "missed": 0,
+          "covered": 4,
+          "percentual": 100
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/EquipamentoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 1104,
+          "covered": 1246,
+          "percentual": 53.02
+        },
+        "LINE": {
+          "missed": 36,
+          "covered": 83,
+          "percentual": 69.75
+        },
+        "COMPLEXITY": {
+          "missed": 187,
+          "covered": 62,
+          "percentual": 24.9
+        },
+        "METHOD": {
+          "missed": 42,
+          "covered": 34,
+          "percentual": 44.74
+        },
+        "BRANCH": {
+          "missed": 229,
+          "covered": 117,
+          "percentual": 33.82
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/CancelamentoSolicitacaoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 65,
+          "covered": 684,
+          "percentual": 91.32
+        },
+        "LINE": {
+          "missed": 1,
+          "covered": 58,
+          "percentual": 98.31
+        },
+        "COMPLEXITY": {
+          "missed": 29,
+          "covered": 67,
+          "percentual": 69.79
+        },
+        "METHOD": {
+          "missed": 3,
+          "covered": 22,
+          "percentual": 88
+        },
+        "BRANCH": {
+          "missed": 29,
+          "covered": 113,
+          "percentual": 79.58
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/ObraService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 43,
+          "covered": 363,
+          "percentual": 89.41
+        },
+        "LINE": {
+          "missed": 1,
+          "covered": 13,
+          "percentual": 92.86
+        },
+        "COMPLEXITY": {
+          "missed": 12,
+          "covered": 31,
+          "percentual": 72.09
+        },
+        "METHOD": {
+          "missed": 2,
+          "covered": 21,
+          "percentual": 91.3
+        },
+        "BRANCH": {
+          "missed": 11,
+          "covered": 29,
+          "percentual": 72.5
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/CatalogoChave",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 0,
+          "covered": 25,
+          "percentual": 100
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 6,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 0,
+          "covered": 3,
+          "percentual": 100
+        },
+        "METHOD": {
+          "missed": 0,
+          "covered": 2,
+          "percentual": 100
+        },
+        "BRANCH": {
+          "missed": 0,
+          "covered": 2,
+          "percentual": 100
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/InventarioHistoricoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 21,
+          "covered": 181,
+          "percentual": 89.6
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 3,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 2,
+          "covered": 7,
+          "percentual": 77.78
+        },
+        "METHOD": {
+          "missed": 1,
+          "covered": 4,
+          "percentual": 80
+        },
+        "BRANCH": {
+          "missed": 1,
+          "covered": 7,
+          "percentual": 87.5
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/EmailRecuperacaoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 6,
+          "covered": 62,
+          "percentual": 91.18
+        },
+        "BRANCH": {
+          "missed": 0,
+          "covered": 6,
+          "percentual": 100
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 16,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 0,
+          "covered": 7,
+          "percentual": 100
+        },
+        "METHOD": {
+          "missed": 0,
+          "covered": 4,
+          "percentual": 100
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/NotificacaoMovimentacaoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 99,
+          "covered": 405,
+          "percentual": 80.36
+        },
+        "LINE": {
+          "missed": 12,
+          "covered": 37,
+          "percentual": 75.51
+        },
+        "COMPLEXITY": {
+          "missed": 18,
+          "covered": 35,
+          "percentual": 66.04
+        },
+        "METHOD": {
+          "missed": 2,
+          "covered": 23,
+          "percentual": 92
+        },
+        "BRANCH": {
+          "missed": 23,
+          "covered": 33,
+          "percentual": 58.93
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/RelatorioPedidoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 107,
+          "covered": 802,
+          "percentual": 88.23
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 50,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 28,
+          "covered": 68,
+          "percentual": 70.83
+        },
+        "METHOD": {
+          "missed": 5,
+          "covered": 31,
+          "percentual": 86.11
+        },
+        "BRANCH": {
+          "missed": 27,
+          "covered": 89,
+          "percentual": 76.72
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/CalibracaoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 48,
+          "covered": 539,
+          "percentual": 91.82
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 44,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 17,
+          "covered": 32,
+          "percentual": 65.31
+        },
+        "METHOD": {
+          "missed": 2,
+          "covered": 19,
+          "percentual": 90.48
+        },
+        "BRANCH": {
+          "missed": 15,
+          "covered": 41,
+          "percentual": 73.21
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/EscopoEquipamento",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 10,
+          "covered": 77,
+          "percentual": 88.51
+        },
+        "BRANCH": {
+          "missed": 5,
+          "covered": 13,
+          "percentual": 72.22
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 13,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 6,
+          "covered": 10,
+          "percentual": 62.5
+        },
+        "METHOD": {
+          "missed": 1,
+          "covered": 6,
+          "percentual": 85.71
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/PedidosFinanceiros",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 76,
+          "covered": 477,
+          "percentual": 86.26
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 19,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 23,
+          "covered": 41,
+          "percentual": 64.06
+        },
+        "METHOD": {
+          "missed": 3,
+          "covered": 26,
+          "percentual": 89.66
+        },
+        "BRANCH": {
+          "missed": 23,
+          "covered": 47,
+          "percentual": 67.14
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/FuncionarioService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 18,
+          "covered": 451,
+          "percentual": 96.16
+        },
+        "LINE": {
+          "missed": 0,
+          "covered": 20,
+          "percentual": 100
+        },
+        "COMPLEXITY": {
+          "missed": 8,
+          "covered": 47,
+          "percentual": 85.45
+        },
+        "METHOD": {
+          "missed": 1,
+          "covered": 24,
+          "percentual": 96
+        },
+        "BRANCH": {
+          "missed": 7,
+          "covered": 53,
+          "percentual": 88.33
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/AuditoriaSegurancaService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 59,
+          "covered": 150,
+          "percentual": 71.77
+        },
+        "LINE": {
+          "missed": 2,
+          "covered": 16,
+          "percentual": 88.89
+        },
+        "COMPLEXITY": {
+          "missed": 12,
+          "covered": 9,
+          "percentual": 42.86
+        },
+        "METHOD": {
+          "missed": 2,
+          "covered": 4,
+          "percentual": 66.67
+        },
+        "BRANCH": {
+          "missed": 13,
+          "covered": 17,
+          "percentual": 56.67
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/SolicitacaoService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 600,
+          "covered": 4912,
+          "percentual": 89.11
+        },
+        "LINE": {
+          "missed": 12,
+          "covered": 401,
+          "percentual": 97.09
+        },
+        "COMPLEXITY": {
+          "missed": 187,
+          "covered": 308,
+          "percentual": 62.22
+        },
+        "METHOD": {
+          "missed": 16,
+          "covered": 133,
+          "percentual": 89.26
+        },
+        "BRANCH": {
+          "missed": 190,
+          "covered": 502,
+          "percentual": 72.54
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    },
+    {
+      "classe": "br/com/era/api/service/RecuperacaoContaService",
+      "contadores": {
+        "INSTRUCTION": {
+          "missed": 55,
+          "covered": 624,
+          "percentual": 91.9
+        },
+        "LINE": {
+          "missed": 1,
+          "covered": 89,
+          "percentual": 98.89
+        },
+        "COMPLEXITY": {
+          "missed": 14,
+          "covered": 45,
+          "percentual": 76.27
+        },
+        "METHOD": {
+          "missed": 6,
+          "covered": 20,
+          "percentual": 76.92
+        },
+        "BRANCH": {
+          "missed": 10,
+          "covered": 56,
+          "percentual": 84.85
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    }
+  ],
+  "node": {
+    "tests": 189,
+    "pass": 189,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "taxaAprovacao": 100
+  },
+  "frontendV8": {
+    "arquivos": 29,
+    "linhas": {
+      "covered": 938,
+      "total": 978,
+      "percentual": 95.91
+    },
+    "ramos": {
+      "covered": 895,
+      "total": 1063,
+      "percentual": 84.2
+    },
+    "escopo": "Apenas módulos .js carregados pelos testes Node; JSX e módulos não carregados excluídos pelo coletor."
+  },
+  "browser": {
+    "stats": {
+      "startTime": "2026-10-27T01:15:16.432Z",
+      "duration": 125862.62400000001,
+      "expected": 30,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "falhas": [],
+    "medicoes": [
+      {
+        "projeto": "qa-desktop",
+        "domContentLoadedMs": 6998.100000000093,
+        "ambiente": "Vite local + API simulada, amostra única"
+      },
+      {
+        "projeto": "qa-mobile",
+        "domContentLoadedMs": 2584.399999999907,
+        "ambiente": "Vite local + API simulada, amostra única"
+      }
+    ]
+  },
+  "inventario": {
+    "controllers": 17,
+    "endpoints": 75,
+    "servicos": 19,
+    "migrations": 48,
+    "arquivosTesteJava": 43,
+    "arquivosTesteNode": 27,
+    "arquivosJsProducao": 44,
+    "componentesJsx": 58
+  },
+  "npmAudit": {
+    "auditReportVersion": 2,
+    "vulnerabilities": {},
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "dependencies": {
+        "prod": 32,
+        "dev": 158,
+        "optional": 27,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 189
+      }
+    }
+  },
+  "osv": {
+    "bibliotecasConsultadas": 102,
+    "alertas": []
+  },
+  "comandosFinais": {
+    "java": {
+      "codigo": 1,
+      "codigoProcesso": 0,
+      "falhasTestes": 2,
+      "inicio": "2026-10-27T01:13:53.706Z",
+      "duracaoMs": 112556,
+      "log": "test-results/quality-assurance/java-3.log"
+    },
+    "node": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:06:49.806Z",
+      "duracaoMs": 1848,
+      "log": "test-results/quality-assurance/node-3.log"
+    },
+    "lint": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:06:51.655Z",
+      "duracaoMs": 33597,
+      "log": "test-results/quality-assurance/lint-3.log"
+    },
+    "build": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:06:12.807Z",
+      "duracaoMs": 6092,
+      "log": "test-results/quality-assurance/build-2.log"
+    },
+    "browser": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:15:12.671Z",
+      "duracaoMs": 129732,
+      "log": "test-results/quality-assurance/browser-3.log"
+    },
+    "integration": {
+      "codigo": 1,
+      "inicio": "2026-10-27T01:10:19.707Z",
+      "duracaoMs": 685,
+      "log": "test-results/quality-assurance/integration-2.log"
+    },
+    "audit": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:10:20.394Z",
+      "duracaoMs": 2002,
+      "log": "test-results/quality-assurance/audit-2.log"
+    },
+    "maven-deps": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:17:04.601Z",
+      "duracaoMs": 17796,
+      "log": "test-results/quality-assurance/maven-deps-2.log"
+    },
+    "osv": {
+      "codigo": 0,
+      "inicio": "2026-10-27T01:17:22.398Z",
+      "duracaoMs": 2204,
+      "log": "test-results/quality-assurance/osv-2.log"
+    }
+  }
+}

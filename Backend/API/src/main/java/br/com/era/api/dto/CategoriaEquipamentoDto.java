@@ -2,6 +2,7 @@ package br.com.era.api.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public final class CategoriaEquipamentoDto {
     public record Requisicao(
             @NotBlank @Size(max = 100) String nome,
             @Size(max = 255) String descricao,
-            @Size(max = 12) List<@Valid Campo> campos) {}
+            @Size(max = 12) List<@NotNull @Valid Campo> campos) {}
 
     public record Resposta(
             Long id,

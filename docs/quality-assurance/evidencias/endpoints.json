@@ -1,0 +1,377 @@
+[
+  {
+    "metodo": "GET",
+    "rota": "/api/atividades/pedidos-rh",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/atividades",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/atividades/pedidos-financeiros",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/transporte-direto",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/plano-financeiro",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/execucao-plano",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/inicio-atendimento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/atendimento-parcial",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/atividades/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/aprovacao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/rejeicao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/materiais/{materialId}/compra",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/materiais/{materialId}/aquisicao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/distribuicao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/transito",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/conclusao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/auditorias",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/funcionarios/{tecnicoId}/auditorias",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaTecnicoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/funcionarios/{tecnicoId}/auditorias/materiais",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaTecnicoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/funcionarios/{tecnicoId}/auditorias/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaTecnicoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/funcionarios/{tecnicoId}/auditorias",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaTecnicoController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/funcionarios/{tecnicoId}/auditorias/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaTecnicoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/auth/csrf",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AutenticacaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/auth/login",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AutenticacaoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/auth/me",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AutenticacaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/auth/alterar-senha",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/AutenticacaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/calibracoes",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/calibracoes/certificados",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/calibracoes/{calibracaoId}/retirada",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/calibracoes/{calibracaoId}/envio",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/calibracoes/{calibracaoId}/retorno",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/calibracoes/{calibracaoId}/cancelamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/atividades/{id}/cancelamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CancelamentoSolicitacaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/cancelamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CancelamentoSolicitacaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/atividades/{id}/cancelamento/confirmacao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CancelamentoSolicitacaoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/categorias-equipamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CategoriaEquipamentoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/categorias-equipamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/CategoriaEquipamentoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/deposito/equipamentos",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/DepositoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/equipamentos",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/equipamentos/disponibilidade-financeira",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/equipamentos/catalogo",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/equipamentos/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/equipamentos/{id}/arquivamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/movimentacoes",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/equipamentos/{id}/historico",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/manutencoes",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/equipamentos/{id}/manutencoes/{manutencaoId}/conclusao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/usuarios/eventos-seguranca",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/EventosSegurancaController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/funcionarios",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/FuncionarioController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/funcionarios",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/FuncionarioController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/funcionarios/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/FuncionarioController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/funcionarios/{id}/arquivamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/FuncionarioController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/notificacoes",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/NotificacaoController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/notificacoes/{id}/leitura",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/NotificacaoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/obras",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/obras",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/obras/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/obras/{id}/arquivamento",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/obras/{id}/historico",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/obras/{id}/inventario-historico",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/painel/resumo",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/PainelController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/auth/recuperacao/configuracao",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RecuperacaoContaController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/auth/recuperacao/email",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RecuperacaoContaController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/auth/recuperacao/confirmar-email",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RecuperacaoContaController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/auth/recuperacao/solicitar",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RecuperacaoContaController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/auth/recuperacao/redefinir",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RecuperacaoContaController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/relatorios/pedidos/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RelatorioPedidoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/relatorios/pedidos",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/RelatorioPedidoController.java"
+  },
+  {
+    "metodo": "GET",
+    "rota": "/api/usuarios",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/UsuarioController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/usuarios",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/UsuarioController.java"
+  },
+  {
+    "metodo": "PUT",
+    "rota": "/api/usuarios/{id}",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/UsuarioController.java"
+  },
+  {
+    "metodo": "PATCH",
+    "rota": "/api/usuarios/{id}/status",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/UsuarioController.java"
+  },
+  {
+    "metodo": "POST",
+    "rota": "/api/usuarios/{id}/redefinicao-senha",
+    "arquivo": "Backend/API/src/main/java/br/com/era/api/controller/UsuarioController.java"
+  }
+]

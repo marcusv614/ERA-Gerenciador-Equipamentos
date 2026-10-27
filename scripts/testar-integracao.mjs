@@ -119,6 +119,7 @@ if (!suiteSolicitada || suiteSolicitada==='regressao') await stack('regressao', 
   }
   await etapa('operacoes',()=>node('scripts/testes/operacoes.mjs', arquivo));
   await etapa('seguranca',()=>node('scripts/testes/seguranca.mjs', arquivo));
+  await etapa('qualidade',()=>node('scripts/testes/qualidade.mjs', arquivo));
   if (!process.argv.includes('--sem-navegador')) {
     await etapa('navegador',()=>executar(process.execPath, ['node_modules/@playwright/test/cli.js', 'test'], {
       cwd: path.join(raiz,'Frontend/UI'),
