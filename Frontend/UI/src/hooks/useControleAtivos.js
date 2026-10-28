@@ -15,6 +15,11 @@ export function useControleAtivos(perfil) {
   const [categoriasEquipamento, definirCategoriasEquipamento] = useState([]);
   const [carregandoDados, definirCarregandoDados] = useState(true);
   const [erroApi, definirErroApi] = useState(null);
+  const [avisoSincronizacao, definirAvisoSincronizacao] = useState(null);
+  const receberPedidosFinanceiros = (pedidos) => {
+    definirSolicitacoes(pedidos);
+    definirAvisoSincronizacao(null);
+  };
 
   useEffect(() => {
     let deveAtualizar = true;
@@ -27,6 +32,7 @@ export function useControleAtivos(perfil) {
         if (Array.isArray(dados.solicitacoes)) definirSolicitacoes(dados.solicitacoes);
         if (Array.isArray(dados.categoriasEquipamento)) definirCategoriasEquipamento(dados.categoriasEquipamento);
         definirErroApi(null);
+        definirAvisoSincronizacao(null);
       })
       .catch((erro) => { if (deveAtualizar) definirErroApi(erro.message); })
       .finally(() => { if (deveAtualizar) definirCarregandoDados(false); });
@@ -44,7 +50,7 @@ export function useControleAtivos(perfil) {
       atualizando = true;
       try {
         const [itens, pedidos] = await Promise.all([financeiro ? financeiroApi.disponibilidade(perfil) : apiEquipamentos.listar(), financeiro ? financeiroApi.pedidos(perfil) : apiAtividades.listar()]);
-        if (ativo) { definirEquipamentos(itens); definirSolicitacoes(pedidos); }
+        if (ativo) { definirEquipamentos(itens); definirSolicitacoes(pedidos); definirAvisoSincronizacao(null); }
       } catch {
         // Mantém os dados atuais e tenta novamente ao retomar o painel.
       } finally { atualizando = false; }
@@ -230,12 +236,42 @@ export function useControleAtivos(perfil) {
     return obterHistoricoEquipamento(equipamento, buscarObraPorId);
   }
 
+  async function sincronizarAlteracaoFinanceira(identificador, resposta, confirmacao) {
+    try {
+      receberPedidosFinanceiros(await financeiroApi.pedidos(perfil));
+      definirErroApi(null);
+    } catch {
+      // A gravação já foi confirmada. A consulta pode falhar sem invalidar
+      // o resultado retornado pela API nem exigir novo envio.
+      definirSolicitacoes((pedidos) => pedidos.map((pedido) => {
+        const analises = pedido.analises || [];
+        if (pedido.id !== identificador && !analises.some(({ id }) => id === identificador)) return pedido;
+        const eventos = [...new Map(
+          [...(pedido.eventosFinanceiros || []), ...(resposta.eventosFinanceiros || [])]
+            .map((evento) => [JSON.stringify([evento.tipo, evento.registradoEm, evento.autorLogin, evento.descricao]), evento]),
+        ).values()];
+        return {
+          ...pedido,
+          decisoes: eventos,
+          eventosFinanceiros: eventos,
+          status: pedido.id === identificador ? resposta.status : pedido.status,
+          analises: analises.map((analise) => analise.id === identificador ? resposta : analise),
+        };
+      }));
+      definirErroApi(null);
+      definirAvisoSincronizacao(`${confirmacao}, mas não foi possível atualizar a lista completa. Os dados serão sincronizados ao retomar o painel.`);
+    }
+  }
+
   async function definirStatusSolicitacao(identificador, status, motivo) {
     try {
       const resposta = status === 'Aprovada'
         ? await apiAtividades.aprovar(identificador)
         : await apiAtividades.rejeitar(identificador, motivo);
-      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
+      if (financeiro) {
+        await sincronizarAlteracaoFinanceira(identificador, resposta, 'A decisão foi registrada');
+        return true;
+      }
       definirSolicitacoes((solicitacoesAtuais) => solicitacoesAtuais.map((solicitacao) =>
         solicitacao.id === identificador ? resposta : solicitacao));
       definirErroApi(null);
@@ -261,7 +297,10 @@ export function useControleAtivos(perfil) {
   async function editarSolicitacao(identificador, dadosAtualizados) {
     try {
       const resposta = await apiAtividades.atualizar(identificador, dadosAtualizados);
-      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
+      if (financeiro) {
+        await sincronizarAlteracaoFinanceira(identificador, resposta, 'As alterações foram salvas');
+        return true;
+      }
       definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === identificador ? resposta : pedido));
       definirErroApi(null);
       return true;
@@ -270,7 +309,10 @@ export function useControleAtivos(perfil) {
   async function salvarPlanoFinanceiro(id,dados) {
     try {
       const resposta = await apiAtividades.salvarPlanoFinanceiro(id,dados);
-      if(financeiro){definirSolicitacoes(await financeiroApi.pedidos(perfil));definirErroApi(null);return true;}
+      if (financeiro) {
+        await sincronizarAlteracaoFinanceira(id, resposta, 'O plano foi salvo');
+        return true;
+      }
       definirSolicitacoes((atuais) => atuais.map((pedido) => pedido.id === id ? resposta : pedido));
       definirErroApi(null);
       return true;
@@ -294,7 +336,7 @@ export function useControleAtivos(perfil) {
     solicitacoes,
     categoriasEquipamento,
     carregandoDados,
-    erroApi,
+    erroApi: erroApi || avisoSincronizacao,
     resumoEquipamentos,
     tecnicosCadastrados,
     buscarObraPorId,

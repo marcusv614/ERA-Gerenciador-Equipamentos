@@ -1,0 +1,481 @@
+{
+  "coletadoEm": "2026-10-27T11:58:57.322284+00:00",
+  "baseGit": "629adecc44caf66d122aaacf1a691a07109f255f",
+  "java": {
+    "suites": 46,
+    "testes": 785,
+    "falhas": 0,
+    "erros": 0,
+    "ignorados": 0,
+    "aprovados": 785
+  },
+  "jacoco": {
+    "INSTRUCTION": {
+      "covered": 19815,
+      "total": 22649,
+      "percentual": 87.49
+    },
+    "BRANCH": {
+      "covered": 1657,
+      "total": 2199,
+      "percentual": 75.35
+    },
+    "LINE": {
+      "covered": 1574,
+      "total": 1735,
+      "percentual": 90.72
+    },
+    "COMPLEXITY": {
+      "covered": 1605,
+      "total": 2276,
+      "percentual": 70.52
+    },
+    "METHOD": {
+      "covered": 972,
+      "total": 1174,
+      "percentual": 82.79
+    },
+    "CLASS": {
+      "covered": 133,
+      "total": 154,
+      "percentual": 86.36
+    }
+  },
+  "classesAlteradas": {
+    "br/com/era/api/service/UsuarioService": {
+      "INSTRUCTION": {
+        "covered": 802,
+        "total": 878,
+        "percentual": 91.34
+      },
+      "BRANCH": {
+        "covered": 95,
+        "total": 114,
+        "percentual": 83.33
+      },
+      "LINE": {
+        "covered": 59,
+        "total": 63,
+        "percentual": 93.65
+      },
+      "COMPLEXITY": {
+        "covered": 68,
+        "total": 92,
+        "percentual": 73.91
+      },
+      "METHOD": {
+        "covered": 28,
+        "total": 35,
+        "percentual": 80.0
+      },
+      "CLASS": {
+        "covered": 1,
+        "total": 1,
+        "percentual": 100.0
+      }
+    },
+    "br/com/era/api/service/FuncionarioService": {
+      "INSTRUCTION": {
+        "covered": 486,
+        "total": 504,
+        "percentual": 96.43
+      },
+      "BRANCH": {
+        "covered": 60,
+        "total": 68,
+        "percentual": 88.24
+      },
+      "LINE": {
+        "covered": 34,
+        "total": 34,
+        "percentual": 100.0
+      },
+      "COMPLEXITY": {
+        "covered": 51,
+        "total": 60,
+        "percentual": 85.0
+      },
+      "METHOD": {
+        "covered": 25,
+        "total": 26,
+        "percentual": 96.15
+      },
+      "CLASS": {
+        "covered": 1,
+        "total": 1,
+        "percentual": 100.0
+      }
+    }
+  },
+  "antesGestao": {
+    "resultados": [
+      {
+        "nome": "QA-ADM-01: duas desativações concorrentes",
+        "resultado": "REPROVADO",
+        "esperasPostgres": [
+          "transactionid",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O pedido foi alterado por outra operação. Atualize a página e tente novamente."
+        ],
+        "administradoresAtivos": 1,
+        "erro": "A recusa precisa ser a regra de negócio, e não um deadlock convertido em 409.",
+        "duracaoMs": 2274.5343439999997
+      },
+      {
+        "nome": "QA-ADM-02: dois rebaixamentos concorrentes",
+        "resultado": "REPROVADO",
+        "esperasPostgres": [
+          "transactionid",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O pedido foi alterado por outra operação. Atualize a página e tente novamente."
+        ],
+        "administradoresAtivos": 1,
+        "erro": "A recusa precisa ser a regra de negócio, e não um deadlock convertido em 409.",
+        "duracaoMs": 2215.6368620000003
+      },
+      {
+        "nome": "QA-ADM-03: desativação e rebaixamento concorrentes",
+        "resultado": "REPROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "mensagens": [],
+        "administradoresAtivos": 0,
+        "erro": "Deve permanecer exatamente um administrador ativo.\n\n0 !== 1\n",
+        "duracaoMs": 1323.8798389999993
+      }
+    ],
+    "escopo": "HTTP, Spring transacional e PostgreSQL reais descartáveis; barreira SQL exclusiva do teste."
+  },
+  "antesArquivamento": {
+    "resultados": [
+      {
+        "nome": "QA-ADM-01: duas desativações concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ser desativado."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 3793.314738
+      },
+      {
+        "nome": "QA-ADM-02: dois rebaixamentos concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ter o perfil alterado."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 3602.7747209999998
+      },
+      {
+        "nome": "QA-ADM-03: desativação e rebaixamento concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ser desativado."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 3653.183223
+      },
+      {
+        "nome": "QA-ADM-04: arquivamento de funcionário e rebaixamento concorrentes",
+        "resultado": "REPROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "mensagens": [],
+        "administradoresAtivos": 0,
+        "eventosAdministrativosPersistidos": 1,
+        "erro": "Deve permanecer exatamente um administrador ativo.\n\n0 !== 1\n",
+        "duracaoMs": 2853.7210159999995
+      },
+      {
+        "nome": "QA-ADM-05: arquivamento de funcionário preserva último administrador",
+        "resultado": "REPROVADO",
+        "statusHttp": [
+          200
+        ],
+        "mensagens": [],
+        "administradoresAtivos": 0,
+        "funcionarioArquivado": true,
+        "erro": "Arquivamento de funcionário não pode desativar o último administrador.\n\n0 !== 1\n"
+      }
+    ],
+    "escopo": "HTTP, Spring transacional e PostgreSQL reais descartáveis; barreira SQL exclusiva do teste."
+  },
+  "escopo": "Rodada de correção do último administrador: Java, quatro stacks de integração, E2E e HTTP reais descartáveis. Node, navegador local simulado e scanners não foram reexecutados. Sem dados habituais, commit, push ou deploy.",
+  "comandos": {
+    "java": {
+      "inicio": "2026-10-27T11:53:07.139Z",
+      "duracaoMs": 61031,
+      "codigo": 0,
+      "log": "test-results/quality-assurance/java-10.log",
+      "comando": [
+        "sh",
+        "mvnw",
+        "-B",
+        "-ntp",
+        "clean",
+        "verify",
+        "-Pcoverage",
+        "-Dmaven.test.failure.ignore=true"
+      ]
+    },
+    "integration": {
+      "inicio": "2026-10-27T11:53:55.072Z",
+      "duracaoMs": 300225,
+      "codigo": 0,
+      "log": "test-results/quality-assurance/integration-5.log",
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "scripts/testar-integracao.mjs"
+      ]
+    }
+  },
+  "depois": {
+    "resultados": [
+      {
+        "nome": "QA-ADM-01: duas desativações concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ser desativado."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 2205.0313370000003
+      },
+      {
+        "nome": "QA-ADM-02: dois rebaixamentos concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ter o perfil alterado."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 2268.5768660000003
+      },
+      {
+        "nome": "QA-ADM-03: desativação e rebaixamento concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ser desativado."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 2070.7294620000002
+      },
+      {
+        "nome": "QA-ADM-04: arquivamento de funcionário e rebaixamento concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ser desativado pelo arquivamento do funcionário."
+        ],
+        "administradoresAtivos": 1,
+        "eventosAdministrativosPersistidos": 1,
+        "duracaoMs": 1979.2088409999997
+      },
+      {
+        "nome": "QA-ADM-05: arquivamento de funcionário preserva último administrador",
+        "resultado": "APROVADO",
+        "statusHttp": [
+          409
+        ],
+        "mensagens": [
+          "O último administrador ativo não pode ser desativado pelo arquivamento do funcionário."
+        ],
+        "administradoresAtivos": 1,
+        "funcionarioArquivado": false
+      }
+    ],
+    "escopo": "HTTP, Spring transacional e PostgreSQL reais descartáveis; barreira SQL exclusiva do teste."
+  },
+  "integracao": {
+    "diretorio": "test-results/integracao-1793102035175",
+    "suites": [
+      {
+        "suite": "atendimento-parcial",
+        "resultado": "passou",
+        "duracaoMs": 38003
+      },
+      {
+        "suite": "regressao",
+        "resultado": "passou",
+        "duracaoMs": 123821
+      },
+      {
+        "suite": "recuperacao",
+        "resultado": "passou",
+        "duracaoMs": 45266
+      },
+      {
+        "suite": "administradores",
+        "resultado": "passou",
+        "duracaoMs": 38729
+      }
+    ],
+    "e2e": {
+      "startTime": "2026-10-27T11:56:19.450Z",
+      "duration": 68809.58600000001,
+      "expected": 30,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "qualidadeApi": {
+      "resultados": [
+        {
+          "nome": "QA-API-01: categoria com campo nulo retorna 400 e não persiste",
+          "resultado": "APROVADO",
+          "duracaoMs": 57.12184500000001
+        },
+        {
+          "nome": "QA-API-02: categoria válida persiste configuração e impede nome duplicado",
+          "resultado": "APROVADO",
+          "duracaoMs": 54.69951600000002
+        },
+        {
+          "nome": "QA-API-03: chaves e tipos de categoria inválidos não persistem",
+          "resultado": "APROVADO",
+          "duracaoMs": 48.71812700000004
+        },
+        {
+          "nome": "QA-API-04: PostgreSQL preserva nome com vírgula no inventário histórico",
+          "resultado": "APROVADO",
+          "duracaoMs": 69.03999699999997
+        },
+        {
+          "nome": "QA-API-05: novo snapshot preserva aspas e lê o último estado persistido",
+          "resultado": "APROVADO",
+          "duracaoMs": 69.52730799999995
+        },
+        {
+          "nome": "QA-API-06: inventário recusa futuro e parâmetros inválidos",
+          "resultado": "APROVADO",
+          "duracaoMs": 29.853166999999985
+        },
+        {
+          "nome": "QA-API-07: arquivamento exige conclusão, persiste e permite restauração",
+          "resultado": "APROVADO",
+          "duracaoMs": 87.57393100000002
+        },
+        {
+          "nome": "QA-API-08: amostragem controlada de dez leituras sequenciais",
+          "resultado": "APROVADO",
+          "duracaoMs": 111.5957699999999
+        }
+      ],
+      "requisicoes": 37,
+      "desempenho": {
+        "amostrasMs": [
+          10.652801000000068,
+          11.17659100000003,
+          12.606791000000044,
+          12.456744000000072,
+          16.289792000000034,
+          9.43756099999996,
+          9.502065000000016,
+          10.121827999999937,
+          9.478819999999928,
+          9.429302000000007
+        ],
+        "p50Ms": 10.121827999999937,
+        "p95Ms": 16.289792000000034,
+        "escopo": "10 GET sequenciais; API e PostgreSQL descartáveis, sem teste de carga ou SLA"
+      }
+    }
+  },
+  "reproducoes": {
+    "gestao": "test-results/integracao-1793101043446/resumo.json",
+    "arquivamento": "test-results/integracao-1793101732326/resumo.json",
+    "javaAntesArquivamento": "test-results/quality-assurance/java-9.log"
+  },
+  "hashesSha256": {
+    "Backend/API/src/main/java/br/com/era/api/repository/UsuarioRepository.java": "f4548e5ab91824ce7545478ad77ae6dbbc733c8b70a9d1e3205b3111a666f12b",
+    "Backend/API/src/main/java/br/com/era/api/service/UsuarioService.java": "8891dacd11bd665baf9b442b2755791444e187040843729b6cd659bbe0165895",
+    "Backend/API/src/main/java/br/com/era/api/service/FuncionarioService.java": "7a494de4ad035afa1390a727220df48807918f690655f0cea2147d8e3043fea1",
+    "Backend/API/src/test/java/br/com/era/api/service/QaFuncionarioServiceTests.java": "2737a3e01af4dc2ebfdb8bfd069bec1f0710e7b14c213b43b6843d670ff985c6",
+    "scripts/testes/administradores-concorrentes.mjs": "4e80da2d51559ef01e3c1fb545e160b61c03bf2cd6046b50302ac02ae924ca44",
+    "scripts/testar-integracao.mjs": "97f149a40a9741a7d40fe6fc576920e25ab71523bda8150b61523f523e7d3efb",
+    "scripts/qa/medir.mjs": "abb98dfde77e6a613f4b91402aef5729a277268ad2caa079acf78de43a9be8a2"
+  }
+}

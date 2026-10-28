@@ -1,5 +1,52 @@
 # Defeitos encontrados
 
+QA-BUG-010, severidade MÉDIA, **CORRIGIDO E VALIDADO**: plano e edição
+confirmados deixam de ser apresentados como recusados quando apenas o GET da
+lista falha. Total acumulado: **dez defeitos confirmados** (dois altos, seis
+médios e dois baixos), corrigidos nas respectivas rodadas. Ver reprodução,
+correção e persistência real em [sincronização financeira](SINCRONIZACAO_FINANCEIRA.md).
+As contagens abaixo são históricas.
+
+QA-BUG-009, severidade MÉDIA, **CORRIGIDO E VALIDADO** na rodada de RH/Financeiro.
+Total acumulado: **nove defeitos confirmados** (dois altos, cinco médios e dois
+baixos), corrigidos nas respectivas rodadas. A correção foi verificada com
+respostas simuladas e com decisão persistida em API/PostgreSQL reais. Ver
+[RH/Financeiro](RH_FINANCEIRO.md). As contagens abaixo são históricas.
+
+A rodada de compra recebida e atendimento parcial não confirmou novo defeito de
+produção. Os 22 casos novos de navegador passaram, assim como a integração HTTP
+real de atendimento parcial. O inventário continua em oito defeitos confirmados
+(dois altos, quatro médios e dois baixos), corrigidos nas rodadas anteriores.
+Ver [compra e atendimento parcial](COMPRAS_ATENDIMENTO_PARCIAL.md).
+
+A rodada de manutenção, calibração e painéis com dados não confirmou novo defeito
+de produção. As falhas intermediárias eram expectativas da fixture,
+corrigidas antes da regressão de 212 casos aprovada. O inventário permanece em
+oito defeitos confirmados (dois altos, quatro médios e dois baixos), corrigidos
+nas rodadas anteriores. Ver [operação dos equipamentos](OPERACAO_EQUIPAMENTOS.md).
+
+Rodada dos formulários: QA-BUG-006, 007 e 008 **CORRIGIDOS E VALIDADOS** na
+regressão de 176 testes de navegador. Total acumulado: **oito defeitos confirmados**
+(dois altos, quatro médios e dois baixos), nenhum crítico confirmado.
+Ver [formulários reais](FORMULARIOS_REAIS.md). As contagens abaixo são históricas.
+
+A ampliação de `useControleAtivos` não confirmou novo defeito de produção.
+Uma expectativa de payload da fixture foi corrigida, conforme `CONTROLE_ATIVOS.md`.
+
+A rodada de JSX/hooks acrescentou medição e testes, sem novo defeito de produção
+confirmado. Ajustes de fixtures e limpeza da automação estão documentados em
+`COBERTURA_INTERFACE.md`; o inventário continua em cinco defeitos confirmados.
+
+Rodada de notificações: QA-BUG-005, severidade MÉDIA, corrigido após reprodução
+Java e HTTP/PostgreSQL. Total atual: cinco defeitos confirmados (três médios e
+dois altos), nenhum crítico confirmado. Ver `NOTIFICACOES_PERSISTENCIA.md`.
+
+Na primeira retomada de 27/10/2026, os cenários adicionais de serviço não
+confirmaram novos defeitos. Na rodada seguinte, foram reproduzidos dois defeitos
+ALTOS na proteção do último administrador, detalhados abaixo e em
+`CONCORRENCIA_ADMINISTRADORES.md`. Naquela rodada, o inventário passou a quatro defeitos
+confirmados: dois médios e dois altos; nenhum crítico confirmado.
+
 Avaliação de 26/10/2026, fuso America/Manaus. Dois defeitos de aplicação foram
 confirmados por execução. O usuário autorizou a correção após a reprodução;
 as expectativas originais dos testes foram preservadas.
@@ -71,6 +118,72 @@ vulnerabilidades ou de defeitos nos fluxos bloqueados.
   cinco cenários de compatibilidade passaram na regressão Java; QA-API-04 e 05
   confirmaram persistência e consulta de vírgulas/aspas no PostgreSQL real.
 
+## QA-BUG-003 — Operações concorrentes removem todos os administradores
+
+- Severidade: ALTA. Funcionalidades F04/F30.
+- Reprodução: dois administradores ativos com sessões independentes; A desativa
+  B por `PATCH /usuarios/{id}/status` enquanto B rebaixa A por `PUT /usuarios/{id}`.
+  A barreira SQL exclusiva de teste garante sobreposição das transações.
+- Esperado: uma alteração conclui, a outra retorna HTTP 409 pela proteção do
+  último administrador; permanece um ADMIN ativo.
+- Obtido: HTTP 200 nas duas chamadas e zero ADMIN ativos no PostgreSQL.
+  Reprodução confirmada com imagem reconstruída do código anterior à correção.
+- Causa: cada operação bloqueava somente a conta-alvo e contava administradores
+  independentemente. Nas disputas homogêneas, a auditoria ainda podia causar
+  conflito de locks, retornando um 409 genérico sem validar a regra de negócio.
+- Correção: lock pessimista dos administradores ativos em ordem de ID antes
+  da conta-alvo. Edição, status e redefinição administrativa de senha seguem
+  essa ordem; a contagem ocorre após adquirir os locks.
+- Regressão real: QA-ADM-01 a 03 em
+  `scripts/testes/administradores-concorrentes.mjs`, incluídos no executor de
+  integração. Testes exigem a mensagem de negócio, além do status e do saldo de
+  administradores; o evento da operação recusada não pode ser persistido.
+- Estado: CORRIGIDO; a validação e as evidências estão em
+  `CONCORRENCIA_ADMINISTRADORES.md`.
+
+## QA-BUG-004 — Arquivamento de funcionário desativa o último administrador
+
+- Severidade: ALTA. Funcionalidades F04/F05.
+- Reprodução: cadastrar um funcionário e uma conta ADMIN vinculada; deixar
+  somente essa conta como administrador ativo; arquivar o funcionário por
+  `PATCH /funcionarios/{id}/arquivamento`. Também reproduzido com dois ADMIN,
+  disputando o arquivamento de um contra o rebaixamento do outro.
+- Esperado: HTTP 409 e preservação do funcionário e do último administrador.
+- Obtido: HTTP 200, funcionário arquivado e zero ADMIN ativos. Na disputa,
+  ambas as operações retornaram HTTP 200.
+- Causa: `FuncionarioService` desativava diretamente a conta vinculada sem
+  proteger a regra do último administrador nem coordenar locks com a gestão de
+  contas. O cadastro permite vincular um funcionário a uma conta ADMIN.
+- Correção: usar os mesmos locks de administradores ativos e validar a conta
+  vinculada antes de remover responsabilidades ou desativar o acesso.
+- Regressão: QA-ADM-04 e 05 no PostgreSQL real; teste Java
+  `QA_BUG_004_arquivarFuncionarioNaoDesativaUltimoAdmin` e caso positivo com
+  outro administrador disponível, em `QaFuncionarioServiceTests`.
+- Estado: CORRIGIDO; a validação e as evidências estão em
+  `CONCORRENCIA_ADMINISTRADORES.md`.
+
+## QA-BUG-005 — Reentrega de aviso mantém resumo e perfil antigos
+
+- Severidade: MÉDIA. Funcionalidade F25.
+- Reprodução: emitir AJUSTE_FINANCEIRO, lê-lo e depois alterar materiais e obra
+  durante a análise financeira. O aviso é renovado com o mesmo ID, mas mantém
+  quantidade e obra anteriores. Também reproduzido após mudar o destinatário de
+  GERENTE para ESTOQUE: uma nova revisão aprovada destina o evento ao perfil atual,
+  mas o perfil antigo armazenado oculta o aviso na consulta de escopo.
+- Esperado: novo evento com os dados atuais, leitura reaberta e sem duplicação;
+  destinatário elegível deve enxergá-lo no perfil atual.
+- Obtido: pedido atualizado para quantidade 2 e obra B, aviso mostrando 1 e obra
+  A; no caso de perfil, o aviso renovado não aparece na caixa do destinatário.
+- Causa: `renovar` atualizava somente mensagem, data e leitura, preservando os
+  demais dados capturados no primeiro evento.
+- Correção: renovar com usuário/pedido atuais e atualizar perfil, obra, nome,
+  indicador de destinatário e materiais, preservando ID e unicidade.
+- Regressão: QA-NOT-01/08 no PostgreSQL e
+  `QA_BUG_005_reentregaAtualizaMateriaisEObraDoResumo` em
+  `QaNotificacaoRessalvasTests`. Os demais casos reais verificam concorrência,
+  falha/rollback e paginação; não foram classificados como outros defeitos.
+- Estado: CORRIGIDO; resultados e evidências em `NOTIFICACOES_PERSISTENCIA.md`.
+
 ## Falhas da automação e impedimentos, não defeitos da aplicação
 
 - Fixture React inicial sem exportação: lint detectou; corrigida no arquivo de teste.
@@ -87,3 +200,86 @@ vulnerabilidades ou de defeitos nos fluxos bloqueados.
   da sandbox permitiram navegador e scanners. O Docker continuou indisponível.
 
 Não foram aplicadas correções de produção baseadas apenas em suspeitas estáticas.
+
+## QA-BUG-006 — Cadastros permitem envio duplicado enquanto aguardam a API
+
+- Severidade: MÉDIA. Famílias F05/F08; proteção equivalente estendida à obra F06.
+- Reprodução: abrir cadastro de equipamento ou funcionário, preencher dados
+  fictícios válidos, manter o POST pendente e dar duplo clique no botão de salvar.
+- Antes: dois POSTs observados por formulário, sem bloqueio de salvar/cancelar.
+- Correção: guarda síncrona com `useRef`, estado de envio, await, bloqueio de
+  fechamento enquanto pendente e erro local com preenchimento preservado. Painel
+  retorna sucesso/falha ao formulário. Obra recebe a mesma proteção; seu baseline
+  terminou por timeout no checkbox da fixture e não comprova dois POSTs.
+- Evidência: `FORMULARIOS_REAIS.md`, snapshot próprio e QA-FORM-DUP/RETRY.
+
+## QA-BUG-007 — Formulários ignoram validação nativa e envio por Enter
+
+- Severidade: BAIXA. Famílias F05/F06/F08.
+- Reprodução: preencher e-mail `endereco-invalido` no novo funcionário ou `invalido`
+  na edição; clicar em salvar. O input tem validade falsa, mas ocorre POST/PATCH.
+  Em equipamento e funcionário, Enter no nome não envia o cadastro válido.
+- Causa: contêiner `div` e botão com callback direto, sem submissão HTML.
+- Correção: `form`/`onSubmit` nos três cadastros e na edição do funcionário,
+  com tipos explícitos nos botões. A validação HTML impede requests inválidos.
+- Evidência: `formularios-antes.log` mostra uma requisição inválida em cada
+  fluxo; `formularios-antes-2.log` registra Enter sem envio. QA-FORM-EMAIL,
+  QA-FORM-EMAIL-EDIT e QA-FORM-ENTER verificam o resultado esperado.
+- Limite: não significa aceitação desses dados pelo backend; a API é simulada.
+
+## QA-BUG-008 — Grupo altera nomes acessíveis dos controles
+
+- Severidade: BAIXA. Famílias F05/F06.
+- Antes: o primeiro checkbox de responsáveis recebia o texto de todo o grupo;
+  o primeiro botão de status tinha nome acessível `Status inicial Concluída`,
+  embora exibisse `Em andamento`.
+- Causa: `CampoFormulario` sempre usava `label`, envolvendo múltiplos controles
+  e outros labels.
+- Correção: agrupamento opcional com `fieldset`/`legend`, aplicado aos grupos de
+  responsáveis/status da obra e de situação/vínculos do funcionário. Os demais
+  campos preservam seus labels individuais.
+- Evidência: QA-FORM-GRUPOS e edição de vínculos com nomes individuais exatos;
+  reprodução registrada em `formularios-antes-3.log`.
+- Limite: correção pontual, sem auditoria completa de acessibilidade.
+
+## QA-BUG-009 — Falha de consulta posterior mascara decisão já registrada
+
+- Severidade: MÉDIA. Famílias F12/F13, aprovação e rejeição de RH/Financeiro.
+- Reprodução: confirmar decisão com HTTP 200 e devolver 503 somente ao GET
+  posterior de `/atividades/pedidos-financeiros`. O POST é efetivado uma vez.
+- Antes: o hook retorna falha da decisão; o formulário continua aberto com
+  mensagem para nova tentativa, apesar do resultado já confirmado.
+- Causa: POST e recarga da lista eram tratados pelo mesmo `catch`.
+- Correção: tratamento separado da consulta; resposta confirmada aplicada à
+  análise correspondente e histórico, com aviso de sincronização. Ações já
+  concluídas desaparecem; o aviso é removido na consulta completa bem-sucedida.
+  Pedidos e análises não relacionados são preservados.
+- Arquivo: `Frontend/UI/src/hooks/useControleAtivos.js`.
+- Evidência: reprodução local em `financeiro-antes-correcao.log` e snapshot
+  próprio; QA-DEC-03/04 nos dois viewports; QA-FIN-REAL verifica o estado e o
+  evento único no histórico financeiro da API real.
+- Limite: não implica que houve duplicação no banco. O backend também valida
+  a fase da decisão. Não se trata de idempotência geral para respostas de POST
+  perdidas após commit.
+
+## QA-BUG-010 — Plano e edição confirmados apresentados como recusados
+
+- Severidade: MÉDIA. Famílias F11/F13.
+- Reprodução: confirmar POST de plano ou PATCH de edição com HTTP 200 e recusar
+  somente a consulta consolidada posterior com HTTP 503. Fluxos: plano novo,
+  revisão aprovada, edição Financeiro/RH e saldo vinculado.
+- Antes: formulário permanece aberto com erro e oferece nova tentativa apesar
+  de uma gravação já confirmada. Cinco reproduções anteriores preservadas.
+- Causa: gravação e recarga da lista no mesmo tratamento de erro.
+- Correção: tratamento de sincronização compartilhado com aprovação/rejeição;
+  aplicar a resposta somente à análise correspondente, conservar os demais
+  pedidos e avisar que a lista completa ainda precisa atualizar. Reabertura
+  conserva campos confirmados; retomar foco sincroniza sem novo envio.
+- Recusa real do POST/PATCH continua preservando preenchimento e permitindo
+  nova tentativa explícita. Agregações completas aguardam o GET bem-sucedido.
+- Arquivo: `Frontend/UI/src/hooks/useControleAtivos.js`.
+- Evidência: QA-SYNC-01/02 locais; QA-SYNC-REAL com POST/PATCH reais, consulta
+  direta da API, campos persistidos, um evento ALTERACAO e uma gravação por caso.
+  Ver [sincronização financeira](SINCRONIZACAO_FINANCEIRA.md).
+- Limite: não foi comprovada duplicação no banco; a resposta da própria gravação
+  perdida após commit permanece uma ressalva de idempotência geral.

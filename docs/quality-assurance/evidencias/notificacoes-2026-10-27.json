@@ -1,0 +1,561 @@
+{
+  "antes": {
+    "resultados": [
+      {
+        "nome": "QA-NOT-01: reentrega atualiza resumo e obra sem duplicar aviso",
+        "resultado": "REPROVADO",
+        "aviso": {
+          "id": 47,
+          "solicitacaoId": 13,
+          "obraId": 1,
+          "obraNome": "DEMO Residencial Aurora",
+          "destinatario": false,
+          "materiais": [
+            {
+              "nome": "DEMO Alicate",
+              "quantidade": 1
+            }
+          ],
+          "criadaEm": "2026-10-27T12:16:13.574431Z",
+          "lidaEm": null,
+          "status": "Aguardando financeiro",
+          "tipo": "AJUSTE_FINANCEIRO",
+          "mensagem": "O Financeiro alterou o pedido, o planejamento ou uma observação. Revise o histórico atualizado antes de acompanhar ou executar o atendimento."
+        },
+        "erro": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    {\n      nome: 'DEMO Alicate',\n+     quantidade: 1\n-     quantidade: 2\n    }\n  ]\n",
+        "duracaoMs": 425.1467839999999
+      },
+      {
+        "nome": "QA-NOT-02: duas leituras simultâneas preservam primeiro horário",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "horariosHttp": [
+          "2026-10-27T08:16:14.172424956-04:00",
+          "2026-10-27T12:16:14.172425Z"
+        ],
+        "lidaEm": "2026-10-27T12:16:14.172425+00:00",
+        "duracaoMs": 1522.634784
+      },
+      {
+        "nome": "QA-NOT-03: leitura seguida de renovação concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "lidaEm": null,
+        "duracaoMs": 1498.124938
+      },
+      {
+        "nome": "QA-NOT-04: renovação seguida de leitura concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "lidaEm": "2026-10-27T12:16:17.635445+00:00",
+        "duracaoMs": 1569.335583
+      },
+      {
+        "nome": "QA-NOT-05: duas alterações financeiras concorrentes mantêm um aviso",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "avisosPersistidos": 1,
+        "duracaoMs": 1573.587912
+      },
+      {
+        "nome": "QA-NOT-06: falha de gravação reverte pedido e todos os avisos",
+        "resultado": "APROVADO",
+        "statusHttp": [
+          409
+        ],
+        "rollbackConfirmado": true,
+        "destinatariosDepoisDaRecuperacao": 2,
+        "duracaoMs": 1677.8055329999988
+      },
+      {
+        "nome": "QA-NOT-07: paginação SQL estável e contador só do titular",
+        "resultado": "APROVADO",
+        "tamanhos": [
+          20,
+          20,
+          5
+        ],
+        "naoLidasAntes": 45,
+        "naoLidasDepois": 44,
+        "duracaoMs": 517.3637920000001
+      },
+      {
+        "nome": "QA-NOT-08: reentrega para novo perfil elegível continua visível",
+        "resultado": "REPROVADO",
+        "avisoVisivel": false,
+        "erro": "O novo evento precisa ficar visível ao destinatário elegível no perfil atual.",
+        "duracaoMs": 724.0821889999988
+      }
+    ],
+    "escopo": "API e PostgreSQL descartáveis; barreiras, falhas e fixtures SQL exclusivas dos testes."
+  },
+  "java": {
+    "suites": 46,
+    "testes": 786,
+    "falhas": 0,
+    "erros": 0,
+    "ignorados": 0,
+    "aprovados": 786
+  },
+  "jacoco": {
+    "INSTRUCTION": {
+      "covered": 19820,
+      "total": 22650,
+      "percentual": 87.51
+    },
+    "BRANCH": {
+      "covered": 1658,
+      "total": 2199,
+      "percentual": 75.4
+    },
+    "LINE": {
+      "covered": 1577,
+      "total": 1738,
+      "percentual": 90.74
+    },
+    "COMPLEXITY": {
+      "covered": 1606,
+      "total": 2276,
+      "percentual": 70.56
+    },
+    "METHOD": {
+      "covered": 972,
+      "total": 1174,
+      "percentual": 82.79
+    },
+    "CLASS": {
+      "covered": 133,
+      "total": 154,
+      "percentual": 86.36
+    }
+  },
+  "classes": {
+    "br/com/era/api/model/NotificacaoMovimentacao": {
+      "INSTRUCTION": {
+        "covered": 178,
+        "total": 184,
+        "percentual": 96.74
+      },
+      "BRANCH": {
+        "covered": 8,
+        "total": 10,
+        "percentual": 80.0
+      },
+      "LINE": {
+        "covered": 24,
+        "total": 25,
+        "percentual": 96.0
+      },
+      "COMPLEXITY": {
+        "covered": 20,
+        "total": 23,
+        "percentual": 86.96
+      },
+      "METHOD": {
+        "covered": 17,
+        "total": 18,
+        "percentual": 94.44
+      },
+      "CLASS": {
+        "covered": 1,
+        "total": 1,
+        "percentual": 100.0
+      }
+    },
+    "br/com/era/api/service/NotificacaoMovimentacaoService": {
+      "INSTRUCTION": {
+        "covered": 501,
+        "total": 506,
+        "percentual": 99.01
+      },
+      "BRANCH": {
+        "covered": 53,
+        "total": 56,
+        "percentual": 94.64
+      },
+      "LINE": {
+        "covered": 49,
+        "total": 49,
+        "percentual": 100.0
+      },
+      "COMPLEXITY": {
+        "covered": 50,
+        "total": 53,
+        "percentual": 94.34
+      },
+      "METHOD": {
+        "covered": 25,
+        "total": 25,
+        "percentual": 100.0
+      },
+      "CLASS": {
+        "covered": 1,
+        "total": 1,
+        "percentual": 100.0
+      }
+    }
+  },
+  "coletadoEm": "2026-10-27T12:23:24.161213+00:00",
+  "baseGit": "629adecc44caf66d122aaacf1a691a07109f255f",
+  "escopo": "Rodada de persistência/concorrência de notificações: 786 Java e integração completa em cinco stacks com API/PostgreSQL, SMTP fictício e Chromium. Node, navegador local simulado e scanners não repetidos. Sem dados habituais, commit, push ou deploy.",
+  "defeito": "QA-BUG-005: resumo, obra e perfil desatualizados na reentrega de aviso de evento.",
+  "depois": {
+    "resultados": [
+      {
+        "nome": "QA-NOT-01: reentrega atualiza resumo e obra sem duplicar aviso",
+        "resultado": "APROVADO",
+        "aviso": {
+          "id": 47,
+          "solicitacaoId": 13,
+          "obraId": 2,
+          "obraNome": "DEMO Escola Horizonte",
+          "destinatario": false,
+          "materiais": [
+            {
+              "nome": "DEMO Alicate",
+              "quantidade": 2
+            }
+          ],
+          "criadaEm": "2026-10-27T12:22:41.206734Z",
+          "lidaEm": null,
+          "status": "Aguardando financeiro",
+          "tipo": "AJUSTE_FINANCEIRO",
+          "mensagem": "O Financeiro alterou o pedido, o planejamento ou uma observação. Revise o histórico atualizado antes de acompanhar ou executar o atendimento."
+        },
+        "duracaoMs": 649.579075
+      },
+      {
+        "nome": "QA-NOT-02: duas leituras simultâneas preservam primeiro horário",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "horariosHttp": [
+          "2026-10-27T08:22:42.041905348-04:00",
+          "2026-10-27T12:22:42.041905Z"
+        ],
+        "lidaEm": "2026-10-27T12:22:42.041905+00:00",
+        "duracaoMs": 1516.174971
+      },
+      {
+        "nome": "QA-NOT-03: leitura seguida de renovação concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "lidaEm": null,
+        "duracaoMs": 1590.0493130000004
+      },
+      {
+        "nome": "QA-NOT-04: renovação seguida de leitura concorrentes",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "lidaEm": "2026-10-27T12:22:45.576235+00:00",
+        "duracaoMs": 1750.3048719999997
+      },
+      {
+        "nome": "QA-NOT-05: duas alterações financeiras concorrentes mantêm um aviso",
+        "resultado": "APROVADO",
+        "esperasPostgres": [
+          "advisory",
+          "transactionid"
+        ],
+        "statusHttp": [
+          200,
+          200
+        ],
+        "avisosPersistidos": 1,
+        "duracaoMs": 1613.7601210000003
+      },
+      {
+        "nome": "QA-NOT-06: falha de gravação reverte pedido e todos os avisos",
+        "resultado": "APROVADO",
+        "statusHttp": [
+          409
+        ],
+        "rollbackConfirmado": true,
+        "destinatariosDepoisDaRecuperacao": 2,
+        "duracaoMs": 1664.314277999999
+      },
+      {
+        "nome": "QA-NOT-07: paginação SQL estável e contador só do titular",
+        "resultado": "APROVADO",
+        "tamanhos": [
+          20,
+          20,
+          5
+        ],
+        "naoLidasAntes": 45,
+        "naoLidasDepois": 44,
+        "duracaoMs": 567.7045290000005
+      },
+      {
+        "nome": "QA-NOT-08: reentrega para novo perfil elegível continua visível",
+        "resultado": "APROVADO",
+        "avisoVisivel": true,
+        "duracaoMs": 932.2986410000012
+      }
+    ],
+    "escopo": "API e PostgreSQL descartáveis; barreiras, falhas e fixtures SQL exclusivas dos testes."
+  },
+  "integracao": {
+    "diretorio": "test-results/integracao-1793103397065",
+    "suites": [
+      {
+        "suite": "atendimento-parcial",
+        "resultado": "passou",
+        "duracaoMs": 43285
+      },
+      {
+        "suite": "regressao",
+        "resultado": "passou",
+        "duracaoMs": 137001
+      },
+      {
+        "suite": "recuperacao",
+        "resultado": "passou",
+        "duracaoMs": 55538
+      },
+      {
+        "suite": "administradores",
+        "resultado": "passou",
+        "duracaoMs": 41939
+      },
+      {
+        "suite": "notificacoes",
+        "resultado": "passou",
+        "duracaoMs": 47887
+      }
+    ],
+    "e2e": {
+      "startTime": "2026-10-27T12:19:04.993Z",
+      "duration": 79635.66500000001,
+      "expected": 30,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "administradores": {
+      "resultados": [
+        {
+          "nome": "QA-ADM-01: duas desativações concorrentes",
+          "resultado": "APROVADO",
+          "esperasPostgres": [
+            "advisory",
+            "transactionid"
+          ],
+          "statusHttp": [
+            200,
+            409
+          ],
+          "mensagens": [
+            "O último administrador ativo não pode ser desativado."
+          ],
+          "administradoresAtivos": 1,
+          "eventosAdministrativosPersistidos": 1,
+          "duracaoMs": 2137.72762
+        },
+        {
+          "nome": "QA-ADM-02: dois rebaixamentos concorrentes",
+          "resultado": "APROVADO",
+          "esperasPostgres": [
+            "advisory",
+            "transactionid"
+          ],
+          "statusHttp": [
+            200,
+            409
+          ],
+          "mensagens": [
+            "O último administrador ativo não pode ter o perfil alterado."
+          ],
+          "administradoresAtivos": 1,
+          "eventosAdministrativosPersistidos": 1,
+          "duracaoMs": 2031.6647359999997
+        },
+        {
+          "nome": "QA-ADM-03: desativação e rebaixamento concorrentes",
+          "resultado": "APROVADO",
+          "esperasPostgres": [
+            "advisory",
+            "transactionid"
+          ],
+          "statusHttp": [
+            200,
+            409
+          ],
+          "mensagens": [
+            "O último administrador ativo não pode ser desativado."
+          ],
+          "administradoresAtivos": 1,
+          "eventosAdministrativosPersistidos": 1,
+          "duracaoMs": 2011.343285
+        },
+        {
+          "nome": "QA-ADM-04: arquivamento de funcionário e rebaixamento concorrentes",
+          "resultado": "APROVADO",
+          "esperasPostgres": [
+            "advisory",
+            "transactionid"
+          ],
+          "statusHttp": [
+            200,
+            409
+          ],
+          "mensagens": [
+            "O último administrador ativo não pode ser desativado pelo arquivamento do funcionário."
+          ],
+          "administradoresAtivos": 1,
+          "eventosAdministrativosPersistidos": 1,
+          "duracaoMs": 2023.2232980000008
+        },
+        {
+          "nome": "QA-ADM-05: arquivamento de funcionário preserva último administrador",
+          "resultado": "APROVADO",
+          "statusHttp": [
+            409
+          ],
+          "mensagens": [
+            "O último administrador ativo não pode ser desativado pelo arquivamento do funcionário."
+          ],
+          "administradoresAtivos": 1,
+          "funcionarioArquivado": false
+        }
+      ],
+      "escopo": "HTTP, Spring transacional e PostgreSQL reais descartáveis; barreira SQL exclusiva do teste."
+    },
+    "qualidadeApi": [
+      {
+        "nome": "QA-API-01: categoria com campo nulo retorna 400 e não persiste",
+        "resultado": "APROVADO",
+        "duracaoMs": 68.26864799999998
+      },
+      {
+        "nome": "QA-API-02: categoria válida persiste configuração e impede nome duplicado",
+        "resultado": "APROVADO",
+        "duracaoMs": 66.29106800000005
+      },
+      {
+        "nome": "QA-API-03: chaves e tipos de categoria inválidos não persistem",
+        "resultado": "APROVADO",
+        "duracaoMs": 44.92796199999998
+      },
+      {
+        "nome": "QA-API-04: PostgreSQL preserva nome com vírgula no inventário histórico",
+        "resultado": "APROVADO",
+        "duracaoMs": 83.02078500000005
+      },
+      {
+        "nome": "QA-API-05: novo snapshot preserva aspas e lê o último estado persistido",
+        "resultado": "APROVADO",
+        "duracaoMs": 64.87997499999994
+      },
+      {
+        "nome": "QA-API-06: inventário recusa futuro e parâmetros inválidos",
+        "resultado": "APROVADO",
+        "duracaoMs": 28.74377800000002
+      },
+      {
+        "nome": "QA-API-07: arquivamento exige conclusão, persiste e permite restauração",
+        "resultado": "APROVADO",
+        "duracaoMs": 87.28976899999998
+      },
+      {
+        "nome": "QA-API-08: amostragem controlada de dez leituras sequenciais",
+        "resultado": "APROVADO",
+        "duracaoMs": 98.25224700000001
+      }
+    ]
+  },
+  "comandos": {
+    "java": {
+      "inicio": "2026-10-27T12:13:23.137Z",
+      "duracaoMs": 54882,
+      "codigo": 0,
+      "log": "test-results/quality-assurance/java-12.log",
+      "comando": [
+        "sh",
+        "mvnw",
+        "-B",
+        "-ntp",
+        "clean",
+        "verify",
+        "-Pcoverage",
+        "-Dmaven.test.failure.ignore=true"
+      ]
+    },
+    "integration": {
+      "inicio": "2026-10-27T12:16:36.995Z",
+      "duracaoMs": 376397,
+      "codigo": 0,
+      "log": "test-results/quality-assurance/integration-6.log",
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "scripts/testar-integracao.mjs"
+      ]
+    }
+  },
+  "reproducao": {
+    "primeiraImagemReconstruida": "test-results/integracao-1793102894346/resumo.json",
+    "baselineFinalSemTrocarImagem": "test-results/integracao-1793103340870/resumo.json",
+    "javaAntes": "test-results/quality-assurance/java-11.log",
+    "fixturesIntermediarias": [
+      "test-results/quality-assurance/notificacoes-antes.log",
+      "test-results/quality-assurance/notificacoes-antes-2.log"
+    ]
+  },
+  "hashesSha256": {
+    "Backend/API/src/main/java/br/com/era/api/model/NotificacaoMovimentacao.java": "265c2f490aa6c3e1e3fa75e674c9e7a6a95b9b5275bf391ed2623c502e35fd0a",
+    "Backend/API/src/main/java/br/com/era/api/service/NotificacaoMovimentacaoService.java": "658627c317dc30698f5b50ae6d9e840ab8f1267a7b85cf699aaebdd22f0fd5e9",
+    "Backend/API/src/test/java/br/com/era/api/service/QaNotificacaoRessalvasTests.java": "24210cda760d894bfb5a22e251029dddad33ddd324ba6e9a464d4dab8623f2c5",
+    "scripts/testes/banco-descartavel.mjs": "8400b84a4ced6f97294a3183fbf32e9990a78d8864c1b8aee018392de04a3684",
+    "scripts/testes/notificacoes-persistencia.mjs": "82286563f65b784e20728acfd2c65e5b09194b042654cf52831b73205424c89d",
+    "scripts/testar-integracao.mjs": "4cdf88bc5650cd5b0b064334e1d5f092e4c1591d15f05329fac661e72c24312f",
+    "scripts/qa/medir.mjs": "29ab35d37da0f2a819a810672c1cb848fb4ea22f7cd033fe962294c099498623"
+  }
+}

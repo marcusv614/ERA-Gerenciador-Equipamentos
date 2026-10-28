@@ -247,3 +247,102 @@ for (const nome of ['gerente','rh','financeiro']) {
     await impressao.close();
   });
 }
+
+for (const acao of ['aprovacao','rejeicao']) {
+  test(`QA-FIN-REAL: ${acao} gravada resiste à falha da consulta sem novo envio`,async({page,request},testInfo)=>{
+    const dados=async(resposta,status=200)=>{
+      expect(resposta.status()).toBe(status);
+      const corpo=await resposta.json();return corpo.dados??corpo;
+    };
+    // Preparar um pedido próprio com outra conta. O APIRequestContext tem
+    // cookies isolados dos da página; não realiza novo login do Financeiro.
+    const gerente=config.contas.find(c=>c.login==='demo.gerente');
+    let csrf=(await dados(await request.get('/api/auth/csrf'))).token;
+    await dados(await request.post('/api/auth/login',{data:{login:gerente.login,senha:gerente.senha},headers:{'X-XSRF-TOKEN':csrf}}));
+    csrf=(await dados(await request.get('/api/auth/csrf'))).token;
+    const obras=await dados(await request.get('/api/obras')),equipamentos=await dados(await request.get('/api/equipamentos'));
+    const destino=obras.find(o=>o.nome==='DEMO Clínica Rio Negro'),equipamento=equipamentos.find(e=>e.serie==='DEMO-3');
+    expect(destino).toBeTruthy();expect(equipamento).toBeTruthy();
+    const hoje=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Manaus'}).format(new Date());
+    const pedido=await dados(await request.post('/api/atividades',{headers:{'X-XSRF-TOKEN':csrf},data:{tecnico:'DEMO tecnico2',obraDestinoId:destino.id,dataSolicitacao:hoje,observacao:'QA decisão confirmada com consulta interrompida',materiais:[{nome:equipamento.modelo,catalogoChave:equipamento.catalogoChave,quantidade:1}]}}),201);
+    expect(pedido.status).toBe('Aguardando financeiro');
+    await entrar(page,'financeiro');
+    const token=(await dados(await page.request.get('/api/auth/csrf'))).token;
+    await dados(await page.request.post(`/api/atividades/${pedido.id}/plano-financeiro`,{headers:{'X-XSRF-TOKEN':token},data:{materiais:[{materialId:pedido.materiais[0].id,quantidadeCompra:1,justificativa:'Preservar saldo na origem durante o teste',origens:[]}]}}));
+    await page.reload();await atividades(page);await page.getByRole('button',{name:'Kanban',exact:true}).click();
+    const abrir=page.getByRole('button',{name:new RegExp(`^Abrir solicitação ${pedido.id},`)});
+    await abrir.click();const principal=page.getByRole('dialog',{name:`Solicitação #${String(pedido.id).padStart(4,'0')}`,exact:true});
+    let bloquearConsulta=true,posts=0;
+    await page.route('**/api/atividades/pedidos-financeiros',r=>bloquearConsulta?r.fulfill({status:503,json:{mensagem:'Consulta interrompida pelo teste'}}):r.continue());
+    page.on('request',r=>{if(r.method()==='POST'&&new URL(r.url()).pathname===`/api/atividades/${pedido.id}/${acao}`)posts++;});
+    let ativo=principal;
+    if(acao==='aprovacao')await principal.getByRole('button',{name:'Aprovar plano e enviar ao estoque',exact:true}).click();
+    else {await principal.getByRole('button',{name:'Rejeitar',exact:true}).click();ativo=page.getByRole('dialog',{name:`Justificar rejeição · pedido #${pedido.id}`,exact:true});await ativo.getByRole('textbox',{name:'Justificativa obrigatória',exact:true}).fill('Material não necessário neste teste');await ativo.getByRole('button',{name:'Confirmar rejeição com justificativa',exact:true}).click();}
+    await expect(ativo).toHaveCount(0);await expect(page.getByRole('alert')).toContainText('A decisão foi registrada');
+    // Esta consulta direta ao backend não é interceptada pela rota da página.
+    const persistido=(await dados(await page.request.get('/api/atividades/pedidos-financeiros'))).find(p=>p.id===pedido.id);
+    expect(persistido?.status).toBe(acao==='aprovacao'?'Aprovada':'Rejeitada');
+    const decisoes=persistido.decisoes.filter(e=>e.tipo===(acao==='aprovacao'?'APROVACAO':'REJEICAO'));
+    expect(decisoes).toHaveLength(1);expect(posts).toBe(1);
+    await abrir.click();await expect(principal.getByRole('button',{name:'Aprovar plano e enviar ao estoque',exact:true})).toHaveCount(0);await expect(principal.getByRole('button',{name:'Rejeitar',exact:true})).toHaveCount(0);await principal.getByRole('button',{name:'Fechar solicitação',exact:true}).click();
+    bloquearConsulta=false;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect(page.getByRole('alert')).toHaveCount(0);expect(posts).toBe(1);
+    await testInfo.attach('decisao-persistida',{body:JSON.stringify({pedidoId:pedido.id,acao,status:persistido.status,registros:decisoes.length,posts}),contentType:'application/json'});
+  });
+}
+
+for (const acao of ['plano','edicao']) {
+  test(`QA-SYNC-REAL: ${acao} confirmada resiste à falha da consulta sem novo envio`,async({page,request},testInfo)=>{
+    const dados=async(resposta,status=200)=>{
+      expect(resposta.status()).toBe(status);
+      const corpo=await resposta.json();return corpo.dados??corpo;
+    };
+    const gerente=config.contas.find(c=>c.login==='demo.gerente');
+    let csrf=(await dados(await request.get('/api/auth/csrf'))).token;
+    await dados(await request.post('/api/auth/login',{data:{login:gerente.login,senha:gerente.senha},headers:{'X-XSRF-TOKEN':csrf}}));
+    csrf=(await dados(await request.get('/api/auth/csrf'))).token;
+    const obras=await dados(await request.get('/api/obras')),equipamentos=await dados(await request.get('/api/equipamentos'));
+    const destino=obras.find(o=>o.nome==='DEMO Clínica Rio Negro'),equipamento=equipamentos.find(e=>e.serie==='DEMO-3');
+    expect(destino).toBeTruthy();expect(equipamento).toBeTruthy();
+    const hoje=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Manaus'}).format(new Date());
+    const pedido=await dados(await request.post('/api/atividades',{headers:{'X-XSRF-TOKEN':csrf},data:{tecnico:'DEMO tecnico2',obraDestinoId:destino.id,dataSolicitacao:hoje,observacao:'QA sincronização inicial',materiais:[{nome:equipamento.modelo,catalogoChave:equipamento.catalogoChave,quantidade:3}]}}),201);
+    expect(pedido.status).toBe('Aguardando financeiro');
+    await entrar(page,'financeiro');await atividades(page);await page.getByRole('button',{name:'Kanban',exact:true}).click();
+    const abrir=page.getByRole('button',{name:new RegExp(`^Abrir solicitação ${pedido.id},`)});
+    const principal=page.getByRole('dialog',{name:`Solicitação #${String(pedido.id).padStart(4,'0')}`,exact:true});
+    const formulario=()=>page.getByRole('dialog',{name:acao==='plano'?'Planejar transporte e compra':'Editar solicitação',exact:true});
+    const nome=pedido.materiais[0].nome;
+    await abrir.click();await principal.getByRole('button',{name:acao==='plano'?'Definir transporte e compra':'Editar',exact:true}).click();
+    const modal=formulario();
+    if(acao==='plano'){
+      await modal.getByRole('spinbutton',{name:`Quantidade de ${nome} para comprar`,exact:true}).fill('3');
+      await modal.getByRole('textbox',{name:/^Motivo da compra/}).fill('Compra confirmada com consulta interrompida');
+    }else{
+      await modal.getByRole('spinbutton',{name:`Quantidade de ${nome}`,exact:true}).fill('2');
+      await modal.getByRole('textbox',{name:'Observação',exact:true}).fill('Edição confirmada com consulta interrompida');
+    }
+    let bloquearConsulta=true,mutacoes=0;
+    const metodo=acao==='plano'?'POST':'PATCH',rota=`/api/atividades/${pedido.id}${acao==='plano'?'/plano-financeiro':''}`;
+    await page.route('**/api/atividades/pedidos-financeiros',r=>bloquearConsulta?r.fulfill({status:503,json:{mensagem:'Consulta interrompida pelo teste'}}):r.continue());
+    page.on('request',r=>{if(r.method()===metodo&&new URL(r.url()).pathname===rota)mutacoes++;});
+    await modal.getByRole('button',{name:acao==='plano'?'Salvar plano financeiro':'Salvar alterações',exact:true}).click();
+    await expect(modal).toHaveCount(0);await expect(page.getByRole('alert')).toContainText(acao==='plano'?'O plano foi salvo':'As alterações foram salvas');
+    const persistido=(await dados(await page.request.get('/api/atividades/pedidos-financeiros'))).find(p=>p.id===pedido.id);
+    const analise=persistido.analises.find(a=>a.id===pedido.id);
+    if(acao==='plano')expect(analise.planoFinanceiro[0].quantidadeCompra).toBe(3);
+    else {expect(analise.materiais.reduce((s,m)=>s+m.quantidade,0)).toBe(2);expect(analise.observacao).toBe('Edição confirmada com consulta interrompida');}
+    const registros=persistido.decisoes.filter(e=>e.tipo==='ALTERACAO');expect(registros).toHaveLength(1);expect(mutacoes).toBe(1);
+    if(acao==='plano')await principal.getByRole('button',{name:'Fechar solicitação',exact:true}).click();
+    bloquearConsulta=false;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect(page.getByRole('alert')).toHaveCount(0);
+    await page.reload();await atividades(page);await page.getByRole('button',{name:'Kanban',exact:true}).click();await abrir.click();
+    await principal.getByRole('button',{name:acao==='plano'?'Revisar plano':'Editar',exact:true}).click();
+    if(acao==='plano'){
+      await expect(formulario().getByRole('spinbutton',{name:`Quantidade de ${nome} para comprar`,exact:true})).toHaveValue('3');
+      await expect(formulario().getByRole('textbox',{name:/^Motivo da compra/})).toHaveValue('Compra confirmada com consulta interrompida');
+    }else{
+      await expect(formulario().getByRole('spinbutton',{name:`Quantidade de ${nome}`,exact:true})).toHaveValue('2');
+      await expect(formulario().getByRole('textbox',{name:'Observação',exact:true})).toHaveValue('Edição confirmada com consulta interrompida');
+    }
+    expect(mutacoes).toBe(1);
+    await testInfo.attach('alteracao-persistida',{body:JSON.stringify({pedidoId:pedido.id,acao,metodo,status:persistido.status,registros:registros.length,mutacoes,valores:acao==='plano'?{planoFinanceiro:analise.planoFinanceiro}:{observacao:analise.observacao,materiais:analise.materiais.map(({nome,quantidade})=>({nome,quantidade}))}}),contentType:'application/json'});
+  });
+}

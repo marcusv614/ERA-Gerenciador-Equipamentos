@@ -1,5 +1,87 @@
 # Relatório de execução
 
+Fechamento técnico do piloto preparado; **início BLOQUEADO**. Quatro critérios
+aprovados (integridade dos fontes, evidência da interface preservada por hash,
+validações locais e dependências) e quatro bloqueados pelo Docker indisponível
+(integração completa, restauração, imagens e E2E atualizados). Foram reexecutados
+**786 Java e 189 Node**, lint/build e scanners de dependências, todos aprovados;
+npm sem vulnerabilidades e 102 bibliotecas OSV sem alertas. Os 278 testes locais
+de navegador permanecem como evidência anterior no mesmo código, sem nova execução.
+Não houve novo defeito de aplicação confirmado. Critérios, roteiro de operação,
+contingência e condições pendentes em [fechamento do piloto](FECHAMENTO_PILOTO.md).
+A aprovação anterior com ressalvas não autoriza o início operacional.
+As rodadas abaixo são históricas.
+
+Rodada de sincronização financeira: QA-BUG-010, severidade MÉDIA, corrigido e
+validado. Plano e edição confirmados conservam o resultado quando só a consulta
+posterior falha, sem orientar novo envio. **278 navegador local, 189 Node,
+38 E2E reais e oito QA-API aprovados**; lint/build e scripts HTTP aprovados.
+Foram acrescentadas 14 execuções locais e quatro E2E. Linhas Istanbul:
+**68,11% global**, **67,34% JSX**. Permanecem 102 fontes; apenas
+o hook mudou nesta rodada. Inventário acumulado: dez defeitos confirmados,
+corrigidos nas respectivas rodadas. Detalhes, evidências e limites em
+[sincronização financeira](SINCRONIZACAO_FINANCEIRA.md). Parecer:
+**APROVADA COM RESSALVAS**. As rodadas abaixo são históricas.
+
+Rodada de RH/Financeiro: QA-BUG-009, severidade MÉDIA, corrigido e validado.
+POST confirmado com falha do GET deixa de ser apresentado como decisão recusada.
+**264 navegador local, 189 Node, 34 E2E reais e oito QA-API aprovados**; lint/build
+aprovados e scripts HTTP de cancelamento, operações e segurança aprovados.
+Foram acrescentadas 30 execuções locais e quatro E2E. Linhas Istanbul:
+**65,95% global**, **65,08% JSX**. O denominador
+continua com 102 fontes, mas há código novo no hook. Inventário: nove defeitos
+confirmados, corrigidos e validados. Detalhes, reprodução e limites em
+[RH/Financeiro](RH_FINANCEIRO.md). O parecer permanece **APROVADA COM RESSALVAS**.
+As rodadas abaixo são históricas; Java unitário e scanners não foram repetidos.
+
+Rodada de compra recebida e atendimento parcial: **234 navegador e 189 Node
+aprovados**, lint/build aprovados; 22 execuções novas. A suíte HTTP de atendimento
+parcial passou novamente em API/PostgreSQL reais descartáveis, com reservas,
+rollback e sequência 6+1+3. Outras stacks e E2E não foram repetidos. Sem alteração
+de produção nem novo defeito confirmado. Linhas Istanbul: **60,72% global**
+e **60,07% JSX**, preservando os mesmos 102 fontes.
+Detalhes e limites em [compra e atendimento parcial](COMPRAS_ATENDIMENTO_PARCIAL.md).
+O parecer continua **APROVADA COM RESSALVAS**. As rodadas abaixo são históricas.
+
+Rodada de operação dos equipamentos e painéis com dados: **212 navegador e
+189 Node aprovados**, lint/build aprovados; 36 execuções novas de manutenção,
+calibração, Estoque e consulta RH/Financeiro. Não houve alteração de produção
+nem novo defeito confirmado. Linhas Istanbul: **57,41% global**
+e **56,33% JSX**, com os mesmos 102 fontes e denominadores.
+Detalhes e ressalvas atuais em [operação dos equipamentos](OPERACAO_EQUIPAMENTOS.md).
+Backend/integração e scanners não foram repetidos. O parecer continua
+**APROVADA COM RESSALVAS**. As rodadas abaixo são históricas.
+
+Rodada dos formulários reais: **176 navegador e 189 Node aprovados**, lint/build
+aprovados. Foram corrigidos QA-BUG-006 (envio duplicado, MÉDIA), QA-BUG-007
+(validação nativa/Enter, BAIXA) e QA-BUG-008 (nomes acessíveis dos grupos, BAIXA).
+São 46 execuções novas. Linhas Istanbul: **50,14% global**,
+**49,39% JSX**; o hook mantém **100% das linhas** e chega a
+**89,65% dos ramos**. Os 102 fontes continuam no denominador;
+os componentes receberam código novo. Backend/integração não foram repetidos.
+Detalhes, evidências e ressalvas em [formulários reais](FORMULARIOS_REAIS.md).
+O parecer permanece **APROVADA COM RESSALVAS**. As rodadas abaixo são históricas.
+
+Rodada mais recente: `CONTROLE_ATIVOS.md`, com ampliação de `useControleAtivos`
+e 56 execuções novas de navegador. Os resultados da primeira medição da interface
+e das rodadas de backend permanecem abaixo, com seus escopos próprios.
+
+Rodada mais recente: `COBERTURA_INTERFACE.md`, com medição Istanbul dos fontes
+JS/JSX e cenários adicionais dos hooks, notificações e painéis. API/Java e E2E
+integrados não foram repetidos nessa rodada de interface.
+
+Rodada mais recente de 27/10: `NOTIFICACOES_PERSISTENCIA.md`, com QA-BUG-005,
+786 testes Java e oito casos próprios de notificações no PostgreSQL real.
+As avaliações anteriores abaixo foram preservadas.
+
+Retomadas em 27/10/2026: a rodada posterior de proteção do último administrador
+está em `CONCORRENCIA_ADMINISTRADORES.md`, com 785 testes Java e suíte HTTP
+concorrente. A primeira retomada está em `CONTINUACAO_RESSALVAS.md` e o snapshot próprio
+`evidencias/continuacao-2026-10-27.json`. Os resultados abaixo documentam a rodada
+de 26/10. Node, navegador local simulado e scanners não foram repetidos nas
+retomadas. A integração PostgreSQL/E2E foi retomada na rodada de concorrência;
+seus resultados estão no documento específico.
+
 Data: 26/10/2026, America/Manaus. Base inspecionada:
 `8236c47fad30bb58dd7c2dc42d144a5430ceab2c`. O Git estava limpo no início.
 Nenhum commit ou push foi realizado. A autorização posterior para corrigir bugs

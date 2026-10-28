@@ -78,12 +78,21 @@ if (existsSync(path.join(raiz,browser))) {
   };
   visitar(r);
 }
+const coberturaUi='test-results/quality-assurance/browser-local/coverage/resumo.json';
+if (existsSync(path.join(raiz,coberturaUi))) {
+  const cobertura=JSON.parse(ler(coberturaUi)),stats=metricas.browser?.stats;
+  metricas.frontendIstanbul={...cobertura,compativelComResultados:Boolean(stats&&cobertura.casosEsperados===stats.expected+stats.unexpected+stats.skipped+stats.flaky)};
+}
 const integracoes = readdirSync(path.join(raiz,'test-results')).filter(f=>/^integracao-\d+$/.test(f)).sort((a,b)=>Number(b.slice(11))-Number(a.slice(11)));
 if (integracoes.length) {
   const diretorio=`test-results/${integracoes[0]}`;
   const resumo=`${diretorio}/resumo.json`, navegador=`${diretorio}/navegador/resultados.json`;
   metricas.integracao={diretorio,suites:existsSync(path.join(raiz,resumo))?JSON.parse(ler(resumo)):null};
   if (existsSync(path.join(raiz,navegador))) metricas.integracao.navegador=JSON.parse(ler(navegador)).stats;
+  const administradores=`${diretorio}/administradores/administradores-concorrentes.json`;
+  if (existsSync(path.join(raiz,administradores))) metricas.integracao.administradores=JSON.parse(ler(administradores));
+  const notificacoes=`${diretorio}/notificacoes/notificacoes-persistencia.json`;
+  if (existsSync(path.join(raiz,notificacoes))) metricas.integracao.notificacoes=JSON.parse(ler(notificacoes));
 }
 const qualidadeApi='test-results/quality-assurance/qualidade-api.json';
 if (existsSync(path.join(raiz,qualidadeApi))) metricas.qualidadeApi=JSON.parse(ler(qualidadeApi));
@@ -96,12 +105,13 @@ for (const arquivo of controllers) {
 metricas.inventario = { controllers: controllers.length, endpoints: endpoints.length, servicos: arquivos('Backend/API/src/main/java/br/com/era/api/service').filter(f=>f.endsWith('.java')).length, migrations: arquivos('Backend/API/src/main/resources/db/migration').length, arquivosTesteJava: arquivos('Backend/API/src/test/java').filter(f=>f.endsWith('.java')).length, arquivosTesteNode: arquivos('Frontend/UI/tests').filter(f=>f.endsWith('.test.js')).length, arquivosJsProducao: arquivos('Frontend/UI/src').filter(f=>f.endsWith('.js')).length, componentesJsx: arquivos('Frontend/UI/src').filter(f=>f.endsWith('.jsx')).length };
 if (metricas.java && metricas.node && metricas.browser && metricas.integracao?.navegador && metricas.qualidadeApi) {
   const b=metricas.browser.stats,e=metricas.integracao.navegador,a=metricas.qualidadeApi.resultados;
+  const complementares=[...(metricas.integracao.administradores?.resultados||[]),...(metricas.integracao.notificacoes?.resultados||[])];
   const totalBrowser=s=>s.expected+s.unexpected+s.skipped+s.flaky;
-  const testes=metricas.java.testes+metricas.node.tests+totalBrowser(b)+totalBrowser(e)+a.length;
-  const aprovados=metricas.java.aprovados+metricas.node.pass+b.expected+e.expected+a.filter(t=>t.resultado==='APROVADO').length;
-  metricas.resumoFinal={casosIndividuais:testes,aprovados,reprovados:metricas.java.falhas+metricas.java.erros+metricas.node.fail+b.unexpected+e.unexpected+a.filter(t=>t.resultado==='REPROVADO').length,
+  const testes=metricas.java.testes+metricas.node.tests+totalBrowser(b)+totalBrowser(e)+a.length+complementares.length;
+  const aprovados=metricas.java.aprovados+metricas.node.pass+b.expected+e.expected+a.filter(t=>t.resultado==='APROVADO').length+complementares.filter(t=>t.resultado==='APROVADO').length;
+  metricas.resumoFinal={casosIndividuais:testes,aprovados,reprovados:metricas.java.falhas+metricas.java.erros+metricas.node.fail+b.unexpected+e.unexpected+a.filter(t=>t.resultado==='REPROVADO').length+complementares.filter(t=>t.resultado==='REPROVADO').length,
     ignorados:metricas.java.ignorados+metricas.node.skipped+b.skipped+e.skipped,taxaAprovacao:pct(aprovados,testes),
-    novosCasos:metricas.java.novosQa+casosNode.filter(t=>t.teste.startsWith('QA ')).length+totalBrowser(b)+a.length,
+    novosCasos:metricas.java.novosQa+casosNode.filter(t=>t.teste.startsWith('QA ')).length+totalBrowser(b)+a.length+complementares.length,
     familiasFuncionais:(ler('docs/quality-assurance/MATRIZ_DE_TESTES.md').match(/^\| F\d\d \|/gm)||[]).length};
 }
 writeFileSync(path.join(pasta,'endpoints.json'),JSON.stringify(endpoints,null,2));

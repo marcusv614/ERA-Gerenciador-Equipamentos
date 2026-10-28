@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './test.mjs';
 
 // Componentes reais; API inteiramente simulada. Não equivale a E2E do backend.
 test.beforeEach(async ({ context, page }) => {

@@ -11,12 +11,16 @@ public class NotificacaoMovimentacao {
     @Column(nullable=false,length=50) private String tipo="ENVIO";
     @Column(columnDefinition="text") private String mensagem;
     public String getTipo(){return tipo;} public String getMensagem(){return mensagem;}
-    public void renovar(String mensagem){this.mensagem=mensagem;criadaEm=OffsetDateTime.now();lidaEm=null;}
-    public NotificacaoMovimentacao(Usuario usuario,Solicitacao pedido,String tipo,String mensagem){
-        this.usuario=usuario;solicitacao=pedido;perfil=usuario.getPerfil();this.tipo=tipo;this.mensagem=mensagem;
+    public void renovar(Usuario usuario,Solicitacao pedido,String mensagem){
+        perfil=usuario.getPerfil();
         obra=pedido.getObraDestino()!=null?pedido.getObraDestino():pedido.getObraOrigem();
-        obraNome=obra.getNome();destinatario=perfil.ehProfissionalDeCampo();criadaEm=OffsetDateTime.now();
+        obraNome=obra.getNome();destinatario=perfil.ehProfissionalDeCampo();
         materiais=pedido.getMateriais().stream().map(m->new Item(m.getNome(),m.getQuantidade())).toList();
+        this.mensagem=mensagem;criadaEm=OffsetDateTime.now();lidaEm=null;
+    }
+    public NotificacaoMovimentacao(Usuario usuario,Solicitacao pedido,String tipo,String mensagem){
+        this.usuario=usuario;solicitacao=pedido;this.tipo=tipo;
+        renovar(usuario,pedido,mensagem);
     }
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="usuario_id") private Usuario usuario;

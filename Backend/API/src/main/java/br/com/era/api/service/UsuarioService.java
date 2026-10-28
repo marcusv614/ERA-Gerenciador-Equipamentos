@@ -64,6 +64,7 @@ public class UsuarioService implements UserDetailsService {
         Usuario salvo=repository.save(usuario);auditar(AuditoriaSegurancaService.Tipo.USUARIO_CRIADO,salvo);return resposta(salvo);
     }
     @Transactional public UsuarioDto.Resposta atualizar(Long id,UsuarioDto.Atualizacao dados){
+        repository.bloquearAtivosDoPerfil(PerfilUsuario.ADMIN);
         Usuario usuario=buscar(id);String login=normalizar(dados.login());
         if(repository.existsByLoginIgnoreCaseAndIdNot(login,id))throw new RegraNegocioException("Já existe um usuário com esse login.");
         if(dados.perfil().ehProfissionalDeCampo()&&dados.funcionarioId()==null)throw new RegraNegocioException("O usuário técnico ou TST precisa estar vinculado a um funcionário.");
@@ -76,8 +77,8 @@ public class UsuarioService implements UserDetailsService {
         if(dados.senhaTemporaria()!=null)auditar(AuditoriaSegurancaService.Tipo.SENHA_REDEFINIDA,usuario);
         return resposta(usuario);
     }
-    @Transactional public UsuarioDto.Resposta definirStatus(Long id,boolean ativo,String solicitante){Usuario u=buscar(id);if(!ativo&&u.getLogin().equalsIgnoreCase(solicitante))throw new RegraNegocioException("O administrador não pode desativar a própria conta.");if(!ativo&&u.getPerfil()==PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ser desativado.");u.setAtivo(ativo);if(ativo){u.setTentativasFalhas(0);u.setBloqueadoAte(null);}auditar(ativo?AuditoriaSegurancaService.Tipo.USUARIO_ATIVADO:AuditoriaSegurancaService.Tipo.USUARIO_DESATIVADO,u);return resposta(u);}
-    @Transactional public UsuarioDto.Resposta redefinirSenha(Long id,String senha){Usuario u=buscar(id);validarSenha(u.getLogin(),senha);u.setSenhaHash(encoder.encode(senha));u.setDeveAlterarSenha(true);u.setTentativasFalhas(0);u.setBloqueadoAte(null);auditar(AuditoriaSegurancaService.Tipo.SENHA_REDEFINIDA,u);return resposta(u);}
+    @Transactional public UsuarioDto.Resposta definirStatus(Long id,boolean ativo,String solicitante){repository.bloquearAtivosDoPerfil(PerfilUsuario.ADMIN);Usuario u=buscar(id);if(!ativo&&u.getLogin().equalsIgnoreCase(solicitante))throw new RegraNegocioException("O administrador não pode desativar a própria conta.");if(!ativo&&u.getPerfil()==PerfilUsuario.ADMIN&&repository.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)<=1)throw new RegraNegocioException("O último administrador ativo não pode ser desativado.");u.setAtivo(ativo);if(ativo){u.setTentativasFalhas(0);u.setBloqueadoAte(null);}auditar(ativo?AuditoriaSegurancaService.Tipo.USUARIO_ATIVADO:AuditoriaSegurancaService.Tipo.USUARIO_DESATIVADO,u);return resposta(u);}
+    @Transactional public UsuarioDto.Resposta redefinirSenha(Long id,String senha){repository.bloquearAtivosDoPerfil(PerfilUsuario.ADMIN);Usuario u=buscar(id);validarSenha(u.getLogin(),senha);u.setSenhaHash(encoder.encode(senha));u.setDeveAlterarSenha(true);u.setTentativasFalhas(0);u.setBloqueadoAte(null);auditar(AuditoriaSegurancaService.Tipo.SENHA_REDEFINIDA,u);return resposta(u);}
     @Transactional public void registrarFalha(String login){repository.buscarLoginParaAtualizacao(normalizar(login)).ifPresentOrElse(u->{
         OffsetDateTime agora=OffsetDateTime.now();
         if(u.getBloqueadoAte()!=null&&u.getBloqueadoAte().isAfter(agora)){auditoria.registrar(AuditoriaSegurancaService.Tipo.LOGIN_BLOQUEADO,null,u.getId());return;}

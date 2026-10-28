@@ -1,0 +1,3927 @@
+{
+  "coletadoEm": "2026-10-27T18:12:19.905218+00:00",
+  "baseGit": "629adecc44caf66d122aaacf1a691a07109f255f",
+  "escopo": "Interface com API simulada, Chromium desktop/mobile; integração HTTP real em API/PostgreSQL descartáveis reexecutada separadamente. Sem alteração de produção.",
+  "browser": {
+    "stats": {
+      "startTime": "2026-10-27T18:02:07.385Z",
+      "duration": 606504.253,
+      "expected": 234,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "falhas": [],
+    "medicoes": [
+      {
+        "projeto": "qa-desktop",
+        "domContentLoadedMs": 2539.400000002235,
+        "ambiente": "Vite local + API simulada, amostra única"
+      },
+      {
+        "projeto": "qa-mobile",
+        "domContentLoadedMs": 1538,
+        "ambiente": "Vite local + API simulada, amostra única"
+      }
+    ]
+  },
+  "node": {
+    "tests": 189,
+    "pass": 189,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "taxaAprovacao": 100
+  },
+  "novosCasos": [
+    {
+      "nome": "QA-COMPRA-01: ferramenta manual dispensa série e entrada valida nota e quantidade",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-01: equipamento exige série e entrada valida nota e quantidade",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-02: envio único bloqueia fechamento e recusa mantém preenchimento para retry",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-03: receber seis de dez conserva quatro pendentes após recarregar",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-01: compras sem entrada não oferecem saldo para envio",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-02: motivo e quantidade positiva são obrigatórios; limite é a entrada recebida",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-03: recusa preserva ajuste; sucesso divide seis e quatro sem apagar outro pedido",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-04: cancelar ajuste não envia e reabertura restaura a seleção inicial",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-05: origens autorizadas e recebidas são separadas; material sem entrada fica pendente",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-EST-FLUXO-01: envio recusado mantém pedido separado; retry move para enviados uma vez",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-EST-FLUXO-02: falha após trânsito preserva avanço e retry de recebimento não repete saída",
+      "projeto": "qa-desktop",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-01: ferramenta manual dispensa série e entrada valida nota e quantidade",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-01: equipamento exige série e entrada valida nota e quantidade",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-02: envio único bloqueia fechamento e recusa mantém preenchimento para retry",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-COMPRA-03: receber seis de dez conserva quatro pendentes após recarregar",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-01: compras sem entrada não oferecem saldo para envio",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-02: motivo e quantidade positiva são obrigatórios; limite é a entrada recebida",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-03: recusa preserva ajuste; sucesso divide seis e quatro sem apagar outro pedido",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-04: cancelar ajuste não envia e reabertura restaura a seleção inicial",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-PARCIAL-05: origens autorizadas e recebidas são separadas; material sem entrada fica pendente",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-EST-FLUXO-01: envio recusado mantém pedido separado; retry move para enviados uma vez",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    },
+    {
+      "nome": "QA-EST-FLUXO-02: falha após trânsito preserva avanço e retry de recebimento não repete saída",
+      "projeto": "qa-mobile",
+      "resultado": "expected"
+    }
+  ],
+  "enviosPendentes": [
+    {
+      "projeto": "qa-desktop",
+      "fluxo": "compra",
+      "requisicoes": 1
+    },
+    {
+      "projeto": "qa-desktop",
+      "fluxo": "parcial",
+      "requisicoes": 1
+    },
+    {
+      "projeto": "qa-mobile",
+      "fluxo": "compra",
+      "requisicoes": 1
+    },
+    {
+      "projeto": "qa-mobile",
+      "fluxo": "parcial",
+      "requisicoes": 1
+    }
+  ],
+  "coberturaIstanbul": {
+    "coletadoEm": "2026-10-27T18:12:14.184Z",
+    "escopo": "Todos os .js/.jsx em src; instrumentação antes do React/JSX no Vite exclusivo de testes. Fontes não carregadas permanecem com zero. API simulada; Chromium desktop/mobile.",
+    "execucaoCompleta": true,
+    "casosEsperados": 234,
+    "casosColetados": 234,
+    "erros": [],
+    "total": {
+      "arquivos": 102,
+      "lines": {
+        "total": 2834,
+        "covered": 1721,
+        "skipped": 0,
+        "pct": 60.72
+      },
+      "statements": {
+        "total": 4435,
+        "covered": 2375,
+        "skipped": 0,
+        "pct": 53.55
+      },
+      "functions": {
+        "total": 1760,
+        "covered": 797,
+        "skipped": 0,
+        "pct": 45.28
+      },
+      "branches": {
+        "total": 4786,
+        "covered": 1954,
+        "skipped": 0,
+        "pct": 40.82
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "jsx": {
+      "arquivos": 58,
+      "lines": {
+        "total": 1816,
+        "covered": 1091,
+        "skipped": 0,
+        "pct": 60.07
+      },
+      "statements": {
+        "total": 2933,
+        "covered": 1546,
+        "skipped": 0,
+        "pct": 52.71
+      },
+      "functions": {
+        "total": 1158,
+        "covered": 509,
+        "skipped": 0,
+        "pct": 43.95
+      },
+      "branches": {
+        "total": 3399,
+        "covered": 1507,
+        "skipped": 0,
+        "pct": 44.33
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "hooks": {
+      "arquivos": 4,
+      "lines": {
+        "total": 247,
+        "covered": 246,
+        "skipped": 0,
+        "pct": 99.59
+      },
+      "statements": {
+        "total": 360,
+        "covered": 355,
+        "skipped": 0,
+        "pct": 98.61
+      },
+      "functions": {
+        "total": 103,
+        "covered": 103,
+        "skipped": 0,
+        "pct": 100
+      },
+      "branches": {
+        "total": 181,
+        "covered": 162,
+        "skipped": 0,
+        "pct": 89.5
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "arquivosNaoCarregados": [],
+    "arquivos": [
+      {
+        "arquivo": "src/App.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        },
+        "statements": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "branches": {
+          "total": 32,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 90.62
+        }
+      },
+      {
+        "arquivo": "src/components/admin/DetalhesUsuarioAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 30,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/EventosSegurancaAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 4.16
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 48,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.08
+        },
+        "branches": {
+          "total": 42,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/ListasAdministracao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 16,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/PainelAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 79,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 59.49
+        },
+        "functions": {
+          "total": 66,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 19.69
+        },
+        "statements": {
+          "total": 188,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 37.23
+        },
+        "branches": {
+          "total": 150,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 39.33
+        }
+      },
+      {
+        "arquivo": "src/components/auditorias-tecnico/AuditoriasTecnicoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 72,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 2.77
+        },
+        "functions": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 143,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 1.39
+        },
+        "branches": {
+          "total": 148,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/auditorias-tecnico/TelaAuditorias.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 41,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 79,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 56,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/CalibracaoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 46,
+          "covered": 45,
+          "skipped": 0,
+          "pct": 97.82
+        },
+        "functions": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "statements": {
+          "total": 75,
+          "covered": 69,
+          "skipped": 0,
+          "pct": 92
+        },
+        "branches": {
+          "total": 110,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 85.45
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/FilaCalibracoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 14,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 78.57
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/IndicadorCalibracao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/deposito-card/DepositoCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 10,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 20
+        },
+        "functions": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 11,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 18.18
+        },
+        "branches": {
+          "total": 19,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/editar-funcionario-modal/EditarFuncionarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 34,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 91.17
+        },
+        "functions": {
+          "total": 22,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 81.81
+        },
+        "statements": {
+          "total": 56,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 65,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 78.46
+        }
+      },
+      {
+        "arquivo": "src/components/editar-solicitacao-modal/EditarSolicitacaoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 44,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.27
+        },
+        "functions": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 77,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.29
+        },
+        "branches": {
+          "total": 136,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/AtendimentoParcialModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 15,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 38,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 97.36
+        },
+        "branches": {
+          "total": 21,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 85.71
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/FiltrosPedidosEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 5,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 40
+        },
+        "functions": {
+          "total": 6,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 6,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/PainelEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 80,
+          "covered": 79,
+          "skipped": 0,
+          "pct": 98.75
+        },
+        "functions": {
+          "total": 74,
+          "covered": 66,
+          "skipped": 0,
+          "pct": 89.18
+        },
+        "statements": {
+          "total": 205,
+          "covered": 186,
+          "skipped": 0,
+          "pct": 90.73
+        },
+        "branches": {
+          "total": 178,
+          "covered": 149,
+          "skipped": 0,
+          "pct": 83.7
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/PedidoOperacional.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "functions": {
+          "total": 20,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 28,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "branches": {
+          "total": 57,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 85.96
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/RegistroCompraEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 89.65
+        },
+        "branches": {
+          "total": 25,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 92
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/SepararEquipamentosModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 65,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.53
+        },
+        "functions": {
+          "total": 48,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 98,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.02
+        },
+        "branches": {
+          "total": 93,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/useOperacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/field/Field.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 7,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 85.71
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaAlterarSenha.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 26,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 61.53
+        },
+        "branches": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaEmailRecuperacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 35,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 51.42
+        },
+        "functions": {
+          "total": 9,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "statements": {
+          "total": 53,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 35.84
+        },
+        "branches": {
+          "total": 34,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaLogin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 25,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaRecuperarSenha.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 34,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "branches": {
+          "total": 25,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 96
+        }
+      },
+      {
+        "arquivo": "src/components/manutencao-equip-modal/ManutencaoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 15,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "statements": {
+          "total": 46,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 95.65
+        },
+        "branches": {
+          "total": 60,
+          "covered": 48,
+          "skipped": 0,
+          "pct": 80
+        }
+      },
+      {
+        "arquivo": "src/components/modal-shell/ModalShell.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/mover-equip-modal/MoverEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 32,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 93.75
+        },
+        "functions": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        },
+        "statements": {
+          "total": 37,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 91.89
+        },
+        "branches": {
+          "total": 61,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 77.04
+        }
+      },
+      {
+        "arquivo": "src/components/notificacoes/Notificacoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "statements": {
+          "total": 30,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "branches": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        }
+      },
+      {
+        "arquivo": "src/components/notificacoes/SinoNotificacoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 50,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 26,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 96.15
+        },
+        "statements": {
+          "total": 90,
+          "covered": 88,
+          "skipped": 0,
+          "pct": 97.77
+        },
+        "branches": {
+          "total": 81,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 86.41
+        }
+      },
+      {
+        "arquivo": "src/components/nova-obra-modal/NovaObraModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 89.65
+        },
+        "functions": {
+          "total": 17,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 88.23
+        },
+        "statements": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "branches": {
+          "total": 36,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 86.11
+        }
+      },
+      {
+        "arquivo": "src/components/novo-equip-modal/NovoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 140,
+          "covered": 126,
+          "skipped": 0,
+          "pct": 90
+        },
+        "functions": {
+          "total": 66,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 80.3
+        },
+        "statements": {
+          "total": 166,
+          "covered": 147,
+          "skipped": 0,
+          "pct": 88.55
+        },
+        "branches": {
+          "total": 243,
+          "covered": 193,
+          "skipped": 0,
+          "pct": 79.42
+        }
+      },
+      {
+        "arquivo": "src/components/novo-funcionario-modal/NovoFuncionarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 27,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 92.59
+        },
+        "functions": {
+          "total": 11,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 90.9
+        },
+        "statements": {
+          "total": 34,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 88.23
+        },
+        "branches": {
+          "total": 26,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 80.76
+        }
+      },
+      {
+        "arquivo": "src/components/novo-usuario-modal/NovoUsuarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/obra-status-badge/ObraStatusBadge.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/painel/AndamentoSolicitacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/BarraSuperior.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 13,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 84.61
+        },
+        "functions": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 17,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 88.23
+        },
+        "branches": {
+          "total": 44,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 72.72
+        }
+      },
+      {
+        "arquivo": "src/components/painel/CancelamentoPedido.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 20,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 35
+        },
+        "functions": {
+          "total": 9,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "statements": {
+          "total": 38,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 28.94
+        },
+        "branches": {
+          "total": 49,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 4.08
+        }
+      },
+      {
+        "arquivo": "src/components/painel/DetalhesPedidoFinanceiro.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 13,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 53.84
+        },
+        "statements": {
+          "total": 17,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 64.7
+        },
+        "branches": {
+          "total": 47,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 74.46
+        }
+      },
+      {
+        "arquivo": "src/components/painel/DetalhesSolicitacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 39,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.56
+        },
+        "functions": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 53,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.88
+        },
+        "branches": {
+          "total": 135,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ExportarAuditoria.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 14,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 42.85
+        },
+        "branches": {
+          "total": 15,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 60
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ExportarRelatorioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 23.07
+        },
+        "functions": {
+          "total": 14,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 21.42
+        },
+        "statements": {
+          "total": 32,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 25
+        },
+        "branches": {
+          "total": 26,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 3.84
+        }
+      },
+      {
+        "arquivo": "src/components/painel/JustificarRejeicaoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/KanbanRolavel.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 64,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 54.68
+        },
+        "functions": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        },
+        "statements": {
+          "total": 74,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 52.7
+        },
+        "branches": {
+          "total": 28,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 21.42
+        }
+      },
+      {
+        "arquivo": "src/components/painel/MenuLateral.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 16,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 68.75
+        },
+        "functions": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        },
+        "statements": {
+          "total": 25,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 56
+        },
+        "branches": {
+          "total": 52,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 80.76
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ModalHistoricoEquipamento.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "functions": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 12,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "branches": {
+          "total": 62,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.61
+        }
+      },
+      {
+        "arquivo": "src/components/painel/NavegacaoInferior.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 13,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 84.61
+        }
+      },
+      {
+        "arquivo": "src/components/painel/PainelControleAtivos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 122,
+          "covered": 98,
+          "skipped": 0,
+          "pct": 80.32
+        },
+        "functions": {
+          "total": 68,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 47.05
+        },
+        "statements": {
+          "total": 165,
+          "covered": 117,
+          "skipped": 0,
+          "pct": 70.9
+        },
+        "branches": {
+          "total": 154,
+          "covered": 115,
+          "skipped": 0,
+          "pct": 74.67
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ResumoEquipamentos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaAtividades.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 90,
+          "covered": 65,
+          "skipped": 0,
+          "pct": 72.22
+        },
+        "functions": {
+          "total": 61,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 59.01
+        },
+        "statements": {
+          "total": 156,
+          "covered": 90,
+          "skipped": 0,
+          "pct": 57.69
+        },
+        "branches": {
+          "total": 162,
+          "covered": 77,
+          "skipped": 0,
+          "pct": 47.53
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaEquipamentos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 45,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 71.11
+        },
+        "functions": {
+          "total": 31,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 64.51
+        },
+        "statements": {
+          "total": 60,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 73.33
+        },
+        "branches": {
+          "total": 95,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 57.89
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaFuncionarios.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "statements": {
+          "total": 9,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 88.88
+        },
+        "branches": {
+          "total": 12,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 91.66
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaObras.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 41,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.43
+        },
+        "functions": {
+          "total": 31,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 61,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.63
+        },
+        "branches": {
+          "total": 104,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/stat-card/StatCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/status-badge/StatusBadge.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/tecnico-card/TecnicoCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "functions": {
+          "total": 11,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 36.36
+        },
+        "statements": {
+          "total": 19,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 52.63
+        },
+        "branches": {
+          "total": 54,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 57.4
+        }
+      },
+      {
+        "arquivo": "src/components/tecnico/PainelTecnico.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 235,
+          "covered": 96,
+          "skipped": 0,
+          "pct": 40.85
+        },
+        "functions": {
+          "total": 118,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 15.25
+        },
+        "statements": {
+          "total": 346,
+          "covered": 109,
+          "skipped": 0,
+          "pct": 31.5
+        },
+        "branches": {
+          "total": 388,
+          "covered": 82,
+          "skipped": 0,
+          "pct": 21.13
+        }
+      },
+      {
+        "arquivo": "src/config/rotasApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 51.72
+        },
+        "functions": {
+          "total": 28,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 29,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 51.72
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/contexto/ContextoAutenticacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 14,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "statements": {
+          "total": 39,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 79.48
+        },
+        "branches": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      {
+        "arquivo": "src/contexto/ContextoEscopoAuditoria.js",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/data/constantesDominio.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/hooks/useControleAtivos.js",
+        "carregado": true,
+        "lines": {
+          "total": 179,
+          "covered": 179,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 83,
+          "covered": 83,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 270,
+          "covered": 270,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 116,
+          "covered": 104,
+          "skipped": 0,
+          "pct": 89.65
+        }
+      },
+      {
+        "arquivo": "src/hooks/useDialogo.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 96.96
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 44,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 88.63
+        },
+        "branches": {
+          "total": 32,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 78.12
+        }
+      },
+      {
+        "arquivo": "src/hooks/useFiltrosPainel.js",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 30,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/main.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/api/clienteHttp.js",
+        "carregado": true,
+        "lines": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      {
+        "arquivo": "src/services/api/financeiroApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/api/notificacoesApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoAtivosApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 70,
+          "covered": 56,
+          "skipped": 0,
+          "pct": 80
+        },
+        "functions": {
+          "total": 58,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 72.41
+        },
+        "statements": {
+          "total": 77,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 79.22
+        },
+        "branches": {
+          "total": 24,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 58.33
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoAutenticacaoApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 10,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 18,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoRecuperacaoApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/controlesExportacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 36,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.77
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 58,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.72
+        },
+        "branches": {
+          "total": 57,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/documentosEquipamentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 52,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 5.76
+        },
+        "functions": {
+          "total": 23,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 60,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/modelosAuditoriaPedidos.js",
+        "carregado": true,
+        "lines": {
+          "total": 13,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 46.15
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 20.68
+        },
+        "branches": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/modelosDocumentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 96,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 19.79
+        },
+        "functions": {
+          "total": 99,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.01
+        },
+        "statements": {
+          "total": 182,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 10.43
+        },
+        "branches": {
+          "total": 307,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/notificacoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/planilhaAuditorias.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "functions": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 20,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/planilhasRelatorios.js",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 11,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/relatoriosPedidos.js",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "functions": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 16,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 6.25
+        },
+        "branches": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/acompanhamentoSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 38,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 21.05
+        },
+        "functions": {
+          "total": 16,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 31.25
+        },
+        "statements": {
+          "total": 66,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 19.69
+        },
+        "branches": {
+          "total": 86,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 16.27
+        }
+      },
+      {
+        "arquivo": "src/utils/administracaoUsuarios.js",
+        "carregado": true,
+        "lines": {
+          "total": 21,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 61.9
+        },
+        "functions": {
+          "total": 21,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 34,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 38.23
+        },
+        "branches": {
+          "total": 50,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 6
+        }
+      },
+      {
+        "arquivo": "src/utils/atendimentoParcial.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 86.2
+        },
+        "branches": {
+          "total": 23,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 60.86
+        }
+      },
+      {
+        "arquivo": "src/utils/auditoriaTecnico.js",
+        "carregado": true,
+        "lines": {
+          "total": 27,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "functions": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 45,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 6.66
+        },
+        "branches": {
+          "total": 64,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/calibracoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 17,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "functions": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "statements": {
+          "total": 23,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 95.65
+        },
+        "branches": {
+          "total": 35,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 71.42
+        }
+      },
+      {
+        "arquivo": "src/utils/classificacaoFuncionario.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        }
+      },
+      {
+        "arquivo": "src/utils/datas.js",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 71.42
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 15,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "branches": {
+          "total": 8,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 62.5
+        }
+      },
+      {
+        "arquivo": "src/utils/edicaoSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 13.63
+        },
+        "functions": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 31,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 9.67
+        },
+        "branches": {
+          "total": 28,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/errosApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 11,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 54.54
+        },
+        "functions": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "statements": {
+          "total": 14,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 57.14
+        },
+        "branches": {
+          "total": 22,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 22.72
+        }
+      },
+      {
+        "arquivo": "src/utils/filtrosEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "statements": {
+          "total": 34,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 67.64
+        },
+        "branches": {
+          "total": 44,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 43.18
+        }
+      },
+      {
+        "arquivo": "src/utils/historicoEquipamento.js",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/utils/identificacaoEquipamento.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 13,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 9,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 88.88
+        }
+      },
+      {
+        "arquivo": "src/utils/localizacaoEquipamentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "statements": {
+          "total": 22,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 95.45
+        },
+        "branches": {
+          "total": 26,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 57.69
+        }
+      },
+      {
+        "arquivo": "src/utils/novoPedido.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/operacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 93.93
+        },
+        "functions": {
+          "total": 21,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 95.23
+        },
+        "statements": {
+          "total": 58,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 87.93
+        },
+        "branches": {
+          "total": 81,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 72.83
+        }
+      },
+      {
+        "arquivo": "src/utils/pedidoMovimentacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 26,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 65.38
+        }
+      },
+      {
+        "arquivo": "src/utils/pedidosFinanceiros.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 72.72
+        },
+        "functions": {
+          "total": 14,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 64.28
+        },
+        "statements": {
+          "total": 41,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 58.53
+        },
+        "branches": {
+          "total": 42,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 33.33
+        }
+      },
+      {
+        "arquivo": "src/utils/pesquisaSolicitacoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 13,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 33,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 93.93
+        },
+        "branches": {
+          "total": 40,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 57.5
+        }
+      },
+      {
+        "arquivo": "src/utils/planoFinanceiro.js",
+        "carregado": true,
+        "lines": {
+          "total": 52,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 9.61
+        },
+        "functions": {
+          "total": 32,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 6.25
+        },
+        "statements": {
+          "total": 76,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 9.21
+        },
+        "branches": {
+          "total": 91,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 5.49
+        }
+      },
+      {
+        "arquivo": "src/utils/recuperacaoConta.js",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 11,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 81.81
+        }
+      },
+      {
+        "arquivo": "src/utils/rolagemKanban.js",
+        "carregado": true,
+        "lines": {
+          "total": 11,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 81.81
+        },
+        "functions": {
+          "total": 3,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 12,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 12,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 66.66
+        }
+      },
+      {
+        "arquivo": "src/utils/statusSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/utils/titulosNotificacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 10,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 40
+        }
+      }
+    ],
+    "compativelComResultados": true
+  },
+  "comparacaoGlobal": {
+    "total": {
+      "antes": {
+        "arquivos": 102,
+        "lines": {
+          "total": 2834,
+          "covered": 1627,
+          "skipped": 0,
+          "pct": 57.41
+        },
+        "statements": {
+          "total": 4435,
+          "covered": 2216,
+          "skipped": 0,
+          "pct": 49.96
+        },
+        "functions": {
+          "total": 1760,
+          "covered": 725,
+          "skipped": 0,
+          "pct": 41.19
+        },
+        "branches": {
+          "total": 4786,
+          "covered": 1803,
+          "skipped": 0,
+          "pct": 37.67
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": "Unknown"
+        }
+      },
+      "depois": {
+        "arquivos": 102,
+        "lines": {
+          "total": 2834,
+          "covered": 1721,
+          "skipped": 0,
+          "pct": 60.72
+        },
+        "statements": {
+          "total": 4435,
+          "covered": 2375,
+          "skipped": 0,
+          "pct": 53.55
+        },
+        "functions": {
+          "total": 1760,
+          "covered": 797,
+          "skipped": 0,
+          "pct": 45.28
+        },
+        "branches": {
+          "total": 4786,
+          "covered": 1954,
+          "skipped": 0,
+          "pct": 40.82
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": "Unknown"
+        }
+      }
+    },
+    "jsx": {
+      "antes": {
+        "arquivos": 58,
+        "lines": {
+          "total": 1816,
+          "covered": 1023,
+          "skipped": 0,
+          "pct": 56.33
+        },
+        "statements": {
+          "total": 2933,
+          "covered": 1426,
+          "skipped": 0,
+          "pct": 48.61
+        },
+        "functions": {
+          "total": 1158,
+          "covered": 455,
+          "skipped": 0,
+          "pct": 39.29
+        },
+        "branches": {
+          "total": 3399,
+          "covered": 1395,
+          "skipped": 0,
+          "pct": 41.04
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": "Unknown"
+        }
+      },
+      "depois": {
+        "arquivos": 58,
+        "lines": {
+          "total": 1816,
+          "covered": 1091,
+          "skipped": 0,
+          "pct": 60.07
+        },
+        "statements": {
+          "total": 2933,
+          "covered": 1546,
+          "skipped": 0,
+          "pct": 52.71
+        },
+        "functions": {
+          "total": 1158,
+          "covered": 509,
+          "skipped": 0,
+          "pct": 43.95
+        },
+        "branches": {
+          "total": 3399,
+          "covered": 1507,
+          "skipped": 0,
+          "pct": 44.33
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": "Unknown"
+        }
+      }
+    },
+    "hooks": {
+      "antes": {
+        "arquivos": 4,
+        "lines": {
+          "total": 247,
+          "covered": 246,
+          "skipped": 0,
+          "pct": 99.59
+        },
+        "statements": {
+          "total": 360,
+          "covered": 355,
+          "skipped": 0,
+          "pct": 98.61
+        },
+        "functions": {
+          "total": 103,
+          "covered": 103,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 181,
+          "covered": 162,
+          "skipped": 0,
+          "pct": 89.5
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": "Unknown"
+        }
+      },
+      "depois": {
+        "arquivos": 4,
+        "lines": {
+          "total": 247,
+          "covered": 246,
+          "skipped": 0,
+          "pct": 99.59
+        },
+        "statements": {
+          "total": 360,
+          "covered": 355,
+          "skipped": 0,
+          "pct": 98.61
+        },
+        "functions": {
+          "total": 103,
+          "covered": 103,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 181,
+          "covered": 162,
+          "skipped": 0,
+          "pct": 89.5
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": "Unknown"
+        }
+      }
+    }
+  },
+  "comparacaoArquivos": {
+    "src/components/estoque/RegistroCompraEstoque.jsx": {
+      "antes": {
+        "arquivo": "src/components/estoque/RegistroCompraEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      "depois": {
+        "arquivo": "src/components/estoque/RegistroCompraEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 89.65
+        },
+        "branches": {
+          "total": 25,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 92
+        }
+      }
+    },
+    "src/components/estoque/AtendimentoParcialModal.jsx": {
+      "antes": {
+        "arquivo": "src/components/estoque/AtendimentoParcialModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 21,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      "depois": {
+        "arquivo": "src/components/estoque/AtendimentoParcialModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 15,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 38,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 97.36
+        },
+        "branches": {
+          "total": 21,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 85.71
+        }
+      }
+    },
+    "src/components/estoque/PedidoOperacional.jsx": {
+      "antes": {
+        "arquivo": "src/components/estoque/PedidoOperacional.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 26.66
+        },
+        "functions": {
+          "total": 20,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 20
+        },
+        "statements": {
+          "total": 28,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 25
+        },
+        "branches": {
+          "total": 57,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 7.01
+        }
+      },
+      "depois": {
+        "arquivo": "src/components/estoque/PedidoOperacional.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "functions": {
+          "total": 20,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 28,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "branches": {
+          "total": 57,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 85.96
+        }
+      }
+    },
+    "src/components/estoque/PainelEstoque.jsx": {
+      "antes": {
+        "arquivo": "src/components/estoque/PainelEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 80,
+          "covered": 65,
+          "skipped": 0,
+          "pct": 81.25
+        },
+        "functions": {
+          "total": 74,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 59.45
+        },
+        "statements": {
+          "total": 205,
+          "covered": 146,
+          "skipped": 0,
+          "pct": 71.21
+        },
+        "branches": {
+          "total": 178,
+          "covered": 123,
+          "skipped": 0,
+          "pct": 69.1
+        }
+      },
+      "depois": {
+        "arquivo": "src/components/estoque/PainelEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 80,
+          "covered": 79,
+          "skipped": 0,
+          "pct": 98.75
+        },
+        "functions": {
+          "total": 74,
+          "covered": 66,
+          "skipped": 0,
+          "pct": 89.18
+        },
+        "statements": {
+          "total": 205,
+          "covered": 186,
+          "skipped": 0,
+          "pct": 90.73
+        },
+        "branches": {
+          "total": 178,
+          "covered": 149,
+          "skipped": 0,
+          "pct": 83.7
+        }
+      }
+    },
+    "src/utils/atendimentoParcial.js": {
+      "antes": {
+        "arquivo": "src/utils/atendimentoParcial.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 23,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      "depois": {
+        "arquivo": "src/utils/atendimentoParcial.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 86.2
+        },
+        "branches": {
+          "total": 23,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 60.86
+        }
+      }
+    },
+    "src/utils/operacaoEstoque.js": {
+      "antes": {
+        "arquivo": "src/utils/operacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 93.93
+        },
+        "functions": {
+          "total": 21,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 80.95
+        },
+        "statements": {
+          "total": 58,
+          "covered": 45,
+          "skipped": 0,
+          "pct": 77.58
+        },
+        "branches": {
+          "total": 81,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 51.85
+        }
+      },
+      "depois": {
+        "arquivo": "src/utils/operacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 93.93
+        },
+        "functions": {
+          "total": 21,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 95.23
+        },
+        "statements": {
+          "total": 58,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 87.93
+        },
+        "branches": {
+          "total": 81,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 72.83
+        }
+      }
+    }
+  },
+  "fontesIguaisAoBaseline": true,
+  "baseline": "operacao-equipamentos-2026-10-27.json",
+  "hashesSha256": {
+    "Frontend/UI/src/App.jsx": "a680fc555f8a9f7f89a1cb09aa5a0421af143ea23797f3d8081bb1d9527482c2",
+    "Frontend/UI/src/components/admin/DetalhesUsuarioAdmin.jsx": "3df51a18a555febb453934478f413f10b048b3118824d24a652383902472dc9c",
+    "Frontend/UI/src/components/admin/EventosSegurancaAdmin.jsx": "ae925bf670e0f8eace96b3a702886fab30e78b8b1f964ad4b34b2a8ba54dfabe",
+    "Frontend/UI/src/components/admin/ListasAdministracao.jsx": "0273af3f014a13e13b897e0aa4658bb9326b22ef7933db4f2531d8d7c697f86d",
+    "Frontend/UI/src/components/admin/PainelAdmin.jsx": "87e6abaa8ad805115389716cb33ef2d8d20514d3399e4cf38aa4e8d3a767302d",
+    "Frontend/UI/src/components/auditorias-tecnico/AuditoriasTecnicoModal.jsx": "40589e023ac3ee62e1d9c5519141dd4a89b6d7747aa883d1d931e48defb69b7e",
+    "Frontend/UI/src/components/auditorias-tecnico/TelaAuditorias.jsx": "dc28fb0721529ca3a7cecc18b8cb500b840ea3e4c0c3f115907e4c6b12172abe",
+    "Frontend/UI/src/components/calibracao-equip-modal/CalibracaoEquipModal.jsx": "fbeb5c789f0d45946c810c0c1f91c7964f67c0274efdfaa77c63eda125954950",
+    "Frontend/UI/src/components/calibracao-equip-modal/FilaCalibracoes.jsx": "9e7ac1949ebdfa8cb9ccd3e190abd214a02f1dd05b10fbe56442a027b01d6e46",
+    "Frontend/UI/src/components/calibracao-equip-modal/IndicadorCalibracao.jsx": "7c79e1f40eb0b13c6018189cd39fd82eb9e2059d93437b8cb39bd72c04ab7afd",
+    "Frontend/UI/src/components/deposito-card/DepositoCard.jsx": "90a03800b194c8917d4b71741120301dc24f7891246cb96aa354fe1568456969",
+    "Frontend/UI/src/components/editar-funcionario-modal/EditarFuncionarioModal.jsx": "842afd96863ce77bfbd270e01f8142e8efb45678d316f1978475ec78a0a12fa2",
+    "Frontend/UI/src/components/editar-solicitacao-modal/EditarSolicitacaoModal.jsx": "e35d2f315782ff677ad70cd66f19b403f389f13225d6df525dfe9d70d3aa4387",
+    "Frontend/UI/src/components/estoque/AtendimentoParcialModal.jsx": "a20cd7c5c1e4bb233b002655de79ca7e014849bbe3d0620f2abc1f3db248fc0e",
+    "Frontend/UI/src/components/estoque/FiltrosPedidosEstoque.jsx": "3d94f24de7eef979961a5fc12c234561ae1fd8e6a1f994b968e1a95ff77e5ab2",
+    "Frontend/UI/src/components/estoque/PainelEstoque.jsx": "f4270d03c297d0c16f8bd9c4fdf986879b56832086447898a3f91b8fd5414184",
+    "Frontend/UI/src/components/estoque/PedidoOperacional.jsx": "569e7474efa6f0b561e6b91f9e24d9b335057f3a78a066961029f370a56152e6",
+    "Frontend/UI/src/components/estoque/RegistroCompraEstoque.jsx": "bbfb583a0ef52f5e1ea5227be8ad6402dfaef6445883004c0934b88a8839385c",
+    "Frontend/UI/src/components/estoque/SepararEquipamentosModal.jsx": "ecdf80917f9a2b2f02588335100f212bef379ce3d9289569c2c54913238c0fd0",
+    "Frontend/UI/src/components/estoque/useOperacaoEstoque.js": "ec081dcc49651d8ea609fdf04770f9abf8ba6e27d98343b2130af9f6240876ea",
+    "Frontend/UI/src/components/field/Field.jsx": "16f3908f0cc35a613292fb8d491780ec30ee638d2908686e7e47896dcb646190",
+    "Frontend/UI/src/components/login/TelaAlterarSenha.jsx": "427097767f911b02f060a8d2829f18baeab7fa7816ee1a4315b8f8d35340c46f",
+    "Frontend/UI/src/components/login/TelaEmailRecuperacao.jsx": "33874029cbc8378d7504997acdeb7cec1fb6650253275fda16f1bf19cc107ec2",
+    "Frontend/UI/src/components/login/TelaLogin.jsx": "bd7dd50e7f7cfe02f3c1ac72e7d2d2bf2e5140dc494c8609919ed49c13313756",
+    "Frontend/UI/src/components/login/TelaRecuperarSenha.jsx": "cc0b444c20df5c5e31eff2cc8fc1275eb78e0b9fe0f5f9a8710f083a17ec0016",
+    "Frontend/UI/src/components/manutencao-equip-modal/ManutencaoEquipModal.jsx": "d8f7ad1bb66d799b6cb9ee1c34e007204ddd3f7b3cfd60111532ed4dc400757f",
+    "Frontend/UI/src/components/modal-shell/ModalShell.jsx": "5046f81056586e14c14c636c2fa913bc5b30617467afcbd0b2d90a898b6c1f16",
+    "Frontend/UI/src/components/mover-equip-modal/MoverEquipModal.jsx": "0b27252d2492ff686226a26ba3faf7537e378a11c35b655a94ea9eaf2e024d13",
+    "Frontend/UI/src/components/notificacoes/Notificacoes.jsx": "6dd18f7b45cfb5b2c7d931bbec93ea92b3e15569fdee6cc965b2377919f0f37a",
+    "Frontend/UI/src/components/notificacoes/SinoNotificacoes.jsx": "18b02b3a8bb56d69a7bda1139912a704b30177f2bd1c43fe4a1c0c8601bffea4",
+    "Frontend/UI/src/components/nova-obra-modal/NovaObraModal.jsx": "04c1040691075884c57cd14fea0292e7e1fbaec8d34e8297d603409149e9b4fc",
+    "Frontend/UI/src/components/novo-equip-modal/NovoEquipModal.jsx": "ac9ae8db75a7c8bc19e46c9b95814dffd1cad8d5d8f6b1dee39a26572998156f",
+    "Frontend/UI/src/components/novo-funcionario-modal/NovoFuncionarioModal.jsx": "84599dddccc35c5e17627effc1493eea273c4cffb4f0c95f3c004e1de9e5a0fd",
+    "Frontend/UI/src/components/novo-usuario-modal/NovoUsuarioModal.jsx": "be6b08b194da4791d8081fa2f749ac098627ca2a3488cc0976b21366d1423d92",
+    "Frontend/UI/src/components/obra-status-badge/ObraStatusBadge.jsx": "1244b89e2df3db4f3b7fa6a50b9c1479ea9641fea7e1a55c832c244af3a302b0",
+    "Frontend/UI/src/components/painel/AndamentoSolicitacao.jsx": "3e4cb9ac1756c8d02b7f29b9c7501ba2c6aa4854cadf0dd13f9761d63f88df4a",
+    "Frontend/UI/src/components/painel/BarraSuperior.jsx": "728f24575c487bf77c4c6b908bfd609edbce787224abb388cb8840d1f424a2a2",
+    "Frontend/UI/src/components/painel/CancelamentoPedido.jsx": "aeadcf59f56ab55562fffc7563a4f44975f33ac26581b92cea50ce81fe72e222",
+    "Frontend/UI/src/components/painel/DetalhesPedidoFinanceiro.jsx": "1a9c03ceeab2c76a09ca6bd1c2b58c63728906e7e339e59a7cafb0f18ee814fd",
+    "Frontend/UI/src/components/painel/DetalhesSolicitacao.jsx": "c853c2152f34fbab1fe154fc05d00c099490336c0d803c8cbfce851954e1e0bd",
+    "Frontend/UI/src/components/painel/ExportarAuditoria.jsx": "a1a04c3b660618cb607747a0e8a92b27e8bf6d3da2ca0fd86d0d2977b58cfef6",
+    "Frontend/UI/src/components/painel/ExportarRelatorioModal.jsx": "e6a2ea70af7594e4682e9f121386915414b7a9ac52a43770c75970193bb94f20",
+    "Frontend/UI/src/components/painel/JustificarRejeicaoModal.jsx": "b2c013ca2c26a05c0e2d7333bf6f2c7d3b838d6eb78d24b0fc59e5a3b9064b69",
+    "Frontend/UI/src/components/painel/KanbanRolavel.jsx": "9348d56905f404a5edb3a4056cb9460b3b920825ba37d6a0d5089bae9da3dab1",
+    "Frontend/UI/src/components/painel/MenuLateral.jsx": "212b22f6abb2dcf4a4aab61375a221a29727a8e8b2d66621ccad84489177d243",
+    "Frontend/UI/src/components/painel/ModalHistoricoEquipamento.jsx": "b721a35310f925cda410159bd850432eff1ebabbe435d10ee119d58b69bb7a0d",
+    "Frontend/UI/src/components/painel/NavegacaoInferior.jsx": "f72d17399999cfdec1beda1daa03c8c5fbb40c1f9f04684d903794989c291d76",
+    "Frontend/UI/src/components/painel/PainelControleAtivos.jsx": "fc32e51e044c66335ada17e211026d709855fc2e5ec9d6d1043d24da8bf082a7",
+    "Frontend/UI/src/components/painel/ResumoEquipamentos.jsx": "5a24b57bd2c2bfd9a30bf455e848d71e914c7cf995adf74a6290118a9e28719a",
+    "Frontend/UI/src/components/painel/TelaAtividades.jsx": "abbcece71f04af977d659de88d57e6bb7ef9ca962065638c517aea3cc8b01b3c",
+    "Frontend/UI/src/components/painel/TelaEquipamentos.jsx": "96de6da7f4659d89eb98cfaa236eb962d1fe4f0cf45289f86b465ca04d1afa39",
+    "Frontend/UI/src/components/painel/TelaFuncionarios.jsx": "c26dc3162d9a67abf26719e82d90c99560aecd6b43c398aa42f891af9ce126c7",
+    "Frontend/UI/src/components/painel/TelaObras.jsx": "711633767681ea1ec635bd63148434c93dec1b71810430cdea9e6420be012593",
+    "Frontend/UI/src/components/stat-card/StatCard.jsx": "667ea26276888aedeefd4512c868b612e5c64d6aff29b39bdf1b4947d4d58f54",
+    "Frontend/UI/src/components/status-badge/StatusBadge.jsx": "85d04e940380c6eaa15367e0802c8954686afd57061fd6b37c5f03cf450ddefd",
+    "Frontend/UI/src/components/tecnico/PainelTecnico.jsx": "e3167a0776158ddac7b136197dd4babc3b5ce9148f0858cffea9bf2958aef41c",
+    "Frontend/UI/src/components/tecnico-card/TecnicoCard.jsx": "93190e2ee1ad155c074022fc95ece376c2346e43ed7bfc16c22146f628bc2118",
+    "Frontend/UI/src/config/rotasApi.js": "52a167690536d66c2cc6f743e88343bbce8d16d825534a2ec7e2309e1092ac00",
+    "Frontend/UI/src/contexto/ContextoAutenticacao.jsx": "7f88b27f09ae03fc1362216e07237a0435afbcb54a0f46db05f4a36904b3bb16",
+    "Frontend/UI/src/contexto/ContextoEscopoAuditoria.js": "15f7e7972625c36a8f3344a1a29fb0afb844c65acfbf87fa2c016ffe82a0fb3d",
+    "Frontend/UI/src/data/constantesDominio.js": "6dfbaeceec6221bd14ffb07cf7d9fdc2c99021ad40de3946644403148991f44c",
+    "Frontend/UI/src/hooks/useControleAtivos.js": "b45893d08f0966a20e76e74dc75918c5753519c1e8906a94f49373d6cc87357a",
+    "Frontend/UI/src/hooks/useDialogo.js": "472997e474ff9a6238c7dd04b77ecdac91a8eb945b4eb0c003d17586a1682566",
+    "Frontend/UI/src/hooks/useFiltrosPainel.js": "6eec4a68db71ac5f9e4c4e746023853f9045316f8af5e44d3a617c36acdb82fd",
+    "Frontend/UI/src/main.jsx": "ec613df23666eee61dc071cd1d83300140e9a8d7cca968d69efaf800a53c3269",
+    "Frontend/UI/src/services/api/clienteHttp.js": "7e74623fdf1855f1df969bc960e4018413204dc30ecb9308630a1638b5b9389b",
+    "Frontend/UI/src/services/api/financeiroApi.js": "13db83423d5b9d90c5bf7358d41e5e113ce5178e80e3ec0aa8e5fc58364014b3",
+    "Frontend/UI/src/services/api/notificacoesApi.js": "a21413f8c509acb808be4a89f06d136f2a25a1a644c6675a78fe922ea83fbec3",
+    "Frontend/UI/src/services/api/servicoAtivosApi.js": "ba29261b38257ab2289237e12c2b855ac463673823a10ed268b2cf95e79a2586",
+    "Frontend/UI/src/services/api/servicoAutenticacaoApi.js": "d89f82a1e610211d1c30b5685fb7383e78395b91867f8da032ac636f5a46dd84",
+    "Frontend/UI/src/services/api/servicoRecuperacaoApi.js": "d27be1089750d972cb35de8ebf8c5d3c1a212fd3658f11a072b19c0facda8dbe",
+    "Frontend/UI/src/services/controlesExportacao.js": "b4115894203a2870cd80d375b7c977549e43705bdf9e1731284cdac805f3fda1",
+    "Frontend/UI/src/services/documentosEquipamentos.js": "b0f1c385c330d91a5715cf8d9eccb3913aeb1b9fd60fb0203e399b5dca81db98",
+    "Frontend/UI/src/services/modelosAuditoriaPedidos.js": "7aa69339a12e07b03209a0f1df9f3dd6ba8caa15e6fe17fd2f671be58f86e4df",
+    "Frontend/UI/src/services/modelosDocumentos.js": "14ac29c9f3094a41de4767dda5297ae42f31e06c361d0ca05e57b1bb2e097647",
+    "Frontend/UI/src/services/notificacoes.js": "74f71c9de8e18d554d202e1de4a0266d964c64a4ed15b69e504a809dc94ee965",
+    "Frontend/UI/src/services/planilhaAuditorias.js": "b71250bd2f4f5b51966c1f49a6e6e33fd25f8b3beee40ffd9f740995b735c229",
+    "Frontend/UI/src/services/planilhasRelatorios.js": "0055a400356ad46bddb9b9c1ef220432f8f704a97bd23b6da6144afe7c6474c9",
+    "Frontend/UI/src/services/relatoriosPedidos.js": "f608013dba1c041516ca0e51b885304048ce7c9f86f9714b13d2af3b4043203c",
+    "Frontend/UI/src/utils/acompanhamentoSolicitacao.js": "ba6179c6dcc296dbd3042eb053f8ee452fcb48d374d566a76adc3860acce7b48",
+    "Frontend/UI/src/utils/administracaoUsuarios.js": "3f6c8e6d833382b39c59332ff8f381818788cf5c1af241506903fd3ac3130b63",
+    "Frontend/UI/src/utils/atendimentoParcial.js": "9f86b0ce1e3f5b5eee037f81fba46c5e41438659f4a9207eeb16cfcdc201c623",
+    "Frontend/UI/src/utils/auditoriaTecnico.js": "e87f26964f410fa35ee33163faa778405be3a4c9bcba941c2cdcb2b3eae228b7",
+    "Frontend/UI/src/utils/calibracoes.js": "69701688adaba4b7db7c96c7cfff873d48487d0a83888d65a60189e0ddf6c307",
+    "Frontend/UI/src/utils/classificacaoFuncionario.js": "7f9c108f6506e4f74f98cb645ee9454fc8b5f9eaad1bf580871cad6386d861e7",
+    "Frontend/UI/src/utils/datas.js": "8059b7dcb981901da0db670aee39f3d211959fafd64093db5076e7640b139c03",
+    "Frontend/UI/src/utils/edicaoSolicitacao.js": "c0d38b1ce06da29374b016d9790a21725952a05af774ca1741a16f369de99c57",
+    "Frontend/UI/src/utils/errosApi.js": "c185666658e80b40ff58f3fefe26c47695470cc0809d3e42ebd810ca11880fea",
+    "Frontend/UI/src/utils/filtrosEstoque.js": "a1d4aa9902e6a5d60c44006a8f50784d67c4fdbb0ebcfe9511ade2a0edc4d33a",
+    "Frontend/UI/src/utils/historicoEquipamento.js": "720a812e90ed6a2325ddb1410f442f3ddd8be0cecb56b43c4e42e60c70c966e6",
+    "Frontend/UI/src/utils/identificacaoEquipamento.js": "831fd8fbbc53619968b447409d24d7f569eea58f0235df80b53bafec74b8dfc7",
+    "Frontend/UI/src/utils/localizacaoEquipamentos.js": "05b92c773aaea9e3d1dae687d7627527b66f8194805083d76f33efc71b0c9f0d",
+    "Frontend/UI/src/utils/novoPedido.js": "60b818f30ee6474c8c63ee3871c7535857bb8927881b004dc99bb87b071352be",
+    "Frontend/UI/src/utils/operacaoEstoque.js": "9a791d1d38266b03643417725c79591c3ec50085bba7331d469647a2c911cad0",
+    "Frontend/UI/src/utils/pedidoMovimentacao.js": "9b80c6ee2c5ccb027fcf80d311c667daadd425f990c9c62c16e95fdfae14deaa",
+    "Frontend/UI/src/utils/pedidosFinanceiros.js": "97a2b5c5f3043212e91aff252ff33946eb0c7b02483e7bfe6acaaaaeae98fc15",
+    "Frontend/UI/src/utils/pesquisaSolicitacoes.js": "cbd126f47d6851e1de602a719db8438763cab11715f9bb634ff102e0c2f4c568",
+    "Frontend/UI/src/utils/planoFinanceiro.js": "c58e43e458b280f7b17117a46417e7efce57caec5e29c084c2eaca134ee20bd5",
+    "Frontend/UI/src/utils/recuperacaoConta.js": "2f93c0cfa7d00de09cdd403003fa27e6028c9784baadcdf9848e36cbf7a02f63",
+    "Frontend/UI/src/utils/rolagemKanban.js": "e9946cdd3ecb88bacfa7f66bcb5fcd5294670f6c6e7046d32971683214af04dc",
+    "Frontend/UI/src/utils/statusSolicitacao.js": "63bee18bc24eb30e89df1731b5edb33b979f726855b7c26f87c42446438c92a6",
+    "Frontend/UI/src/utils/titulosNotificacao.js": "3154bfcdddf5290881d2535e08d186f12c4c4465bbdc7f9dc0d7c819c92c9e5c",
+    "Frontend/UI/qa-browser/compras-parciais.spec.mjs": "7f8bc49b7afc4d059e200181d5da6c585b8c74724c4af1cb69e51f19aaa5d498",
+    "scripts/qa/executar.mjs": "ce39df22835119ce30455fcc4bcdd75f9a841e6d185d3fd4bcf0cd3c807b2abb",
+    "scripts/qa/medir.mjs": "49e7f5d0e67ca9f5a46256c274bd2de4c55c5ac85c50c23ea7f6e24076b865a3",
+    "scripts/testar-integracao.mjs": "4cdf88bc5650cd5b0b064334e1d5f092e4c1591d15f05329fac661e72c24312f",
+    "scripts/validar-atendimento-parcial.mjs": "f8d4e51a6b18777f0a896c613f551810b34076b3af34eba41e47b5ba4dc6b66a"
+  },
+  "comandos": {
+    "node": {
+      "etapa": "node",
+      "tentativa": 10,
+      "inicio": "2026-10-27T17:59:21.207Z",
+      "duracaoMs": 787,
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/**/*.js",
+        "--test-reporter=tap",
+        "--test-reporter=lcov",
+        "--test-reporter-destination=/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/test-results/quality-assurance/frontend.tap",
+        "--test-reporter-destination=/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/test-results/quality-assurance/frontend.lcov",
+        "--test",
+        "--test-isolation=none",
+        "tests/acompanhamentoSolicitacao.test.js",
+        "tests/administracaoUsuarios.test.js",
+        "tests/atendimentoParcial.test.js",
+        "tests/calibracoes.test.js",
+        "tests/cancelamento.test.js",
+        "tests/documentosAuditoria.test.js",
+        "tests/edicaoSolicitacao.test.js",
+        "tests/errosApi.test.js",
+        "tests/escopoPedidosGerencia.test.js",
+        "tests/exportacaoAuditoria.test.js",
+        "tests/filtrosEstoque.test.js",
+        "tests/isolamentoIntegracao.test.js",
+        "tests/localizacaoEquipamentos.test.js",
+        "tests/manutencaoEquipamento.test.js",
+        "tests/notificacoes.test.js",
+        "tests/novoPedido.test.js",
+        "tests/operacaoEstoque.test.js",
+        "tests/ordemAtendimento.test.js",
+        "tests/pedidoMovimentacao.test.js",
+        "tests/pedidosFinanceiros.test.js",
+        "tests/pesquisaSolicitacoes.test.js",
+        "tests/planoFinanceiro.test.js",
+        "tests/qaFundamentos.test.js",
+        "tests/recuperacaoConta.test.js",
+        "tests/rolagemKanban.test.js",
+        "tests/titulosNotificacao.test.js",
+        "tests/vistoriaTecnico.test.js"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/node-10.log"
+    },
+    "lint": {
+      "etapa": "lint",
+      "tentativa": 12,
+      "inicio": "2026-10-27T17:59:21.996Z",
+      "duracaoMs": 17569,
+      "comando": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/lint-12.log"
+    },
+    "build": {
+      "etapa": "build",
+      "tentativa": 9,
+      "inicio": "2026-10-27T17:59:39.565Z",
+      "duracaoMs": 2391,
+      "comando": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/build-9.log"
+    },
+    "browser": {
+      "etapa": "browser",
+      "tentativa": 12,
+      "inicio": "2026-10-27T18:02:06.024Z",
+      "duracaoMs": 608218,
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "--config=qa-browser/playwright.config.mjs",
+        "--workers",
+        "2"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/browser-12.log"
+    }
+  },
+  "integracaoReal": {
+    "comando": [
+      "node",
+      "scripts/testar-integracao.mjs",
+      "--suite=atendimento-parcial"
+    ],
+    "relatorio": "test-results/integracao-1793123715227/resumo.json",
+    "resultados": [
+      {
+        "suite": "atendimento-parcial",
+        "resultado": "passou",
+        "duracaoMs": 42580
+      }
+    ],
+    "log": "test-results/quality-assurance/compras-integracao.log",
+    "sha256Log": "4457d9e0c3eff408c10ed8d1ad27f59da6f167fca8af42ad21f0e1a024be7b29",
+    "requestsNaoContadosComoCasos": true
+  },
+  "tentativaDirecionada": {
+    "log": "compras-direcionado.log",
+    "aprovados": 11,
+    "reprovados": 0
+  },
+  "novosDefeitosConfirmados": []
+}

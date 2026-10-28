@@ -79,13 +79,19 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   };
   const imprimirHistoricoDoEquipamento = (equipamento) => imprimirHistoricoEquipamento(equipamento, controleAtivos.consultarHistorico(equipamento), controleAtivos.buscarObraPorId);
   const cadastrarObra = async (novaObra) => {
-    if (await controleAtivos.cadastrarObra(novaObra)) definirModalNovaObraAberto(false);
+    const sucesso = await controleAtivos.cadastrarObra(novaObra);
+    if (sucesso) definirModalNovaObraAberto(false);
+    return sucesso;
   };
   const cadastrarEquipamento = async (novoEquipamento) => {
-    if (await controleAtivos.cadastrarEquipamento(novoEquipamento)) definirModalNovoEquipamentoAberto(false);
+    const sucesso = await controleAtivos.cadastrarEquipamento(novoEquipamento);
+    if (sucesso) definirModalNovoEquipamentoAberto(false);
+    return sucesso;
   };
   const salvarEdicaoEquipamento = async (dadosAtualizados) => {
-    if (await controleAtivos.atualizarEquipamento(equipamentoEmEdicao.id, dadosAtualizados)) definirEquipamentoEmEdicao(null);
+    const sucesso = await controleAtivos.atualizarEquipamento(equipamentoEmEdicao.id, dadosAtualizados);
+    if (sucesso) definirEquipamentoEmEdicao(null);
+    return sucesso;
   };
   const arquivarEquipamento = async (arquivado) => {
     const resultado = await controleAtivos.arquivarEquipamento(equipamentoEmEdicao.id,arquivado);
@@ -98,7 +104,9 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     return sucesso;
   };
   const cadastrarFuncionario = async (novoFuncionario) => {
-    if (await controleAtivos.cadastrarFuncionario(novoFuncionario)) definirModalNovoFuncionarioAberto(false);
+    const sucesso = await controleAtivos.cadastrarFuncionario(novoFuncionario);
+    if (sucesso) definirModalNovoFuncionarioAberto(false);
+    return sucesso;
   };
   const salvarFuncionario = async (funcionario, dadosAtualizados, obrasIds) => {
     const sucesso = await controleAtivos.atualizarFuncionario(funcionario, dadosAtualizados, obrasIds);
@@ -170,13 +178,13 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
       </div>
     </main>
     <NavegacaoInferior telaAtual={telaAtual} totalAtividadesPendentes={totalAtividadesPendentes} ocultarVistorias={ehResumo} ocultarEquipamentos={ehResumo} aoSelecionarTela={selecionarTela} estilos={estilos} />
-    {modalNovaObraAberto && <ModalNovaObra tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirModalNovaObraAberto(false)} aoSalvar={cadastrarObra} />}
-    {podeGerenciarCadastrosNoPainel && modalNovoEquipamentoAberto && <ModalNovoEquipamento obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} categoriasDisponiveis={controleAtivos.categoriasEquipamento} aoCriarCategoria={controleAtivos.cadastrarCategoriaEquipamento} aoFechar={() => definirModalNovoEquipamentoAberto(false)} aoSalvar={cadastrarEquipamento} />}
-    {podeGerenciarCadastrosNoPainel && equipamentoEmEdicao && <ModalNovoEquipamento equipamento={equipamentoEmEdicao} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis.includes(equipamentoEmEdicao.tipo)?tiposEquipamentoDisponiveis:[equipamentoEmEdicao.tipo,...tiposEquipamentoDisponiveis]} categoriasDisponiveis={controleAtivos.categoriasEquipamento} aoCriarCategoria={controleAtivos.cadastrarCategoriaEquipamento} aoFechar={() => definirEquipamentoEmEdicao(null)} aoSalvar={salvarEdicaoEquipamento} aoArquivar={arquivarEquipamento} />}
+    {modalNovaObraAberto && <ModalNovaObra erroApi={controleAtivos.erroApi} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirModalNovaObraAberto(false)} aoSalvar={cadastrarObra} />}
+    {podeGerenciarCadastrosNoPainel && modalNovoEquipamentoAberto && <ModalNovoEquipamento erroApi={controleAtivos.erroApi} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis} categoriasDisponiveis={controleAtivos.categoriasEquipamento} aoCriarCategoria={controleAtivos.cadastrarCategoriaEquipamento} aoFechar={() => definirModalNovoEquipamentoAberto(false)} aoSalvar={cadastrarEquipamento} />}
+    {podeGerenciarCadastrosNoPainel && equipamentoEmEdicao && <ModalNovoEquipamento erroApi={controleAtivos.erroApi} equipamento={equipamentoEmEdicao} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} seriesCadastradas={controleAtivos.equipamentos.map(({ serie }) => serie)} tiposDisponiveis={tiposEquipamentoDisponiveis.includes(equipamentoEmEdicao.tipo)?tiposEquipamentoDisponiveis:[equipamentoEmEdicao.tipo,...tiposEquipamentoDisponiveis]} categoriasDisponiveis={controleAtivos.categoriasEquipamento} aoCriarCategoria={controleAtivos.cadastrarCategoriaEquipamento} aoFechar={() => definirEquipamentoEmEdicao(null)} aoSalvar={salvarEdicaoEquipamento} aoArquivar={arquivarEquipamento} />}
     {equipamentoParaCalibracao && <ModalCalibracaoEquipamento equipamento={equipamentoParaCalibracao} buscarObraPorId={controleAtivos.buscarObraPorId} aoFechar={()=>definirEquipamentoParaCalibracao(null)} aoAtualizar={controleAtivos.receberEquipamentoAtualizado} />}
     {equipamentoParaManutencao && <ModalManutencaoEquipamento equipamento={equipamentoParaManutencao} buscarObraPorId={controleAtivos.buscarObraPorId} aoFechar={() => definirEquipamentoParaManutencao(null)} aoAtualizar={controleAtivos.receberEquipamentoAtualizado} />}
     {equipamentoParaMover && <ModalMovimentarEquipamento erroApi={controleAtivos.erroApi} equipamento={equipamentoParaMover} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirEquipamentoParaMover(null)} aoSalvar={movimentarEquipamento} />}
-    {podeGerenciarCadastrosNoPainel && modalNovoFuncionarioAberto && <ModalNovoFuncionario funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
+    {podeGerenciarCadastrosNoPainel && modalNovoFuncionarioAberto && <ModalNovoFuncionario erroApi={controleAtivos.erroApi} funcionariosCadastrados={controleAtivos.funcionarios} aoFechar={() => definirModalNovoFuncionarioAberto(false)} aoSalvar={cadastrarFuncionario} />}
     {podeGerenciarCadastrosNoPainel && funcionarioEmEdicao && <ModalEditarFuncionario funcionario={funcionarioEmEdicao} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras.filter(({arquivado})=>!arquivado)} aoFechar={() => definirFuncionarioEmEdicao(null)} aoSalvar={salvarFuncionario} aoArquivar={controleAtivos.arquivarFuncionario} />}
     {solicitacaoEmEdicao && <ModalEditarSolicitacao financeiro={ehFinanceiro} obras={controleAtivos.obras} erroApi={controleAtivos.erroApi} solicitacao={solicitacaoEmEdicao} equipamentos={equipamentosParaSolicitacao} tecnicosCadastrados={controleAtivos.tecnicosCadastrados} aoFechar={() => definirSolicitacaoEmEdicao(null)} aoSalvar={salvarEdicaoSolicitacao} />}
     {novaSolicitacaoAberta && <ModalEditarSolicitacao nova solicitante={usuario.nome} funcionarios={controleAtivos.funcionarios} obras={controleAtivos.obras} erroApi={controleAtivos.erroApi} equipamentos={equipamentosParaSolicitacao} aoFechar={() => definirNovaSolicitacaoAberta(false)} aoSalvar={cadastrarSolicitacao} />}

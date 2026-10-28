@@ -12,7 +12,7 @@ export default defineConfig({
   timeout: 30000,
   forbidOnly: true,
   outputDir: fileURLToPath(new URL('../../../test-results/quality-assurance/browser-local/artifacts', import.meta.url)),
-  reporter: [['list'], ['json', { outputFile: fileURLToPath(new URL('../../../test-results/quality-assurance/browser-local/results.json', import.meta.url)) }]],
+  reporter: [['list'], ['json', { outputFile: fileURLToPath(new URL('../../../test-results/quality-assurance/browser-local/results.json', import.meta.url)) }], ['./cobertura-reporter.mjs']],
   use: {
     baseURL: 'http://127.0.0.1:4179',
     trace: 'off',

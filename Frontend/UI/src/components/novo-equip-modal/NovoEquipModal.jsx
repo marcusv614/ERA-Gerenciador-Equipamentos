@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { BookOpen, ChevronDown, Info, Plus } from "lucide-react";
 import { EstruturaModal } from "../modal-shell/ModalShell";
 import { CampoFormulario } from "../field/Field";
@@ -100,6 +100,7 @@ export function ModalNovoEquipamento({
   aoCriarCategoria,
   aoFechar,
   aoSalvar,
+  erroApi,
   aoArquivar,
 }) {
   const editando = Boolean(equipamento);
@@ -133,6 +134,9 @@ export function ModalNovoEquipamento({
   const [confirmandoExclusao, definirConfirmandoExclusao] = useState(false);
   const [excluindo, definirExcluindo] = useState(false);
   const [erroExclusao, definirErroExclusao] = useState('');
+  const envioEmCurso = useRef(false);
+  const [salvando, definirSalvando] = useState(false);
+  const [erro, definirErro] = useState('');
 
   const categoriasExibidas = useMemo(() => {
     const porNome = new Map();
@@ -244,38 +248,45 @@ export function ModalNovoEquipamento({
     definirExcluindo(false);
   };
 
-  const salvar = () => {
-    if (!canSave) return;
-    const chavesVisiveis = new Set(camposAtributos.map(({ chave }) => chave));
-    const atributosVisiveis = Object.fromEntries(Object.entries(form.atributos)
-      .filter(([chave]) => chavesVisiveis.has(chave)));
-    aoSalvar({
-      ...form,
-      tipo: form.tipo.trim(),
-      modelo: form.modelo.trim(),
-      serie: exibeSerie ? form.serie.trim() || null : null,
-      medida: exibeMedida ? form.medida.trim() || null : null,
-      atributos: limparObjeto(atributosVisiveis),
-      fornecedor: form.fornecedor.trim(),
-      notaFiscal: form.notaFiscal.trim(),
-      dataCompra: form.dataCompra || null,
-      observacoes: form.observacoes.trim(),
-      obraId: form.obraId || null,
-      tecnico: form.tecnico || null,
-      data: form.data || null,
-      quantidade,
-      controleQuantidade: quantidade > 1 ? 'LOTE' : 'INDIVIDUAL',
-    });
+  const salvar = async () => {
+    if (!canSave || equipamento?.arquivado || excluindo || envioEmCurso.current) return;
+    envioEmCurso.current = true;
+    definirSalvando(true);
+    definirErro('');
+    try {
+      const chavesVisiveis = new Set(camposAtributos.map(({ chave }) => chave));
+      const atributosVisiveis = Object.fromEntries(Object.entries(form.atributos)
+        .filter(([chave]) => chavesVisiveis.has(chave)));
+      const sucesso = await aoSalvar({
+        ...form,
+        tipo: form.tipo.trim(),
+        modelo: form.modelo.trim(),
+        serie: exibeSerie ? form.serie.trim() || null : null,
+        medida: exibeMedida ? form.medida.trim() || null : null,
+        atributos: limparObjeto(atributosVisiveis),
+        fornecedor: form.fornecedor.trim(),
+        notaFiscal: form.notaFiscal.trim(),
+        dataCompra: form.dataCompra || null,
+        observacoes: form.observacoes.trim(),
+        obraId: form.obraId || null,
+        tecnico: form.tecnico || null,
+        data: form.data || null,
+        quantidade,
+        controleQuantidade: quantidade > 1 ? 'LOTE' : 'INDIVIDUAL',
+      });
+      if (sucesso === false) definirErro('Não foi possível salvar. Confira os dados e tente novamente.');
+    } catch (excecao) { definirErro(excecao.message || 'Não foi possível salvar. Tente novamente.'); }
+    finally { envioEmCurso.current = false; definirSalvando(false); }
   };
 
   return <>
     <EstruturaModal
       titulo={editando ? 'Editar item do inventário' : 'Adicionar item ao inventário'}
       subtitulo={editando ? 'Atualize identificação, especificações e origem' : 'Cadastre equipamentos, ferramentas ou materiais'}
-      aoFechar={aoFechar}
+      aoFechar={() => { if (!envioEmCurso.current && !excluindo) aoFechar(); }}
       largo
     >
-      <div className={styles.form}>
+      <form className={styles.form} onSubmit={(evento) => { evento.preventDefault(); salvar(); }}>
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <span className={styles.sectionNumber}>1</span>
@@ -394,15 +405,16 @@ export function ModalNovoEquipamento({
           <div><button type="button" onClick={() => { definirConfirmandoExclusao(false); definirErroExclusao(''); }} disabled={excluindo}>Cancelar</button><button type="button" onClick={excluirRegistro} disabled={excluindo}>{excluindo ? 'Salvando...' : equipamento.arquivado ? 'Restaurar' : 'Arquivar'}</button></div>
         </div>}
 
+        {erro && <p role="alert">{erroApi || erro}</p>}
         <div className={styles.actions}>
-          {editando && !confirmandoExclusao && <button type="button" onClick={() => definirConfirmandoExclusao(true)} className={styles.delete}>{equipamento.arquivado ? 'Restaurar registro' : 'Arquivar registro'}</button>}
+          {editando && !confirmandoExclusao && <button type="button" disabled={salvando} onClick={() => definirConfirmandoExclusao(true)} className={styles.delete}>{equipamento.arquivado ? 'Restaurar registro' : 'Arquivar registro'}</button>}
           <span className={styles.actionsSpacer} />
-          <button type="button" onClick={aoFechar} className={styles.cancel}>Cancelar</button>
-          <button type="button" disabled={!canSave || equipamento?.arquivado} onClick={salvar} className={styles.submit}>
-            {editando ? 'Salvar alterações' : 'Adicionar ao inventário'}
+          <button type="button" disabled={salvando || excluindo} onClick={aoFechar} className={styles.cancel}>Cancelar</button>
+          <button type="submit" disabled={!canSave || equipamento?.arquivado || salvando || excluindo} className={styles.submit}>
+            {salvando ? 'Salvando...' : editando ? 'Salvar alterações' : 'Adicionar ao inventário'}
           </button>
         </div>
-      </div>
+      </form>
     </EstruturaModal>
 
     {guiaCategoriasAberto && categoriaDoGuia && <EstruturaModal titulo="Guia de cadastro das categorias" subtitulo="Consulte exemplos e informações recomendadas" aoFechar={() => definirGuiaCategoriasAberto(false)} largo>

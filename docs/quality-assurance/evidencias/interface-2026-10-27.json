@@ -1,0 +1,3148 @@
+{
+  "coletadoEm": "2026-10-27T13:25:43.573438+00:00",
+  "baseGit": "629adecc44caf66d122aaacf1a691a07109f255f",
+  "escopo": "Rodada de interface com API simulada; 189 Node e 74 Chromium desktop/mobile. Java, PostgreSQL/E2E e scanners de imagens não reexecutados. Sem mudanças em Frontend/UI/src, commit, push ou deploy.",
+  "browser": {
+    "startTime": "2026-10-27T13:19:42.091Z",
+    "duration": 266785.75100000005,
+    "expected": 74,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "node": {
+    "tests": 189,
+    "pass": 189,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "taxaAprovacao": 100
+  },
+  "coberturaIstanbul": {
+    "coletadoEm": "2026-10-27T13:24:09.292Z",
+    "escopo": "Todos os .js/.jsx em src; instrumentação antes do React/JSX no Vite exclusivo de testes. Fontes não carregadas permanecem com zero. API simulada; Chromium desktop/mobile.",
+    "execucaoCompleta": true,
+    "casosEsperados": 74,
+    "casosColetados": 74,
+    "erros": [],
+    "total": {
+      "arquivos": 102,
+      "lines": {
+        "total": 2783,
+        "covered": 926,
+        "skipped": 0,
+        "pct": 33.27
+      },
+      "statements": {
+        "total": 4364,
+        "covered": 1187,
+        "skipped": 0,
+        "pct": 27.19
+      },
+      "functions": {
+        "total": 1752,
+        "covered": 271,
+        "skipped": 0,
+        "pct": 15.46
+      },
+      "branches": {
+        "total": 4710,
+        "covered": 799,
+        "skipped": 0,
+        "pct": 16.96
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "jsx": {
+      "arquivos": 58,
+      "lines": {
+        "total": 1765,
+        "covered": 585,
+        "skipped": 0,
+        "pct": 33.14
+      },
+      "statements": {
+        "total": 2862,
+        "covered": 786,
+        "skipped": 0,
+        "pct": 27.46
+      },
+      "functions": {
+        "total": 1150,
+        "covered": 164,
+        "skipped": 0,
+        "pct": 14.26
+      },
+      "branches": {
+        "total": 3323,
+        "covered": 617,
+        "skipped": 0,
+        "pct": 18.56
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "hooks": {
+      "arquivos": 4,
+      "lines": {
+        "total": 247,
+        "covered": 125,
+        "skipped": 0,
+        "pct": 50.6
+      },
+      "statements": {
+        "total": 360,
+        "covered": 163,
+        "skipped": 0,
+        "pct": 45.27
+      },
+      "functions": {
+        "total": 103,
+        "covered": 43,
+        "skipped": 0,
+        "pct": 41.74
+      },
+      "branches": {
+        "total": 181,
+        "covered": 100,
+        "skipped": 0,
+        "pct": 55.24
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "arquivosNaoCarregados": [],
+    "arquivos": [
+      {
+        "arquivo": "src/App.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        },
+        "statements": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "branches": {
+          "total": 32,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 90.62
+        }
+      },
+      {
+        "arquivo": "src/components/admin/DetalhesUsuarioAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 30,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/EventosSegurancaAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 4.16
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 48,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.08
+        },
+        "branches": {
+          "total": 42,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/ListasAdministracao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 16,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/PainelAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 79,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 59.49
+        },
+        "functions": {
+          "total": 66,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 19.69
+        },
+        "statements": {
+          "total": 188,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 37.23
+        },
+        "branches": {
+          "total": 150,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 39.33
+        }
+      },
+      {
+        "arquivo": "src/components/auditorias-tecnico/AuditoriasTecnicoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 72,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 2.77
+        },
+        "functions": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 143,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 1.39
+        },
+        "branches": {
+          "total": 148,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/auditorias-tecnico/TelaAuditorias.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 41,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 79,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 56,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/CalibracaoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 46,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.17
+        },
+        "functions": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 75,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.33
+        },
+        "branches": {
+          "total": 110,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/FilaCalibracoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 14,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/IndicadorCalibracao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/deposito-card/DepositoCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 10,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 20
+        },
+        "functions": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 11,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 18.18
+        },
+        "branches": {
+          "total": 19,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/editar-funcionario-modal/EditarFuncionarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 31,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 49,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 52,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/editar-solicitacao-modal/EditarSolicitacaoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 44,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.27
+        },
+        "functions": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 77,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.29
+        },
+        "branches": {
+          "total": 136,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/AtendimentoParcialModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 21,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/FiltrosPedidosEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 5,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 40
+        },
+        "functions": {
+          "total": 6,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 6,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 10,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 80
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/PainelEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 80,
+          "covered": 58,
+          "skipped": 0,
+          "pct": 72.5
+        },
+        "functions": {
+          "total": 74,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 12.16
+        },
+        "statements": {
+          "total": 205,
+          "covered": 98,
+          "skipped": 0,
+          "pct": 47.8
+        },
+        "branches": {
+          "total": 178,
+          "covered": 67,
+          "skipped": 0,
+          "pct": 37.64
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/PedidoOperacional.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 28,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 57,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/RegistroCompraEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/SepararEquipamentosModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 65,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.53
+        },
+        "functions": {
+          "total": 48,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 98,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.02
+        },
+        "branches": {
+          "total": 93,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/useOperacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/field/Field.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaAlterarSenha.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 26,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 61.53
+        },
+        "branches": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaEmailRecuperacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 35,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 51.42
+        },
+        "functions": {
+          "total": 9,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "statements": {
+          "total": 53,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 35.84
+        },
+        "branches": {
+          "total": 34,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaLogin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 25,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaRecuperarSenha.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 34,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "branches": {
+          "total": 25,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 96
+        }
+      },
+      {
+        "arquivo": "src/components/manutencao-equip-modal/ManutencaoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 3.44
+        },
+        "functions": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 46,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.17
+        },
+        "branches": {
+          "total": 60,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/modal-shell/ModalShell.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/mover-equip-modal/MoverEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 32,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/notificacoes/Notificacoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "statements": {
+          "total": 30,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "branches": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        }
+      },
+      {
+        "arquivo": "src/components/notificacoes/SinoNotificacoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 50,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 26,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 96.15
+        },
+        "statements": {
+          "total": 90,
+          "covered": 88,
+          "skipped": 0,
+          "pct": 97.77
+        },
+        "branches": {
+          "total": 81,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 86.41
+        }
+      },
+      {
+        "arquivo": "src/components/nova-obra-modal/NovaObraModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/novo-equip-modal/NovoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 128,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 2.34
+        },
+        "functions": {
+          "total": 64,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 150,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 2
+        },
+        "branches": {
+          "total": 221,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/novo-funcionario-modal/NovoFuncionarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/novo-usuario-modal/NovoUsuarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/obra-status-badge/ObraStatusBadge.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/AndamentoSolicitacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/BarraSuperior.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 13,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 53.84
+        },
+        "functions": {
+          "total": 8,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 12.5
+        },
+        "statements": {
+          "total": 17,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 41.17
+        },
+        "branches": {
+          "total": 44,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 63.63
+        }
+      },
+      {
+        "arquivo": "src/components/painel/CancelamentoPedido.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 49,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/DetalhesPedidoFinanceiro.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "functions": {
+          "total": 13,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 17,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 5.88
+        },
+        "branches": {
+          "total": 47,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/DetalhesSolicitacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 39,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.56
+        },
+        "functions": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 53,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.88
+        },
+        "branches": {
+          "total": 135,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ExportarAuditoria.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 14,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ExportarRelatorioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 23.07
+        },
+        "functions": {
+          "total": 14,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 21.42
+        },
+        "statements": {
+          "total": 32,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 25
+        },
+        "branches": {
+          "total": 26,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 3.84
+        }
+      },
+      {
+        "arquivo": "src/components/painel/JustificarRejeicaoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/KanbanRolavel.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 64,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 54.68
+        },
+        "functions": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        },
+        "statements": {
+          "total": 74,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 52.7
+        },
+        "branches": {
+          "total": 28,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 21.42
+        }
+      },
+      {
+        "arquivo": "src/components/painel/MenuLateral.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 16,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 31.25
+        },
+        "functions": {
+          "total": 16,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 18.75
+        },
+        "statements": {
+          "total": 25,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 28
+        },
+        "branches": {
+          "total": 52,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 67.3
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ModalHistoricoEquipamento.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "functions": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 12,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "branches": {
+          "total": 62,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.61
+        }
+      },
+      {
+        "arquivo": "src/components/painel/NavegacaoInferior.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 13,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 76.92
+        }
+      },
+      {
+        "arquivo": "src/components/painel/PainelControleAtivos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 114,
+          "covered": 66,
+          "skipped": 0,
+          "pct": 57.89
+        },
+        "functions": {
+          "total": 68,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 10.29
+        },
+        "statements": {
+          "total": 157,
+          "covered": 69,
+          "skipped": 0,
+          "pct": 43.94
+        },
+        "branches": {
+          "total": 154,
+          "covered": 84,
+          "skipped": 0,
+          "pct": 54.54
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ResumoEquipamentos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaAtividades.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 90,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 48.88
+        },
+        "functions": {
+          "total": 61,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 16.39
+        },
+        "statements": {
+          "total": 156,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 32.05
+        },
+        "branches": {
+          "total": 162,
+          "covered": 46,
+          "skipped": 0,
+          "pct": 28.39
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaEquipamentos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 45,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 46.66
+        },
+        "functions": {
+          "total": 31,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 25.8
+        },
+        "statements": {
+          "total": 60,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 41.66
+        },
+        "branches": {
+          "total": 95,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 10.52
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaFuncionarios.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaObras.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 41,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.43
+        },
+        "functions": {
+          "total": 31,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 61,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.63
+        },
+        "branches": {
+          "total": 104,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/stat-card/StatCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/status-badge/StatusBadge.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/tecnico-card/TecnicoCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 11,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 19,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 54,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/tecnico/PainelTecnico.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 235,
+          "covered": 96,
+          "skipped": 0,
+          "pct": 40.85
+        },
+        "functions": {
+          "total": 118,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 15.25
+        },
+        "statements": {
+          "total": 346,
+          "covered": 109,
+          "skipped": 0,
+          "pct": 31.5
+        },
+        "branches": {
+          "total": 388,
+          "covered": 82,
+          "skipped": 0,
+          "pct": 21.13
+        }
+      },
+      {
+        "arquivo": "src/config/rotasApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 3.44
+        },
+        "functions": {
+          "total": 28,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 3.44
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/contexto/ContextoAutenticacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 14,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "statements": {
+          "total": 39,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 79.48
+        },
+        "branches": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      {
+        "arquivo": "src/contexto/ContextoEscopoAuditoria.js",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/data/constantesDominio.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/hooks/useControleAtivos.js",
+        "carregado": true,
+        "lines": {
+          "total": 179,
+          "covered": 58,
+          "skipped": 0,
+          "pct": 32.4
+        },
+        "functions": {
+          "total": 83,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 27.71
+        },
+        "statements": {
+          "total": 270,
+          "covered": 78,
+          "skipped": 0,
+          "pct": 28.88
+        },
+        "branches": {
+          "total": 116,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 37.06
+        }
+      },
+      {
+        "arquivo": "src/hooks/useDialogo.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 96.96
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 44,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 88.63
+        },
+        "branches": {
+          "total": 32,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 75
+        }
+      },
+      {
+        "arquivo": "src/hooks/useFiltrosPainel.js",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 30,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/main.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/api/clienteHttp.js",
+        "carregado": true,
+        "lines": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      {
+        "arquivo": "src/services/api/financeiroApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 5,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 80
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/api/notificacoesApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoAtivosApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 70,
+          "covered": 27,
+          "skipped": 0,
+          "pct": 38.57
+        },
+        "functions": {
+          "total": 58,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 18.96
+        },
+        "statements": {
+          "total": 77,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 37.66
+        },
+        "branches": {
+          "total": 24,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 25
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoAutenticacaoApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 10,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 18,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoRecuperacaoApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/controlesExportacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 36,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.77
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 58,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.72
+        },
+        "branches": {
+          "total": 57,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/documentosEquipamentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 52,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 5.76
+        },
+        "functions": {
+          "total": 23,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 60,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/modelosAuditoriaPedidos.js",
+        "carregado": true,
+        "lines": {
+          "total": 13,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 46.15
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 20.68
+        },
+        "branches": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/modelosDocumentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 96,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 19.79
+        },
+        "functions": {
+          "total": 99,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.01
+        },
+        "statements": {
+          "total": 182,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 10.43
+        },
+        "branches": {
+          "total": 307,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/notificacoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        }
+      },
+      {
+        "arquivo": "src/services/planilhaAuditorias.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "functions": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 20,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/planilhasRelatorios.js",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 11,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/relatoriosPedidos.js",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "functions": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 16,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 6.25
+        },
+        "branches": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/acompanhamentoSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 38,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 13.15
+        },
+        "functions": {
+          "total": 16,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 6.25
+        },
+        "statements": {
+          "total": 66,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 10.6
+        },
+        "branches": {
+          "total": 86,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 4.65
+        }
+      },
+      {
+        "arquivo": "src/utils/administracaoUsuarios.js",
+        "carregado": true,
+        "lines": {
+          "total": 21,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 61.9
+        },
+        "functions": {
+          "total": 21,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 34,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 38.23
+        },
+        "branches": {
+          "total": 50,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 6
+        }
+      },
+      {
+        "arquivo": "src/utils/atendimentoParcial.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 23,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/auditoriaTecnico.js",
+        "carregado": true,
+        "lines": {
+          "total": 27,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "functions": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 45,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 6.66
+        },
+        "branches": {
+          "total": 64,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/calibracoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 17,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 17.64
+        },
+        "functions": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 23,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 13.04
+        },
+        "branches": {
+          "total": 35,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/classificacaoFuncionario.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/utils/datas.js",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 15,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/edicaoSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 13.63
+        },
+        "functions": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 31,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 9.67
+        },
+        "branches": {
+          "total": 28,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/errosApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 11,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 54.54
+        },
+        "functions": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "statements": {
+          "total": 14,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 57.14
+        },
+        "branches": {
+          "total": 22,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 22.72
+        }
+      },
+      {
+        "arquivo": "src/utils/filtrosEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 62.5
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 34,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 55.88
+        },
+        "branches": {
+          "total": 44,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 34.09
+        }
+      },
+      {
+        "arquivo": "src/utils/historicoEquipamento.js",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/identificacaoEquipamento.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 13,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 46.15
+        },
+        "branches": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/localizacaoEquipamentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 42.85
+        },
+        "functions": {
+          "total": 12,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 16.66
+        },
+        "statements": {
+          "total": 22,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 27.27
+        },
+        "branches": {
+          "total": 26,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 11.53
+        }
+      },
+      {
+        "arquivo": "src/utils/novoPedido.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/operacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 6.06
+        },
+        "functions": {
+          "total": 21,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 9.52
+        },
+        "statements": {
+          "total": 58,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 3.44
+        },
+        "branches": {
+          "total": 81,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/pedidoMovimentacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/pedidosFinanceiros.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 27.27
+        },
+        "functions": {
+          "total": 14,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 41,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 17.07
+        },
+        "branches": {
+          "total": 42,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.38
+        }
+      },
+      {
+        "arquivo": "src/utils/pesquisaSolicitacoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 19,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 31.57
+        },
+        "functions": {
+          "total": 13,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 23.07
+        },
+        "statements": {
+          "total": 33,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 24.24
+        },
+        "branches": {
+          "total": 40,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 12.5
+        }
+      },
+      {
+        "arquivo": "src/utils/planoFinanceiro.js",
+        "carregado": true,
+        "lines": {
+          "total": 52,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 9.61
+        },
+        "functions": {
+          "total": 32,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 76,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 6.57
+        },
+        "branches": {
+          "total": 91,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/recuperacaoConta.js",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 11,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 81.81
+        }
+      },
+      {
+        "arquivo": "src/utils/rolagemKanban.js",
+        "carregado": true,
+        "lines": {
+          "total": 11,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 81.81
+        },
+        "functions": {
+          "total": 3,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 12,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 12,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 66.66
+        }
+      },
+      {
+        "arquivo": "src/utils/statusSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/titulosNotificacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 10,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 40
+        }
+      }
+    ],
+    "compativelComResultados": true
+  },
+  "coberturaV8Separada": {
+    "arquivos": 29,
+    "linhas": {
+      "covered": 938,
+      "total": 978,
+      "percentual": 95.91
+    },
+    "ramos": {
+      "covered": 895,
+      "total": 1063,
+      "percentual": 84.2
+    },
+    "escopo": "Apenas módulos .js carregados pelos testes Node; JSX e módulos não carregados excluídos pelo coletor."
+  },
+  "npmAudit": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 32,
+      "dev": 169,
+      "optional": 27,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 200
+    }
+  },
+  "versoesFerramentas": {
+    "istanbul-lib-instrument": "6.0.3",
+    "istanbul-lib-coverage": "3.2.2",
+    "istanbul-lib-report": "3.0.1",
+    "istanbul-reports": "3.2.0"
+  },
+  "comandos": {
+    "node": {
+      "inicio": "2026-10-27T13:19:20.213Z",
+      "duracaoMs": 641,
+      "codigo": 0,
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/**/*.js",
+        "--test-reporter=tap",
+        "--test-reporter=lcov",
+        "--test-reporter-destination=/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/test-results/quality-assurance/frontend.tap",
+        "--test-reporter-destination=/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/test-results/quality-assurance/frontend.lcov",
+        "--test",
+        "--test-isolation=none",
+        "tests/acompanhamentoSolicitacao.test.js",
+        "tests/administracaoUsuarios.test.js",
+        "tests/atendimentoParcial.test.js",
+        "tests/calibracoes.test.js",
+        "tests/cancelamento.test.js",
+        "tests/documentosAuditoria.test.js",
+        "tests/edicaoSolicitacao.test.js",
+        "tests/errosApi.test.js",
+        "tests/escopoPedidosGerencia.test.js",
+        "tests/exportacaoAuditoria.test.js",
+        "tests/filtrosEstoque.test.js",
+        "tests/isolamentoIntegracao.test.js",
+        "tests/localizacaoEquipamentos.test.js",
+        "tests/manutencaoEquipamento.test.js",
+        "tests/notificacoes.test.js",
+        "tests/novoPedido.test.js",
+        "tests/operacaoEstoque.test.js",
+        "tests/ordemAtendimento.test.js",
+        "tests/pedidoMovimentacao.test.js",
+        "tests/pedidosFinanceiros.test.js",
+        "tests/pesquisaSolicitacoes.test.js",
+        "tests/planoFinanceiro.test.js",
+        "tests/qaFundamentos.test.js",
+        "tests/recuperacaoConta.test.js",
+        "tests/rolagemKanban.test.js",
+        "tests/titulosNotificacao.test.js",
+        "tests/vistoriaTecnico.test.js"
+      ],
+      "log": "test-results/quality-assurance/node-6.log"
+    },
+    "lint": {
+      "inicio": "2026-10-27T13:19:20.855Z",
+      "duracaoMs": 17371,
+      "codigo": 0,
+      "comando": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "log": "test-results/quality-assurance/lint-6.log"
+    },
+    "build": {
+      "inicio": "2026-10-27T13:19:38.227Z",
+      "duracaoMs": 2567,
+      "codigo": 0,
+      "comando": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "log": "test-results/quality-assurance/build-5.log"
+    },
+    "browser": {
+      "inicio": "2026-10-27T13:19:40.795Z",
+      "duracaoMs": 268554,
+      "codigo": 0,
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "--config=qa-browser/playwright.config.mjs"
+      ],
+      "log": "test-results/quality-assurance/browser-7.log"
+    },
+    "audit": {
+      "inicio": "2026-10-27T13:24:09.349Z",
+      "duracaoMs": 1408,
+      "codigo": 0,
+      "comando": [
+        "npm",
+        "audit",
+        "--json"
+      ],
+      "log": "test-results/quality-assurance/audit-3.log"
+    }
+  },
+  "verificacoes": {
+    "fontesInventariados": 102,
+    "jsxInventariados": 58,
+    "arquivosHooks": 4,
+    "mapasOriginaisConferidos": true,
+    "distSemInstrumentacao": true,
+    "uiSrcSemAlteracoes": true,
+    "interrupcao": {
+      "timeoutCodigo": 124,
+      "etapaBrowserCodigo": 1,
+      "log": "test-results/quality-assurance/interrupcao-browser.log",
+      "portaLiberadaNaExecucaoSeguinte": true
+    }
+  },
+  "hashConjuntoFontesUi": "f6e8cc861506a8a9d01c3f73598f318a296a03f5324e99280dd8db86a7595991",
+  "hashesSha256": {
+    "Frontend/UI/package.json": "65d074c029be4041e68a81264a65d312d0fa11a93339ae8e393c56d29acb51f6",
+    "Frontend/UI/package-lock.json": "61606a2d02c632764f3610c8e5fd250445fb6413ae3de28197d4b73ed0dc1278",
+    "Frontend/UI/eslint.config.js": "9e53118e8e3e80f1d00116c1a9568d57a9577a1744a29da42e906f3efd2caffd",
+    "Frontend/UI/qa-browser/cobertura.mjs": "4106940dcf81ac3c6186ccafe346945ad21439c46de4ee6f4d07705ccbbcc224",
+    "Frontend/UI/qa-browser/cobertura-reporter.mjs": "b610be7b5b1a7fb41075a622a4f997dbb76481d9229858fda27892378e97c677",
+    "Frontend/UI/qa-browser/test.mjs": "9650d4c6d7cf20e3140fa2ab13ae9b443c65f1965458300309907afe596b3865",
+    "Frontend/UI/qa-browser/vite.config.mjs": "22e5050e9292cadc1e60fdb5369cf35ab3d1969341a26283c73ce93873ce4eb4",
+    "Frontend/UI/qa-browser/playwright.config.mjs": "bd09f14ed622273eacfcc06c54b6130cbc733afa4656ebc068d9424e96ff4df4",
+    "Frontend/UI/qa-browser/interacoes.jsx": "41ef027597317cae68275ce2e4d9675f868ece05a95f0e8fb007d0aad737e15c",
+    "Frontend/UI/qa-browser/interacoes.spec.mjs": "142f88200af1c3a739c367aa34fa92bbd3f992015f9502eb204a59cbb8e64022",
+    "Frontend/UI/qa-browser/paineis.spec.mjs": "a2dc856270455f32312e86a09302ebc142cb1a0b64adfffd97b4d2751ec42ffd",
+    "scripts/qa/executar.mjs": "9a9d3143f4c368ac95a05523e619d64b9203eca1c065abae083c1c6d3659ec7e",
+    "scripts/qa/medir.mjs": "49e7f5d0e67ca9f5a46256c274bd2de4c55c5ac85c50c23ea7f6e24076b865a3"
+  }
+}

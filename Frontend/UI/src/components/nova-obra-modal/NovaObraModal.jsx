@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import { EstruturaModal } from '../modal-shell/ModalShell';
 import { CampoFormulario } from '../field/Field';
@@ -6,7 +6,7 @@ import { statusObra } from '../../data/constantesDominio';
 import { obterDataAtual } from '../../utils/datas';
 import styles from './NovaObraModal.module.css';
 
-export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar }) {
+export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar, erroApi }) {
   const [form, setForm] = useState({
     nome: '', cliente: '', cidade: '', responsaveis: [], inicio: '', status: 'Em andamento',
   });
@@ -18,9 +18,24 @@ export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar }) {
       : [...dadosAtuais.responsaveis, nome],
   }));
 
+  const envioEmCurso = useRef(false);
+  const [salvando, definirSalvando] = useState(false);
+  const [erro, definirErro] = useState('');
+  const salvar = async () => {
+    if (!canSave || envioEmCurso.current) return;
+    envioEmCurso.current = true;
+    definirSalvando(true);
+    definirErro('');
+    try {
+      const sucesso = await aoSalvar({ ...form, inicio: form.inicio || obterDataAtual() });
+      if (sucesso === false) definirErro('Não foi possível salvar. Confira os dados e tente novamente.');
+    } catch (excecao) { definirErro(excecao.message || 'Não foi possível salvar. Tente novamente.'); }
+    finally { envioEmCurso.current = false; definirSalvando(false); }
+  };
+
   return (
-    <EstruturaModal titulo="Nova obra" subtitulo="Cadastre uma nova frente de trabalho" aoFechar={aoFechar}>
-      <div className={styles.form}>
+    <EstruturaModal titulo="Nova obra" subtitulo="Cadastre uma nova frente de trabalho" aoFechar={() => { if (!envioEmCurso.current) aoFechar(); }}>
+      <form className={styles.form} onSubmit={(evento) => { evento.preventDefault(); salvar(); }}>
         <CampoFormulario rotulo="Nome da obra">
           <input
             autoFocus
@@ -50,7 +65,7 @@ export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar }) {
           </CampoFormulario>
         </div>
 
-        <CampoFormulario rotulo="Técnicos responsáveis">
+        <CampoFormulario rotulo="Técnicos responsáveis" agrupado>
           <details className={styles.multiSelect}>
             <summary className={styles.multiSelectTrigger}>
               <span>{form.responsaveis.length ? `${form.responsaveis.length} técnico(s) selecionado(s)` : 'Selecionar técnicos'}</span>
@@ -80,7 +95,7 @@ export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar }) {
           />
         </CampoFormulario>
 
-        <CampoFormulario rotulo="Status inicial">
+        <CampoFormulario rotulo="Status inicial" agrupado>
           <div className={styles.statusRow}>
             {statusObra.map((s) => (
               <button
@@ -95,19 +110,18 @@ export function ModalNovaObra({ tecnicosCadastrados, aoFechar, aoSalvar }) {
           </div>
         </CampoFormulario>
 
+        {erro && <p role="alert">{erroApi || erro}</p>}
         <div className={styles.actions}>
-          <button onClick={aoFechar} className={styles.cancel}>Cancelar</button>
+          <button type="button" disabled={salvando} onClick={aoFechar} className={styles.cancel}>Cancelar</button>
           <button
-            disabled={!canSave}
-            onClick={() =>
-              aoSalvar({ ...form, inicio: form.inicio || obterDataAtual() })
-            }
+            type="submit"
+            disabled={!canSave || salvando}
             className={styles.submit}
           >
-            Criar obra
+            {salvando ? 'Salvando...' : 'Criar obra'}
           </button>
         </div>
-      </div>
+      </form>
     </EstruturaModal>
   );
 }

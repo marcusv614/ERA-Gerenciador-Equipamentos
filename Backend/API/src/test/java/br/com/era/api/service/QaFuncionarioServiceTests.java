@@ -91,6 +91,22 @@ class QaFuncionarioServiceTests {
         tst.setAtivo(false);assertTrue(service.listarParaUsuario("rh").isEmpty());
         tst.setAtivo(true);funcionario.definirArquivamento(true,"admin");assertTrue(service.listarParaUsuario("rh").isEmpty());
     }
+    @Test void QA_BUG_004_arquivarFuncionarioNaoDesativaUltimoAdmin(){
+        var conta=new Usuario();conta.setPerfil(PerfilUsuario.ADMIN);
+        when(contas.findByFuncionarioId(1L)).thenReturn(Optional.of(conta));
+        when(contas.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)).thenReturn(1L);
+        var erro=assertThrows(RegraNegocioException.class,()->service.definirArquivamento(1L,true,"admin"));
+        assertTrue(erro.getMessage().contains("último administrador ativo"));
+        assertTrue(conta.isAtivo());assertFalse(funcionario.isArquivado());
+        verifyNoInteractions(obras,historico);
+    }
+    @Test void arquivamentoDeAdminVinculadoPermitidoQuandoOutroAdminPermanece(){
+        var conta=new Usuario();conta.setPerfil(PerfilUsuario.ADMIN);
+        when(contas.findByFuncionarioId(1L)).thenReturn(Optional.of(conta));
+        when(contas.countByPerfilAndAtivoTrue(PerfilUsuario.ADMIN)).thenReturn(2L);
+        assertTrue(service.definirArquivamento(1L,true,"outro.admin").arquivado());
+        assertFalse(conta.isAtivo());
+    }
     @Test void adminConsultaArquivadosGerenciaSomenteAtivos(){
         funcionario.definirArquivamento(true,"admin");when(repository.findAll()).thenReturn(List.of(funcionario));
         var u=new Usuario();u.setPerfil(PerfilUsuario.ADMIN);when(usuarios.buscarPorLogin("qa")).thenReturn(u);

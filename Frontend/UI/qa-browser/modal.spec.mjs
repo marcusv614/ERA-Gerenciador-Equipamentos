@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './test.mjs';
 
 test.beforeEach(async ({ page }) => { await page.goto('/qa-browser/fixture.html'); });
 

@@ -1,0 +1,813 @@
+{
+  "coletadoEm": "2026-10-27T11:30:37.546082+00:00",
+  "baseGit": "629adecc44caf66d122aaacf1a691a07109f255f",
+  "escopo": "Regressão Java local completa com mocks/MockMvc e JaCoCo. Sem nova execução de UI, integração PostgreSQL, scanners ou concorrência real. Sem mudanças de produção.",
+  "comando": {
+    "inicio": "2026-10-27T11:29:33.111Z",
+    "duracaoMs": 49083,
+    "codigo": 0,
+    "log": "test-results/quality-assurance/java-7.log",
+    "comando": [
+      "sh",
+      "mvnw",
+      "-B",
+      "-ntp",
+      "clean",
+      "verify",
+      "-Pcoverage",
+      "-Dmaven.test.failure.ignore=true"
+    ]
+  },
+  "java": {
+    "suites": 46,
+    "testes": 783,
+    "falhas": 0,
+    "erros": 0,
+    "ignorados": 0,
+    "aprovados": 783
+  },
+  "novosCasos": 91,
+  "suitesAdicionadas": [
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "testes": 43,
+      "falhas": 0,
+      "erros": 0,
+      "ignorados": 0
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "testes": 22,
+      "falhas": 0,
+      "erros": 0,
+      "ignorados": 0
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "testes": 26,
+      "falhas": 0,
+      "erros": 0,
+      "ignorados": 0
+    }
+  ],
+  "jacoco": {
+    "INSTRUCTION": {
+      "covered": 19765,
+      "missed": 2834,
+      "total": 22599,
+      "percentual": 87.46
+    },
+    "BRANCH": {
+      "covered": 1650,
+      "missed": 541,
+      "total": 2191,
+      "percentual": 75.31
+    },
+    "LINE": {
+      "covered": 1559,
+      "missed": 161,
+      "total": 1720,
+      "percentual": 90.64
+    },
+    "COMPLEXITY": {
+      "covered": 1601,
+      "missed": 670,
+      "total": 2271,
+      "percentual": 70.5
+    },
+    "METHOD": {
+      "covered": 971,
+      "missed": 202,
+      "total": 1173,
+      "percentual": 82.78
+    },
+    "CLASS": {
+      "covered": 133,
+      "missed": 21,
+      "total": 154,
+      "percentual": 86.36
+    }
+  },
+  "servicos": {
+    "UsuarioService": {
+      "INSTRUCTION": {
+        "covered": 787,
+        "missed": 76,
+        "total": 863,
+        "percentual": 91.19
+      },
+      "BRANCH": {
+        "covered": 95,
+        "missed": 19,
+        "total": 114,
+        "percentual": 83.33
+      },
+      "LINE": {
+        "covered": 58,
+        "missed": 4,
+        "total": 62,
+        "percentual": 93.55
+      },
+      "COMPLEXITY": {
+        "covered": 68,
+        "missed": 24,
+        "total": 92,
+        "percentual": 73.91
+      },
+      "METHOD": {
+        "covered": 28,
+        "missed": 7,
+        "total": 35,
+        "percentual": 80.0
+      },
+      "CLASS": {
+        "covered": 1,
+        "missed": 0,
+        "total": 1,
+        "percentual": 100.0
+      }
+    },
+    "EquipamentoService": {
+      "INSTRUCTION": {
+        "covered": 1966,
+        "missed": 384,
+        "total": 2350,
+        "percentual": 83.66
+      },
+      "BRANCH": {
+        "covered": 236,
+        "missed": 110,
+        "total": 346,
+        "percentual": 68.21
+      },
+      "LINE": {
+        "covered": 112,
+        "missed": 7,
+        "total": 119,
+        "percentual": 94.12
+      },
+      "COMPLEXITY": {
+        "covered": 152,
+        "missed": 97,
+        "total": 249,
+        "percentual": 61.04
+      },
+      "METHOD": {
+        "covered": 64,
+        "missed": 12,
+        "total": 76,
+        "percentual": 84.21
+      },
+      "CLASS": {
+        "covered": 1,
+        "missed": 0,
+        "total": 1,
+        "percentual": 100.0
+      }
+    },
+    "NotificacaoMovimentacaoService": {
+      "INSTRUCTION": {
+        "covered": 495,
+        "missed": 9,
+        "total": 504,
+        "percentual": 98.21
+      },
+      "BRANCH": {
+        "covered": 52,
+        "missed": 4,
+        "total": 56,
+        "percentual": 92.86
+      },
+      "LINE": {
+        "covered": 49,
+        "missed": 0,
+        "total": 49,
+        "percentual": 100.0
+      },
+      "COMPLEXITY": {
+        "covered": 49,
+        "missed": 4,
+        "total": 53,
+        "percentual": 92.45
+      },
+      "METHOD": {
+        "covered": 25,
+        "missed": 0,
+        "total": 25,
+        "percentual": 100.0
+      },
+      "CLASS": {
+        "covered": 1,
+        "missed": 0,
+        "total": 1,
+        "percentual": 100.0
+      }
+    }
+  },
+  "comparacao26Outubro": {
+    "java": {
+      "suites": 43,
+      "testes": 692,
+      "falhas": 0,
+      "erros": 0,
+      "ignorados": 0,
+      "novosQa": 412,
+      "defeitos": [],
+      "aprovados": 692,
+      "taxaAprovacao": 100
+    },
+    "jacoco": {
+      "INSTRUCTION": {
+        "missed": 3922,
+        "covered": 18677,
+        "total": 22599,
+        "percentual": 82.65
+      },
+      "LINE": {
+        "missed": 209,
+        "covered": 1511,
+        "total": 1720,
+        "percentual": 87.85
+      },
+      "COMPLEXITY": {
+        "missed": 812,
+        "covered": 1459,
+        "total": 2271,
+        "percentual": 64.24
+      },
+      "METHOD": {
+        "missed": 242,
+        "covered": 931,
+        "total": 1173,
+        "percentual": 79.37
+      },
+      "CLASS": {
+        "missed": 23,
+        "covered": 131,
+        "total": 154,
+        "percentual": 85.06
+      },
+      "BRANCH": {
+        "missed": 725,
+        "covered": 1466,
+        "total": 2191,
+        "percentual": 66.91
+      }
+    },
+    "servicos": {
+      "UsuarioService": {
+        "INSTRUCTION": {
+          "missed": 304,
+          "covered": 559,
+          "percentual": 64.77
+        },
+        "LINE": {
+          "missed": 9,
+          "covered": 53,
+          "percentual": 85.48
+        },
+        "COMPLEXITY": {
+          "missed": 57,
+          "covered": 35,
+          "percentual": 38.04
+        },
+        "METHOD": {
+          "missed": 13,
+          "covered": 22,
+          "percentual": 62.86
+        },
+        "BRANCH": {
+          "missed": 62,
+          "covered": 52,
+          "percentual": 45.61
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      },
+      "EquipamentoService": {
+        "INSTRUCTION": {
+          "missed": 1104,
+          "covered": 1246,
+          "percentual": 53.02
+        },
+        "LINE": {
+          "missed": 36,
+          "covered": 83,
+          "percentual": 69.75
+        },
+        "COMPLEXITY": {
+          "missed": 187,
+          "covered": 62,
+          "percentual": 24.9
+        },
+        "METHOD": {
+          "missed": 42,
+          "covered": 34,
+          "percentual": 44.74
+        },
+        "BRANCH": {
+          "missed": 229,
+          "covered": 117,
+          "percentual": 33.82
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      },
+      "NotificacaoMovimentacaoService": {
+        "INSTRUCTION": {
+          "missed": 99,
+          "covered": 405,
+          "percentual": 80.36
+        },
+        "LINE": {
+          "missed": 12,
+          "covered": 37,
+          "percentual": 75.51
+        },
+        "COMPLEXITY": {
+          "missed": 18,
+          "covered": 35,
+          "percentual": 66.04
+        },
+        "METHOD": {
+          "missed": 2,
+          "covered": 23,
+          "percentual": 92
+        },
+        "BRANCH": {
+          "missed": 23,
+          "covered": 33,
+          "percentual": 58.93
+        },
+        "CLASS": {
+          "missed": 0,
+          "covered": 1,
+          "percentual": 100
+        }
+      }
+    }
+  },
+  "casosAdicionados": [
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "compraRejeitaIdentificacaoDuplicadaECatalogoArquivado",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "quantidadeNaoPodeConsumirUnidadesEmManutencao",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "historicoDeCampoOcultaOutrasObrasELocalAtual(PerfilUsuario)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "historicoDeCampoOcultaOutrasObrasELocalAtual(PerfilUsuario)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoRejeitaSerieDeOutroAtivoMasAceitaPropriaSerie",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "quantidadeEmObraAtualizaSnapshotSomenteQuandoMuda",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "historicoDeOutroSetorNaoRevelaExistencia(PerfilUsuario)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "historicoDeOutroSetorNaoRevelaExistencia(PerfilUsuario)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "historicoDeOutroSetorNaoRevelaExistencia(PerfilUsuario)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "exclusaoEmObraAtualizaSnapshotDepoisDoFlush",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "entradaDeCompraCopiaCatalogoSemCompartilharAtributos",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoERestauracaoSaoIdempotentesEPreservamHistorico",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoRecusaPendenciasSemAlterarEstado(String)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoRecusaPendenciasSemAlterarEstado(String)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoRecusaPendenciasSemAlterarEstado(String)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoRecusaPendenciasSemAlterarEstado(String)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoRecusaPendenciasSemAlterarEstado(String)[5]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "arquivamentoRecusaPendenciasSemAlterarEstado(String)[6]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoPreservaSerieEUnidadeDeCalibracao(String)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoPreservaSerieEUnidadeDeCalibracao(String)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoPreservaSerieEUnidadeDeCalibracao(String)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "exclusaoPreservaHistoricosEPendencias(String)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "exclusaoPreservaHistoricosEPendencias(String)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "exclusaoPreservaHistoricosEPendencias(String)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoNaoTrocaIdentificacaoComPendencias(String, String)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoNaoTrocaIdentificacaoComPendencias(String, String)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoNaoTrocaIdentificacaoComPendencias(String, String)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "edicaoNaoTrocaIdentificacaoComPendencias(String, String)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[5]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[6]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "catalogoRespeitaSetorRemoveDuplicatasEArquivados(PerfilUsuario)[7]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "tecnicoSemVinculoAtualOuHistoricoNaoAcessaAtivo",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[5]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[6]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaEquipamentoRessalvasTests",
+      "teste": "disponibilidadeFinanceiraExigePerfilEExcluiArquivados(PerfilUsuario)[7]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "inativoNaoPodeMarcarLeitura",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "destinatariosDoSetorSaoFiltradosEDeduplicados",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "rejeicaoFinanceiraEntregaAoGestorESolicitanteDoSetor(boolean)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "rejeicaoFinanceiraEntregaAoGestorESolicitanteDoSetor(boolean)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "recebimentoNoDepositoUsaObraDeOrigemEMensagemDeRetorno",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "falhaNaConsultaNaoRetornaCaixaVaziaComoSucesso",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "reentregaRenovaMesmaNotificacaoDepoisDeLeitura",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[5]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[6]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "cancelamentoEncaminhaSomenteAosSetoresDaEtapa(String, boolean, boolean, String)[7]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "solicitanteSemAcessoAdequadoNaoRecebeRejeicaoNemEnvio(String)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "solicitanteSemAcessoAdequadoNaoRecebeRejeicaoNemEnvio(String)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "solicitanteSemAcessoAdequadoNaoRecebeRejeicaoNemEnvio(String)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "paginacaoRespeitaLimitesTitularEContador(int, int)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "paginacaoRespeitaLimitesTitularEContador(int, int)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "paginacaoRespeitaLimitesTitularEContador(int, int)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "paginacaoRespeitaLimitesTitularEContador(int, int)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaNotificacaoRessalvasTests",
+      "teste": "paginacaoRespeitaLimitesTitularEContador(int, int)[5]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "cadastroEEdicaoRejeitamFuncionarioJaVinculado",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "sucessoLimpaFalhasERegistraHorario",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "administradorInicialUsaNomePadraoELoginNormalizado",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "cadastroEEdicaoExigemVinculoParaCampo(PerfilUsuario)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "cadastroEEdicaoExigemVinculoParaCampo(PerfilUsuario)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[3]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[4]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[5]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[6]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "perfilAtivoDeCampoDependeDoPerfilEDoStatus(PerfilUsuario)[7]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "outroAdministradorPermiteRebaixarERemoverVinculoSemTrocarSenha",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "redefinicaoRevogaSessaoLimpaBloqueioEExigeTroca",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "edicaoRejeitaLoginDeOutraConta",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "administradorPodeManterPerfilMesmoSendoUnico",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "sucessoRejeitaContaInativaOuVersaoRevogada(boolean)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "sucessoRejeitaContaInativaOuVersaoRevogada(boolean)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "ultimoAdministradorNaoPodeSerDesativado(long)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "ultimoAdministradorNaoPodeSerDesativado(long)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "cadastroEEdicaoRejeitamFuncionarioArquivadoOuAusente(boolean)[1]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "cadastroEEdicaoRejeitamFuncionarioArquivadoOuAusente(boolean)[2]",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "administradorInativoPodeMudarPerfilSemContarAtivos",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "cadastroRejeitaLoginNormalizadoDuplicadoAntesDeGerarHash",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "bloqueioExpiradoReiniciaContagemNaPrimeiraFalha",
+      "resultado": "APROVADO"
+    },
+    {
+      "classe": "br.com.era.api.service.QaUsuarioGestaoTests",
+      "teste": "desativacaoRevogaSessaoEReativacaoLimpaBloqueio",
+      "resultado": "APROVADO"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ const envVazio = path.join(temporario, 'sem-env');
 await writeFile(envVazio, '', { mode: 0o600 });
 const resultados = [];
 const suiteSolicitada = process.argv.find(arg=>arg.startsWith('--suite='))?.slice(8);
-assert.ok(!suiteSolicitada || ['atendimento-parcial','regressao','recuperacao'].includes(suiteSolicitada),'Suíte inválida.');
+assert.ok(!suiteSolicitada || ['atendimento-parcial','regressao','recuperacao','administradores','notificacoes','backup-restauracao'].includes(suiteSolicitada),'Suíte inválida.');
 const filhos = new Set();
 let interrompido = false;
 function interromper() { interrompido = true;for (const filho of filhos) filho.kill('SIGTERM'); }
@@ -59,7 +59,7 @@ async function stack(nome, testar) {
     await compose(['up','-d','--no-build','--no-deps','ui']);
     origem=await porta('ui',80);
     await compose(['up', '-d', '--no-build']);
-    const config = { descartavel: true, project, database: 'era_test', url: await porta('api',8080), ui: origem, envVazio };
+    const config = { descartavel: true, project, database: 'era_test', url: await porta('api',8080), ui: origem, envVazio, artefatos: path.join(artefatos,nome) };
     if (nome==='recuperacao') config.mail=await porta('mail',8025);
     const arquivo = path.join(temporario, `${nome}.json`);
     await writeFile(arquivo, JSON.stringify(config), { mode: 0o600 });
@@ -129,6 +129,15 @@ if (!suiteSolicitada || suiteSolicitada==='regressao') await stack('regressao', 
   assert.deepEqual(falhas,[],`Etapas com falhas: ${falhas.join(', ')}`);
 });
 if (!suiteSolicitada || suiteSolicitada==='recuperacao') await stack('recuperacao',arquivo=>node('scripts/testes/recuperacao.mjs',arquivo));
+if (!suiteSolicitada || suiteSolicitada==='administradores') await stack('administradores',arquivo=>node('scripts/testes/administradores-concorrentes.mjs',arquivo));
+if (!suiteSolicitada || suiteSolicitada==='notificacoes') await stack('notificacoes',async arquivo=>{
+  await node('scripts/testes/preparar-dados.mjs',arquivo);
+  await node('scripts/testes/notificacoes-persistencia.mjs',arquivo);
+});
+if (!suiteSolicitada || suiteSolicitada==='backup-restauracao') await stack('backup-restauracao',async arquivo=>{
+  await node('scripts/testes/preparar-dados.mjs',arquivo);
+  await node('scripts/testes/backup-restauracao.mjs',arquivo);
+});
 console.log(`\nRelatório: ${path.relative(raiz, artefatos)}/resumo.json`);
 console.table(resultados);
 if (resultados.some(r => r.resultado !== 'passou')) process.exitCode = 1;

@@ -26,7 +26,7 @@ public class NotificacaoMovimentacaoService {
         if(solicitante)contas.findByFuncionarioId(s.getTecnico().getId()).filter(Usuario::isAtivo).filter(u->u.getPerfil()==(epi(s)?PerfilUsuario.TST:PerfilUsuario.TECNICO)).ifPresent(u->destinatarios.put(u.getId(),u));
         repository.saveAll(destinatarios.values().stream().map(u->{
             var existente=repository.findByUsuarioIdAndSolicitacaoIdAndTipo(u.getId(),s.getId(),tipo);
-            if(existente.isPresent()){existente.get().renovar(mensagem);return existente.get();}
+            if(existente.isPresent()){existente.get().renovar(u,s,mensagem);return existente.get();}
             return new NotificacaoMovimentacao(u,s,tipo,mensagem);
         }).toList());
     }

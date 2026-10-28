@@ -54,6 +54,44 @@ Casos parametrizados serão contados individualmente nos relatórios executados.
 
 ## Complementos e inventário executável
 
+- Rodada de `useControleAtivos`: Q/controle-ativos QA-ATIVOS-01 a 27 (ID 21 em
+  Financeiro e RH), 28 cenários nos dois projetos = 56 execuções adicionais.
+  Complementa F05/F06/F07/F08/F14/F15/F17/F26 com estado após recusa/retry,
+  contratos HTTP do cliente, vínculos, duplicidades, planejamento, carregamento,
+  refresh/visibilidade e respostas secundárias. Resultados em `CONTROLE_ATIVOS.md`.
+
+- Rodada de interface em 27/10: Q/interacoes QA-JSX-01 a 15 e Q/paineis
+  QA-JSX-16 a 22, nos dois projetos (44 execuções adicionais), complementam
+  F17/F25/F26/F27/F28 com filtros, operação duplicada, estado/cleanup de hooks,
+  leitura/paginação/timers e os sete perfis. Q/cobertura instrumenta todos os
+  JS/JSX de produção; relatório e limites em `COBERTURA_INTERFACE.md`.
+
+- Rodada de notificações em 27/10: `I/notificacoes-persistencia` acrescenta oito
+  casos reais de F25: resumo/obra/perfil atualizados na reentrega, dupla leitura,
+  leitura/renovação nas duas ordens, alterações financeiras concorrentes,
+  rollback após falha de gravação e paginação SQL. O teste
+  `QaNotificacaoRessalvasTests.QA_BUG_005_reentregaAtualizaMateriaisEObraDoResumo`
+  preserva a reprodução Java. Resultados em `NOTIFICACOES_PERSISTENCIA.md`.
+
+- Rodada posterior de 27/10: `I/administradores-concorrentes` acrescenta cinco
+  casos de F04/F05/F30, com PostgreSQL real e sobreposição observada: desativações,
+  rebaixamentos, disputa mista, arquivamento contra rebaixamento e proteção
+  sequencial do último administrador no arquivamento. `QaFuncionarioServiceTests`
+  acrescenta a reprodução de QA-BUG-004 e um caso positivo com outro ADMIN ativo.
+  Casos, correções e resultados em `CONCORRENCIA_ADMINISTRADORES.md`.
+
+- Retomada de 27/10/2026 (contagens e resultados em `CONTINUACAO_RESSALVAS.md`):
+  `QaUsuarioGestaoTests` complementa F02/F04/F05 com conflitos de login/vínculo,
+  funcionários ausentes/arquivados, proteção sequencial do último administrador,
+  mudanças de perfil, revogação de sessão, bloqueio e redefinição de senha.
+  `QaEquipamentoRessalvasTests` complementa F08/F09/F15/F19/F20 com bloqueios de
+  edição/arquivamento/exclusão, snapshots, catálogo por perfil, histórico restrito
+  por obra/setor e cópia independente de atributos em compras.
+  `QaNotificacaoRessalvasTests` complementa F18/F25 com limites da paginação,
+  contadores, falha de consulta, contas inativas, destinatários por etapa,
+  deduplicação, retorno ao depósito e reabertura da leitura na reentrega.
+  As contagens de 949 abaixo permanecem referentes à avaliação de 26/10.
+
 - `QaRecursosRecuperacaoTests`: vetor SHA-256 conhecido, limite inclusivo de
   tentativas, retorno nulo, configuração de SMTP, montagem de mensagem e falha
   sem vazamento de dados. Não usa servidor SMTP externo.
@@ -89,3 +127,82 @@ legados. Não há família declarada integralmente coberta: permanecem combinaç
 de entradas, telas e estados e os tipos de teste NÃO EXECUTADOS registrados em
 `RELATORIO_EXECUCAO.md`. A cobertura de famílias com alguma evidência é 31/31;
 isso não deve ser divulgado como "100% da aplicação testada".
+
+## Formulários reais — retomada de 27/10/2026
+
+`Q/formularios.spec.mjs`, com 21 cenários em desktop/mobile:
+
+| Família | Casos adicionais |
+| --- | --- |
+| F05 | QA-FORM-DUP/RETRY/ENTER funcionário, EMAIL, FUNC, EDIT-FUNC, EMAIL-EDIT, ARQUIVAR-FUNC: validação, envio, preservação e vínculos |
+| F06 | QA-FORM-DUP/RETRY/ENTER obra, OBRA, GRUPOS: responsáveis, data padrão, status e nomes acessíveis |
+| F07 | QA-FORM-CATEGORIA: duplicidade, falha/retry, seleção e guia |
+| F08 | QA-FORM-DUP/RETRY/ENTER equipamento, EQUIP, EDICAO, ARQUIVAR-EQUIP: série, quantidade, reservas e arquivamento |
+| F14 | QA-FORM-MOVER: destino, responsável, saldo, envio pendente e retry |
+| F09/F12/F13 | Q/controle-ativos.spec.mjs, QA-ATIVOS-28: foco atualiza disponibilidade e pedidos em Financeiro/RH |
+
+Componentes, hook e cliente HTTP reais com API simulada. Escopo e limites em
+[formulários reais](FORMULARIOS_REAIS.md); não substitui integração PostgreSQL.
+
+## Operação dos equipamentos e painéis com dados — 27/10/2026
+
+`Q/operacao-equipamentos.spec.mjs`: 18 cenários, desktop/mobile, com aplicação
+real e rede simulada. Ver [operação dos equipamentos](OPERACAO_EQUIPAMENTOS.md).
+
+| Família | Casos adicionais |
+| --- | --- |
+| F19 | QA-MAN-01 a 04: abertura, saldo/motivo, envio pendente, recusa/retry, cancelamento da conclusão, histórico e liberação de saldo |
+| F20 | QA-CAL-01 a 08: solicitação em duas origens, retirada, envio, retorno/certificado, certificado anterior, cancelamento, duas restrições e limites da Gerência |
+| F09/F17 | QA-EST-DADOS-01/02: filas e filtros com dados, histórico, falha de carga sem listas parciais e retry |
+| F12/F13 | QA-PAINEL-DADOS RH/Financeiro: detalhes/materiais/decisões, disponibilidade dos botões e abertura pelo Kanban, sem mutações |
+
+## Compra recebida e atendimento parcial — 27/10/2026
+
+`Q/compras-parciais.spec.mjs`: 11 cenários em desktop/mobile, 22 execuções novas.
+Detalhes em [compra recebida e atendimento parcial](COMPRAS_ATENDIMENTO_PARCIAL.md).
+
+| Família | Casos adicionais e evidências |
+| --- | --- |
+| F15 | QA-COMPRA-01 a 03: nota/série/quantidade, envio único, recusa/retry, entrada de seis e saldo de quatro após recarga |
+| F16 | QA-PARCIAL-01 a 05: indisponibilidade sem entrada, seleção/motivo, divisão e pedido remanescente, cancelamento local, origens distintas e material sem saldo |
+| F17 | QA-EST-FLUXO-01/02: envio recusado/retry e recebimento recusado após trânsito sem repetição da saída |
+| F13/F15/F16/F17 | `scripts/validar-atendimento-parcial.mjs`: reexecutado em API/PostgreSQL reais descartáveis, com reservas, rollback, sequência 6+1+3, autorização e CSRF |
+
+## Planejamento e decisões de RH/Financeiro — 27/10/2026
+
+`Q/financeiro-decisoes.spec.mjs`: 15 cenários, 30 execuções desktop/mobile.
+Detalhes em [RH/Financeiro](RH_FINANCEIRO.md).
+
+| Família | Casos e evidências adicionais |
+| --- | --- |
+| F12 | QA-DEC-01/02 em RH e Financeiro: aprovação, rejeição justificada, envio único e recusa/retry |
+| F13 | QA-FIN-PLANO-01 a 03: transporte/compra, origem inválida, revisão, reserva própria e mínimo já recebido |
+| F18 | QA-CAN-01 a 04: falha de carga, entrega concluída somente leitura, suspensão pelo RH, parecer financeiro com/sem estoque e saldo vinculado |
+| F12/F13 | QA-DEC-03/04: POST confirmado com GET recusado, análise vinculada, aviso de sincronização e retomada sem nova mutação; QA-BUG-009 |
+| F12/F13 | E/fluxos QA-FIN-REAL aprovação/rejeição: quatro execuções novas com API/PostgreSQL reais, consulta da lista interceptada e decisão persistida conferida |
+| F18/F04 | Regressão HTTP de cancelamento/RH, operações, segurança e oito QA-API; stack real de regressão reexecutada |
+
+## Sincronização após plano e edição — 27/10/2026
+
+Sete cenários novos em `Q/financeiro-decisoes.spec.mjs`, 14 execuções nos dois
+viewports; dois cenários novos em `E/fluxos.spec.mjs`, quatro execuções reais.
+Detalhes em [sincronização financeira](SINCRONIZACAO_FINANCEIRA.md).
+
+| Família | Casos e evidências adicionais |
+| --- | --- |
+| F11/F13 | QA-SYNC-01: plano novo, revisão aprovada, edição Financeiro/RH e saldo vinculado confirmados com GET recusado, dados preservados e um envio; QA-BUG-010 |
+| F11 | QA-SYNC-02: PATCH realmente recusado preserva dados e permite retry em Financeiro/RH |
+| F11/F13 | QA-SYNC-REAL: POST do plano e PATCH da edição reais, GET interceptado, campos persistidos e um evento ALTERACAO, retomada/reload sem novo envio |
+| F12 | Regressão dos casos de decisão e consulta recusada da rodada de QA-BUG-009 |
+
+## Fechamento técnico do piloto — 27/10/2026
+
+| Família | Verificação e situação nesta tentativa |
+| --- | --- |
+| F01 a F31 | 786 Java, 189 Node, lint/build reexecutados e aprovados; 278 navegador preservados por hashes dos 102 fontes, sem nova execução |
+| F31 | npm audit sem vulnerabilidades e OSV com 102 bibliotecas sem alertas |
+| F31 | QA-BKP-01: dump custom, alteração de dados fictícios, restauração integral/sequências e retomada HTTP; implementação com sintaxe verificada, execução BLOQUEADA pelo Docker |
+| F31 | Integração completa e Trivy das duas imagens locais: BLOQUEADOS pelo Docker; resultados anteriores não contados como novos |
+| F01/F27/F31 | Smoke e condições operacionais do destino: PENDENTES de ambiente e responsáveis |
+
+Critérios e evidências em [fechamento do piloto](FECHAMENTO_PILOTO.md).
