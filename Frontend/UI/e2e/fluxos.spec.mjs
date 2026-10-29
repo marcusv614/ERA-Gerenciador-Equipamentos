@@ -145,7 +145,8 @@ test('Kanban: barra integrada, mouse, teclado, gestos e redimensionamento',async
   await expect(barra).toBeHidden();
   await page.setViewportSize({width:320,height:900});
   await expect(barra).toBeVisible();
-  await expect.poll(()=>indicador.evaluate(e=>e.getBoundingClientRect().width)).toBeGreaterThanOrEqual(44);
+  // CSS pixels podem retornar 43.999996 para largura de 44 em viewport mobile.
+  await expect.poll(()=>indicador.evaluate(e=>Math.round(e.getBoundingClientRect().width*1000)/1000)).toBeGreaterThanOrEqual(44);
   await barra.focus();
   await barra.press('End');
   await expect.poll(()=>board.evaluate(e=>Math.abs(e.scrollLeft-(e.scrollWidth-e.clientWidth)))).toBeLessThanOrEqual(1);

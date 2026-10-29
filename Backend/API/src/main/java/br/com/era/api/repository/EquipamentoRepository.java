@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import br.com.era.api.model.Equipamento;
 import jakarta.persistence.LockModeType;
-public interface EquipamentoRepository extends JpaRepository<Equipamento,Long> {
+public interface EquipamentoRepository extends JpaRepository<Equipamento,Long>, EquipamentoConsultas {
     List<Equipamento> findByTecnicoIdAndAuditavelTrueAndArquivadoFalseOrderByModeloAscSerieAsc(Long tecnicoId);
     boolean existsBySerieIgnoreCase(String serie);
     Optional<Equipamento> findBySerieIgnoreCase(String serie);

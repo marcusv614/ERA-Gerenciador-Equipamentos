@@ -1,0 +1,1279 @@
+{
+  "agendamentoPiloto": {
+    "situacao": "ADIADO",
+    "orientacaoUsuario": "o piloto iniciará depois"
+  },
+  "definicoesOperacionais": {
+    "https": {
+      "responsavel": "Hostinger",
+      "situacao": "CONFIGURAÇÃO PREVISTA",
+      "origem": "Informado pelo usuário",
+      "validacaoNoDestino": "PENDENTE: HTTPS, cookie seguro e CORS antes do piloto"
+    },
+    "destino": {
+      "dominio": "tools.eraltda.com.br",
+      "plataforma": "Hostinger",
+      "situacao": "PREVISTO; sem implantação nesta etapa"
+    },
+    "participantes": {
+      "pessoasAproximadas": 20,
+      "obrasEmAndamentoMinimas": 3,
+      "quantidadeRealRegistros": "ALTA, sem contagem informada"
+    },
+    "responsaveis": {
+      "situacao": "A DEFINIR",
+      "origem": "Usuário não sabe informar"
+    },
+    "backupExterno": {
+      "situacao": "DESTINO DEFINIDO; CÓPIA DOS DADOS REAIS DA VPS PENDENTE",
+      "destinoLocal": "/home/marcus/Documents/Backups-ERA",
+      "ensaioValidado": {
+        "tipo": "ENSAIO COM DADOS FICTÍCIOS",
+        "backupRealDaVps": false,
+        "arquivo": "/home/marcus/Documents/Backups-ERA/ensaios/ENSAIO-FICTICIO-ERA-dc58d5d153fba59b.dump",
+        "sha256": "dc58d5d153fba59b137c7ba7e8fc8e370529b1caa9f32a1e5f280e1f72400e52",
+        "bytes": 104259,
+        "origem": "test-results/integracao-1793149187848/backup-restauracao",
+        "restauracao": "APROVADA",
+        "tabelas": 24,
+        "sequencias": 20,
+        "salvoEm": "2026-10-28T01:47:45.902Z",
+        "retencao": "Sem remoção automática; política dos dados reais ainda a definir."
+      },
+      "retencao": "A DEFINIR; sem remoção automática"
+    },
+    "carga": {
+      "usuarios": 20,
+      "obrasMinimas": 3,
+      "cenarioSintetico": {
+        "equipamentosAdicionais": 5000,
+        "pedidosAdicionais": 2000
+      },
+      "volumeReal": "Alto, contagem ainda não informada",
+      "slaHostinger": "Não definido nem medido"
+    }
+  },
+  "statusEntrega": "PREPARAÇÃO TÉCNICA COM PENDÊNCIAS",
+  "coletadoEm": "2026-10-29T12:21:49.442Z",
+  "fuso": "America/Manaus",
+  "baseGit": "6c9c078af0039a166347797deb72f6cf8c2225d7",
+  "arvoreDeTrabalho": "Alterações de QA ainda não commitadas; a base Git isolada não identifica a versão testada.",
+  "parecerTecnico": "REPROVADO",
+  "inicioOperacional": "ADIADO pelo usuário; ambiente, responsáveis, backup real e demais condições operacionais ainda pendentes.",
+  "verificacoes": [
+    {
+      "id": "P01",
+      "nome": "Integridade dos fontes do fechamento",
+      "estado": "APROVADO",
+      "arquivos": 365,
+      "alterados": []
+    },
+    {
+      "id": "P02",
+      "nome": "Regressão de interface preservada no mesmo código",
+      "estado": "APROVADO",
+      "reexecutadaNesteFechamento": false,
+      "baseline": "docs/quality-assurance/evidencias/sincronizacao-financeira-2026-10-27.json",
+      "sha256Baseline": "4bbf554f82800c4dd1ead118877e2f10fc7ba8fb8e2fe0ed29c3b98a0c6e956e",
+      "fontesConferidos": 102,
+      "casos": {
+        "startTime": "2026-10-27T22:28:24.689Z",
+        "duration": 1249714.1979999999,
+        "expected": 278,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cobertura": {
+        "total": 2857,
+        "covered": 1946,
+        "skipped": 0,
+        "pct": 68.11
+      }
+    },
+    {
+      "id": "P03",
+      "nome": "Backend, Node, lint e build",
+      "estado": "APROVADO",
+      "java": {
+        "suites": 47,
+        "testes": 787,
+        "falhas": 0,
+        "erros": 0,
+        "ignorados": 0,
+        "novosQa": 507,
+        "defeitos": [],
+        "aprovados": 787,
+        "taxaAprovacao": 100
+      },
+      "node": {
+        "tests": 189,
+        "pass": 189,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "taxaAprovacao": 100
+      },
+      "comandos": {
+        "java": {
+          "etapa": "java",
+          "tentativa": 15,
+          "inicio": "2026-10-29T12:19:46.957Z",
+          "duracaoMs": 33188,
+          "comando": [
+            "sh",
+            "mvnw",
+            "-B",
+            "-ntp",
+            "clean",
+            "verify",
+            "-Pcoverage",
+            "-Dmaven.test.failure.ignore=true"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Backend/API",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/java-15.log"
+        },
+        "node": {
+          "etapa": "node",
+          "tentativa": 13,
+          "inicio": "2026-10-28T00:06:14.645Z",
+          "duracaoMs": 1172,
+          "comando": [
+            "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+            "--experimental-test-coverage",
+            "--test-coverage-include=src/**/*.js",
+            "--test-reporter=tap",
+            "--test-reporter=lcov",
+            "--test-reporter-destination=/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/test-results/quality-assurance/frontend.tap",
+            "--test-reporter-destination=/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/test-results/quality-assurance/frontend.lcov",
+            "--test",
+            "--test-isolation=none",
+            "tests/acompanhamentoSolicitacao.test.js",
+            "tests/administracaoUsuarios.test.js",
+            "tests/atendimentoParcial.test.js",
+            "tests/calibracoes.test.js",
+            "tests/cancelamento.test.js",
+            "tests/documentosAuditoria.test.js",
+            "tests/edicaoSolicitacao.test.js",
+            "tests/errosApi.test.js",
+            "tests/escopoPedidosGerencia.test.js",
+            "tests/exportacaoAuditoria.test.js",
+            "tests/filtrosEstoque.test.js",
+            "tests/isolamentoIntegracao.test.js",
+            "tests/localizacaoEquipamentos.test.js",
+            "tests/manutencaoEquipamento.test.js",
+            "tests/notificacoes.test.js",
+            "tests/novoPedido.test.js",
+            "tests/operacaoEstoque.test.js",
+            "tests/ordemAtendimento.test.js",
+            "tests/pedidoMovimentacao.test.js",
+            "tests/pedidosFinanceiros.test.js",
+            "tests/pesquisaSolicitacoes.test.js",
+            "tests/planoFinanceiro.test.js",
+            "tests/qaFundamentos.test.js",
+            "tests/recuperacaoConta.test.js",
+            "tests/rolagemKanban.test.js",
+            "tests/titulosNotificacao.test.js",
+            "tests/vistoriaTecnico.test.js"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/node-13.log"
+        },
+        "lint": {
+          "etapa": "lint",
+          "tentativa": 18,
+          "inicio": "2026-10-28T00:06:15.819Z",
+          "duracaoMs": 31669,
+          "comando": [
+            "npm",
+            "run",
+            "lint"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/lint-18.log"
+        },
+        "build": {
+          "etapa": "build",
+          "tentativa": 12,
+          "inicio": "2026-10-28T00:06:47.489Z",
+          "duracaoMs": 5012,
+          "comando": [
+            "npm",
+            "run",
+            "build"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/build-12.log"
+        }
+      }
+    },
+    {
+      "id": "P04",
+      "nome": "Dependências npm e Maven",
+      "estado": "APROVADO",
+      "npm": {
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        },
+        "dependencies": {
+          "prod": 32,
+          "dev": 169,
+          "optional": 27,
+          "peer": 0,
+          "peerOptional": 0,
+          "total": 200
+        }
+      },
+      "osv": {
+        "bibliotecasConsultadas": 102,
+        "alertas": []
+      },
+      "comandos": {
+        "maven-deps": {
+          "etapa": "maven-deps",
+          "tentativa": 4,
+          "inicio": "2026-10-29T12:20:20.145Z",
+          "duracaoMs": 3985,
+          "comando": [
+            "sh",
+            "mvnw",
+            "-B",
+            "-ntp",
+            "dependency:tree",
+            "-DoutputType=json",
+            "-DoutputFile=target/security-dependencies.json",
+            "-Dscope=runtime"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Backend/API",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/maven-deps-4.log"
+        },
+        "audit": {
+          "etapa": "audit",
+          "tentativa": 5,
+          "inicio": "2026-10-29T12:20:24.131Z",
+          "duracaoMs": 1017,
+          "comando": [
+            "npm",
+            "audit",
+            "--json"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/audit-5.log"
+        },
+        "osv": {
+          "etapa": "osv",
+          "tentativa": 4,
+          "inicio": "2026-10-29T12:20:25.149Z",
+          "duracaoMs": 1529,
+          "comando": [
+            "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+            "scripts/verificar-dependencias-java.mjs"
+          ],
+          "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/",
+          "codigo": 0,
+          "sinal": null,
+          "log": "test-results/quality-assurance/osv-4.log"
+        }
+      }
+    },
+    {
+      "id": "P05",
+      "nome": "Integração completa em stacks descartáveis",
+      "estado": "BLOQUEADO",
+      "motivo": "Daemon Docker indisponível; nenhuma stack foi validada nesta tentativa.",
+      "execucao": {
+        "inicio": "2026-10-29T12:19:46.953Z",
+        "fim": "2026-10-29T12:19:47.902Z",
+        "comando": [
+          "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+          "scripts/testar-integracao.mjs"
+        ],
+        "env": {
+          "ERA_TEST_CHROMIUM": "/usr/bin/chromium"
+        },
+        "codigo": 1,
+        "sinal": null,
+        "log": "test-results/quality-assurance/piloto/integracao.log"
+      },
+      "relatorio": "test-results/integracao-1793276387011/resumo.json",
+      "resumo": [
+        {
+          "suite": "construcao",
+          "resultado": "falhou",
+          "erro": "docker compose falhou (1)."
+        }
+      ],
+      "logSha256": "b759155a952b3412558f15ffbfbbdec6c1372926ccbc5b3450148001c33af79c",
+      "anterior": "test-results/integracao-1793132175643/resumo.json"
+    },
+    {
+      "id": "P06",
+      "nome": "Ensaio de backup e restauração",
+      "estado": "BLOQUEADO",
+      "motivo": "Ensaio preparado; execução depende da stack Docker descartável.",
+      "evidencia": null,
+      "script": "scripts/testes/backup-restauracao.mjs",
+      "politicaRealValidada": false
+    },
+    {
+      "id": "P07",
+      "nome": "Varredura das imagens finais de API e UI",
+      "estado": "BLOQUEADO",
+      "motivo": "Não há relatório atual de duas imagens identificadas, sem alertas HIGH/CRITICAL. Consultar os motivos registrados no relatório de imagens.",
+      "evidencia": {
+        "inicio": "2026-10-29T12:21:44.680Z",
+        "fim": "2026-10-29T12:21:44.743Z",
+        "scanner": "aquasec/trivy:0.76.1",
+        "scannerId": null,
+        "scanners": [
+          "vuln"
+        ],
+        "severidades": [
+          "HIGH",
+          "CRITICAL"
+        ],
+        "ignoreUnfixed": false,
+        "resultados": [
+          {
+            "nome": "api",
+            "tag": "era-tests-api:local",
+            "resultado": "BLOQUEADO",
+            "motivo": "docker info falhou (1): failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory\n"
+          },
+          {
+            "nome": "ui",
+            "tag": "era-tests-ui:local",
+            "resultado": "BLOQUEADO",
+            "motivo": "docker info falhou (1): failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory\n"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P08",
+      "nome": "E2E reais desktop/mobile atualizados",
+      "estado": "BLOQUEADO",
+      "motivo": "Os 38 E2E anteriores não são contados como nova execução do fechamento.",
+      "atual": null,
+      "anterior": {
+        "startTime": "2026-10-27T20:17:36.340Z",
+        "duration": 125249.79,
+        "expected": 38,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "id": "P09",
+      "nome": "Carga sintética com 20 sessões e três obras",
+      "estado": "REPROVADO",
+      "motivo": "20 de 20 leituras falharam no perfil 2 CPUs / 2GiB; a carga permanece reprovada.",
+      "evidencia": {
+        "nome": "QA-CARGA-01: 20 sessões independentes em três obras",
+        "resultado": "REPROVADO",
+        "usuarios": 20,
+        "equipamentosAdicionais": 5000,
+        "pedidosAdicionais": 2000,
+        "obras": 3,
+        "escopo": "Leituras HTTP locais; 20 contas de Gerência sintéticas, volume escolhido para ensaio, sem representar quantidade real ainda desconhecida. Não mede renderização de 20 navegadores nem SLA da Hostinger.",
+        "limites": {
+          "apiCpus": 2,
+          "apiMemoria": "2GiB",
+          "postgresCpus": 1,
+          "postgresMemoria": "512MiB",
+          "timeoutHttpMs": 10000,
+          "apiMemoriaBytes": 2147483648
+        },
+        "amostras": [
+          {
+            "usuario": 0,
+            "rota": "/obras",
+            "fase": "aquecimento",
+            "status": 200,
+            "bytes": 641,
+            "itens": 3,
+            "sucesso": true,
+            "duracaoMs": 41.47003799999948
+          },
+          {
+            "usuario": 0,
+            "rota": "/equipamentos",
+            "fase": "aquecimento",
+            "status": 200,
+            "bytes": 3058867,
+            "itens": 5011,
+            "sucesso": true,
+            "duracaoMs": 2992.6215950000005
+          },
+          {
+            "usuario": 0,
+            "rota": "/atividades",
+            "fase": "aquecimento",
+            "status": 200,
+            "bytes": 1481640,
+            "itens": 2006,
+            "sucesso": true,
+            "duracaoMs": 1315.7867490000026
+          },
+          {
+            "usuario": 0,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10010.870690999996
+          },
+          {
+            "usuario": 1,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10012.837897999998
+          },
+          {
+            "usuario": 2,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10011.180544000003
+          },
+          {
+            "usuario": 3,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10010.697200999995
+          },
+          {
+            "usuario": 4,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10010.221721999998
+          },
+          {
+            "usuario": 5,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10009.531412
+          },
+          {
+            "usuario": 6,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10008.999362999999
+          },
+          {
+            "usuario": 7,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10007.921216000002
+          },
+          {
+            "usuario": 8,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10011.450279000004
+          },
+          {
+            "usuario": 9,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10011.627942
+          },
+          {
+            "usuario": 10,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10012.667869
+          },
+          {
+            "usuario": 11,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10012.849086999999
+          },
+          {
+            "usuario": 12,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10012.517031
+          },
+          {
+            "usuario": 13,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10012.071730999996
+          },
+          {
+            "usuario": 14,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10011.509942
+          },
+          {
+            "usuario": 15,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10010.931861999998
+          },
+          {
+            "usuario": 16,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10010.219448000003
+          },
+          {
+            "usuario": 17,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10009.735772999997
+          },
+          {
+            "usuario": 18,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10009.265295999998
+          },
+          {
+            "usuario": 19,
+            "rota": "/equipamentos",
+            "fase": "carga",
+            "sucesso": false,
+            "erro": "Tempo limite de 10s",
+            "duracaoMs": 10018.648595000002
+          }
+        ],
+        "imageId": "sha256:5f6bc6ef6e1ab1d196adc447b205af4f2e8aac6df784f1e75dc8c5d9e9d6858e",
+        "volumes": {
+          "equipamentos": 5011,
+          "pedidos": 2012,
+          "obrasComEquipamentos": 3
+        },
+        "aquecimento": [
+          {
+            "rota": "/obras",
+            "sucesso": true
+          },
+          {
+            "rota": "/equipamentos",
+            "sucesso": true
+          },
+          {
+            "rota": "/atividades",
+            "sucesso": true
+          }
+        ],
+        "duracaoCargaMs": 10043.915515,
+        "concorrenciaMaxima": 20,
+        "resumo": {
+          "requisicoes": 20,
+          "sucessos": 0,
+          "erros": 20,
+          "p50Ms": 10010.931861999998,
+          "p95Ms": 10012.849086999999,
+          "maxMs": 10018.648595000002,
+          "requisicoesPorSegundo": 0
+        },
+        "erro": "O ensaio encontrou falhas ou timeouts.\n\n20 !== 0\n",
+        "duracaoMs": 32941.212074
+      }
+    }
+  ],
+  "hashesSha256": {
+    "Backend/API/Dockerfile": "ea9ecbd5a2549a681c9e356b82518907567a1cb146bc153d207b5f8e9f2f8e93",
+    "Backend/API/pom.xml": "103b8eb485a629d3e0fa386df5810e0981c45974c409e1368e4946e5311bc7cc",
+    "Backend/API/src/main/java/br/com/era/api/EraApiApplication.java": "b9057aff197ccc388f25af6fabae5566f4f9b5a62079dd7f817d9c5e56e76b18",
+    "Backend/API/src/main/java/br/com/era/api/config/CorsProperties.java": "a8e91c50e384338a5cb63345622df72518de5e91009ec548806575cadb814f91",
+    "Backend/API/src/main/java/br/com/era/api/config/PoliticaSenha.java": "c78953325eeaa1378cea089b43dc3dfadcabcfdbbc1a565bfd93b62612baf7e4",
+    "Backend/API/src/main/java/br/com/era/api/config/RecuperacaoConfig.java": "06068b6913c6e9ba6f0f2d966b848896ced533f7d7bc694fc0d65a70e7343f4e",
+    "Backend/API/src/main/java/br/com/era/api/config/RecuperacaoProperties.java": "22f712683c5e28180313c961784f24fb62e7d5ebf4e428f2411a52b301967bc7",
+    "Backend/API/src/main/java/br/com/era/api/config/RegistroErroSeguro.java": "8a4d1787d3b5b789b87e0e0a34dc82a113a26a60a1d05f3d49cfd41c697a2c22",
+    "Backend/API/src/main/java/br/com/era/api/config/SecurityConfig.java": "92f7e6addf66a38170ab7646636cf3d6fcf347c6dd50d9eeb1578938f6d4ba29",
+    "Backend/API/src/main/java/br/com/era/api/config/UsuarioAutenticado.java": "61a8e0009d3488f52b42190e591e467d673acbf643d80a2a173e11c8c3cb88fc",
+    "Backend/API/src/main/java/br/com/era/api/config/ValidacaoSessaoFilter.java": "1b75f3d96ddf50b1813fd6eed242e6cd5e2ffbde95fb5942336a3624d1e4ede3",
+    "Backend/API/src/main/java/br/com/era/api/controller/AtividadeController.java": "90eed140a7d5552e0006ba367bf7bf8feffdeb93a6a8c0b6e30ea2bb9ad0161f",
+    "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaController.java": "2d488a6be36586460576c9adba4fad3fee9642ae88e45a9c01d050be3a3a3cc0",
+    "Backend/API/src/main/java/br/com/era/api/controller/AuditoriaTecnicoController.java": "6bbb8a1ac0592fac20700e465a0daa6f410068357288f0e7efe680d2f5cfd4b5",
+    "Backend/API/src/main/java/br/com/era/api/controller/AutenticacaoController.java": "4aad21997d84150f01d1867c8ec4e2dd12b6debf8092bc6bc8aee9ee39674188",
+    "Backend/API/src/main/java/br/com/era/api/controller/CalibracaoController.java": "53e03b111cb88c82d3052d00c5538808baa3dd6af38847123cd1d513efa85f87",
+    "Backend/API/src/main/java/br/com/era/api/controller/CancelamentoSolicitacaoController.java": "dd640e93dce3db7f232a737c273942e00cffbc2ba81b3f574552bbe47f0bbd32",
+    "Backend/API/src/main/java/br/com/era/api/controller/CategoriaEquipamentoController.java": "a9f66cdb2e35bbed8ee42864cf5bce7ecc5b9c029eb70ff31d4899721244e60d",
+    "Backend/API/src/main/java/br/com/era/api/controller/DepositoController.java": "a7184be9ac35a6ed7555868384e0fae29901038c8729da351527b2925a7d0de2",
+    "Backend/API/src/main/java/br/com/era/api/controller/EquipamentoController.java": "caa222cf5160484a25b4cf66880a0b752c1b3163b89aa6f4b61c6305dbe4162b",
+    "Backend/API/src/main/java/br/com/era/api/controller/EventosSegurancaController.java": "f01a7b1c59f770bbc2b0ffb8a8ac3deb3af45a716ef67f118147000fefdc54f8",
+    "Backend/API/src/main/java/br/com/era/api/controller/FuncionarioController.java": "d7f3b83b763295cbb36eaa45c81acc76c0a0c1aa271e42e9a38458a524751eef",
+    "Backend/API/src/main/java/br/com/era/api/controller/NotificacaoController.java": "fcaa2a95fc75c85f8a383bcee88bbe8d201d65f62f553a4656b87caa1c82f06d",
+    "Backend/API/src/main/java/br/com/era/api/controller/ObraController.java": "d1f9b15c3f77775fcc944c53f7e640df52a6216deb2d433ff1e49de0d478c403",
+    "Backend/API/src/main/java/br/com/era/api/controller/PainelController.java": "715eff730b3a8701b2b236715f9ba7508e57d588c3615a9da69c7fb93481827f",
+    "Backend/API/src/main/java/br/com/era/api/controller/RecuperacaoContaController.java": "31426efa1a1052da1a064d80eeaf06390feee234365876bb097135e3874270cc",
+    "Backend/API/src/main/java/br/com/era/api/controller/RelatorioPedidoController.java": "58faf0010132357c434910d4da4584d589a267760bee43ed093a8311d7d706b5",
+    "Backend/API/src/main/java/br/com/era/api/controller/UsuarioController.java": "665fff03d6a8e2660451f6888160b8583eab727bb1d05abcd36adf460a0d72d1",
+    "Backend/API/src/main/java/br/com/era/api/dto/ArquivamentoDto.java": "77f71076997c983f0091fba38886c6d6d9765ae54118fb0009d60695d70843b7",
+    "Backend/API/src/main/java/br/com/era/api/dto/AuditoriaTecnicoDto.java": "028752185f56e1b12dd33e45217905343868081cf6fdc746050c5ff4daabf9b8",
+    "Backend/API/src/main/java/br/com/era/api/dto/AutenticacaoDto.java": "5dc927cca3d63bd51d2fec0b0068309a73b67edd9bf1b1944a7f74b0657c2b19",
+    "Backend/API/src/main/java/br/com/era/api/dto/CalibracaoDto.java": "816ed9c813013a939e336d011d99fdbace9eb2964ef557b7bcb690cf731e98fe",
+    "Backend/API/src/main/java/br/com/era/api/dto/CategoriaEquipamentoDto.java": "d1fbabe265aac2a9f4eb24348c0e9daa2dde1c6a48b37e09946364a3df75f36d",
+    "Backend/API/src/main/java/br/com/era/api/dto/EquipamentoDto.java": "526ec6391f248146c51b2dfc09ff04e7b4a2502d839b8ebbc2a93bb806391803",
+    "Backend/API/src/main/java/br/com/era/api/dto/FuncionarioDto.java": "3290410b30e52fe49d513e9625d6902e6f0a21a5868654eb88c22dd33bd74c44",
+    "Backend/API/src/main/java/br/com/era/api/dto/InventarioHistoricoDto.java": "31ed8c82fda2e35a5d6aa890f55c0669b013f98de9fec3270f64ce3bbf832e79",
+    "Backend/API/src/main/java/br/com/era/api/dto/ManutencaoDto.java": "71f20b77e4feedd9cb8d61c86f71c94cb601b1ae02a8f9c27bf5e5f88ddc949b",
+    "Backend/API/src/main/java/br/com/era/api/dto/MovimentacaoDto.java": "523f2d189404ed05fd172541c379928ee9fa683ae1857650501eca67549035a1",
+    "Backend/API/src/main/java/br/com/era/api/dto/ObraDto.java": "3b1b1ed5b815aeb76092aa90b35ef4a814ce9a327dbb5d9364d5ea530663bc32",
+    "Backend/API/src/main/java/br/com/era/api/dto/PedidoFinanceiroDto.java": "82cb228dd0d9354cbcf7d6b5bfbada8c829b64af06815ac20ea671292d9cf805",
+    "Backend/API/src/main/java/br/com/era/api/dto/RecuperacaoDto.java": "6b656a72676020fcd6b96c56274e5fa5344e7a06b1c69324beef14ad97bb932c",
+    "Backend/API/src/main/java/br/com/era/api/dto/SolicitacaoDto.java": "8043bb5406a1d2bb786530e7e1065d3847966992f436325a7dafa2825bd577b9",
+    "Backend/API/src/main/java/br/com/era/api/dto/UsuarioDto.java": "33f5d8eb633e87b80c88f801f54fd690a443f44006c4d50f3c38c63591f21923",
+    "Backend/API/src/main/java/br/com/era/api/exception/ApiExceptionHandler.java": "19a68d3f9fc771051911c229456b5a745def60f7184b4f9e517200982591663a",
+    "Backend/API/src/main/java/br/com/era/api/exception/RecursoNaoEncontradoException.java": "1b07a4179dd69e94eb96726ee91520d954fce96367a24fff2522a233622a7c60",
+    "Backend/API/src/main/java/br/com/era/api/exception/RegraNegocioException.java": "9aa0ba9bc713d7f62861f5b62ced6deda8c5ec66519a408709bd9d6d76fc80ca",
+    "Backend/API/src/main/java/br/com/era/api/model/AuditoriaTecnico.java": "4a7faa58ad332d366fdf2009fdc3b28f445fd12310b833ea29611f591e60da97",
+    "Backend/API/src/main/java/br/com/era/api/model/CalibracaoEquipamento.java": "5fda00b41be26f952bf216449ff381900453a7fdff82b960fbafe88dcc9f3960",
+    "Backend/API/src/main/java/br/com/era/api/model/CategoriaEquipamento.java": "894471d007bc7663873ce32ec86690695f2c5be3627adfa18b91990b0e7bba6a",
+    "Backend/API/src/main/java/br/com/era/api/model/Equipamento.java": "1bb287a36016e59536d3a4313237b0fcf209635681266b6f1b6f3ab28a1a56db",
+    "Backend/API/src/main/java/br/com/era/api/model/Funcionario.java": "6cb74ee38d220bb57e6646953e5178da8bb1fb9b4371803817b25066ccd4413b",
+    "Backend/API/src/main/java/br/com/era/api/model/InventarioObraSnapshot.java": "bfa1b71f21396fb442fbd0aabe96de28454062bb066653831619aa0557e259a2",
+    "Backend/API/src/main/java/br/com/era/api/model/InventarioObraSnapshotItem.java": "e50bd55c7c9090795fc24f78df551a7199cfb2aef680887b118dfcaa68693205",
+    "Backend/API/src/main/java/br/com/era/api/model/ManutencaoEquipamento.java": "5c8bfb0e4edd39b7c7a141a6a442ccb0f767093ebecae99f5692a08219ee5b9e",
+    "Backend/API/src/main/java/br/com/era/api/model/MaterialSolicitado.java": "0efde7f36f4efb188e8160cc7f5a171266f9cd69473f0896d1105d0f512dd962",
+    "Backend/API/src/main/java/br/com/era/api/model/Movimentacao.java": "69d9a2ec872e2163666e4e24673c3f34146aed2235823a733d0e3492ab53ad94",
+    "Backend/API/src/main/java/br/com/era/api/model/NotificacaoMovimentacao.java": "265c2f490aa6c3e1e3fa75e674c9e7a6a95b9b5275bf391ed2623c502e35fd0a",
+    "Backend/API/src/main/java/br/com/era/api/model/Obra.java": "82386427fed8df8a454d458d7c648d5cfeb2e9b3f52623cd65ab1c9a3e5b9963",
+    "Backend/API/src/main/java/br/com/era/api/model/PerfilUsuario.java": "91181617a1af30e8a338d2fea20d5c0d762d6fa20329d85eaeceb8a35042986a",
+    "Backend/API/src/main/java/br/com/era/api/model/Solicitacao.java": "722eee93db62b420d02fa7130821de4e78bb2c81ee8ee83b7acfde7fddeabbc7",
+    "Backend/API/src/main/java/br/com/era/api/model/TokenRecuperacao.java": "0e8a0225637af4603505dec02825ecbc1de972e8bdba4191445d05e8c29b613b",
+    "Backend/API/src/main/java/br/com/era/api/model/Usuario.java": "92faa2aaa0bc26062e345ab3b4eced324299ea6e227c7977f484c363abd4a5d0",
+    "Backend/API/src/main/java/br/com/era/api/repository/AuditoriaTecnicoRepository.java": "2729520b79b48031868cfd9c18aee90ad2fad3487617cd2cd0ab43257cac9814",
+    "Backend/API/src/main/java/br/com/era/api/repository/CategoriaEquipamentoRepository.java": "b0f0c5b6bc364a42a825fcd54e50ef6d84d5d09e15f801ad82efe774eb765960",
+    "Backend/API/src/main/java/br/com/era/api/repository/EquipamentoRepository.java": "8193c556bf9112009052c8104198e557e27be6f2a67b418d4669ea675ab448b5",
+    "Backend/API/src/main/java/br/com/era/api/repository/FuncionarioRepository.java": "587b470fd108e1c1abc355b7f45ebcb50e3f5688b11ca305147890cb1e3cbe5f",
+    "Backend/API/src/main/java/br/com/era/api/repository/InventarioObraSnapshotItemRepository.java": "7c892f2638e31c6550ba65ace0d76b300e242d35c453484bccc013eb686dc441",
+    "Backend/API/src/main/java/br/com/era/api/repository/InventarioObraSnapshotRepository.java": "f367c1cb399769fd0f75443510d169f2e79fb4ae3238bc4a6394a77d0691e7f7",
+    "Backend/API/src/main/java/br/com/era/api/repository/MovimentacaoRepository.java": "17bd96da61ab130f389742bf652ee1adc5548702684d730406fee6ad55f08c41",
+    "Backend/API/src/main/java/br/com/era/api/repository/NotificacaoMovimentacaoRepository.java": "5005b747ab1dde627364c2c2564bf9a1f5ec745a36dc1ac86c87120c86b375ba",
+    "Backend/API/src/main/java/br/com/era/api/repository/ObraRepository.java": "a104041195e2c15ef3cdc84ed6e6aa27ed53866fa2e6f16c0ad4a86dcbad6f6f",
+    "Backend/API/src/main/java/br/com/era/api/repository/SolicitacaoRepository.java": "d40908c00b971ec996b3e3644363672660e15d4800d9ca704ac9f2c378a40e75",
+    "Backend/API/src/main/java/br/com/era/api/repository/TokenRecuperacaoRepository.java": "a2af8df046036a0261bc0441b1b770742208615ea5623b29bb90b733a1c2ee0c",
+    "Backend/API/src/main/java/br/com/era/api/repository/UsuarioRepository.java": "f4548e5ab91824ce7545478ad77ae6dbbc733c8b70a9d1e3205b3111a666f12b",
+    "Backend/API/src/main/java/br/com/era/api/service/AuditoriaSegurancaService.java": "6a1122c815e4b5827c1567a20e9e1cfbb83974d3bdad6a3d0b8fa3efecd90607",
+    "Backend/API/src/main/java/br/com/era/api/service/AuditoriaTecnicoService.java": "5c44cbb82ef446e15ec4b267c44ad74fec22504c4e7d1dddef24d54f1447fdf3",
+    "Backend/API/src/main/java/br/com/era/api/service/CalibracaoService.java": "0ee861e2abfdffb8fe16af7b983ccf6d0d9a447ce366faa814ea61daa6ced2b8",
+    "Backend/API/src/main/java/br/com/era/api/service/CancelamentoSolicitacaoService.java": "283df49a53b9c2e234514caba5a7e347d983a13dbd175df6824fc36980f33095",
+    "Backend/API/src/main/java/br/com/era/api/service/CatalogoChave.java": "dbbef8bf3121da4e7aa56e353649dd196b312f704f5ca8c84ad2e8ae071a6b82",
+    "Backend/API/src/main/java/br/com/era/api/service/CategoriaEquipamentoService.java": "2fd55d8c7e313fb30d95c23f976fa417afe371e31851edc1af78f11f0df62405",
+    "Backend/API/src/main/java/br/com/era/api/service/EmailRecuperacaoService.java": "37533cd6c1f0265ab0702de4bf07ed566552ee9103f6f56061bc239f9683d784",
+    "Backend/API/src/main/java/br/com/era/api/service/EquipamentoService.java": "f280496a73e179cef3bb15f569e1ef9dca166f661bc6f7ef77bd2df7e3aaec38",
+    "Backend/API/src/main/java/br/com/era/api/service/EscopoEquipamento.java": "53b9c3a7c14b77173cc28940e78155cebf9c384e4606b4f41a3b88b0ca8fd300",
+    "Backend/API/src/main/java/br/com/era/api/service/FuncionarioService.java": "7a494de4ad035afa1390a727220df48807918f690655f0cea2147d8e3043fea1",
+    "Backend/API/src/main/java/br/com/era/api/service/InventarioHistoricoService.java": "79be6ad8a27ad61d31b27519fe3e8614860d8cd13b86843621fcbccfea6e0694",
+    "Backend/API/src/main/java/br/com/era/api/service/LimitesRecuperacao.java": "4f29ae9c7f352d4109253f7ce0e4d8b615e6918ee08632bf240ea05134a65ee2",
+    "Backend/API/src/main/java/br/com/era/api/service/NotificacaoMovimentacaoService.java": "658627c317dc30698f5b50ae6d9e840ab8f1267a7b85cf699aaebdd22f0fd5e9",
+    "Backend/API/src/main/java/br/com/era/api/service/ObraService.java": "b47d4e58bc7bceb1fc6cba201fbfe4bd7170fbd6e1f9a9a24ff0e7f9e8c4003c",
+    "Backend/API/src/main/java/br/com/era/api/service/PedidosFinanceiros.java": "c55fee5c3207a05e07e65a43aa77169e27d872c6851c18b5f5c585344885c607",
+    "Backend/API/src/main/java/br/com/era/api/service/RecuperacaoContaService.java": "37104223a7e4c35766ad26739d35f3cd0085edc1ec93afd27e63e8e1d51f78e6",
+    "Backend/API/src/main/java/br/com/era/api/service/RelatorioPedidoService.java": "38471015c7f38fe71388b0adcbbb70339e1485a6d9407e10a7997b8712c1a53c",
+    "Backend/API/src/main/java/br/com/era/api/service/SolicitacaoService.java": "8b4fb6c685167f5309e2ae8ddb4e43158cc2806b4a019b27e105106cebede991",
+    "Backend/API/src/main/java/br/com/era/api/service/UsuarioService.java": "8891dacd11bd665baf9b442b2755791444e187040843729b6cd659bbe0165895",
+    "Backend/API/src/main/resources/application.properties": "d6d9997bf426e8c0879437dcbd66baedf284788092de124cbc262b67ff5d1d9d",
+    "Backend/API/src/main/resources/db/migration/V10__completar_dados_ficticios_funcionarios.sql": "7ab6e1c14875e7bffbdd5d72294f0b3b48c3f9b6d62b0c7aa7df108486682872",
+    "Backend/API/src/main/resources/db/migration/V11__criar_autenticacao_e_autorizacao.sql": "5503bfc258ca866d1451466ca37b49c351640a7d56d5044e075c8ce74d1c43ca",
+    "Backend/API/src/main/resources/db/migration/V12__adicionar_ciclo_operacional_movimentacoes.sql": "2caf2420e1c36a88ae8d33b67666924c08fcc32c1b50ab20626492eed39e93c1",
+    "Backend/API/src/main/resources/db/migration/V13__adicionar_perfil_estoque.sql": "e29b23c69c05a1cda2d74a991a0a9a6011407acb21d0f3c33e9db04804521b38",
+    "Backend/API/src/main/resources/db/migration/V14__adicionar_necessidade_compra.sql": "fbbd36b888d8e68593a0c83ff8450ff8b9b32e604c9791cfced7dd6755110615",
+    "Backend/API/src/main/resources/db/migration/V15__adicionar_origem_solicitacao_dividida.sql": "0f2d0b7db618534ab070a90d9c4e4be5842e0b97388196a82edfc068ebed7593",
+    "Backend/API/src/main/resources/db/migration/V16__criar_cautelas_auditaveis.sql": "862ffeaae61d8ef317b56ff145e7d42db2af1134ace134bcf4c01bbc1c0cf017",
+    "Backend/API/src/main/resources/db/migration/V17__consolidar_cautela_unica.sql": "30477c55c9c77407e153b7c240aa8d1066782ccf5ce72f474db87ca50ff635d1",
+    "Backend/API/src/main/resources/db/migration/V18__registrar_aquisicao_materiais.sql": "167c77624097c2a11996d19c5f7aece98da0d4767026f22a0a3996582b8d81bb",
+    "Backend/API/src/main/resources/db/migration/V19__adicionar_chave_catalogo_material.sql": "ef260372d5b0d92aec7b7cba9719dbc0c8a54a9120f71663b9d403e649a3711a",
+    "Backend/API/src/main/resources/db/migration/V1__criar_estrutura_inicial.sql": "eb0446a0394a324f41114c79886496c5667952b26372a9e48fdd2f673fe59161",
+    "Backend/API/src/main/resources/db/migration/V20__criar_inventario_historico_obras.sql": "93a85f88ba8cee61e807c631d68e89f059f95a519351dcbd16cbd4b10dfaba82",
+    "Backend/API/src/main/resources/db/migration/V21__controlar_entrada_estoque_aquisicoes.sql": "ccf1eebb615d51d09786b6137e68b81ba544685a143057ea352fcd97bbec6538",
+    "Backend/API/src/main/resources/db/migration/V22__distinguir_identificacao_interna_ferramentas_manuais.sql": "ed3035d3c538b11c209bd2c23948de9950b0fcf9f5428d8fe22fef070188bcf0",
+    "Backend/API/src/main/resources/db/migration/V23__registrar_quantidade_movimentada.sql": "efb1e16b8c9c8958147d26b8c219662cc18864417055c6c5dda29c22767472c2",
+    "Backend/API/src/main/resources/db/migration/V24__padronizar_status_obras.sql": "1a7cf23b5843953b12feb8a366d2f2f6eca9854b48f3428779349d67e8af4015",
+    "Backend/API/src/main/resources/db/migration/V25__adicionar_arquivamento_registros.sql": "d647002504f19ed2655569992555d791074c0c9a46931a45228a8119719163a2",
+    "Backend/API/src/main/resources/db/migration/V26__limpar_dados_para_inicio_oficial.sql": "e97b7d9e748b76894e165899fc6b427c070f477f769f329d115ea1b61ece7217",
+    "Backend/API/src/main/resources/db/migration/V27__registrar_nota_fiscal_equipamentos.sql": "ed6c231d8bf488fc48404e33400578c2083b4fbec69e9b0b51acf20ee5565c0d",
+    "Backend/API/src/main/resources/db/migration/V28__criar_categorias_e_atributos_equipamentos.sql": "69d6e9a1947635a12e7264296ac447994647586f4b9aca069b3886c8089faa4b",
+    "Backend/API/src/main/resources/db/migration/V29__registrar_autoria_usuario_pedidos.sql": "21781af55a16a7b47fe5528061fcc729885ef501b6959709bbab5cb5e9a98f7f",
+    "Backend/API/src/main/resources/db/migration/V2__inserir_dados_ficticios.sql": "0bf07f061a068c831fcd8cc353d050ebc87362eb71f15e243b2a0ab7ade05c21",
+    "Backend/API/src/main/resources/db/migration/V30__preservar_conta_e_perfil_solicitante.sql": "f51d7e986ca25c6bdb0fd772505996801eccd19d9984a57d9737c0e5c3995cd6",
+    "Backend/API/src/main/resources/db/migration/V31__criar_auditorias_tecnicos.sql": "db09f4278bdf7d82211e6c8b5f27c313dd6c7c264f47d34b4f9e4bb9a1bd27dc",
+    "Backend/API/src/main/resources/db/migration/V32__preservar_compras_na_separacao.sql": "0aaa7537fff9faa11012ea009d18b08f00ebb0a9bf31e86bd70276ddcfbeeee3",
+    "Backend/API/src/main/resources/db/migration/V33__registrar_manutencoes_equipamentos.sql": "fa49c923570d4ab6e75c8fbe27430a9ac542aa191322a5a105c04e5a9b27b597",
+    "Backend/API/src/main/resources/db/migration/V34__registrar_calibracoes_fluke.sql": "6fe5f44bdd069a7b3ceb0f3afdce83158411255d9181fc52a32546a7fbf6bfc0",
+    "Backend/API/src/main/resources/db/migration/V35__revogar_sessoes_apos_alteracoes_de_acesso.sql": "315e62bcf52bb5bc63ac156e7d760613b40bde87c2a69745256f49b1156c5c7a",
+    "Backend/API/src/main/resources/db/migration/V36__adicionar_perfis_tst_rh_e_categoria_epi.sql": "7f5107007548fcc7d1a38d4e94d71eafbe46f184948835f3ce7fecee9b5fab6f",
+    "Backend/API/src/main/resources/db/migration/V37__tornar_contatos_funcionario_opcionais.sql": "c744af681701d1ae6bfdc075af814501fb5beeea3b84de529a14b778d863b392",
+    "Backend/API/src/main/resources/db/migration/V38__adicionar_perfil_financeiro_e_fluxo_aprovacao.sql": "b1357f12e8b5cdae4aba9105bf8f3d76a67d339feb3d0e2c7a7330390823a5f5",
+    "Backend/API/src/main/resources/db/migration/V39__planejar_atendimento_pelo_financeiro.sql": "1ab76dc1bac17acb227c8477de74f498b1fb8024e9bc3cda1265becb78ca099a",
+    "Backend/API/src/main/resources/db/migration/V3__restringir_solicitacoes_a_movimentacoes.sql": "8a803d06b266309fbb9ca95ecc452d4f118a08037ce8e3f008e8f165514c3082",
+    "Backend/API/src/main/resources/db/migration/V44__preservar_pedido_em_atendimentos_parciais.sql": "73f82b071a2b0866f16d10340b02b3354bb87361148de11bcfa0b80876688d96",
+    "Backend/API/src/main/resources/db/migration/V45__notificar_envios_para_obras.sql": "935142e69cbc6d94eec98c89c4945cb68e2f9c61fff97e001bd64490fd8c4d5c",
+    "Backend/API/src/main/resources/db/migration/V46__email_compras_aprovacao.sql": "c5d6203f0e6c4ceebeeadc2e6afb4cf0e0392b9228a8597aee255a5b146e3552",
+    "Backend/API/src/main/resources/db/migration/V47__provedor_dos_emails_de_pedidos.sql": "9773127aa4c4368ef933da73eb64b7457cc6ce86e283b1962607260587d1e64f",
+    "Backend/API/src/main/resources/db/migration/V48__preparar_email_no_cliente_externo.sql": "e1f38d402d9f1744069d5afdd903d9ba453436d03ddbd4d7409b7642be12ae7c",
+    "Backend/API/src/main/resources/db/migration/V49__cancelamento_auditavel_de_solicitacoes.sql": "f1b67b99b7bd489ecea37810b67feb9d0580ec4fc1e25faab3772ceb63bfbacf",
+    "Backend/API/src/main/resources/db/migration/V4__separar_solicitante_e_responsavel.sql": "ca664a41f1a623180d44a6c50f605ae65b5571ae26f177cc4033ce750b462eb5",
+    "Backend/API/src/main/resources/db/migration/V50__preservar_comprovantes_de_aquisicao.sql": "f39f873d5cb581c5c19ae094b6e14f61d424c09b20d326c13448716a5850814c",
+    "Backend/API/src/main/resources/db/migration/V51__recuperacao_de_conta_administrador.sql": "b3e2c9b65f1a54a1dd6cec89a3fbce9bb6d56f0abc40076708ea1213e111b94d",
+    "Backend/API/src/main/resources/db/migration/V52__auditoria_de_seguranca.sql": "36110980345126f645db132db47819ea20c2060996aad2462cf245887d60554b",
+    "Backend/API/src/main/resources/db/migration/V5__importar_inventario_ferramentas.sql": "0cbfd5738c200a79485147cf9c717704f8a242df23892db2bf65e45cbae14eba",
+    "Backend/API/src/main/resources/db/migration/V6__adicionar_controle_de_lotes.sql": "9286ae3ad4809958099b45e6ac244f52c0dc0edc906355edf58107fdaebf5672",
+    "Backend/API/src/main/resources/db/migration/V7__substituir_seeds_por_inventario_real.sql": "fc771d3ccdca2d294021742d9bf3e79984f26d6ec466ba2b5943709f365d5f5e",
+    "Backend/API/src/main/resources/db/migration/V8__adicionar_rotuladoras.sql": "47871f74bf4974a0be38c4d6a7148c15e5288960581ba72b7dd438136d1771e2",
+    "Backend/API/src/main/resources/db/migration/V9__adicionar_funcionarios_e_obras.sql": "06b38dfffae7f4dd3d734b42f55146b0706b77502983c39241690b7e1202a92b",
+    "Backend/API/src/test/java/br/com/era/api/EraApiApplicationTests.java": "ed2604e2abd7525baa94b862ac5682d36058e760c0f5a0e73c88e22e0c03a56d",
+    "Backend/API/src/test/java/br/com/era/api/HistoricoMigracoesTests.java": "159058f70114a6524721af69f4c63579aca3af0478ccd880cb7dae06f1614737",
+    "Backend/API/src/test/java/br/com/era/api/config/PoliticaSenhaTests.java": "3fcea58d377961df69549ca9b840593cb02ee65521dfcc9f0b89e48a159f12f2",
+    "Backend/API/src/test/java/br/com/era/api/config/QaMatrizAutorizacaoTests.java": "5cb43c866d930bd431ab6b9c8a23b28d9d9eccea7347d7a4c78311b83d8a1050",
+    "Backend/API/src/test/java/br/com/era/api/config/SaudeSemSmtpTests.java": "5961591d7201c7da14e582360b479c7ee8ef6995a6b6d40d71227347db4b0234",
+    "Backend/API/src/test/java/br/com/era/api/config/SegurancaRecuperacaoTests.java": "fa862a534878e0186cd4ad54e82b237178cd5aec6adab4ae5fac0e5a1d506e49",
+    "Backend/API/src/test/java/br/com/era/api/config/ValidacaoSessaoFilterTests.java": "1d699e403c83853e47b904b0397286d3c8f43b57725b7fb5f2bb29142af2190c",
+    "Backend/API/src/test/java/br/com/era/api/controller/AuditoriaErrosHttpTests.java": "bc207ddbaa7eaa8b8ebc166e8fd60f5904653a7aa1e0a5cdc97eb8aec6432b07",
+    "Backend/API/src/test/java/br/com/era/api/controller/AutenticacaoControllerTests.java": "7456e989d2d3b34afe01d388aac8278a5745054decc8cdb7affbf995e35dacf9",
+    "Backend/API/src/test/java/br/com/era/api/controller/CalibracaoErrosHttpTests.java": "3986a929bd6d36d8746feaa89f24b92555ad9cd58fb2c93007a56fc5c871c755",
+    "Backend/API/src/test/java/br/com/era/api/controller/ExcecoesSegurasTests.java": "3902e7cee2582bd73cc2ef86c28af235b9b155f73bcb3175f1d1e1c87f4999f1",
+    "Backend/API/src/test/java/br/com/era/api/controller/LogsSegurosTests.java": "a9a35f0fc385eb949d4c3f40a1d976f4311d494e6b26d5857a6483c9c4569ddb",
+    "Backend/API/src/test/java/br/com/era/api/controller/ManutencaoErrosHttpTests.java": "598cf8009f1edc12a80ddc8e689af13eca9917cd303e139a57031b218616272f",
+    "Backend/API/src/test/java/br/com/era/api/controller/PedidoErrosHttpTests.java": "c9da8a4fb9c6b2dbbc6c7c9cfbe93f322e8cac4671770acb59b64516d04c2d67",
+    "Backend/API/src/test/java/br/com/era/api/controller/QaCategoriaHttpTests.java": "1e47caa6b11eab8a0d6fd10c69869e96eef701a4b528adaa98d61d8d8f873433",
+    "Backend/API/src/test/java/br/com/era/api/controller/RecuperacaoContaControllerTests.java": "04e8cb8a9365927fa13dccd1f03b80e508436b549bce2d540f5987973924f74a",
+    "Backend/API/src/test/java/br/com/era/api/dto/QaValidacaoDtoTests.java": "93ffc4108776795b962c664142c2bea67e57f1c7a21d7d82f07bc9da62e18878",
+    "Backend/API/src/test/java/br/com/era/api/service/AuditoriaMovimentacaoTests.java": "4ce67ddeaf8862d954caa802a03911994e9d7b5d15777b99d62925f1f49b01e6",
+    "Backend/API/src/test/java/br/com/era/api/service/AuditoriaSegurancaServiceTests.java": "017f096aa0a43fe1b46571dac5dcd49c4ce7631f265d25006b1e130c70efb93d",
+    "Backend/API/src/test/java/br/com/era/api/service/AuditoriaTecnicoServiceTests.java": "8d2b6722242ef2dc659a776cd4a15ef027585c96672cf6318d0bb46789db3d66",
+    "Backend/API/src/test/java/br/com/era/api/service/CalibracaoServiceTests.java": "ec70d257940122af4045df0d4009e07f40707858d2c3be26184774b10402ce8e",
+    "Backend/API/src/test/java/br/com/era/api/service/CancelamentoSolicitacaoTests.java": "d54d8517e0e4741577dd5987521ff153bc84b659d3dbc2da45eacc05b8dbab4c",
+    "Backend/API/src/test/java/br/com/era/api/service/ConsultaObrasAuditoriaTests.java": "3219a2f5bcc42084c5ae754910fef45e8ca62295acb875175fc91c9551c4b607",
+    "Backend/API/src/test/java/br/com/era/api/service/EdicaoPedidoTests.java": "09e9c6d19d304cc3d831e68c886e210d1d8765eeb2de547ed3ffbba0af5ce6ef",
+    "Backend/API/src/test/java/br/com/era/api/service/EquipamentoServiceTests.java": "832eefa9eab8ac04e412cf24178ee3dc191c4f645eac66bbb4874fa3a83bd1f7",
+    "Backend/API/src/test/java/br/com/era/api/service/FluxoFinanceiroTests.java": "9604c16f43ad2050c5aef29688c74ba83f70fba1ce5d2b6dc3d8f3dc6341c513",
+    "Backend/API/src/test/java/br/com/era/api/service/FuncionarioServiceTests.java": "37cd7d5bbcd320f0cd2aca392278d32861bb492f8631344f07d7926699353230",
+    "Backend/API/src/test/java/br/com/era/api/service/ManutencaoEquipamentoTests.java": "aba51b5253c3170720acab323e2823a91f2c719900eed692e8dde0b78f185743",
+    "Backend/API/src/test/java/br/com/era/api/service/NotificacaoMovimentacaoServiceTests.java": "dc20210f9eaea0ed1cd26c8da98bf827fecb8e0268d4becb4b28bff0ca1f9792",
+    "Backend/API/src/test/java/br/com/era/api/service/PedidoGerenciaTests.java": "43bec3c4700286f3c96c3695fb79bd60e984e34ea5be9596181c0e52e19813da",
+    "Backend/API/src/test/java/br/com/era/api/service/PedidoMateriaisTests.java": "dc41317244fc5e39be4f4c64d652d2649c07cf61572411ddc0fe946153056466",
+    "Backend/API/src/test/java/br/com/era/api/service/PedidosFinanceirosTests.java": "2a29b325c8e9c883d353a63670ab5d1225b30c5d39a500cdeb751dda590b5b2f",
+    "Backend/API/src/test/java/br/com/era/api/service/PerfisTstRhTests.java": "4d53adff28449879f09658ea7b0a7bc1e832d267f4461a8554142f223e985250",
+    "Backend/API/src/test/java/br/com/era/api/service/PlanejamentoAtendimentoTests.java": "f3183bbfd30d1f1dc290c67cebf51dbcba6baed0ab08d3c4c3729700cdbf18ee",
+    "Backend/API/src/test/java/br/com/era/api/service/QaCategoriaEquipamentoTests.java": "c828897b893d290713edfa6c57fce679cf2b2a70862ab93489cf36101d0549d3",
+    "Backend/API/src/test/java/br/com/era/api/service/QaEquipamentoRessalvasTests.java": "acaedc52dfc468597b89424de8639450d0d02179fb04b5aa276003173c8a222d",
+    "Backend/API/src/test/java/br/com/era/api/service/QaFuncionarioServiceTests.java": "2737a3e01af4dc2ebfdb8bfd069bec1f0710e7b14c213b43b6843d670ff985c6",
+    "Backend/API/src/test/java/br/com/era/api/service/QaInventarioHistoricoTests.java": "7730c2f7a782121a0eb049d6f516dc17e3fd5e36366ce641cac63c8ad3b699d3",
+    "Backend/API/src/test/java/br/com/era/api/service/QaListagemEquipamentosTests.java": "e6b95883ca7b7c0b8b048f0185c0da07d7c8e0d7f8bd5fd18af2f07b5f1f44f0",
+    "Backend/API/src/test/java/br/com/era/api/service/QaNotificacaoRessalvasTests.java": "24210cda760d894bfb5a22e251029dddad33ddd324ba6e9a464d4dab8623f2c5",
+    "Backend/API/src/test/java/br/com/era/api/service/QaObraServiceTests.java": "9a2bf164d8434f013804e19764fc09d504667ba4ab0c89a9cf67715b0b822885",
+    "Backend/API/src/test/java/br/com/era/api/service/QaRecursosRecuperacaoTests.java": "54760d2495404502a2d117cb276aea5d22fb1c21e88c772a64c77deb54762015",
+    "Backend/API/src/test/java/br/com/era/api/service/QaUsuarioGestaoTests.java": "5ab336e845835e7bdf620fd2ef295ed50d917204c981ab526acc5fa27ffc6148",
+    "Backend/API/src/test/java/br/com/era/api/service/RecuperacaoContaServiceTests.java": "75fda80038f7cde5b0e00ca0eb0db166a5ce4681fa8b42a242b55eb732527054",
+    "Backend/API/src/test/java/br/com/era/api/service/RelatorioPedidoServiceTests.java": "a880dabd4ba8c496e0beb6f9b37effed1d2a12ad3726189092c6470aec342637",
+    "Backend/API/src/test/java/br/com/era/api/service/SolicitacaoServiceTests.java": "609e43404df1372d93bc0850b54972a4a9e878917a05ec833e32c407e73d8f01",
+    "Backend/API/src/test/java/br/com/era/api/service/UsuarioServiceTests.java": "41d8d2fb9f043309fca269d178e769df7f65673b9f6645aa7ef20fc68a0b3416",
+    "Backend/API/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker": "8eca853a5a457f17e0479b71dfbe95f2a13aff9eeff250261ecdc8ca9b847a6a",
+    "Frontend/UI/Dockerfile": "47c67d51e225e8063f47bdf3a1a8d5341d8dd4cc956d1930cb1d505c9346beb4",
+    "Frontend/UI/index.html": "5c0f97591394ca5356771968a77df11aabcc5f0f5cac73c1d55cf189b2816ef6",
+    "Frontend/UI/nginx.conf": "a3eea6e42f5928e66e7dd2804d8bdc8f634391b84faffb204e387ca193efe566",
+    "Frontend/UI/package-lock.json": "61606a2d02c632764f3610c8e5fd250445fb6413ae3de28197d4b73ed0dc1278",
+    "Frontend/UI/package.json": "65d074c029be4041e68a81264a65d312d0fa11a93339ae8e393c56d29acb51f6",
+    "Frontend/UI/public/favicon.svg": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66",
+    "Frontend/UI/public/icons.svg": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a",
+    "Frontend/UI/security-headers.conf": "d5cd3fd60aa330af535bac38cd2177a4e00ebbd862be775e50c2898739cb14a1",
+    "Frontend/UI/src/App.jsx": "a680fc555f8a9f7f89a1cb09aa5a0421af143ea23797f3d8081bb1d9527482c2",
+    "Frontend/UI/src/assets/ERALTDA.png": "a08d805174cf3ad3432e0b7119ec8e89b1cbfe682b82af4ee29cc7b2102ef8af",
+    "Frontend/UI/src/assets/hero.png": "881ffbcaafc212e49addad08846a5b82761355fa20624253af3477ba33262c5c",
+    "Frontend/UI/src/assets/raio.png": "d49aed78af82d6083a0857008b174d01880227bf9244a9dc14f31ffb27f0b22c",
+    "Frontend/UI/src/assets/react.svg": "35ef61ed53b323ae94a16a8ec659b3d0af3880698791133f23b084085ab1c2e5",
+    "Frontend/UI/src/components/admin/DetalhesUsuarioAdmin.jsx": "3df51a18a555febb453934478f413f10b048b3118824d24a652383902472dc9c",
+    "Frontend/UI/src/components/admin/EventosSegurancaAdmin.jsx": "ae925bf670e0f8eace96b3a702886fab30e78b8b1f964ad4b34b2a8ba54dfabe",
+    "Frontend/UI/src/components/admin/ListasAdministracao.jsx": "0273af3f014a13e13b897e0aa4658bb9326b22ef7933db4f2531d8d7c697f86d",
+    "Frontend/UI/src/components/admin/PainelAdmin.jsx": "87e6abaa8ad805115389716cb33ef2d8d20514d3399e4cf38aa4e8d3a767302d",
+    "Frontend/UI/src/components/admin/PainelAdmin.module.css": "8ac57855dc92da5e023924b23926a8a25bcfe2828517c950331343a90ffe4a9f",
+    "Frontend/UI/src/components/auditorias-tecnico/AuditoriasTecnicoModal.jsx": "40589e023ac3ee62e1d9c5519141dd4a89b6d7747aa883d1d931e48defb69b7e",
+    "Frontend/UI/src/components/auditorias-tecnico/AuditoriasTecnicoModal.module.css": "bfda7418e05b54442d3d4215c290a792504c1759b3e4b09db91e3336e5e75587",
+    "Frontend/UI/src/components/auditorias-tecnico/TelaAuditorias.jsx": "dc28fb0721529ca3a7cecc18b8cb500b840ea3e4c0c3f115907e4c6b12172abe",
+    "Frontend/UI/src/components/auditorias-tecnico/TelaAuditorias.module.css": "23bca27f40e24edd9f6a0b7695b284f2b836f7b857dfd5e4a2392867cce78e45",
+    "Frontend/UI/src/components/calibracao-equip-modal/CalibracaoEquipModal.jsx": "fbeb5c789f0d45946c810c0c1f91c7964f67c0274efdfaa77c63eda125954950",
+    "Frontend/UI/src/components/calibracao-equip-modal/CalibracaoEquipModal.module.css": "ef361893399784601c6835b2fc9e4333ee3ea2b3d3da43a8b614121c89d13eee",
+    "Frontend/UI/src/components/calibracao-equip-modal/FilaCalibracoes.jsx": "9e7ac1949ebdfa8cb9ccd3e190abd214a02f1dd05b10fbe56442a027b01d6e46",
+    "Frontend/UI/src/components/calibracao-equip-modal/IndicadorCalibracao.jsx": "7c79e1f40eb0b13c6018189cd39fd82eb9e2059d93437b8cb39bd72c04ab7afd",
+    "Frontend/UI/src/components/deposito-card/DepositoCard.jsx": "90a03800b194c8917d4b71741120301dc24f7891246cb96aa354fe1568456969",
+    "Frontend/UI/src/components/deposito-card/DepositoCard.module.css": "320f4f45d3d461cecffec9dc90c8faf4ed91bba49c840400d040006d32668e49",
+    "Frontend/UI/src/components/editar-funcionario-modal/EditarFuncionarioModal.jsx": "842afd96863ce77bfbd270e01f8142e8efb45678d316f1978475ec78a0a12fa2",
+    "Frontend/UI/src/components/editar-solicitacao-modal/EditarSolicitacaoModal.jsx": "e35d2f315782ff677ad70cd66f19b403f389f13225d6df525dfe9d70d3aa4387",
+    "Frontend/UI/src/components/editar-solicitacao-modal/EditarSolicitacaoModal.module.css": "72a19710b97317da55fc34a292b7b22e8bc7903cbdbcf50949d38067cc2ce296",
+    "Frontend/UI/src/components/estoque/AtendimentoParcialModal.jsx": "a20cd7c5c1e4bb233b002655de79ca7e014849bbe3d0620f2abc1f3db248fc0e",
+    "Frontend/UI/src/components/estoque/AtendimentoParcialModal.module.css": "ffdebba28263f2aa5cfe399b3564a48a49f8390e3ea123b590bcc8f5fdd9b478",
+    "Frontend/UI/src/components/estoque/FiltrosPedidosEstoque.jsx": "3d94f24de7eef979961a5fc12c234561ae1fd8e6a1f994b968e1a95ff77e5ab2",
+    "Frontend/UI/src/components/estoque/FiltrosPedidosEstoque.module.css": "dde72f599f498c64395c71141ccf60ae921482d11519eca8ec91b227bad24559",
+    "Frontend/UI/src/components/estoque/OperacaoEstoque.module.css": "c190c3bce9af4066949a89ce193313c64335113fbdfb1887b00bbf7f9b3542ac",
+    "Frontend/UI/src/components/estoque/PainelEstoque.jsx": "f4270d03c297d0c16f8bd9c4fdf986879b56832086447898a3f91b8fd5414184",
+    "Frontend/UI/src/components/estoque/PainelEstoque.module.css": "a2abceb9ab2f7ff7c3551858545639f024828e7bd06f555effc36bfbfc24bf5e",
+    "Frontend/UI/src/components/estoque/PedidoOperacional.jsx": "569e7474efa6f0b561e6b91f9e24d9b335057f3a78a066961029f370a56152e6",
+    "Frontend/UI/src/components/estoque/RegistroCompraEstoque.jsx": "bbfb583a0ef52f5e1ea5227be8ad6402dfaef6445883004c0934b88a8839385c",
+    "Frontend/UI/src/components/estoque/SepararEquipamentosModal.jsx": "ecdf80917f9a2b2f02588335100f212bef379ce3d9289569c2c54913238c0fd0",
+    "Frontend/UI/src/components/estoque/SepararEquipamentosModal.module.css": "6aa708dcc8dc214ee9176d065de975ea32a02eeaa558c4f8dd909a749bd1545c",
+    "Frontend/UI/src/components/estoque/useOperacaoEstoque.js": "ec081dcc49651d8ea609fdf04770f9abf8ba6e27d98343b2130af9f6240876ea",
+    "Frontend/UI/src/components/fibra-track/FibraTrack.module.css": "966a1a8e350bc39f6d49a84017f6b338195a58d361bfe3a2828f9e483ebe2f10",
+    "Frontend/UI/src/components/field/Field.jsx": "16f3908f0cc35a613292fb8d491780ec30ee638d2908686e7e47896dcb646190",
+    "Frontend/UI/src/components/field/Field.module.css": "1e3f547dfee5729d6f39eff754b2c023b05d488aa246d12a74eedf74828f0659",
+    "Frontend/UI/src/components/login/TelaAlterarSenha.jsx": "427097767f911b02f060a8d2829f18baeab7fa7816ee1a4315b8f8d35340c46f",
+    "Frontend/UI/src/components/login/TelaEmailRecuperacao.jsx": "33874029cbc8378d7504997acdeb7cec1fb6650253275fda16f1bf19cc107ec2",
+    "Frontend/UI/src/components/login/TelaLogin.jsx": "bd7dd50e7f7cfe02f3c1ac72e7d2d2bf2e5140dc494c8609919ed49c13313756",
+    "Frontend/UI/src/components/login/TelaLogin.module.css": "579589aa08416bb97ef381fdda011c64b503436b4b983081a20db629b7fc1f49",
+    "Frontend/UI/src/components/login/TelaRecuperarSenha.jsx": "cc0b444c20df5c5e31eff2cc8fc1275eb78e0b9fe0f5f9a8710f083a17ec0016",
+    "Frontend/UI/src/components/login/VisualizacaoSenha.css": "f3d510c8f8468838d156ce485c795180aeacac161eb20849ade7e93fa236e715",
+    "Frontend/UI/src/components/manutencao-equip-modal/ManutencaoEquipModal.jsx": "d8f7ad1bb66d799b6cb9ee1c34e007204ddd3f7b3cfd60111532ed4dc400757f",
+    "Frontend/UI/src/components/manutencao-equip-modal/ManutencaoEquipModal.module.css": "69a17496390f28a2c083556ab7076e27816620df4659b3a267df98ed80102166",
+    "Frontend/UI/src/components/modal-shell/ModalShell.jsx": "5046f81056586e14c14c636c2fa913bc5b30617467afcbd0b2d90a898b6c1f16",
+    "Frontend/UI/src/components/modal-shell/ModalShell.module.css": "958a2260a5259cb41fada009ddd1c7b23e53d903bc2abed7d4179bbafcc6a152",
+    "Frontend/UI/src/components/mover-equip-modal/MoverEquipModal.jsx": "0b27252d2492ff686226a26ba3faf7537e378a11c35b655a94ea9eaf2e024d13",
+    "Frontend/UI/src/components/mover-equip-modal/MoverEquipModal.module.css": "f4ede9148e5cc157bc5ba2accb8418cee3c23e7d395f6ccf17ffe4595956d23a",
+    "Frontend/UI/src/components/notificacoes/Notificacoes.jsx": "6dd18f7b45cfb5b2c7d931bbec93ea92b3e15569fdee6cc965b2377919f0f37a",
+    "Frontend/UI/src/components/notificacoes/Notificacoes.module.css": "51df710e4c4eb90caae38390a7d9521411d8c19ae3c92c74d6116f144fd86009",
+    "Frontend/UI/src/components/notificacoes/SinoNotificacoes.jsx": "18b02b3a8bb56d69a7bda1139912a704b30177f2bd1c43fe4a1c0c8601bffea4",
+    "Frontend/UI/src/components/notificacoes/SinoNotificacoes.module.css": "1d8a1f25f41f51afd30e83698bdf8adc1f14b1a42718c7d6a948904d47febe20",
+    "Frontend/UI/src/components/nova-obra-modal/NovaObraModal.jsx": "04c1040691075884c57cd14fea0292e7e1fbaec8d34e8297d603409149e9b4fc",
+    "Frontend/UI/src/components/nova-obra-modal/NovaObraModal.module.css": "2f4565f40ad6f772b6e9ddac438c08fed8d1955a572a4a456fe964001e07ea1f",
+    "Frontend/UI/src/components/novo-equip-modal/NovoEquipModal.jsx": "ac9ae8db75a7c8bc19e46c9b95814dffd1cad8d5d8f6b1dee39a26572998156f",
+    "Frontend/UI/src/components/novo-equip-modal/NovoEquipModal.module.css": "a80502874519aae7380cfa70c1d374727f3f059c1f9383fcd129efebe2de8367",
+    "Frontend/UI/src/components/novo-funcionario-modal/NovoFuncionarioModal.jsx": "84599dddccc35c5e17627effc1493eea273c4cffb4f0c95f3c004e1de9e5a0fd",
+    "Frontend/UI/src/components/novo-usuario-modal/NovoUsuarioModal.jsx": "be6b08b194da4791d8081fa2f749ac098627ca2a3488cc0976b21366d1423d92",
+    "Frontend/UI/src/components/obra-status-badge/ObraStatusBadge.jsx": "1244b89e2df3db4f3b7fa6a50b9c1479ea9641fea7e1a55c832c244af3a302b0",
+    "Frontend/UI/src/components/obra-status-badge/ObraStatusBadge.module.css": "bc1234265688d2746b9ea9d02dafe241b854fda79ff415aacaf1ba18af02f8c7",
+    "Frontend/UI/src/components/painel/AndamentoSolicitacao.jsx": "3e4cb9ac1756c8d02b7f29b9c7501ba2c6aa4854cadf0dd13f9761d63f88df4a",
+    "Frontend/UI/src/components/painel/AndamentoSolicitacao.module.css": "f9342f8638dd4cd37d561d7e210bd5a0a49c1f2520d166f3fa2a331d5d418b61",
+    "Frontend/UI/src/components/painel/BarraSuperior.jsx": "728f24575c487bf77c4c6b908bfd609edbce787224abb388cb8840d1f424a2a2",
+    "Frontend/UI/src/components/painel/CancelamentoPedido.jsx": "aeadcf59f56ab55562fffc7563a4f44975f33ac26581b92cea50ce81fe72e222",
+    "Frontend/UI/src/components/painel/CancelamentoPedido.module.css": "c26fe2f9d41c9051971886ad940399f9c638a4d1c979603c90fea441ccda7c14",
+    "Frontend/UI/src/components/painel/DetalhesPedidoFinanceiro.jsx": "1a9c03ceeab2c76a09ca6bd1c2b58c63728906e7e339e59a7cafb0f18ee814fd",
+    "Frontend/UI/src/components/painel/DetalhesSolicitacao.jsx": "c853c2152f34fbab1fe154fc05d00c099490336c0d803c8cbfce851954e1e0bd",
+    "Frontend/UI/src/components/painel/DetalhesSolicitacao.module.css": "7d32549406f461181e32afd877777e4dd1098bca27d32af6c5f96061d16eaeb0",
+    "Frontend/UI/src/components/painel/ExportarAuditoria.jsx": "a1a04c3b660618cb607747a0e8a92b27e8bf6d3da2ca0fd86d0d2977b58cfef6",
+    "Frontend/UI/src/components/painel/ExportarAuditoria.module.css": "6ebf525ea3d3ff13f722f8174d1637c76f248bf21a9d8c96b13331638e724b87",
+    "Frontend/UI/src/components/painel/ExportarRelatorioModal.jsx": "e6a2ea70af7594e4682e9f121386915414b7a9ac52a43770c75970193bb94f20",
+    "Frontend/UI/src/components/painel/ExportarRelatorioModal.module.css": "48721f8e7f4cb5669a9928f337ccfbd3fc17f33d702f5dcaeedae249afed91ab",
+    "Frontend/UI/src/components/painel/JustificarRejeicaoModal.jsx": "b2c013ca2c26a05c0e2d7333bf6f2c7d3b838d6eb78d24b0fc59e5a3b9064b69",
+    "Frontend/UI/src/components/painel/KanbanRolavel.jsx": "9348d56905f404a5edb3a4056cb9460b3b920825ba37d6a0d5089bae9da3dab1",
+    "Frontend/UI/src/components/painel/KanbanRolavel.module.css": "6c9995fad43d81ff17e2a1a0e2c483955486174fc62c5d18e08b82e165abec18",
+    "Frontend/UI/src/components/painel/MenuLateral.jsx": "212b22f6abb2dcf4a4aab61375a221a29727a8e8b2d66621ccad84489177d243",
+    "Frontend/UI/src/components/painel/ModalHistoricoEquipamento.jsx": "b721a35310f925cda410159bd850432eff1ebabbe435d10ee119d58b69bb7a0d",
+    "Frontend/UI/src/components/painel/NavegacaoInferior.jsx": "f72d17399999cfdec1beda1daa03c8c5fbb40c1f9f04684d903794989c291d76",
+    "Frontend/UI/src/components/painel/PainelControleAtivos.jsx": "fc32e51e044c66335ada17e211026d709855fc2e5ec9d6d1043d24da8bf082a7",
+    "Frontend/UI/src/components/painel/ResumoEquipamentos.jsx": "5a24b57bd2c2bfd9a30bf455e848d71e914c7cf995adf74a6290118a9e28719a",
+    "Frontend/UI/src/components/painel/TelaAtividades.jsx": "abbcece71f04af977d659de88d57e6bb7ef9ca962065638c517aea3cc8b01b3c",
+    "Frontend/UI/src/components/painel/TelaAtividades.module.css": "36f7d70b31da6c077b7fdd5db11ce9d293a89f0088fa3df3a901faf4d74c4756",
+    "Frontend/UI/src/components/painel/TelaEquipamentos.jsx": "96de6da7f4659d89eb98cfaa236eb962d1fe4f0cf45289f86b465ca04d1afa39",
+    "Frontend/UI/src/components/painel/TelaEquipamentos.module.css": "74aff8eb57d59c3ddb6616f15f31281da09c03683de0c7d1c55b5d33ac868422",
+    "Frontend/UI/src/components/painel/TelaFuncionarios.jsx": "c26dc3162d9a67abf26719e82d90c99560aecd6b43c398aa42f891af9ce126c7",
+    "Frontend/UI/src/components/painel/TelaObras.jsx": "711633767681ea1ec635bd63148434c93dec1b71810430cdea9e6420be012593",
+    "Frontend/UI/src/components/stat-card/StatCard.jsx": "667ea26276888aedeefd4512c868b612e5c64d6aff29b39bdf1b4947d4d58f54",
+    "Frontend/UI/src/components/stat-card/StatCard.module.css": "0097d03e2926b45eff5c2c58474b1c61867e9992fec9e60210b732166736738b",
+    "Frontend/UI/src/components/status-badge/StatusBadge.jsx": "85d04e940380c6eaa15367e0802c8954686afd57061fd6b37c5f03cf450ddefd",
+    "Frontend/UI/src/components/status-badge/StatusBadge.module.css": "bdc2bb33dbab1ac18a6816bd35e6f6d51553f06e1cb02272e3a2c959cabbf1d5",
+    "Frontend/UI/src/components/tecnico-card/TecnicoCard.jsx": "93190e2ee1ad155c074022fc95ece376c2346e43ed7bfc16c22146f628bc2118",
+    "Frontend/UI/src/components/tecnico-card/TecnicoCard.module.css": "9212dc25a78167f4a09ad9bf2c4ee3e3f54d7bde84c4e0a41bc06bcf526095de",
+    "Frontend/UI/src/components/tecnico/PainelTecnico.jsx": "e3167a0776158ddac7b136197dd4babc3b5ce9148f0858cffea9bf2958aef41c",
+    "Frontend/UI/src/components/tecnico/PainelTecnico.module.css": "309ba243bd7431c2da8cde9071fcc7844eae68450e90d658c8ea1605249d3d2a",
+    "Frontend/UI/src/config/rotasApi.js": "52a167690536d66c2cc6f743e88343bbce8d16d825534a2ec7e2309e1092ac00",
+    "Frontend/UI/src/contexto/ContextoAutenticacao.jsx": "7f88b27f09ae03fc1362216e07237a0435afbcb54a0f46db05f4a36904b3bb16",
+    "Frontend/UI/src/contexto/ContextoEscopoAuditoria.js": "15f7e7972625c36a8f3344a1a29fb0afb844c65acfbf87fa2c016ffe82a0fb3d",
+    "Frontend/UI/src/data/constantesDominio.js": "6dfbaeceec6221bd14ffb07cf7d9fdc2c99021ad40de3946644403148991f44c",
+    "Frontend/UI/src/hooks/useControleAtivos.js": "c6c83ba6e4165626016a6c3257f069d318a0556c614c6f0d9611d64141c1c998",
+    "Frontend/UI/src/hooks/useDialogo.js": "472997e474ff9a6238c7dd04b77ecdac91a8eb945b4eb0c003d17586a1682566",
+    "Frontend/UI/src/hooks/useFiltrosPainel.js": "6eec4a68db71ac5f9e4c4e746023853f9045316f8af5e44d3a617c36acdb82fd",
+    "Frontend/UI/src/index.css": "f24687f89257cb174b5ed89607134d4673d0b6da89b5b2cc28532acd555b95ba",
+    "Frontend/UI/src/main.jsx": "ec613df23666eee61dc071cd1d83300140e9a8d7cca968d69efaf800a53c3269",
+    "Frontend/UI/src/services/api/clienteHttp.js": "7e74623fdf1855f1df969bc960e4018413204dc30ecb9308630a1638b5b9389b",
+    "Frontend/UI/src/services/api/financeiroApi.js": "13db83423d5b9d90c5bf7358d41e5e113ce5178e80e3ec0aa8e5fc58364014b3",
+    "Frontend/UI/src/services/api/notificacoesApi.js": "a21413f8c509acb808be4a89f06d136f2a25a1a644c6675a78fe922ea83fbec3",
+    "Frontend/UI/src/services/api/servicoAtivosApi.js": "ba29261b38257ab2289237e12c2b855ac463673823a10ed268b2cf95e79a2586",
+    "Frontend/UI/src/services/api/servicoAutenticacaoApi.js": "d89f82a1e610211d1c30b5685fb7383e78395b91867f8da032ac636f5a46dd84",
+    "Frontend/UI/src/services/api/servicoRecuperacaoApi.js": "d27be1089750d972cb35de8ebf8c5d3c1a212fd3658f11a072b19c0facda8dbe",
+    "Frontend/UI/src/services/controlesExportacao.js": "b4115894203a2870cd80d375b7c977549e43705bdf9e1731284cdac805f3fda1",
+    "Frontend/UI/src/services/documentosEquipamentos.js": "b0f1c385c330d91a5715cf8d9eccb3913aeb1b9fd60fb0203e399b5dca81db98",
+    "Frontend/UI/src/services/modelosAuditoriaPedidos.js": "7aa69339a12e07b03209a0f1df9f3dd6ba8caa15e6fe17fd2f671be58f86e4df",
+    "Frontend/UI/src/services/modelosDocumentos.js": "14ac29c9f3094a41de4767dda5297ae42f31e06c361d0ca05e57b1bb2e097647",
+    "Frontend/UI/src/services/notificacoes.js": "74f71c9de8e18d554d202e1de4a0266d964c64a4ed15b69e504a809dc94ee965",
+    "Frontend/UI/src/services/planilhaAuditorias.js": "b71250bd2f4f5b51966c1f49a6e6e33fd25f8b3beee40ffd9f740995b735c229",
+    "Frontend/UI/src/services/planilhasRelatorios.js": "0055a400356ad46bddb9b9c1ef220432f8f704a97bd23b6da6144afe7c6474c9",
+    "Frontend/UI/src/services/relatoriosPedidos.js": "f608013dba1c041516ca0e51b885304048ce7c9f86f9714b13d2af3b4043203c",
+    "Frontend/UI/src/styles/statusEquipamentos.css": "ca043a901a678d5be1f009d23993d4a2d2398108094cee21344a9fb83eae7c08",
+    "Frontend/UI/src/utils/acompanhamentoSolicitacao.js": "ba6179c6dcc296dbd3042eb053f8ee452fcb48d374d566a76adc3860acce7b48",
+    "Frontend/UI/src/utils/administracaoUsuarios.js": "3f6c8e6d833382b39c59332ff8f381818788cf5c1af241506903fd3ac3130b63",
+    "Frontend/UI/src/utils/atendimentoParcial.js": "9f86b0ce1e3f5b5eee037f81fba46c5e41438659f4a9207eeb16cfcdc201c623",
+    "Frontend/UI/src/utils/auditoriaTecnico.js": "e87f26964f410fa35ee33163faa778405be3a4c9bcba941c2cdcb2b3eae228b7",
+    "Frontend/UI/src/utils/calibracoes.js": "69701688adaba4b7db7c96c7cfff873d48487d0a83888d65a60189e0ddf6c307",
+    "Frontend/UI/src/utils/classificacaoFuncionario.js": "7f9c108f6506e4f74f98cb645ee9454fc8b5f9eaad1bf580871cad6386d861e7",
+    "Frontend/UI/src/utils/datas.js": "8059b7dcb981901da0db670aee39f3d211959fafd64093db5076e7640b139c03",
+    "Frontend/UI/src/utils/edicaoSolicitacao.js": "c0d38b1ce06da29374b016d9790a21725952a05af774ca1741a16f369de99c57",
+    "Frontend/UI/src/utils/errosApi.js": "c185666658e80b40ff58f3fefe26c47695470cc0809d3e42ebd810ca11880fea",
+    "Frontend/UI/src/utils/filtrosEstoque.js": "a1d4aa9902e6a5d60c44006a8f50784d67c4fdbb0ebcfe9511ade2a0edc4d33a",
+    "Frontend/UI/src/utils/historicoEquipamento.js": "720a812e90ed6a2325ddb1410f442f3ddd8be0cecb56b43c4e42e60c70c966e6",
+    "Frontend/UI/src/utils/identificacaoEquipamento.js": "831fd8fbbc53619968b447409d24d7f569eea58f0235df80b53bafec74b8dfc7",
+    "Frontend/UI/src/utils/localizacaoEquipamentos.js": "05b92c773aaea9e3d1dae687d7627527b66f8194805083d76f33efc71b0c9f0d",
+    "Frontend/UI/src/utils/novoPedido.js": "60b818f30ee6474c8c63ee3871c7535857bb8927881b004dc99bb87b071352be",
+    "Frontend/UI/src/utils/operacaoEstoque.js": "9a791d1d38266b03643417725c79591c3ec50085bba7331d469647a2c911cad0",
+    "Frontend/UI/src/utils/pedidoMovimentacao.js": "9b80c6ee2c5ccb027fcf80d311c667daadd425f990c9c62c16e95fdfae14deaa",
+    "Frontend/UI/src/utils/pedidosFinanceiros.js": "97a2b5c5f3043212e91aff252ff33946eb0c7b02483e7bfe6acaaaaeae98fc15",
+    "Frontend/UI/src/utils/pesquisaSolicitacoes.js": "cbd126f47d6851e1de602a719db8438763cab11715f9bb634ff102e0c2f4c568",
+    "Frontend/UI/src/utils/planoFinanceiro.js": "c58e43e458b280f7b17117a46417e7efce57caec5e29c084c2eaca134ee20bd5",
+    "Frontend/UI/src/utils/recuperacaoConta.js": "2f93c0cfa7d00de09cdd403003fa27e6028c9784baadcdf9848e36cbf7a02f63",
+    "Frontend/UI/src/utils/rolagemKanban.js": "e9946cdd3ecb88bacfa7f66bcb5fcd5294670f6c6e7046d32971683214af04dc",
+    "Frontend/UI/src/utils/statusSolicitacao.js": "63bee18bc24eb30e89df1731b5edb33b979f726855b7c26f87c42446438c92a6",
+    "Frontend/UI/src/utils/titulosNotificacao.js": "3154bfcdddf5290881d2535e08d186f12c4c4465bbdc7f9dc0d7c819c92c9e5c",
+    "Frontend/UI/vite.config.js": "4d36db3522a7b2dd10e0936e1004373c7ee65f10f7cd7920cd76410459c15a45",
+    "compose.test.load.yaml": "d164a29bfc1875e3f647374e3894ee607b8f82c890cff75ad94ab9c68fba5aa9",
+    "compose.test.recovery.yaml": "43e4044e71f6729b4dc25f77122c6f9bee5c3a841ec26b94e43b1d5879f2ec75",
+    "compose.test.yaml": "44f8d1d714bc84f55d2769bc8a2c2cac50ac18390b04c8d54205c3da7bb91c41",
+    "scripts/qa/executar-integracao-piloto.mjs": "e7ee1887639d39ca1ea24b67d8cc684d625e4473c80523f5b9eddc8427d063c3",
+    "scripts/qa/executar.mjs": "ce39df22835119ce30455fcc4bcdd75f9a841e6d185d3fd4bcf0cd3c807b2abb",
+    "scripts/qa/fechar-piloto.mjs": "d17ea60dff8df94cc2f0a5dc44bdb6ad1af05c0b4a761b77b065398e03f40424",
+    "scripts/qa/medir.mjs": "49e7f5d0e67ca9f5a46256c274bd2de4c55c5ac85c50c23ea7f6e24076b865a3",
+    "scripts/qa/salvar-ensaio-backup.mjs": "040fdeb42b92fec1536bb13e5e45e6b1ae386a8684cecfc4c953e623d347b061",
+    "scripts/qa/verificar-imagens-piloto.mjs": "18c432b8c5aecd19f6ad028b6ccd1b6ba56c600010ded4b1dadbc161be67054d",
+    "scripts/testar-integracao.mjs": "61a8ad250affa79d25583e0d4fb81465f8eed8e524ff52d33643e127e8ff18d9",
+    "scripts/testes/administradores-concorrentes.mjs": "4e80da2d51559ef01e3c1fb545e160b61c03bf2cd6046b50302ac02ae924ca44",
+    "scripts/testes/backup-restauracao.mjs": "70ba50ff3a8ad63d72ea1ba4eb4b97ca54bda679a4c36d54e4021944934032ea",
+    "scripts/testes/banco-descartavel.mjs": "8400b84a4ced6f97294a3183fbf32e9990a78d8864c1b8aee018392de04a3684",
+    "scripts/testes/carga-piloto.mjs": "532d7fccf9e9834de66fd01f6c76dfb1bae70a9fde6a908ad8735c468d9891e7",
+    "scripts/testes/cliente.mjs": "6703898e6044b6567e8ed64fda6e0adec35a70f470eb2c2d9fdfa92fc3336d45",
+    "scripts/testes/notificacoes-persistencia.mjs": "82286563f65b784e20728acfd2c65e5b09194b042654cf52831b73205424c89d",
+    "scripts/testes/operacoes.mjs": "6ce592ea3fbe3d17ee936ea7e4b21f8a56c3ddeb347043937741f13ba3ca0bd2",
+    "scripts/testes/preparar-dados.mjs": "2fe29682c6c8094f49e050daba7b26b23cb34466126f36364955d63d00b51f7c",
+    "scripts/testes/qualidade.mjs": "e2f60da9c35b3354258e453eedc00afa08e027f0cb0caf8ef40f1fa1a6e4fa76",
+    "scripts/testes/recuperacao.mjs": "add4202c23a6798dfeda55b1321f4b05ee541742834f24ee8fb499ab01840024",
+    "scripts/testes/seguranca.mjs": "a825b6944c8c6d2c26af361e6b40c63b494f53f741136f5a146a9aa63fba4d39",
+    "scripts/testes/smtp-ficticio.mjs": "dfcbb4d2bc71a63030ccf2ed3396d610145043eef2172c55a528dccc803ba6a9",
+    "scripts/verificar-dependencias-java.mjs": "fe147cafea0f47e4fe8b1d6e67e5d4ee7d2a265afbb3d2b3dbc60affc0a8339e"
+  },
+  "ferramentasFechamento": {
+    "scripts/qa/fechar-piloto.mjs": "d17ea60dff8df94cc2f0a5dc44bdb6ad1af05c0b4a761b77b065398e03f40424",
+    "scripts/qa/verificar-imagens-piloto.mjs": "18c432b8c5aecd19f6ad028b6ccd1b6ba56c600010ded4b1dadbc161be67054d"
+  },
+  "ressalvas": [
+    "Resposta do próprio POST/PATCH perdida após commit e idempotência geral.",
+    "Acessibilidade sistemática, outros navegadores/dispositivos e carga representativa.",
+    "Backup externo, retenção, criptografia e restauração de base real ainda não demonstrados.",
+    "Upgrade de base legada representativa e rollback de versão compatível com json:v1:."
+  ],
+  "historico": {
+    "defeitosConfirmados": 11,
+    "altos": 2,
+    "medios": 7,
+    "baixos": 2,
+    "corrigidosNasRodadasAnteriores": 10,
+    "novoDefeitoDeAplicacaoConfirmadoNesteFechamento": true,
+    "pendente": "QA-BUG-011: carga sintética reprovada; otimização parcial, sem aprovação de capacidade."
+  },
+  "retomada": {
+    "data": "2026-10-29",
+    "restauracaoAvulsa": {
+      "tipo": "ENSAIO COM DADOS FICTÍCIOS",
+      "backupRealDaVps": false,
+      "arquivo": "/home/marcus/Documents/Backups-ERA/ensaios/ENSAIO-FICTICIO-ERA-dc58d5d153fba59b.dump",
+      "sha256": "dc58d5d153fba59b137c7ba7e8fc8e370529b1caa9f32a1e5f280e1f72400e52",
+      "bytes": 104259,
+      "origem": "test-results/integracao-1793149187848/backup-restauracao",
+      "restauracao": "APROVADA",
+      "tabelas": 24,
+      "sequencias": 20,
+      "salvoEm": "2026-10-28T01:47:45.902Z",
+      "retencao": "Sem remoção automática; política dos dados reais ainda a definir."
+    },
+    "carga2GiB": {
+      "nome": "QA-CARGA-01: 20 sessões independentes em três obras",
+      "resultado": "REPROVADO",
+      "usuarios": 20,
+      "equipamentosAdicionais": 5000,
+      "pedidosAdicionais": 2000,
+      "obras": 3,
+      "escopo": "Leituras HTTP locais; 20 contas de Gerência sintéticas, volume escolhido para ensaio, sem representar quantidade real ainda desconhecida. Não mede renderização de 20 navegadores nem SLA da Hostinger.",
+      "limites": {
+        "apiCpus": 2,
+        "apiMemoria": "2GiB",
+        "postgresCpus": 1,
+        "postgresMemoria": "512MiB",
+        "timeoutHttpMs": 10000,
+        "apiMemoriaBytes": 2147483648
+      },
+      "amostras": [
+        {
+          "usuario": 0,
+          "rota": "/obras",
+          "fase": "aquecimento",
+          "status": 200,
+          "bytes": 641,
+          "itens": 3,
+          "sucesso": true,
+          "duracaoMs": 41.47003799999948
+        },
+        {
+          "usuario": 0,
+          "rota": "/equipamentos",
+          "fase": "aquecimento",
+          "status": 200,
+          "bytes": 3058867,
+          "itens": 5011,
+          "sucesso": true,
+          "duracaoMs": 2992.6215950000005
+        },
+        {
+          "usuario": 0,
+          "rota": "/atividades",
+          "fase": "aquecimento",
+          "status": 200,
+          "bytes": 1481640,
+          "itens": 2006,
+          "sucesso": true,
+          "duracaoMs": 1315.7867490000026
+        },
+        {
+          "usuario": 0,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10010.870690999996
+        },
+        {
+          "usuario": 1,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10012.837897999998
+        },
+        {
+          "usuario": 2,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10011.180544000003
+        },
+        {
+          "usuario": 3,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10010.697200999995
+        },
+        {
+          "usuario": 4,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10010.221721999998
+        },
+        {
+          "usuario": 5,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10009.531412
+        },
+        {
+          "usuario": 6,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10008.999362999999
+        },
+        {
+          "usuario": 7,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10007.921216000002
+        },
+        {
+          "usuario": 8,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10011.450279000004
+        },
+        {
+          "usuario": 9,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10011.627942
+        },
+        {
+          "usuario": 10,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10012.667869
+        },
+        {
+          "usuario": 11,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10012.849086999999
+        },
+        {
+          "usuario": 12,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10012.517031
+        },
+        {
+          "usuario": 13,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10012.071730999996
+        },
+        {
+          "usuario": 14,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10011.509942
+        },
+        {
+          "usuario": 15,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10010.931861999998
+        },
+        {
+          "usuario": 16,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10010.219448000003
+        },
+        {
+          "usuario": 17,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10009.735772999997
+        },
+        {
+          "usuario": 18,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10009.265295999998
+        },
+        {
+          "usuario": 19,
+          "rota": "/equipamentos",
+          "fase": "carga",
+          "sucesso": false,
+          "erro": "Tempo limite de 10s",
+          "duracaoMs": 10018.648595000002
+        }
+      ],
+      "imageId": "sha256:5f6bc6ef6e1ab1d196adc447b205af4f2e8aac6df784f1e75dc8c5d9e9d6858e",
+      "volumes": {
+        "equipamentos": 5011,
+        "pedidos": 2012,
+        "obrasComEquipamentos": 3
+      },
+      "aquecimento": [
+        {
+          "rota": "/obras",
+          "sucesso": true
+        },
+        {
+          "rota": "/equipamentos",
+          "sucesso": true
+        },
+        {
+          "rota": "/atividades",
+          "sucesso": true
+        }
+      ],
+      "duracaoCargaMs": 10043.915515,
+      "concorrenciaMaxima": 20,
+      "resumo": {
+        "requisicoes": 20,
+        "sucessos": 0,
+        "erros": 20,
+        "p50Ms": 10010.931861999998,
+        "p95Ms": 10012.849086999999,
+        "maxMs": 10018.648595000002,
+        "requisicoesPorSegundo": 0
+      },
+      "erro": "O ensaio encontrou falhas ou timeouts.\n\n20 !== 0\n",
+      "duracaoMs": 32941.212074
+    },
+    "limitacaoAtual": "Docker indisponível; inicialização requer autenticação administrativa local. Sem integração final ou varredura atual aprovada."
+  }
+}

@@ -1,0 +1,13 @@
+# Limites somente para o ensaio sintético de carga, nunca para o ambiente habitual.
+services:
+  api:
+    environment:
+      JAVA_TOOL_OPTIONS: ${ERA_CARGA_JAVA_OPCOES:--Duser.timezone=America/Manaus -Xlog:gc -Xms2g -Xmx2g}
+    cpus: ${ERA_CARGA_CPUS_API:-2}
+    mem_limit: ${ERA_CARGA_MEMORIA_API:-4g}
+  database:
+    cpus: 0.5
+    mem_limit: 512m
+  ui:
+    cpus: 0.25
+    mem_limit: 128m

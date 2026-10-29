@@ -15,7 +15,9 @@ const envVazio = path.join(temporario, 'sem-env');
 await writeFile(envVazio, '', { mode: 0o600 });
 const resultados = [];
 const suiteSolicitada = process.argv.find(arg=>arg.startsWith('--suite='))?.slice(8);
-assert.ok(!suiteSolicitada || ['atendimento-parcial','regressao','recuperacao','administradores','notificacoes','backup-restauracao'].includes(suiteSolicitada),'Suíte inválida.');
+assert.ok(!suiteSolicitada || ['atendimento-parcial','regressao','recuperacao','administradores','notificacoes','backup-restauracao','carga-piloto'].includes(suiteSolicitada),'Suíte inválida.');
+const perfilCarga=process.argv.includes('--perfil-carga');
+assert.ok(!perfilCarga||suiteSolicitada==='carga-piloto','Perfil JVM restrito à suíte de carga descartável.');
 const filhos = new Set();
 let interrompido = false;
 function interromper() { interrompido = true;for (const filho of filhos) filho.kill('SIGTERM'); }
@@ -44,8 +46,9 @@ async function stack(nome, testar) {
   const project = `era-tests-${randomBytes(6).toString('hex')}`;
   const args = ['compose', '--env-file', envVazio, '-f', path.join(raiz, 'compose.test.yaml'), '-p', project];
   if (nome==='recuperacao') args.push('-f',path.join(raiz,'compose.test.recovery.yaml'));
+  if (nome==='carga-piloto') args.push('-f',path.join(raiz,'compose.test.load.yaml'));
   let origem='http://localhost:5173';
-  const compose = (comandos, opcoes) => executar('docker', [...args, ...comandos], {...opcoes,env:{...process.env,ERA_TEST_ORIGIN:origem}});
+  const compose = (comandos, opcoes) => executar('docker', [...args, ...comandos], {...opcoes,env:{...process.env,ERA_TEST_ORIGIN:origem,...(perfilCarga?{ERA_CARGA_JAVA_OPCOES:'-Duser.timezone=America/Manaus -Xlog:gc -XX:StartFlightRecording=filename=/tmp/era-carga.jfr,settings=profile,dumponexit=true,maxsize=64m'}:{})}});
   const inicio = Date.now();
   let erroTeste;
   console.log(`\n[${nome}] Iniciando ${project} (dados descartáveis, portas aleatórias).`);
@@ -89,6 +92,13 @@ async function stack(nome, testar) {
     for (const id of ids) {
       const label = await executar('docker', ['inspect', '-f', '{{index .Config.Labels "era.test"}}', id], { capturar: true });
       assert.equal(label, 'true', 'Limpeza interrompida: container não pertence aos testes.');
+    }
+    if(perfilCarga){
+      // Copiar apenas o perfil da JVM sintética, após validar todos os rótulos.
+      try{
+        await compose(['stop','--timeout','30','api']);
+        await compose(['cp','api:/tmp/era-carga.jfr',path.join(artefatos,'carga-piloto.jfr')]);
+      }catch(erro){console.error(`Perfil JVM não coletado: ${erro.message}`);}
     }
     await compose(['down', '--remove-orphans', '--timeout', '10']);
     resultados.push({ suite: nome, resultado: erroTeste ? 'falhou' : 'passou', duracaoMs: Date.now()-inicio, erro: erroTeste?.message });
@@ -137,6 +147,10 @@ if (!suiteSolicitada || suiteSolicitada==='notificacoes') await stack('notificac
 if (!suiteSolicitada || suiteSolicitada==='backup-restauracao') await stack('backup-restauracao',async arquivo=>{
   await node('scripts/testes/preparar-dados.mjs',arquivo);
   await node('scripts/testes/backup-restauracao.mjs',arquivo);
+});
+if (suiteSolicitada==='carga-piloto') await stack('carga-piloto',async arquivo=>{
+  await node('scripts/testes/preparar-dados.mjs',arquivo);
+  await node('scripts/testes/carga-piloto.mjs',arquivo);
 });
 console.log(`\nRelatório: ${path.relative(raiz, artefatos)}/resumo.json`);
 console.table(resultados);

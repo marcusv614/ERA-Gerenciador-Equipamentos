@@ -25,10 +25,12 @@ try{
  assert.equal(execucao.codigo,0,'A integração completa do fechamento deve passar antes da varredura.');
  const fontes=JSON.parse(readFileSync(path.join(pasta,'fontes-iniciais.json'),'utf8'));
  for(const [arquivo,hash] of Object.entries(fontes))assert.equal(createHash('sha256').update(readFileSync(arquivo)).digest('hex'),hash,`Fonte alterado após o início: ${arquivo}`);
+ for(const [arquivo,hash] of Object.entries(fontes).filter(([p])=>!p.startsWith('scripts/qa/')&&p!=='README.md'&&p!=='compose.production.yaml'))assert.equal(execucao.fontesNoInicio?.[arquivo],hash,`A integração não validou este candidato: ${arquivo}`);
  await executar(['pull',scanner]);scannerId=await executar(['image','inspect',scanner,'--format','{{.Id}}']);
  const cache=path.join(pasta,'trivy-cache');mkdirSync(cache,{recursive:true});
  for(const alvo of alvos){
   const imageId=await executar(['image','inspect',alvo.tag,'--format','{{.Id}}']);assert.match(imageId,/^sha256:[a-f0-9]{64}$/);
+  assert.equal(imageId,execucao.imagensTestadas?.[alvo.nome],'A imagem atual não corresponde à integração concluída.');
   const arquivo=path.join(pasta,`${alvo.nome}-imagem.tar`);
   await executar(['image','save','--output',arquivo,alvo.tag]);chmodSync(arquivo,0o600);
   assert.equal(await executar(['image','inspect',alvo.tag,'--format','{{.Id}}']),imageId,'A tag mudou durante a exportação.');

@@ -1,6 +1,36 @@
 # Relatório de qualidade
 
-Fechamento técnico do piloto preparado; **início BLOQUEADO**. Quatro critérios
+Atualização final de **29/10/2026**: os **nove critérios técnicos passaram**.
+Foram aprovados **788 testes Java**, seis suítes de integração, **38 E2E** e o
+ensaio de restauração (24 tabelas, 20 sequências). Carga HTTP de **20 sessões,
+100 leituras sem erros**, no orçamento preparado para compartilhar a VPS com
+Nextcloud: API 2 CPUs / 4 GiB, banco 0,5 CPU / 512 MiB e UI 0,25 CPU / 128 MiB.
+P95 de 6,99 s; máximo de 8,19 s.
+A varredura final identificou **zero HIGH/CRITICAL** nas duas imagens, após
+corrigir três ocorrências em dois CVEs na imagem da UI. QA-BUG-011 e 012
+encerrados nos escopos validados: **12 defeitos confirmados e corrigidos**
+(um crítico, dois altos, sete médios e dois baixos). O grau crítico de QA-BUG-012
+é a classificação do scanner para pacotes da imagem, sem exploração reproduzida.
+
+Os 189 Node e 278 casos locais de navegador permanecem aprovados no código da
+interface preservado por hash; não foram repetidos. Lint/build também passaram
+na reconstrução atual da imagem UI. O piloto permanece **adiado**. A cópia real
+do banco foi **adiada pelo usuário**; o dump em Documentos é fictício.
+Não houve implantação ou alteração do Nextcloud. Ver [fechamento](FECHAMENTO_PILOTO.md)
+e [carga/restauração](CARGA_E_RESTAURACAO_PILOTO.md). Os registros abaixo são históricos.
+
+Atualização de **29/10/2026**: **787 testes Java aprovados**, sem falhas, erros
+ou ignorados; scanners npm/OSV reexecutados sem alertas. Ensaio avulso de
+restauração aprovado (24 tabelas, 20 sequências) e cópia fictícia salva em
+Documentos com hash conferido. **QA-BUG-011 permanece aberto**: as 20 leituras
+simultâneas excederam 10 segundos tanto com 1 GiB quanto com 2 GiB. A consulta
+isolada melhorou; a carga não foi aprovada. Integração final, E2E atualizados e
+imagens aguardam Docker. Quatro dos nove critérios aprovados, quatro bloqueados
+e um reprovado; **piloto adiado**. Ver [fechamento atual](FECHAMENTO_PILOTO.md) e
+[carga/restauração](CARGA_E_RESTAURACAO_PILOTO.md). As rodadas abaixo são históricas.
+
+Preparação técnica do piloto entregue com pendências; **início ADIADO pelo
+usuário**. Quatro critérios
 aprovados (integridade dos fontes, evidência da interface preservada por hash,
 validações locais e dependências) e quatro bloqueados pelo Docker indisponível
 (integração completa, restauração, imagens e E2E atualizados). Foram reexecutados
@@ -9,7 +39,7 @@ npm sem vulnerabilidades e 102 bibliotecas OSV sem alertas. Os 278 testes locais
 de navegador permanecem como evidência anterior no mesmo código, sem nova execução.
 Não houve novo defeito de aplicação confirmado. Critérios, roteiro de operação,
 contingência e condições pendentes em [fechamento do piloto](FECHAMENTO_PILOTO.md).
-A aprovação anterior com ressalvas não autoriza o início operacional.
+As verificações pendentes serão retomadas antes do início do piloto.
 As rodadas abaixo são históricas.
 
 Rodada de sincronização financeira: QA-BUG-010, severidade MÉDIA, corrigido e

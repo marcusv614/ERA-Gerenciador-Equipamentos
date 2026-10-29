@@ -1,6 +1,8 @@
 services:
   database:
     image: postgres:16-bookworm
+    cpus: 0.5
+    mem_limit: 512m
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-era_erp}
@@ -24,6 +26,8 @@ services:
 
   api:
     image: ${API_IMAGE:-ghcr.io/marcusv614/era-gerenciador-equipamentos-api:latest}
+    cpus: 2
+    mem_limit: 4g
     pull_policy: always
     restart: unless-stopped
     environment:
@@ -44,7 +48,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       SERVER_FORWARD_HEADERS_STRATEGY: framework
       TZ: ${APP_TIMEZONE:-America/Manaus}
-      JAVA_TOOL_OPTIONS: -Duser.timezone=${APP_TIMEZONE:-America/Manaus}
+      JAVA_TOOL_OPTIONS: -Duser.timezone=${APP_TIMEZONE:-America/Manaus} -Xms2g -Xmx2g
     depends_on:
       database:
         condition: service_healthy
@@ -63,6 +67,8 @@ services:
 
   ui:
     image: ${UI_IMAGE:-ghcr.io/marcusv614/era-gerenciador-equipamentos-ui:latest}
+    cpus: 0.25
+    mem_limit: 128m
     pull_policy: always
     restart: unless-stopped
     depends_on:

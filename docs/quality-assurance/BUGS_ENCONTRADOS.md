@@ -1,5 +1,18 @@
 # Defeitos encontrados
 
+Fechamento final de **29/10/2026**: **12 defeitos confirmados e corrigidos**
+nos escopos validados (um crítico, dois altos, sete médios e dois baixos).
+QA-BUG-011: carga aprovada no orçamento da VPS compartilhada. QA-BUG-012:
+pacotes da imagem UI atualizados, regressão aprovada e scanner com zero
+HIGH/CRITICAL. A classificação crítica é do scanner, sem exploração reproduzida.
+Os registros anteriores abaixo são históricos. Ver [fechamento](FECHAMENTO_PILOTO.md).
+
+Atualização de 29/10/2026: **QA-BUG-011, MÉDIA, ABERTO**. A listagem não
+concluiu o ensaio de 20 sessões com o volume sintético definido. A otimização
+parcial não encerra o defeito. Total: **11 confirmados**, dez corrigidos nas
+rodadas anteriores e um aberto (dois altos, sete médios, dois baixos).
+Ver [carga e restauração](CARGA_E_RESTAURACAO_PILOTO.md).
+
 QA-BUG-010, severidade MÉDIA, **CORRIGIDO E VALIDADO**: plano e edição
 confirmados deixam de ser apresentados como recusados quando apenas o GET da
 lista falha. Total acumulado: **dez defeitos confirmados** (dois altos, seis
@@ -283,3 +296,43 @@ Não foram aplicadas correções de produção baseadas apenas em suspeitas est�
   Ver [sincronização financeira](SINCRONIZACAO_FINANCEIRA.md).
 - Limite: não foi comprovada duplicação no banco; a resposta da própria gravação
   perdida após commit permanece uma ressalva de idempotência geral.
+
+## QA-BUG-011 — Listagem excede o prazo sob carga sintética
+
+- Severidade: MÉDIA. **CORRIGIDO E VALIDADO NO PERFIL COMPARTILHADO**.
+- Reprodução: três obras, 5.000 equipamentos e 2.000 pedidos adicionais,
+  20 contas distintas de Gerência e prazo de 10 segundos por resposta.
+- Antes da correção final: no orçamento compartilhado, oito timeouts em
+  68 tentativas; as sequências interrompidas não completaram as 100 leituras.
+- Causa e correção: consultas de histórico por registro foram agrupadas;
+  projeção de leitura evita registrar milhares de equipamentos no contexto
+  de persistência. Manutenções e calibrações são consultadas separadamente,
+  agrupadas por ID e ordenadas. Normalização de catálogo usa padrões
+  pré-compilados. Sem cache de respostas ou saldos.
+- As regras de disponibilidade, filtros por perfil/obra, mascaramento e
+  bloqueios de escrita foram preservados. O contrato compara o DTO completo,
+  incluindo manutenção/calibração, e os testes de privacidade continuam ativos.
+- Resultado final: **788 Java**, seis suítes e **38 E2E** aprovados. Carga:
+  **100 leituras sem erros**, p95 **6.992 ms**, máximo **8.193 ms**.
+- Orçamento validado: API 2 CPUs / 4 GiB (heap 2 GiB), banco 0,5 CPU / 512 MiB,
+  UI 0,25 CPU / 128 MiB. O perfil que usava 4 CPUs na API não vale para a
+  aceitação da VPS compartilhada. As tentativas reprovadas foram preservadas.
+- Limite: mede HTTP local, sem 20 navegadores ou tráfego do Nextcloud. O
+  volume real ainda não foi contado; não comprova SLA da Hostinger.
+- Evidência: [snapshot final](evidencias/validacao-final-piloto-2026-10-29.json)
+  e [protocolo e histórico](CARGA_E_RESTAURACAO_PILOTO.md).
+
+## QA-BUG-012 — Pacotes vulneráveis na imagem da interface
+
+- Severidade: **CRÍTICA**, pelo maior grau reportado pelo Trivy. **CORRIGIDO E VALIDADO**.
+- Primeira varredura: Brotli `1.2.0-r1` com `CVE-2026-111497` (CRITICAL);
+  curl e libcurl `8.22.0-r0` com `CVE-2026-92392` (HIGH). Duas CVEs, três
+  ocorrências de pacote, agrupadas em um achado da imagem.
+- Correção: `apk upgrade --no-cache` no estágio final do Dockerfile da UI;
+  instalados Brotli `1.2.1-r0` e curl/libcurl `8.23.0-r0`.
+- Validação: seis suítes, 38 E2E sem retries, carga na imagem API integrada e
+  Trivy nas imagens finais com zero HIGH/CRITICAL. Relatórios anteriores
+  preservados; nenhum ignore, scanner ou limite de severidade foi relaxado.
+- Limite: achado de dependências da imagem, sem exploração reproduzida no ERP;
+  a varredura não declara ausência de alertas médios/baixos ou falhas futuras.
+- Evidência: [snapshot final](evidencias/validacao-final-piloto-2026-10-29.json).

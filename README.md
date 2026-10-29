@@ -71,6 +71,8 @@ Para voltar ao acesso local por HTTP, remova `COMPOSE_FILE` do `.env` e execute 
 
 O arquivo `compose.production.yaml` executa banco, API e interface na VPS. As imagens privadas da API e da interface são publicadas no GitHub Container Registry pelo workflow `publish-production-images.yml`. O Traefik existente descobre somente o container da interface e publica a aplicação com HTTPS; a API e o PostgreSQL permanecem acessíveis apenas pela rede interna do projeto.
 
+Para compartilhar a VPS com o Nextcloud, o Compose limita a API a 2 CPUs e 4 GiB de memória (heap Java de 2 GiB), o PostgreSQL a 0,5 CPU e 512 MiB e a interface a 0,25 CPU e 128 MiB. Os tetos somam 2,75 CPUs e 4,625 GiB; limitam o consumo do ERP, sem reservar esses recursos ou comprovar desempenho junto ao Nextcloud. Antes do piloto, conferir o consumo conjunto no servidor. O [relatório de carga](docs/quality-assurance/CARGA_E_RESTAURACAO_PILOTO.md) distingue os perfis medidos. Essa configuração só será aplicada na próxima implantação autorizada.
+
 1. Crie o registro DNS `A` de `tools.eraltda.com.br` apontando para o IPv4 público da VPS.
 2. Confirme que as imagens da API e da interface estão públicas no GitHub Container Registry.
 3. Escolha **Compose manualmente**, informe o nome `era-tools-manager`, cole o conteúdo de `compose.production.yaml` e configure as variáveis de `.env.production.example` com senhas próprias. O Compose não fixa o nome internamente, permitindo que o Docker Manager aplique seu identificador de projeto.

@@ -8,6 +8,8 @@ ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run lint && npm run build
 
 FROM nginx:1.30.6-alpine3.24
+# Aplicar as correções de segurança disponíveis para os pacotes da base Alpine.
+RUN apk upgrade --no-cache
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=build /app/dist /usr/share/nginx/html

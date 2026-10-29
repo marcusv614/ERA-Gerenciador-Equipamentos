@@ -151,7 +151,8 @@ class QaEquipamentoRessalvasTests {
         when(obras.idsPermitidos("autor")).thenReturn(new HashSet<>(List.of(10L)));
         var ida = movimento(e,permitida,restrita); var volta = movimento(e,null,permitida); var privado = movimento(e,restrita,null);
         when(movimentos.findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(1L)).thenReturn(List.of(ida,volta,privado));
-        when(equipamentos.findAll()).thenReturn(List.of(e));
+        when(movimentos.findByEquipamentoIdInOrderByDataMovimentacaoAscIdAsc(List.of(1L))).thenReturn(List.of(ida,volta,privado));
+        when(equipamentos.listarParaConsulta()).thenReturn(List.of(e));
         var resposta = service.listarParaUsuario("autor").getFirst();
         assertNull(resposta.obraId()); assertNull(resposta.tecnico()); assertEquals(2,resposta.historico().size());
         var historico = service.historicoParaUsuario(1L,"autor");

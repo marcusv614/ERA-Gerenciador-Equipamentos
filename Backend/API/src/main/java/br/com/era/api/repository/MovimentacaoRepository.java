@@ -6,6 +6,7 @@ import java.util.Optional;
 public interface MovimentacaoRepository extends JpaRepository<Movimentacao,Long> {
     boolean existsByEquipamentoId(Long equipamentoId);
     List<Movimentacao> findByEquipamentoIdOrderByDataMovimentacaoAscIdAsc(Long equipamentoId);
+    List<Movimentacao> findByEquipamentoIdInOrderByDataMovimentacaoAscIdAsc(List<Long> equipamentosIds);
     List<Movimentacao> findByObraOrigemIdOrObraDestinoIdOrderByDataMovimentacaoAscIdAsc(Long origemId,Long destinoId);
     Optional<Movimentacao> findBySolicitacaoIdAndEquipamentoId(Long solicitacaoId,Long equipamentoId);
     List<Movimentacao> findBySolicitacaoId(Long solicitacaoId);

@@ -84,16 +84,20 @@ if (existsSync(path.join(raiz,coberturaUi))) {
   metricas.frontendIstanbul={...cobertura,compativelComResultados:Boolean(stats&&cobertura.casosEsperados===stats.expected+stats.unexpected+stats.skipped+stats.flaky)};
 }
 const integracoes = readdirSync(path.join(raiz,'test-results')).filter(f=>/^integracao-\d+$/.test(f)).sort((a,b)=>Number(b.slice(11))-Number(a.slice(11)));
-if (integracoes.length) {
-  const diretorio=`test-results/${integracoes[0]}`;
+const integracaoEscolhida=process.argv.find(a=>a.startsWith('--integracao='))?.slice(13);
+if(integracaoEscolhida&&(!/^test-results\/integracao-\d+$/.test(integracaoEscolhida)||!existsSync(path.join(raiz,integracaoEscolhida,'resumo.json'))))throw new Error('Informe --integracao=test-results/integracao-ID com resumo existente.');
+if (integracoes.length||integracaoEscolhida) {
+  const diretorio=integracaoEscolhida??`test-results/${integracoes[0]}`;
   const resumo=`${diretorio}/resumo.json`, navegador=`${diretorio}/navegador/resultados.json`;
-  metricas.integracao={diretorio,suites:existsSync(path.join(raiz,resumo))?JSON.parse(ler(resumo)):null};
+  metricas.integracao={diretorio,selecao:integracaoEscolhida?'explícita':'tentativa mais recente',tentativaMaisRecente:integracoes.length?`test-results/${integracoes[0]}`:null,suites:existsSync(path.join(raiz,resumo))?JSON.parse(ler(resumo)):null};
   if (existsSync(path.join(raiz,navegador))) metricas.integracao.navegador=JSON.parse(ler(navegador)).stats;
   const administradores=`${diretorio}/administradores/administradores-concorrentes.json`;
   if (existsSync(path.join(raiz,administradores))) metricas.integracao.administradores=JSON.parse(ler(administradores));
   const notificacoes=`${diretorio}/notificacoes/notificacoes-persistencia.json`;
   if (existsSync(path.join(raiz,notificacoes))) metricas.integracao.notificacoes=JSON.parse(ler(notificacoes));
 }
+const ensaioCarga='test-results/quality-assurance/piloto/carga-piloto.json';
+if(existsSync(path.join(raiz,ensaioCarga))){const c=JSON.parse(ler(ensaioCarga));metricas.ensaioCarga={artefato:ensaioCarga,resultado:c.resultado,limites:c.limites,usuarios:c.usuarios,volumes:c.volumes,resumo:c.resumo,escopo:c.escopo};}
 const qualidadeApi='test-results/quality-assurance/qualidade-api.json';
 if (existsSync(path.join(raiz,qualidadeApi))) metricas.qualidadeApi=JSON.parse(ler(qualidadeApi));
 const controllers = arquivos('Backend/API/src/main/java/br/com/era/api/controller').filter(f => f.endsWith('.java'));

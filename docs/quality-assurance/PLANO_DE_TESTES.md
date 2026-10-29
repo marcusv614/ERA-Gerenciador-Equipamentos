@@ -171,3 +171,40 @@ Docker bloqueia esses critérios: não substituí-los por resultados históricos
 Não iniciar o daemon automaticamente, conforme a regra de isolamento acima.
 Ambiente, responsáveis, backup real e aceite das ressalvas permanecem pendentes.
 Parecer e comandos de retomada em [fechamento do piloto](FECHAMENTO_PILOTO.md).
+
+Agendamento informado pelo usuário: o piloto iniciará depois. A entrega atual
+encerra a preparação técnica com as pendências registradas; verificações
+operacionais serão retomadas antes do início, sem antecipar a implantação.
+
+Infraestrutura informada pelo usuário: o HTTPS será configurado pela Hostinger.
+A definição do responsável está resolvida; a validação de HTTPS, cookie seguro
+e CORS será feita no ambiente publicado antes do piloto.
+
+## Retomada de carga e restauração — 29/10/2026
+
+Domínio previsto: `tools.eraltda.com.br`; HTTPS pela Hostinger. Aproximadamente
+20 pessoas e pelo menos três obras; volume real ainda não contado. Responsáveis
+a definir. Destino escolhido para backup: Documentos deste computador.
+
+O ensaio avulso de restauração passou e a cópia fictícia foi salva com hash
+conferido. Não há backup real da VPS demonstrado. A carga usa 20 contas
+independentes, três obras, 5.000 equipamentos e 2.000 pedidos adicionais,
+100 leituras previstas e prazo de 10 segundos. Os perfis de 1 GiB e 2 GiB
+reprovaram na primeira onda; QA-BUG-011 permanece aberto.
+
+Retomar com Docker ativo, investigar o custo da listagem e paginação, manter
+as assertivas de isolamento e dados completos; repetir a mesma carga e a
+integração final antes da varredura das imagens. Não promover resultados
+históricos a aprovação atual. Ver [carga/restauração](CARGA_E_RESTAURACAO_PILOTO.md)
+e [fechamento](FECHAMENTO_PILOTO.md). O piloto permanece adiado.
+
+## Resultado final da preparação — 29/10/2026
+
+Nove critérios técnicos aprovados; ver [fechamento atual](FECHAMENTO_PILOTO.md).
+O perfil com 4 CPUs somente na API foi descartado da aceitação por a VPS ter
+4 vCPUs compartilhadas com Nextcloud. O perfil validado usa API 2 CPUs / 4 GiB,
+banco 0,5 CPU / 512 MiB e UI 0,25 CPU / 128 MiB, sem aplicar limites na VPS.
+Carga final: 100 leituras sem erros. Regressão: 788 Java, seis suítes e 38 E2E.
+Imagens finais sem HIGH/CRITICAL após atualização dos pacotes Alpine da UI.
+A cópia real do banco foi adiada pelo usuário; não retomar sem nova orientação.
+O piloto permanece adiado e depende das verificações operacionais documentadas.

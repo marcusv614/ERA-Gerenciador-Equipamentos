@@ -42,19 +42,25 @@ async function manifestar(){
   for(const nome of nomes){assert.match(nome,/^[a-z_][a-z_0-9]*$/);const [valor,chamada]= (await sql(`select last_value,is_called from public."${nome}";`)).split('|');sequencias.push({nome,valor,chamada});}
   return {tabelas:linhas,sequencias};
 }
-function canonizar(valor){
+function canonizar(valor,chave){
   if(Array.isArray(valor)){
-    const itens=valor.map(canonizar);
+    const itens=valor.map(v=>canonizar(v));
+    // Responsáveis é um Set no domínio, sem ordenação persistida.
+    if(chave==='responsaveis')return itens.sort();
     return itens.every(x=>x&&typeof x==='object'&&'id' in x)?itens.sort((a,b)=>String(a.id).localeCompare(String(b.id))):itens;
   }
-  if(valor&&typeof valor==='object')return Object.fromEntries(Object.keys(valor).sort().map(k=>[k,canonizar(valor[k])]));
+  if(valor&&typeof valor==='object')return Object.fromEntries(Object.keys(valor).sort().map(k=>[k,canonizar(valor[k],k)]));
   return valor;
 }
 const rotas=['/obras','/equipamentos','/funcionarios','/atividades'];
-async function leituras(){
+async function leituras(rotulo){
   const conta=config.contas.find(c=>c.login==='demo.gerente');assert.ok(conta);
   const cliente=await new Cliente(config).entrar(conta.login,conta.senha);
-  const respostas={};for(const rota of rotas)respostas[rota]=sha(JSON.stringify(canonizar(await cliente.req('GET',rota))));
+  const respostas={};for(const rota of rotas){
+    const dados=await cliente.req('GET',rota);
+    if(rota==='/obras'&&rotulo)evidencia[rotulo]=dados.map(({id,responsaveis})=>({id,responsaveis}));
+    respostas[rota]=sha(JSON.stringify(canonizar(dados)));
+  }
   return respostas;
 }
 let parada=false;
@@ -63,7 +69,7 @@ try{
   const api=await docker([...compose,'ps','-q','api']);assert.match(api,/^[a-f0-9]{12,64}$/);
   assert.equal(await docker(['inspect','-f','{{index .Config.Labels "era.test"}}',api]),'true');
   assert.equal(await docker(['inspect','-f','{{index .Config.Labels "com.docker.compose.project"}}',api]),config.project);
-  const antesHttp=await leituras();
+  const antesHttp=await leituras('responsaveisAntes');
   await comando([...compose,'stop','--timeout','10','api']);parada=true;
   const antes=await manifestar();
   const dumpInicio=performance.now();
@@ -83,12 +89,17 @@ try{
   assert.deepEqual(depois.sequencias,antes.sequencias,'Sequências devem preservar valor e is_called.');
   evidencia.restauracao={duracaoMs:performance.now()-restauracaoInicio,...depois};
   await comando([...compose,'start','api']);parada=false;
+  // Uma porta efêmera pode mudar mesmo ao reiniciar o mesmo contêiner.
+  const endereco=await docker([...compose,'port','api','8080']);
+  assert.match(endereco,/^127\.0\.0\.1:\d+$/);
+  const urlAnterior=config.url;config.url=`http://${endereco}`;
+  evidencia.portaAlteradaNoReinicio=config.url!==urlAnterior;
   const limite=Date.now()+180000;
   while(true){
     try{if((await fetch(`${config.url}/api/actuator/health`,{signal:AbortSignal.timeout(2000)})).ok)break;}catch{/* aguardar reinício */}
     assert.ok(Date.now()<limite,'API restaurada não voltou a ficar saudável.');await new Promise(r=>setTimeout(r,1000));
   }
-  assert.deepEqual(await leituras(),antesHttp,'Novo login e leituras da API devem recuperar o conteúdo anterior.');
+  assert.deepEqual(await leituras('responsaveisDepois'),antesHttp,'Novo login e leituras da API devem recuperar o conteúdo anterior.');
   evidencia.leiturasHttp=antesHttp;evidencia.resultado='APROVADO';
 }catch(erro){evidencia.erro=erro.message;throw erro;}
 finally{

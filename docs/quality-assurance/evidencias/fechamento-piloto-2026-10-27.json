@@ -708,5 +708,18 @@
     "baixos": 2,
     "corrigidosNasRodadasAnteriores": 10,
     "novoDefeitoDeAplicacaoConfirmadoNesteFechamento": false
+  },
+  "statusEntrega": "PREPARAÇÃO TÉCNICA ENTREGUE COM PENDÊNCIAS",
+  "agendamentoPiloto": {
+    "situacao": "ADIADO",
+    "orientacaoUsuario": "o piloto iniciará depois"
+  },
+  "definicoesOperacionais": {
+    "https": {
+      "responsavel": "Hostinger",
+      "situacao": "CONFIGURAÇÃO PREVISTA",
+      "origem": "Informado pelo usuário",
+      "validacaoNoDestino": "PENDENTE: HTTPS, cookie seguro e CORS antes do piloto"
+    }
   }
 }
