@@ -1,5 +1,7 @@
 # Fechamento técnico para o piloto — 29/10/2026
 
+> Atualização posterior: a interface recebeu nova estilização Material ERA. O fechamento abaixo refere-se ao candidato anterior. A verificação da interface e as condições para publicar a nova imagem estão em [Interface Material ERA](INTERFACE_MATERIAL_ERA.md).
+
 **Nove critérios técnicos APROVADOS. Início do piloto: ADIADO pelo usuário.**
 O parecer técnico é **APTO PARA PILOTO CONTROLADO COM RESSALVAS** no escopo
 abaixo. A implantação, a validação no destino e as condições operacionais

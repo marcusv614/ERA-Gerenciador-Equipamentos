@@ -4,6 +4,8 @@ Monorepo do painel de gestão de equipamentos e obras da ERA.
 
 Testes automatizados, matriz de cobertura e execução isolada: [guia de testes](docs/TESTES.md).
 
+Interface Material ERA: temas claro e verde escuro, laranja nas ações e tipografia local. Paleta e componentes em [guia visual](docs/quality-assurance/INTERFACE_MATERIAL_ERA.md); tokens em `Frontend/UI/src/styles/material-theme.css`.
+
 ## Estrutura
 
 ```text

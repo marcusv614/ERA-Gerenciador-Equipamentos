@@ -1,0 +1,101 @@
+/* ERA · papéis de cor e superfícies inspirados no Material Design 3. */
+:root, [data-theme='light'] {
+  --md-background: #f5f8f5;
+  --md-surface: #ffffff;
+  --md-surface-low: #f0f5ef;
+  --md-surface-container: #e9f0e9;
+  --md-surface-high: #e2ebe2;
+  --md-on-surface: #1b2e22;
+  --md-on-surface-variant: #506457;
+  --md-outline: #738578;
+  --md-outline-variant: #d5e0d6;
+  --md-primary: #ac4c00;
+  --md-on-primary: #ffffff;
+  --md-primary-container: #ffeadb;
+  --md-on-primary-container: #351400;
+  --md-secondary: #2d6248;
+  --md-on-secondary: #ffffff;
+  --md-secondary-container: #d1eddb;
+  --md-on-secondary-container: #103623;
+  --md-error: #ba1a1a;
+  --md-on-error: #ffffff;
+  --md-error-container: #ffdad6;
+  --md-success: #226742;
+  --md-success-container: #d4efde;
+  --md-info: #315e72;
+  --md-info-container: #d2eaf5;
+  --md-warning: #795500;
+  --md-warning-container: #fff0cd;
+  --md-scrim: rgb(7 26 16 / 42%);
+  color-scheme: light;
+}
+
+body:has([data-theme='dark']), [data-theme='dark'] {
+  --md-background: #0a1b13;
+  --md-surface: #10271c;
+  --md-surface-low: #142d21;
+  --md-surface-container: #1b3628;
+  --md-surface-high: #254333;
+  --md-on-surface: #e2efe4;
+  --md-on-surface-variant: #b5cbbd;
+  --md-outline: #7e9988;
+  --md-outline-variant: #355341;
+  --md-primary: #ffb77a;
+  --md-on-primary: #4d2500;
+  --md-primary-container: #633300;
+  --md-on-primary-container: #ffdcc2;
+  --md-secondary: #9ed5b2;
+  --md-on-secondary: #0c3822;
+  --md-secondary-container: #204c35;
+  --md-on-secondary-container: #cdeed8;
+  --md-error: #ffb4ab;
+  --md-on-error: #690005;
+  --md-error-container: #652420;
+  --md-success: #a0d6b3;
+  --md-success-container: #1c412d;
+  --md-info: #9bcbde;
+  --md-info-container: #183e4b;
+  --md-warning: #f5ce83;
+  --md-warning-container: #473719;
+  --md-scrim: rgb(0 12 5 / 68%);
+  color-scheme: dark;
+}
+
+:root, body, [data-theme] {
+  --bg: var(--md-background);
+  --surface: var(--md-surface);
+  --surface-2: var(--md-surface-container);
+  --border: var(--md-outline-variant);
+  --border-strong: var(--md-outline);
+  --text: var(--md-on-surface);
+  --text-muted: var(--md-on-surface-variant);
+  --accent: var(--md-primary);
+  --on-accent: var(--md-on-primary);
+  --accent-dim: var(--md-primary-container);
+  --warn: var(--md-warning);
+  --info: var(--md-info);
+  --danger: var(--md-error);
+}
+
+:root {
+  --era-orange: #ed9200;
+  --era-yellow: #e8cc2b;
+  --era-bolt: #ed9200;
+  --era-graphite: #1b2e22;
+  --era-orange-rgb: 237, 146, 0;
+  --era-yellow-rgb: 232, 204, 43;
+  --era-bolt-rgb: 237, 146, 0;
+  --font-display: 'Roboto', 'Arial', sans-serif;
+  --font-body: 'Roboto', 'Arial', sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+  --md-shape-xs: 8px;
+  --md-shape-small: 12px;
+  --md-shape-medium: 16px;
+  --md-shape-large: 24px;
+  --md-shape-dialog: 28px;
+  --md-shape-full: 999px;
+  --md-elevation-1: 0 1px 3px rgb(12 40 23 / 9%), 0 1px 2px rgb(12 40 23 / 5%);
+  --md-elevation-2: 0 4px 12px rgb(12 40 23 / 12%), 0 1px 3px rgb(12 40 23 / 8%);
+  --md-elevation-3: 0 12px 36px rgb(0 24 10 / 20%), 0 3px 8px rgb(0 24 10 / 10%);
+  --md-motion: 180ms cubic-bezier(.2, 0, 0, 1);
+}

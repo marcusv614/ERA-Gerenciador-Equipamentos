@@ -41,7 +41,9 @@ for (const nome of selecionadas) {
     const interromper = () => { interrompido = true; filho.kill('SIGINT'); };
     process.once('SIGINT', interromper); process.once('SIGTERM', interromper);
     const limpar = () => { clearTimeout(timer); process.removeListener('SIGINT', interromper); process.removeListener('SIGTERM', interromper); };
-    const timer = setTimeout(() => filho.kill('SIGTERM'), 15 * 60 * 1000);
+    // A campanha desktop/mobile pode ultrapassar 15 minutos com dois workers.
+    // Os testes mantêm seus timeouts do Playwright e continuam sem retries.
+    const timer = setTimeout(() => filho.kill('SIGTERM'), (nome === 'browser' ? 45 : 15) * 60 * 1000);
     const registrar = b => { saida += b; writeFileSync(log, saida, { mode: 0o600 }); };
     filho.stdout.on('data', registrar); filho.stderr.on('data', registrar);
     filho.once('error', erro => { limpar(); resolve({ codigo: null, erro: erro.message, saida }); });

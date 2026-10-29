@@ -1,14 +1,14 @@
-.painel { display: grid; gap: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--stock-border); border-radius: 13px; background: var(--stock-surface); }
+.painel { display: grid; gap: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--stock-border); border-radius:var(--md-shape-medium); background: var(--stock-surface); }
 .topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .topo > span { display: flex; align-items: center; gap: 7px; color: var(--stock-text); font-size: 13px; font-weight: 650; }
 .atalhos { display: flex; flex-wrap: wrap; gap: 7px; }
-.atalhos button, .limpar { min-height: 44px; padding: 9px 14px; border: 1px solid var(--stock-border); border-radius: 8px; background: var(--stock-raised); color: var(--stock-muted); font-size: 12px; font-weight: 600; cursor: pointer; }
+.atalhos button, .limpar { min-height: 44px; padding: 9px 14px; border: 1px solid var(--stock-border); border-radius:var(--md-shape-small); background: var(--stock-raised); color: var(--stock-muted); font-size: 12px; font-weight: 600; cursor: pointer; }
 .atalhos button[aria-pressed='true'] { color: var(--stock-text); border-color: var(--stock-border-strong); background: var(--stock-green-soft); }
 .limpar { display: inline-flex; align-items: center; gap: 6px; background: transparent; }
 .campos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: 12px; }
 .campos label { display: grid; gap: 7px; min-width: 0; }
 .campos span { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--stock-muted); }
-.campos input, .campos select { width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: 1px solid var(--stock-border-strong); border-radius: 8px; background: var(--stock-raised); color: var(--stock-text); color-scheme: light; font-size: 13px; }
+.campos input, .campos select { width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: 1px solid var(--stock-border-strong); border-radius:var(--md-shape-small); background: var(--stock-raised); color: var(--stock-text); color-scheme: light; font-size: 13px; }
 :global([data-theme='dark']) .campos input, :global([data-theme='dark']) .campos select { color-scheme: dark; }
 .ajuda, .resumo, .erro { margin: 0; font-size: 12px; line-height: 1.6; color: var(--stock-muted); }
 .resumo { color: var(--stock-text); }

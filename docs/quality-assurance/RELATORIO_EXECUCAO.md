@@ -1,5 +1,7 @@
 # Relatório de execução
 
+> Atualização posterior: nova interface Material ERA validada com 278 testes de navegador, lint/build, fontes locais e revisão visual dos sete perfis. O fechamento do piloto registrado abaixo é do candidato anterior à mudança de estilos; ver [Interface Material ERA](INTERFACE_MATERIAL_ERA.md).
+
 Atualização final de **29/10/2026**: os **nove critérios técnicos passaram**.
 Foram aprovados **788 testes Java**, seis suítes de integração, **38 E2E** e o
 ensaio de restauração (24 tabelas, 20 sequências). Carga HTTP de **20 sessões,

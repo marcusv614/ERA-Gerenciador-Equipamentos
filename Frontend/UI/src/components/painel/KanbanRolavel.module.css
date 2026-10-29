@@ -7,7 +7,7 @@
   cursor: pointer;
   touch-action: pan-y;
   user-select: none;
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
 }
 .barra[hidden] { display: none; }
 .trilho, .indicador {
@@ -21,13 +21,13 @@
 .trilho { width: 100%; background: var(--border); }
 .indicador { background: var(--text-muted); }
 .barra:hover .indicador, .barra:focus-visible .indicador,
-.barra[data-arrastando='true'] .indicador { background: var(--accent); }
+.barra[data-arrastando='true'] .indicador { background: var(--accent);  color:var(--md-on-primary);}
 .barra[data-arrastando='true'] { cursor: grabbing; }
-.barra:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.barra:focus-visible { outline:2px solid var(--md-primary); outline-offset: 1px; }
 .quadro[data-rolavel='true'] .conteudo { padding-top: 30px; }
 .conteudo { scrollbar-width: none; }
 .conteudo::-webkit-scrollbar { display: none; }
-.conteudo:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.conteudo:focus-visible { outline:2px solid var(--md-primary); outline-offset: -2px; }
 @media (max-width: 640px) { .barra { inset-inline: 12px; } }
 @media (hover: none) {
   .trilho, .indicador { top: 9px; height: 6px; }

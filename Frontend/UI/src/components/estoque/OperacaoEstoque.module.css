@@ -1,4 +1,4 @@
-.linha { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto; align-items:center; gap:24px; padding:22px; border:1px solid var(--stock-border); border-radius:13px; background:var(--stock-raised); }
+.linha { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto; align-items:center; gap:24px; padding:22px; border:1px solid var(--stock-border); border-radius:var(--md-shape-medium); background:var(--stock-raised); }
 .linha > div { min-width:0; }
 .identidade > span { color:var(--stock-muted); font-size:12px; }
 .identidade h3 { margin:7px 0; font:650 17px/1.4 var(--font-display); overflow-wrap:anywhere; }
@@ -13,11 +13,11 @@
 .abrir { display:grid; justify-items:stretch; gap:10px; }
 .abrir > .situacao { justify-self:end; }
 .abrir > button, .abrir > [data-exportar-auditoria] { width:100%; }
-.situacao { display:inline-flex; width:fit-content; max-width:100%; padding:6px 10px; border-radius:7px; background:var(--stock-green-soft); color:var(--stock-green); font-size:12px; font-weight:650; line-height:1.4; overflow-wrap:anywhere; }
+.situacao { display:inline-flex; width:fit-content; max-width:100%; padding:6px 10px; border-radius:var(--md-shape-xs); background:var(--stock-green-soft); color:var(--stock-green); font-size:12px; font-weight:650; line-height:1.4; overflow-wrap:anywhere; }
 .situacao[data-etapa='comprar'] { color:var(--stock-orange-dark); background:var(--stock-orange-soft); }
 .situacao[data-etapa='aguardar'] { color:var(--stock-muted); background:var(--stock-soft); }
 .situacao[data-etapa='rejeitado'] { color:var(--stock-danger); background:var(--stock-danger-soft); }
-.linha button, .detalhes button, .formulario button { min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:10px 14px; border:1px solid var(--stock-border-strong); border-radius:9px; background:var(--stock-raised); color:var(--stock-text); font-size:13px; font-weight:650; line-height:1.4; cursor:pointer; }
+.linha button, .detalhes button, .formulario button { min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:10px 14px; border:1px solid var(--stock-border-strong); border-radius:var(--md-shape-small); background:var(--stock-raised); color:var(--stock-text); font-size:13px; font-weight:650; line-height:1.4; cursor:pointer; }
 .detalhes { min-width:0; display:grid; gap:22px; color:var(--stock-text); }
 .detalhes h3 { margin:0; font:650 16px/1.5 var(--font-display); }
 .contexto { display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px; }
@@ -25,7 +25,7 @@
 .tituloMateriais { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
 .tituloMateriais > span { color:var(--stock-muted); font-size:13px; white-space:nowrap; }
 .itens { display:grid; gap:13px; }
-.item { min-width:0; border:1px solid var(--stock-border); border-radius:12px; overflow:hidden; }
+.item { min-width:0; border:1px solid var(--stock-border); border-radius:var(--md-shape-medium); overflow:hidden; }
 .item > header { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding:15px; background:var(--stock-soft); }
 .item > header strong { font-size:15px; line-height:1.5; overflow-wrap:anywhere; }
 .item > header b { font-size:15px; line-height:1.5; white-space:nowrap; }
@@ -59,15 +59,15 @@
 .rodape > div { display:flex; justify-content:space-between; gap:12px; }
 .detalhes .primario, .formulario .primario { background:var(--stock-text); color:var(--stock-raised); border-color:var(--stock-text); }
 .detalhes button:disabled, .formulario button:disabled { opacity:.5; cursor:wait; }
-.erro { margin:0 0 14px; padding:12px; background:var(--stock-danger-soft); border:1px solid var(--stock-danger); border-radius:8px; color:var(--stock-danger); font-size:13px; line-height:1.6; overflow-wrap:anywhere; }
+.erro { margin:0 0 14px; padding:12px; background:var(--stock-danger-soft); border:1px solid var(--stock-danger); border-radius:var(--md-shape-small); color:var(--stock-danger); font-size:13px; line-height:1.6; overflow-wrap:anywhere; }
 .formulario { color:var(--stock-text); }
 .formulario fieldset { display:grid; gap:18px; padding:0; border:0; margin:0; min-width:0; }
 .formulario p { margin:0; color:var(--stock-muted); font-size:13px; line-height:1.6; }
-.resumoCompra { display:grid; gap:5px; padding:15px; border:1px solid var(--stock-border); border-radius:10px; background:var(--stock-soft); }
+.resumoCompra { display:grid; gap:5px; padding:15px; border:1px solid var(--stock-border); border-radius:var(--md-shape-small); background:var(--stock-soft); }
 .resumoCompra strong { font-size:16px; overflow-wrap:anywhere; }
 .resumoCompra span { font-size:13px; color:var(--stock-muted); }
 .formulario label { display:grid; gap:8px; font-size:14px; }
-.formulario input { width:100%; min-width:0; height:46px; padding:10px 12px; border:1px solid var(--stock-border-strong); border-radius:8px; color:var(--stock-text); background:var(--stock-raised); font:inherit; }
+.formulario input { width:100%; min-width:0; height:46px; padding:10px 12px; border:1px solid var(--stock-border-strong); border-radius:var(--md-shape-small); color:var(--stock-text); background:var(--stock-raised); font:inherit; }
 .acoesFormulario { display:flex; gap:10px; justify-content:flex-end; }
 @media(max-width:1000px) {
   .linha { grid-template-columns:minmax(0,1fr) auto; gap:16px; }

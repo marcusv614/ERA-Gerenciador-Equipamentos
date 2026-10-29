@@ -17,7 +17,7 @@
   min-height: 44px;
   padding: 10px 12px;
   border: 1px solid var(--border-strong, #94a3b866);
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   background: transparent;
   color: inherit;
   font: 600 12px/1.4 var(--font-body);
@@ -27,6 +27,6 @@
   cursor: pointer;
 }
 
-.botao:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.botao:focus-visible { outline:2px solid var(--md-primary); outline-offset: 2px; }
 .botao:disabled { opacity: .5; cursor: wait; }
 .erro { flex-basis: 100%; min-width: 0; overflow-wrap: anywhere; }

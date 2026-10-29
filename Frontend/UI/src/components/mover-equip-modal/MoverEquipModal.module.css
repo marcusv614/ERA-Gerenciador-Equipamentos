@@ -8,7 +8,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
   color: var(--text);
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   padding: 8px 12px;
   font-size: 14px;
   width: 100%;
@@ -23,7 +23,7 @@
 }
 
 .statusBtn {
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 500;
@@ -48,7 +48,7 @@
 
 .cancel {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
@@ -59,19 +59,19 @@
 
 .submit {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius:var(--md-shape-full);
   font-size: 14px;
   font-weight: 600;
   background: var(--accent);
-  color: #fffaf0;
+  color:var(--md-on-primary);
   border: none;
   cursor: pointer;
 }
 .submit:hover {
   filter: brightness(1.08);
 }
-.erro { margin:0; color:var(--danger, #b94737); font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
-.responsavel { margin:0; padding:10px 12px; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface-2); color:var(--text); font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+.erro { margin:0; color:var(--danger, var(--md-error)); font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.responsavel { margin:0; padding:10px 12px; border:1px solid var(--border-strong); border-radius:var(--md-shape-small); background:var(--surface-2); color:var(--text); font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
 .form small { color:var(--text-muted); font-size:12px; line-height:1.5; }
 .submit:disabled, .cancel:disabled { opacity:.5; cursor:not-allowed; }
 

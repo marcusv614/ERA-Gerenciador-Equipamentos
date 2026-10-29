@@ -14,7 +14,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
   color: var(--text);
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   padding: 8px 12px;
   font-size: 14px;
   width: 100%;
@@ -33,7 +33,7 @@
   min-height: 38px;
   padding: 8px 12px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   background: var(--surface-2);
   color: var(--text-muted);
   font-size: 13px;
@@ -71,7 +71,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 9px;
-  border-radius: 6px;
+  border-radius:var(--md-shape-xs);
   color: var(--text-muted);
   font-size: 13px;
   cursor: pointer;
@@ -105,7 +105,7 @@
 .multiSelectOptionSelected .optionCheck {
   background: var(--accent);
   border-color: var(--accent);
-}
+ color:var(--md-on-primary);}
 
 .selectedChips {
   display: flex;
@@ -146,7 +146,7 @@
 
 .statusBtn {
   flex: 1;
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 500;
@@ -172,11 +172,11 @@
 }
 .actions > button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; }
 .actions > button svg { flex-shrink:0; }
-.actionsSpacer{flex:1}.archive{padding:8px 12px;border:1px solid rgba(185,71,55,.28);border-radius:8px;background:rgba(185,71,55,.08);color:#b94737;font-size:13px;font-weight:700;cursor:pointer}
+.actionsSpacer{flex:1}.archive{padding:8px 12px;border:1px solid rgba(185,71,55,.28);border-radius:var(--md-shape-small);background:rgba(185,71,55,.08);color:var(--md-error);font-size:13px;font-weight:700;cursor:pointer}
 
 .cancel {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
@@ -187,11 +187,11 @@
 
 .submit {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius:var(--md-shape-full);
   font-size: 14px;
   font-weight: 600;
   background: var(--accent);
-  color: #fffaf0;
+  color:var(--md-on-primary);
   border: none;
   cursor: pointer;
 }

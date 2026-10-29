@@ -1,25 +1,25 @@
 .pagina {
-  --stock-bg: #f3f1ec;
-  --stock-surface: #fffdf8;
-  --stock-raised: #fff;
-  --stock-soft: #eeece6;
-  --stock-soft-green: #edf3ef;
-  --stock-border: #deddd6;
-  --stock-border-strong: #cbd0cb;
-  --stock-text: #202722;
-  --stock-muted: #737a74;
-  --stock-green: #183f32;
-  --stock-green-soft: #dfece5;
-  --stock-orange: #e88918;
-  --stock-orange-dark: #a85c08;
-  --stock-orange-soft: #fff0d5;
-  --stock-danger: #a9473f;
-  --stock-danger-soft: #f9e8e5;
-  --stock-success: #246b4e;
-  --stock-success-soft: #e2f1e8;
-  --stock-info: #356e96;
-  --stock-info-soft: #e0edf6;
-  --stock-shadow: 0 14px 34px rgba(33, 47, 39, .07);
+  --stock-bg: var(--md-background);
+  --stock-surface: var(--md-surface);
+  --stock-raised: var(--md-surface);
+  --stock-soft: var(--md-surface-container);
+  --stock-soft-green: var(--md-secondary-container);
+  --stock-border: var(--md-outline-variant);
+  --stock-border-strong: var(--md-outline);
+  --stock-text: var(--md-on-surface);
+  --stock-muted: var(--md-on-surface-variant);
+  --stock-green: var(--md-secondary);
+  --stock-green-soft: var(--md-secondary-container);
+  --stock-orange: var(--md-primary);
+  --stock-orange-dark: var(--md-primary);
+  --stock-orange-soft: var(--md-primary-container);
+  --stock-danger: var(--md-error);
+  --stock-danger-soft: var(--md-error-container);
+  --stock-success: var(--md-success);
+  --stock-success-soft: var(--md-success-container);
+  --stock-info: var(--md-info);
+  --stock-info-soft: var(--md-info-container);
+  --stock-shadow:var(--md-elevation-1);
   min-height: 100vh;
   background: var(--stock-bg);
   color: var(--stock-text);
@@ -28,40 +28,40 @@
 }
 
 .pagina[data-theme='dark'] {
-  --stock-bg: #101713;
-  --stock-surface: #18221d;
-  --stock-raised: #202c26;
-  --stock-soft: #131c17;
-  --stock-soft-green: #1e3027;
-  --stock-border: #2d3932;
-  --stock-border-strong: #425148;
-  --stock-text: #edf2ee;
-  --stock-muted: #aeb9b2;
-  --stock-green: #dce9e1;
-  --stock-green-soft: #244335;
-  --stock-orange: #ee9d3e;
-  --stock-orange-dark: #f0ae5f;
-  --stock-orange-soft: #3b2c18;
-  --stock-danger: #f0988f;
-  --stock-danger-soft: #3b2422;
-  --stock-success: #9fdbbc;
-  --stock-success-soft: #244335;
-  --stock-info: #8ab8d8;
-  --stock-info-soft: #233746;
-  --stock-shadow: 0 16px 40px rgba(0, 0, 0, .2);
+  --stock-bg: var(--md-background);
+  --stock-surface: var(--md-surface);
+  --stock-raised: var(--md-surface);
+  --stock-soft: var(--md-surface-container);
+  --stock-soft-green: var(--md-secondary-container);
+  --stock-border: var(--md-outline-variant);
+  --stock-border-strong: var(--md-outline);
+  --stock-text: var(--md-on-surface);
+  --stock-muted: var(--md-on-surface-variant);
+  --stock-green: var(--md-secondary);
+  --stock-green-soft: var(--md-secondary-container);
+  --stock-orange: var(--md-primary);
+  --stock-orange-dark: var(--md-primary);
+  --stock-orange-soft: var(--md-primary-container);
+  --stock-danger: var(--md-error);
+  --stock-danger-soft: var(--md-error-container);
+  --stock-success: var(--md-success);
+  --stock-success-soft: var(--md-success-container);
+  --stock-info: var(--md-info);
+  --stock-info-soft: var(--md-info-container);
+  --stock-shadow:var(--md-elevation-1);
 }
 
 .temaManutencao {
-  --surface:var(--stock-surface);
-  --surface-2:var(--stock-soft);
-  --border:var(--stock-border);
-  --border-strong:var(--stock-border-strong);
-  --text:var(--stock-text);
-  --text-muted:var(--stock-muted);
-  --accent:var(--stock-orange);
-  --on-accent:#202722;
-  --warn:var(--stock-orange-dark);
-  --danger:var(--stock-danger);
+  --surface: var(--md-surface);
+  --surface-2: var(--md-surface-container);
+  --border: var(--md-outline-variant);
+  --border-strong: var(--md-outline);
+  --text: var(--md-on-surface);
+  --text-muted: var(--md-on-surface-variant);
+  --accent: var(--md-primary);
+  --on-accent: var(--md-on-primary);
+  --warn: var(--md-warning);
+  --danger: var(--md-error);
 }
 
 .pagina *,
@@ -76,12 +76,12 @@
   transition: opacity 160ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-.pagina button:hover:not(:disabled) { opacity: .82; }
+.pagina button:hover:not(:disabled) { opacity:1; }
 
 .pagina button:focus-visible,
 .pagina input:focus-visible,
 .pagina select:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--stock-orange) 34%, transparent);
+  outline:3px solid var(--md-primary);
   outline-offset: 2px;
 }
 
@@ -119,7 +119,7 @@
 .usuario > div { align-items: flex-end; flex-direction: column; margin-right: 8px; }
 .usuario small {
   color: var(--stock-muted);
-  font-size: 9px;
+  font-size:11px;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -135,7 +135,7 @@
   height: 42px;
   padding: 0;
   border: 1px solid var(--stock-border);
-  border-radius: 12px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-raised);
   color: var(--stock-text);
   display: grid;
@@ -162,7 +162,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size:11px;
   font-weight: 900;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -192,7 +192,7 @@
   min-height: 92px;
   padding: 16px;
   border: 1px solid var(--stock-border);
-  border-radius: 16px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-surface);
   box-shadow: 0 7px 20px rgba(33, 47, 39, .035);
   display: flex;
@@ -203,7 +203,7 @@
   width: 40px;
   height: 40px;
   padding: 10px;
-  border-radius: 12px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
   flex: 0 0 auto;
@@ -213,7 +213,7 @@
 .resumoOperacional span {
   margin-top: 5px;
   color: var(--stock-muted);
-  font-size: 10px;
+  font-size:11px;
   font-weight: 750;
   line-height: 1.25;
   overflow-wrap: anywhere;
@@ -224,7 +224,7 @@
   margin: 0 0 18px;
   padding: 10px 10px 10px 14px;
   border: 1px solid;
-  border-radius: 13px;
+  border-radius:var(--md-shape-medium);
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr) 36px;
   align-items: center;
@@ -238,7 +238,7 @@
   height: 36px;
   padding: 0;
   border: 0;
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: transparent;
   color: inherit;
   display: grid;
@@ -261,7 +261,7 @@
   margin-bottom: 12px;
   padding: 5px;
   border: 1px solid var(--stock-border);
-  border-radius: 16px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-soft);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -273,7 +273,7 @@
   min-height: 50px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 11px;
+  border-radius:var(--md-shape-small);
   background: transparent;
   color: var(--stock-muted);
   display: flex;
@@ -299,7 +299,7 @@
   background: color-mix(in srgb, var(--stock-muted) 15%, transparent);
   display: grid;
   place-items: center;
-  font-size: 9px;
+  font-size:11px;
   flex: 0 0 auto;
 }
 .abas .abaAtiva {
@@ -314,7 +314,7 @@
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid var(--stock-border);
-  border-radius: 15px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-surface);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(210px, 280px);
@@ -325,7 +325,7 @@
   height: 46px;
   padding: 0 13px;
   border: 1px solid var(--stock-border);
-  border-radius: 11px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-soft);
   display: flex;
   align-items: center;
@@ -352,7 +352,7 @@
 .secao {
   padding: 24px;
   border: 1px solid var(--stock-border);
-  border-radius: 20px;
+  border-radius:var(--md-shape-large);
   background: var(--stock-surface);
   box-shadow: var(--stock-shadow);
 }
@@ -369,28 +369,28 @@
   width: 42px;
   height: 42px;
   padding: 11px;
-  border-radius: 12px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-green-soft);
   color: var(--stock-green);
   flex: 0 0 auto;
 }
 .tituloSecao > div { min-width: 0; }
 .tituloSecao h2 { margin: 0 0 3px; font: 750 18px/1.2 var(--font-display); }
-.tituloSecao p { margin: 0; color: var(--stock-muted); font-size: 10px; line-height: 1.45; }
+.tituloSecao p { margin: 0; color: var(--stock-muted); font-size:11px; line-height: 1.45; }
 .tituloAquisicoes > div { flex: 1; }
 .tituloAquisicoes > button,
 .exportarSolicitacao {
   min-height: 42px;
   padding: 0 14px;
   border: 1px solid var(--stock-border-strong);
-  border-radius: 10px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-green);
-  color: var(--stock-raised);
+  color:var(--md-on-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  font-size: 10px;
+  font-size:11px;
   font-weight: 850;
   cursor: pointer;
 }
@@ -410,7 +410,7 @@
   min-height: 54px;
   margin-bottom: 12px;
   padding: 10px 13px;
-  border-radius: 13px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-soft-green);
   display: flex;
   align-items: center;
@@ -424,7 +424,7 @@
 }
 .grupoObra > header > div { min-width: 0; display: flex; flex-direction: column; }
 .grupoObra > header strong { font-size: 12px; overflow-wrap: anywhere; }
-.grupoObra > header small { margin-top: 2px; color: var(--stock-muted); font-size: 9px; }
+.grupoObra > header small { margin-top: 2px; color: var(--stock-muted); font-size:11px; }
 .grade,
 .gradeAquisicoes {
   display: grid;
@@ -436,7 +436,7 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--stock-border);
-  border-radius: 16px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-raised);
   display: flex;
   flex-direction: column;
@@ -452,7 +452,7 @@
 .icone {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
   display: grid;
@@ -464,7 +464,7 @@
   overflow-wrap: anywhere;
   color: var(--stock-muted);
   display: block;
-  font-size: 8px;
+  font-size:11px;
   font-weight: 800;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -480,7 +480,7 @@
   border-radius: 999px;
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
-  font-size: 8px;
+  font-size:11px;
   line-height: 1.2;
   text-align: center;
   overflow-wrap: anywhere;
@@ -501,7 +501,7 @@
   min-width: 0;
   margin: 0 16px;
   padding: 11px 12px;
-  border-radius: 11px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-soft);
   display: grid;
   grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
@@ -510,7 +510,7 @@
 }
 .rota span {
   min-width: 0;
-  font-size: 10px;
+  font-size:11px;
   font-weight: 750;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -560,7 +560,7 @@
   min-width: 0;
   padding: 10px;
   border: 1px solid var(--stock-border);
-  border-radius: 11px;
+  border-radius:var(--md-shape-small);
   background: color-mix(in srgb, var(--stock-soft) 62%, transparent);
   display: flex;
   align-items: flex-start;
@@ -570,12 +570,12 @@
   min-width: 28px;
   height: 24px;
   padding: 0 6px;
-  border-radius: 7px;
+  border-radius:var(--md-shape-xs);
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
   display: grid;
   place-items: center;
-  font-size: 9px;
+  font-size:11px;
   font-weight: 900;
   flex: 0 0 auto;
 }
@@ -591,7 +591,7 @@
   margin-top: 7px;
   padding: 7px 9px;
   border: 1px solid color-mix(in srgb, var(--stock-orange) 48%, var(--stock-border));
-  border-radius: 8px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
   display: flex;
@@ -602,11 +602,11 @@
 .compraAnexada > span { min-width: 0; display: flex; flex-direction: column; }
 .compraAnexada b,
 .compraAnexada small { overflow-wrap: anywhere; }
-.compraAnexada b { font-size: 8px; }
+.compraAnexada b { font-size:11px; }
 .compraAnexada small {
   margin-top: 2px;
   color: color-mix(in srgb, var(--stock-orange-dark) 78%, var(--stock-muted));
-  font-size: 8px;
+  font-size:11px;
 }
 .card > footer {
   min-width: 0;
@@ -623,14 +623,14 @@
   min-height: 38px;
   padding: 0 11px;
   border: 1px solid var(--stock-border-strong);
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-raised);
   color: var(--stock-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 9px;
+  font-size:11px;
   font-weight: 800;
   line-height: 1.25;
   cursor: pointer;
@@ -640,7 +640,7 @@
   margin-left: auto;
   border-color: var(--stock-green);
   background: var(--stock-green);
-  color: var(--stock-raised);
+  color:var(--md-on-secondary);
 }
 .pagina[data-theme='dark'] .card > footer .primario,
 .pagina[data-theme='dark'] .entradaAquisicao > button {
@@ -651,10 +651,10 @@
 .aviso {
   margin-left: auto;
   padding: 9px 11px;
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
-  font-size: 9px;
+  font-size:11px;
   font-weight: 750;
   overflow-wrap: anywhere;
 }
@@ -664,7 +664,7 @@
   min-height: 180px;
   padding: 28px 18px;
   border: 1px dashed var(--stock-border-strong);
-  border-radius: 14px;
+  border-radius:var(--md-shape-medium);
   background: color-mix(in srgb, var(--stock-soft) 42%, transparent);
   color: var(--stock-muted);
   display: flex;
@@ -675,14 +675,14 @@
 }
 .vazio svg { width: 24px; height: 24px; color: var(--stock-success); }
 .vazio strong { margin: 10px 0 4px; color: var(--stock-text); font-size: 12px; }
-.vazio span { max-width: 360px; font-size: 10px; line-height: 1.45; }
+.vazio span { max-width: 360px; font-size:11px; line-height: 1.45; }
 .carregando { padding: 80px 16px; color: var(--stock-muted); text-align: center; font-size: 12px; }
 
 .aquisicao {
   min-width: 0;
   padding: 17px;
   border: 1px solid var(--stock-border);
-  border-radius: 16px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-raised);
   display: flex;
   flex-direction: column;
@@ -698,7 +698,7 @@
 }
 .aquisicao > header > div { min-width: 0; }
 .aquisicao > header small,
-.aquisicaoItemTitulo small { color: var(--stock-muted); font-size: 8px; line-height: 1.4; }
+.aquisicaoItemTitulo small { color: var(--stock-muted); font-size:11px; line-height: 1.4; }
 .aquisicao h3 {
   margin: 4px 0 0;
   font: 750 15px/1.25 var(--font-display);
@@ -709,7 +709,7 @@
   border-radius: 999px;
   background: var(--stock-orange-soft);
   color: var(--stock-orange-dark);
-  font-size: 8px;
+  font-size:11px;
   flex: 0 0 auto;
 }
 .aquisicao[data-concluida='true'] > header > b {
@@ -737,7 +737,7 @@
 .aquisicao dl {
   margin: 0 0 11px;
   border: 1px solid var(--stock-border);
-  border-radius: 11px;
+  border-radius:var(--md-shape-small);
   overflow: hidden;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -763,7 +763,7 @@
   min-width: 0;
   margin-top: 0;
   padding: 12px;
-  border-radius: 12px;
+  border-radius:var(--md-shape-medium);
   background: var(--stock-soft);
   display: grid;
   grid-template-columns: minmax(105px, .55fr) repeat(2, minmax(150px, 1fr));
@@ -777,16 +777,16 @@
   flex-direction: column;
   gap: 2px;
   color: var(--stock-text);
-  font-size: 9px;
+  font-size:11px;
 }
-.entradaAquisicao > p span { color: var(--stock-muted); font-size: 8px; }
+.entradaAquisicao > p span { color: var(--stock-muted); font-size:11px; }
 .entradaAquisicao label {
   min-width: 0;
   color: var(--stock-muted);
   display: flex;
   flex-direction: column;
   gap: 5px;
-  font-size: 8px;
+  font-size:11px;
   font-weight: 750;
 }
 .entradaAquisicao input {
@@ -795,11 +795,11 @@
   height: 40px;
   padding: 0 10px;
   border: 1px solid var(--stock-border-strong);
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   outline: 0;
   background: var(--stock-raised);
   color: var(--stock-text);
-  font-size: 10px;
+  font-size:11px;
 }
 .campoQuantidadeCompra {
   min-width: 0;
@@ -812,10 +812,10 @@
   height: 40px;
   padding: 0 9px;
   border: 1px solid var(--stock-border-strong);
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-raised);
   color: var(--stock-text);
-  font-size: 8px;
+  font-size:11px;
   font-weight: 850;
   cursor: pointer;
 }
@@ -824,14 +824,14 @@
   min-height: 40px;
   padding: 0 12px;
   border: 1px solid var(--stock-green);
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-green);
-  color: var(--stock-raised);
+  color:var(--md-on-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 9px;
+  font-size:11px;
   font-weight: 850;
   cursor: pointer;
 }
@@ -840,13 +840,13 @@
 .aquisicaoConcluida {
   margin-top: 3px;
   padding: 10px;
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-success-soft);
   color: var(--stock-success);
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 9px;
+  font-size:11px;
   font-weight: 700;
   line-height: 1.4;
 }
@@ -870,7 +870,7 @@
   .marca img { width: 74px; }
   .marca span,
   .usuario > div { display: none; }
-  .usuario button { width: 44px; height: 44px; border-radius: 14px; }
+  .usuario button { width: 44px; height: 44px; border-radius:var(--md-shape-medium); }
   .conteudo,
   .pagina[data-incorporado='true'] .conteudo {
     width: calc(100% - 24px);
@@ -883,22 +883,22 @@
   .resumoOperacional article {
     min-height: 82px;
     padding: 12px;
-    border-radius: 14px;
+    border-radius:var(--md-shape-medium);
     gap: 10px;
   }
   .resumoOperacional article > svg {
     width: 35px;
     height: 35px;
     padding: 9px;
-    border-radius: 10px;
+    border-radius:var(--md-shape-small);
   }
   .resumoOperacional strong { font-size: 20px; }
-  .resumoOperacional span { font-size: 9px; }
+  .resumoOperacional span { font-size:11px; }
   .abas {
     position: sticky;
     top: 72px;
     z-index: 10;
-    border-radius: 14px;
+    border-radius:var(--md-shape-medium);
     box-shadow: 0 8px 24px rgba(16, 23, 19, .11);
   }
   .pagina:not([data-incorporado='true']) .abas { top: 68px; }
@@ -907,10 +907,10 @@
     padding: 6px 5px;
     flex-direction: column;
     gap: 3px;
-    font-size: 8px;
+    font-size:11px;
     line-height: 1.1;
   }
-  .abas button > span { width: 100%; text-align: center; font-size: 10px; overflow-wrap: anywhere; }
+  .abas button > span { width: 100%; text-align: center; font-size:11px; overflow-wrap: anywhere; }
   .abas button > b {
     position: absolute;
     top: 5px;
@@ -921,7 +921,7 @@
   }
   .filtros { padding: 8px; grid-template-columns: 1fr; gap: 8px; }
   .filtros label { height: 45px; }
-  .secao { padding: 14px; border-radius: 17px; }
+  .secao { padding: 14px; border-radius:var(--md-shape-medium); }
   .tituloSecao { margin-bottom: 17px; padding-bottom: 14px; }
   .tituloSecao > svg { width: 38px; height: 38px; padding: 10px; }
   .tituloSecao h2 { font-size: 16px; }
@@ -975,7 +975,7 @@
   }
   .resumoOperacional article > svg { width: 31px; height: 31px; padding: 8px; }
   .resumoOperacional strong { font-size: 18px; }
-  .resumoOperacional span { font-size: 8px; }
+  .resumoOperacional span { font-size:11px; }
   .abas button > svg { width: 16px; }
   .secao { padding: 11px; }
   .grupoObra > header { margin-bottom: 9px; }
@@ -993,22 +993,22 @@
 .instrucaoEntrega {
   margin: 0 16px 4px;
   padding: 9px 11px;
-  border-radius: 9px;
+  border-radius:var(--md-shape-small);
   background: var(--stock-soft-green);
   color: var(--stock-green);
-  font-size: 10px;
+  font-size:11px;
   font-weight: 800;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
-.planoFinanceiro{display:grid;gap:10px;margin:14px 0;padding:14px;border:1px solid #819d8c;border-radius:10px;font-size:12px;overflow-wrap:anywhere}.planoFinanceiro section{display:grid;gap:5px}.planoFinanceiro p{margin:0;line-height:1.6}.planoFinanceiro small{opacity:.8;line-height:1.6}
+.planoFinanceiro{display:grid;gap:10px;margin:14px 0;padding:14px;border:1px solid #819d8c;border-radius:var(--md-shape-small);font-size:12px;overflow-wrap:anywhere}.planoFinanceiro section{display:grid;gap:5px}.planoFinanceiro p{margin:0;line-height:1.6}.planoFinanceiro small{opacity:.8;line-height:1.6}
 
 .listaPedidos { display:grid; gap:12px; }
 .pedidosOperacionais { display:grid; gap:18px; }
 .barraFila { display:flex; align-items:center; justify-content:space-between; gap:20px; }
 .barraFila > p { margin:0; max-width:380px; color:var(--stock-muted); font-size:12px; line-height:1.5; }
-.alternadorFila { display:flex; gap:4px; padding:4px; border:1px solid var(--stock-border); border-radius:10px; background:var(--stock-surface); }
-.alternadorFila button { min-height:44px; padding:10px 14px; display:flex; align-items:center; gap:9px; border:0; border-radius:7px; color:var(--stock-muted); background:transparent; font-size:13px; cursor:pointer; white-space:nowrap; }
+.alternadorFila { display:flex; gap:4px; padding:4px; border:1px solid var(--stock-border); border-radius:var(--md-shape-small); background:var(--stock-surface); }
+.alternadorFila button { min-height:44px; padding:10px 14px; display:flex; align-items:center; gap:9px; border:0; border-radius:var(--md-shape-xs); color:var(--stock-muted); background:transparent; font-size:13px; cursor:pointer; white-space:nowrap; }
 .alternadorFila button[aria-pressed='true'] { color:var(--stock-text); background:var(--stock-green-soft); font-weight:650; }
 .alternadorFila b { font-size:11px; font-weight:650; }
 .abas button { font-size:14px; }
@@ -1017,9 +1017,9 @@
 .comprasOrganizadas > header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:4px; }
 .comprasOrganizadas h2 { margin:0; font:650 20px/1.4 var(--font-display); }
 .comprasOrganizadas > header p { margin:5px 0 0; color:var(--stock-muted); font-size:13px; line-height:1.5; }
-.comprasOrganizadas button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; padding:10px 14px; border:1px solid var(--stock-border-strong); border-radius:9px; color:var(--stock-text); background:var(--stock-raised); font-size:13px; font-weight:600; cursor:pointer; }
+.comprasOrganizadas button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; padding:10px 14px; border:1px solid var(--stock-border-strong); border-radius:var(--md-shape-small); color:var(--stock-text); background:var(--stock-raised); font-size:13px; font-weight:600; cursor:pointer; }
 .comprasOrganizadas button:disabled { opacity:.5; cursor:default; }
-.grupoCompra { border:1px solid var(--stock-border); border-radius:13px; background:var(--stock-raised); overflow:hidden; }
+.grupoCompra { border:1px solid var(--stock-border); border-radius:var(--md-shape-medium); background:var(--stock-raised); overflow:hidden; }
 .grupoCompra > header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px; border-bottom:1px solid var(--stock-border); }
 .grupoCompra > header > div { min-width:0; }
 .grupoCompra header span { color:var(--stock-muted); font-size:12px; }
@@ -1051,3 +1051,16 @@
   .itemCompra > button { grid-column:1/-1; }
   .filtros input, .filtros select { font-size:16px; }
 }
+
+/* Material ERA: superfícies e navegação compartilham os mesmos papéis de cor. */
+.cabecalho { background:var(--md-surface); border-bottom-color:var(--md-outline-variant); box-shadow:var(--md-elevation-1); }
+.marca img { padding:6px; width:106px; border-radius:var(--md-shape-small); background:#fff; }
+.marca span { color:var(--md-primary); }
+.usuario button { border-radius:var(--md-shape-full); border-color:transparent; background:var(--md-surface-container); color:var(--md-on-surface); }
+.abas { background:var(--md-surface-container); border-color:var(--md-outline-variant); border-radius:var(--md-shape-large); }
+.abas button { border-radius:var(--md-shape-full); font-weight:500; }
+.abas button:hover { background:var(--md-surface-high); }
+.abas .abaAtiva { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-color:transparent; box-shadow:none; }
+.abas button > b { color:var(--md-on-primary); }
+.inventarioObra, .secao, .card, .aquisicao, .grupoCompra { border-radius:var(--md-shape-large); box-shadow:var(--md-elevation-1); }
+.resumoOperacional article { border-radius:var(--md-shape-large); box-shadow:var(--md-elevation-1); }

@@ -1,0 +1,3521 @@
+{
+  "coletadoEm": "2026-10-29T17:23:42.352967+00:00",
+  "escopo": "Estilização Material ERA: estilos, fontes locais e validação da interface; sem implantação.",
+  "baseGit": "5321be13ef34bfe5034f6b6efa9b1f1d6d59de9c",
+  "validacoes": {
+    "lint": {
+      "etapa": "lint",
+      "tentativa": 22,
+      "inicio": "2026-10-29T17:20:48.287Z",
+      "duracaoMs": 42871,
+      "comando": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/lint-22.log"
+    },
+    "build": {
+      "etapa": "build",
+      "tentativa": 16,
+      "inicio": "2026-10-29T17:21:31.160Z",
+      "duracaoMs": 6963,
+      "comando": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/build-16.log"
+    },
+    "browser": {
+      "etapa": "browser",
+      "tentativa": 20,
+      "inicio": "2026-10-29T16:15:18.072Z",
+      "duracaoMs": 1348880,
+      "comando": [
+        "/home/marcus/.nvm/versions/node/v24.19.0/bin/node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "--config=qa-browser/playwright.config.mjs",
+        "--workers",
+        "2"
+      ],
+      "cwd": "/home/marcus/Documents/Projetos/ERA ERP/ERA-Gerenciador-Equipamentos/Frontend/UI",
+      "codigo": 0,
+      "sinal": null,
+      "log": "test-results/quality-assurance/browser-20.log"
+    }
+  },
+  "browser": {
+    "startTime": "2026-10-29T16:15:21.032Z",
+    "duration": 1344678.635,
+    "expected": 278,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "coberturaIstanbul": {
+    "coletadoEm": "2026-10-29T16:37:46.820Z",
+    "escopo": "Todos os .js/.jsx em src; instrumentação antes do React/JSX no Vite exclusivo de testes. Fontes não carregadas permanecem com zero. API simulada; Chromium desktop/mobile.",
+    "execucaoCompleta": true,
+    "casosEsperados": 278,
+    "casosColetados": 278,
+    "erros": [],
+    "total": {
+      "arquivos": 102,
+      "lines": {
+        "total": 2857,
+        "covered": 1946,
+        "skipped": 0,
+        "pct": 68.11
+      },
+      "statements": {
+        "total": 4453,
+        "covered": 2721,
+        "skipped": 0,
+        "pct": 61.1
+      },
+      "functions": {
+        "total": 1767,
+        "covered": 947,
+        "skipped": 0,
+        "pct": 53.59
+      },
+      "branches": {
+        "total": 4802,
+        "covered": 2301,
+        "skipped": 0,
+        "pct": 47.91
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "jsx": {
+      "arquivos": 58,
+      "lines": {
+        "total": 1816,
+        "covered": 1223,
+        "skipped": 0,
+        "pct": 67.34
+      },
+      "statements": {
+        "total": 2933,
+        "covered": 1768,
+        "skipped": 0,
+        "pct": 60.27
+      },
+      "functions": {
+        "total": 1158,
+        "covered": 611,
+        "skipped": 0,
+        "pct": 52.76
+      },
+      "branches": {
+        "total": 3399,
+        "covered": 1745,
+        "skipped": 0,
+        "pct": 51.33
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "hooks": {
+      "arquivos": 4,
+      "lines": {
+        "total": 270,
+        "covered": 269,
+        "skipped": 0,
+        "pct": 99.62
+      },
+      "statements": {
+        "total": 378,
+        "covered": 373,
+        "skipped": 0,
+        "pct": 98.67
+      },
+      "functions": {
+        "total": 110,
+        "covered": 110,
+        "skipped": 0,
+        "pct": 100
+      },
+      "branches": {
+        "total": 197,
+        "covered": 175,
+        "skipped": 0,
+        "pct": 88.83
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    },
+    "arquivosNaoCarregados": [],
+    "arquivos": [
+      {
+        "arquivo": "src/App.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        },
+        "statements": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "branches": {
+          "total": 32,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 90.62
+        }
+      },
+      {
+        "arquivo": "src/components/admin/DetalhesUsuarioAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 30,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/EventosSegurancaAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 4.16
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 48,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.08
+        },
+        "branches": {
+          "total": 42,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/ListasAdministracao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 16,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/admin/PainelAdmin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 79,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 59.49
+        },
+        "functions": {
+          "total": 66,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 19.69
+        },
+        "statements": {
+          "total": 188,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 37.23
+        },
+        "branches": {
+          "total": 150,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 39.33
+        }
+      },
+      {
+        "arquivo": "src/components/auditorias-tecnico/AuditoriasTecnicoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 72,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 2.77
+        },
+        "functions": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 143,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 1.39
+        },
+        "branches": {
+          "total": 148,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/auditorias-tecnico/TelaAuditorias.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 37,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 41,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 79,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 56,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/CalibracaoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 46,
+          "covered": 45,
+          "skipped": 0,
+          "pct": 97.82
+        },
+        "functions": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "statements": {
+          "total": 75,
+          "covered": 69,
+          "skipped": 0,
+          "pct": 92
+        },
+        "branches": {
+          "total": 110,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 85.45
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/FilaCalibracoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 14,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 78.57
+        }
+      },
+      {
+        "arquivo": "src/components/calibracao-equip-modal/IndicadorCalibracao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/deposito-card/DepositoCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 10,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 20
+        },
+        "functions": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 11,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 18.18
+        },
+        "branches": {
+          "total": 19,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/editar-funcionario-modal/EditarFuncionarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 34,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 91.17
+        },
+        "functions": {
+          "total": 22,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 81.81
+        },
+        "statements": {
+          "total": 56,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 65,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 78.46
+        }
+      },
+      {
+        "arquivo": "src/components/editar-solicitacao-modal/EditarSolicitacaoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 44,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 86.36
+        },
+        "functions": {
+          "total": 37,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 62.16
+        },
+        "statements": {
+          "total": 77,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 71.42
+        },
+        "branches": {
+          "total": 136,
+          "covered": 87,
+          "skipped": 0,
+          "pct": 63.97
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/AtendimentoParcialModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 15,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 38,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 97.36
+        },
+        "branches": {
+          "total": 21,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 85.71
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/FiltrosPedidosEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 5,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 40
+        },
+        "functions": {
+          "total": 6,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 6,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/PainelEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 80,
+          "covered": 79,
+          "skipped": 0,
+          "pct": 98.75
+        },
+        "functions": {
+          "total": 74,
+          "covered": 66,
+          "skipped": 0,
+          "pct": 89.18
+        },
+        "statements": {
+          "total": 205,
+          "covered": 186,
+          "skipped": 0,
+          "pct": 90.73
+        },
+        "branches": {
+          "total": 178,
+          "covered": 149,
+          "skipped": 0,
+          "pct": 83.7
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/PedidoOperacional.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "functions": {
+          "total": 20,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 28,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "branches": {
+          "total": 57,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 85.96
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/RegistroCompraEstoque.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 89.65
+        },
+        "branches": {
+          "total": 25,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 92
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/SepararEquipamentosModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 65,
+          "covered": 64,
+          "skipped": 0,
+          "pct": 98.46
+        },
+        "functions": {
+          "total": 48,
+          "covered": 46,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "statements": {
+          "total": 98,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 95.91
+        },
+        "branches": {
+          "total": 93,
+          "covered": 78,
+          "skipped": 0,
+          "pct": 83.87
+        }
+      },
+      {
+        "arquivo": "src/components/estoque/useOperacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/field/Field.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 7,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 85.71
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaAlterarSenha.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 26,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 61.53
+        },
+        "branches": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaEmailRecuperacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 35,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 51.42
+        },
+        "functions": {
+          "total": 9,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "statements": {
+          "total": 53,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 35.84
+        },
+        "branches": {
+          "total": 34,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaLogin.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 25,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        }
+      },
+      {
+        "arquivo": "src/components/login/TelaRecuperarSenha.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 34,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "branches": {
+          "total": 25,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 96
+        }
+      },
+      {
+        "arquivo": "src/components/manutencao-equip-modal/ManutencaoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 15,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "statements": {
+          "total": 46,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 95.65
+        },
+        "branches": {
+          "total": 60,
+          "covered": 48,
+          "skipped": 0,
+          "pct": 80
+        }
+      },
+      {
+        "arquivo": "src/components/modal-shell/ModalShell.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/components/mover-equip-modal/MoverEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 32,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 93.75
+        },
+        "functions": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        },
+        "statements": {
+          "total": 37,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 91.89
+        },
+        "branches": {
+          "total": 61,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 77.04
+        }
+      },
+      {
+        "arquivo": "src/components/notificacoes/Notificacoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "statements": {
+          "total": 30,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "branches": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        }
+      },
+      {
+        "arquivo": "src/components/notificacoes/SinoNotificacoes.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 50,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 26,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 96.15
+        },
+        "statements": {
+          "total": 90,
+          "covered": 88,
+          "skipped": 0,
+          "pct": 97.77
+        },
+        "branches": {
+          "total": 81,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 86.41
+        }
+      },
+      {
+        "arquivo": "src/components/nova-obra-modal/NovaObraModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 89.65
+        },
+        "functions": {
+          "total": 17,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 88.23
+        },
+        "statements": {
+          "total": 37,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 86.48
+        },
+        "branches": {
+          "total": 36,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 86.11
+        }
+      },
+      {
+        "arquivo": "src/components/novo-equip-modal/NovoEquipModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 140,
+          "covered": 126,
+          "skipped": 0,
+          "pct": 90
+        },
+        "functions": {
+          "total": 66,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 80.3
+        },
+        "statements": {
+          "total": 166,
+          "covered": 147,
+          "skipped": 0,
+          "pct": 88.55
+        },
+        "branches": {
+          "total": 243,
+          "covered": 193,
+          "skipped": 0,
+          "pct": 79.42
+        }
+      },
+      {
+        "arquivo": "src/components/novo-funcionario-modal/NovoFuncionarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 27,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 92.59
+        },
+        "functions": {
+          "total": 11,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 90.9
+        },
+        "statements": {
+          "total": 34,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 88.23
+        },
+        "branches": {
+          "total": 26,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 80.76
+        }
+      },
+      {
+        "arquivo": "src/components/novo-usuario-modal/NovoUsuarioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 18,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 38,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 61,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/obra-status-badge/ObraStatusBadge.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/painel/AndamentoSolicitacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/BarraSuperior.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 13,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 84.61
+        },
+        "functions": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "statements": {
+          "total": 17,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 88.23
+        },
+        "branches": {
+          "total": 44,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 72.72
+        }
+      },
+      {
+        "arquivo": "src/components/painel/CancelamentoPedido.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 9,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 88.88
+        },
+        "statements": {
+          "total": 38,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 94.73
+        },
+        "branches": {
+          "total": 49,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 87.75
+        }
+      },
+      {
+        "arquivo": "src/components/painel/DetalhesPedidoFinanceiro.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 13,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 92.3
+        },
+        "statements": {
+          "total": 17,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "branches": {
+          "total": 47,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 80.85
+        }
+      },
+      {
+        "arquivo": "src/components/painel/DetalhesSolicitacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 39,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.56
+        },
+        "functions": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 53,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.88
+        },
+        "branches": {
+          "total": 135,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ExportarAuditoria.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 14,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 42.85
+        },
+        "branches": {
+          "total": 15,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 60
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ExportarRelatorioModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 23.07
+        },
+        "functions": {
+          "total": 14,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 21.42
+        },
+        "statements": {
+          "total": 32,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 25
+        },
+        "branches": {
+          "total": 26,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 3.84
+        }
+      },
+      {
+        "arquivo": "src/components/painel/JustificarRejeicaoModal.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        }
+      },
+      {
+        "arquivo": "src/components/painel/KanbanRolavel.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 64,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 54.68
+        },
+        "functions": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        },
+        "statements": {
+          "total": 74,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 52.7
+        },
+        "branches": {
+          "total": 28,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 21.42
+        }
+      },
+      {
+        "arquivo": "src/components/painel/MenuLateral.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 16,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 68.75
+        },
+        "functions": {
+          "total": 16,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 56.25
+        },
+        "statements": {
+          "total": 25,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 56
+        },
+        "branches": {
+          "total": 52,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 80.76
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ModalHistoricoEquipamento.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "functions": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 12,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "branches": {
+          "total": 62,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.61
+        }
+      },
+      {
+        "arquivo": "src/components/painel/NavegacaoInferior.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 13,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 84.61
+        }
+      },
+      {
+        "arquivo": "src/components/painel/PainelControleAtivos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 122,
+          "covered": 104,
+          "skipped": 0,
+          "pct": 85.24
+        },
+        "functions": {
+          "total": 68,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 54.41
+        },
+        "statements": {
+          "total": 165,
+          "covered": 125,
+          "skipped": 0,
+          "pct": 75.75
+        },
+        "branches": {
+          "total": 154,
+          "covered": 118,
+          "skipped": 0,
+          "pct": 76.62
+        }
+      },
+      {
+        "arquivo": "src/components/painel/ResumoEquipamentos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaAtividades.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 90,
+          "covered": 74,
+          "skipped": 0,
+          "pct": 82.22
+        },
+        "functions": {
+          "total": 61,
+          "covered": 48,
+          "skipped": 0,
+          "pct": 78.68
+        },
+        "statements": {
+          "total": 156,
+          "covered": 121,
+          "skipped": 0,
+          "pct": 77.56
+        },
+        "branches": {
+          "total": 162,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 58.02
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaEquipamentos.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 45,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 71.11
+        },
+        "functions": {
+          "total": 31,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 64.51
+        },
+        "statements": {
+          "total": 60,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 73.33
+        },
+        "branches": {
+          "total": 95,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 57.89
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaFuncionarios.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "statements": {
+          "total": 9,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 88.88
+        },
+        "branches": {
+          "total": 12,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 91.66
+        }
+      },
+      {
+        "arquivo": "src/components/painel/TelaObras.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 41,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.43
+        },
+        "functions": {
+          "total": 31,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 61,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.63
+        },
+        "branches": {
+          "total": 104,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/stat-card/StatCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/components/status-badge/StatusBadge.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/components/tecnico-card/TecnicoCard.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 15,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "functions": {
+          "total": 11,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 36.36
+        },
+        "statements": {
+          "total": 19,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 52.63
+        },
+        "branches": {
+          "total": 54,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 57.4
+        }
+      },
+      {
+        "arquivo": "src/components/tecnico/PainelTecnico.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 235,
+          "covered": 96,
+          "skipped": 0,
+          "pct": 40.85
+        },
+        "functions": {
+          "total": 118,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 15.25
+        },
+        "statements": {
+          "total": 346,
+          "covered": 109,
+          "skipped": 0,
+          "pct": 31.5
+        },
+        "branches": {
+          "total": 388,
+          "covered": 82,
+          "skipped": 0,
+          "pct": 21.13
+        }
+      },
+      {
+        "arquivo": "src/config/rotasApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 29,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 51.72
+        },
+        "functions": {
+          "total": 28,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 29,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 51.72
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/contexto/ContextoAutenticacao.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 14,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "statements": {
+          "total": 39,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 79.48
+        },
+        "branches": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      {
+        "arquivo": "src/contexto/ContextoEscopoAuditoria.js",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/data/constantesDominio.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/hooks/useControleAtivos.js",
+        "carregado": true,
+        "lines": {
+          "total": 202,
+          "covered": 202,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 90,
+          "covered": 90,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 288,
+          "covered": 288,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 132,
+          "covered": 117,
+          "skipped": 0,
+          "pct": 88.63
+        }
+      },
+      {
+        "arquivo": "src/hooks/useDialogo.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 96.96
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 44,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 88.63
+        },
+        "branches": {
+          "total": 32,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 78.12
+        }
+      },
+      {
+        "arquivo": "src/hooks/useFiltrosPainel.js",
+        "carregado": true,
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 30,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/main.jsx",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/api/clienteHttp.js",
+        "carregado": true,
+        "lines": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      {
+        "arquivo": "src/services/api/financeiroApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/api/notificacoesApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoAtivosApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 70,
+          "covered": 56,
+          "skipped": 0,
+          "pct": 80
+        },
+        "functions": {
+          "total": 58,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 72.41
+        },
+        "statements": {
+          "total": 77,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 79.22
+        },
+        "branches": {
+          "total": 24,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 62.5
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoAutenticacaoApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 18,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 10,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 18,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 50
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/api/servicoRecuperacaoApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 6,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 8,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/controlesExportacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 36,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.77
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 58,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.72
+        },
+        "branches": {
+          "total": 57,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/documentosEquipamentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 52,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 5.76
+        },
+        "functions": {
+          "total": 23,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 60,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/modelosAuditoriaPedidos.js",
+        "carregado": true,
+        "lines": {
+          "total": 13,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 46.15
+        },
+        "functions": {
+          "total": 20,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 20.68
+        },
+        "branches": {
+          "total": 25,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/modelosDocumentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 96,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 19.79
+        },
+        "functions": {
+          "total": 99,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.01
+        },
+        "statements": {
+          "total": 182,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 10.43
+        },
+        "branches": {
+          "total": 307,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/notificacoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/services/planilhaAuditorias.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "functions": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 20,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/planilhasRelatorios.js",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 11,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/services/relatoriosPedidos.js",
+        "carregado": true,
+        "lines": {
+          "total": 7,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "functions": {
+          "total": 9,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 16,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 6.25
+        },
+        "branches": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/acompanhamentoSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 38,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 23.68
+        },
+        "functions": {
+          "total": 16,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 37.5
+        },
+        "statements": {
+          "total": 66,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 21.21
+        },
+        "branches": {
+          "total": 86,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 19.76
+        }
+      },
+      {
+        "arquivo": "src/utils/administracaoUsuarios.js",
+        "carregado": true,
+        "lines": {
+          "total": 21,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 61.9
+        },
+        "functions": {
+          "total": 21,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 14.28
+        },
+        "statements": {
+          "total": 34,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 38.23
+        },
+        "branches": {
+          "total": 50,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 6
+        }
+      },
+      {
+        "arquivo": "src/utils/atendimentoParcial.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 86.2
+        },
+        "branches": {
+          "total": 23,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 60.86
+        }
+      },
+      {
+        "arquivo": "src/utils/auditoriaTecnico.js",
+        "carregado": true,
+        "lines": {
+          "total": 27,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 11.11
+        },
+        "functions": {
+          "total": 17,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 45,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 6.66
+        },
+        "branches": {
+          "total": 64,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/calibracoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 17,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "functions": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "statements": {
+          "total": 23,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 95.65
+        },
+        "branches": {
+          "total": 35,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 71.42
+        }
+      },
+      {
+        "arquivo": "src/utils/classificacaoFuncionario.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        }
+      },
+      {
+        "arquivo": "src/utils/datas.js",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 71.42
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 15,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "branches": {
+          "total": 8,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 62.5
+        }
+      },
+      {
+        "arquivo": "src/utils/edicaoSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        },
+        "statements": {
+          "total": 31,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 96.77
+        },
+        "branches": {
+          "total": 28,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 78.57
+        }
+      },
+      {
+        "arquivo": "src/utils/errosApi.js",
+        "carregado": true,
+        "lines": {
+          "total": 11,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 54.54
+        },
+        "functions": {
+          "total": 3,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 33.33
+        },
+        "statements": {
+          "total": 14,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 57.14
+        },
+        "branches": {
+          "total": 22,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 22.72
+        }
+      },
+      {
+        "arquivo": "src/utils/filtrosEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 24,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 6,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "statements": {
+          "total": 34,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 67.64
+        },
+        "branches": {
+          "total": 44,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 43.18
+        }
+      },
+      {
+        "arquivo": "src/utils/historicoEquipamento.js",
+        "carregado": true,
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      {
+        "arquivo": "src/utils/identificacaoEquipamento.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 13,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 9,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 88.88
+        }
+      },
+      {
+        "arquivo": "src/utils/localizacaoEquipamentos.js",
+        "carregado": true,
+        "lines": {
+          "total": 14,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "statements": {
+          "total": 22,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 95.45
+        },
+        "branches": {
+          "total": 26,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 57.69
+        }
+      },
+      {
+        "arquivo": "src/utils/novoPedido.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      {
+        "arquivo": "src/utils/operacaoEstoque.js",
+        "carregado": true,
+        "lines": {
+          "total": 33,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 93.93
+        },
+        "functions": {
+          "total": 21,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 95.23
+        },
+        "statements": {
+          "total": 58,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 87.93
+        },
+        "branches": {
+          "total": 81,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 72.83
+        }
+      },
+      {
+        "arquivo": "src/utils/pedidoMovimentacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 26,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 65.38
+        }
+      },
+      {
+        "arquivo": "src/utils/pedidosFinanceiros.js",
+        "carregado": true,
+        "lines": {
+          "total": 22,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 95.45
+        },
+        "functions": {
+          "total": 14,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 78.57
+        },
+        "statements": {
+          "total": 41,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 87.8
+        },
+        "branches": {
+          "total": 42,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 61.9
+        }
+      },
+      {
+        "arquivo": "src/utils/pesquisaSolicitacoes.js",
+        "carregado": true,
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 13,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 33,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 93.93
+        },
+        "branches": {
+          "total": 40,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 57.5
+        }
+      },
+      {
+        "arquivo": "src/utils/planoFinanceiro.js",
+        "carregado": true,
+        "lines": {
+          "total": 52,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 96.15
+        },
+        "functions": {
+          "total": 32,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 96.87
+        },
+        "statements": {
+          "total": 76,
+          "covered": 73,
+          "skipped": 0,
+          "pct": 96.05
+        },
+        "branches": {
+          "total": 91,
+          "covered": 63,
+          "skipped": 0,
+          "pct": 69.23
+        }
+      },
+      {
+        "arquivo": "src/utils/recuperacaoConta.js",
+        "carregado": true,
+        "lines": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "branches": {
+          "total": 11,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 81.81
+        }
+      },
+      {
+        "arquivo": "src/utils/rolagemKanban.js",
+        "carregado": true,
+        "lines": {
+          "total": 11,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 81.81
+        },
+        "functions": {
+          "total": 3,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 66.66
+        },
+        "statements": {
+          "total": 12,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 12,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 66.66
+        }
+      },
+      {
+        "arquivo": "src/utils/statusSolicitacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        }
+      },
+      {
+        "arquivo": "src/utils/titulosNotificacao.js",
+        "carregado": true,
+        "lines": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 75
+        },
+        "branches": {
+          "total": 10,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 40
+        }
+      }
+    ]
+  },
+  "inspecaoVisual": [
+    {
+      "perfil": "GERENTE",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "GERENTE",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "loaded"
+        }
+      ]
+    },
+    {
+      "perfil": "ADMIN",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "ADMIN",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "ESTOQUE",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "ESTOQUE",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "TECNICO",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "TECNICO",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "TST",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "TST",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "RH",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "RH",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "FINANCEIRO",
+      "tema": "light",
+      "overflow": false,
+      "bg": "rgb(245, 248, 245)",
+      "text": "rgb(27, 46, 34)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    },
+    {
+      "perfil": "FINANCEIRO",
+      "tema": "dark",
+      "overflow": false,
+      "bg": "rgb(10, 27, 19)",
+      "text": "rgb(226, 239, 228)",
+      "fontes": [
+        {
+          "familia": "Roboto",
+          "estado": "loaded"
+        },
+        {
+          "familia": "Roboto Mono",
+          "estado": "unloaded"
+        }
+      ]
+    }
+  ],
+  "contrasteTokens": [
+    {
+      "tema": "claro",
+      "texto": "on-surface",
+      "fundo": "surface",
+      "razao": 14.38
+    },
+    {
+      "tema": "claro",
+      "texto": "on-surface-variant",
+      "fundo": "surface",
+      "razao": 6.36
+    },
+    {
+      "tema": "claro",
+      "texto": "on-surface-variant",
+      "fundo": "surface-container",
+      "razao": 5.48
+    },
+    {
+      "tema": "claro",
+      "texto": "on-primary",
+      "fundo": "primary",
+      "razao": 5.54
+    },
+    {
+      "tema": "claro",
+      "texto": "on-primary-container",
+      "fundo": "primary-container",
+      "razao": 14.42
+    },
+    {
+      "tema": "claro",
+      "texto": "primary",
+      "fundo": "primary-container",
+      "razao": 4.76
+    },
+    {
+      "tema": "claro",
+      "texto": "on-secondary",
+      "fundo": "secondary",
+      "razao": 7.11
+    },
+    {
+      "tema": "claro",
+      "texto": "on-secondary-container",
+      "fundo": "secondary-container",
+      "razao": 10.7
+    },
+    {
+      "tema": "claro",
+      "texto": "error",
+      "fundo": "error-container",
+      "razao": 5.0
+    },
+    {
+      "tema": "claro",
+      "texto": "on-error",
+      "fundo": "error",
+      "razao": 6.46
+    },
+    {
+      "tema": "claro",
+      "texto": "on-secondary",
+      "fundo": "success",
+      "razao": 6.8
+    },
+    {
+      "tema": "claro",
+      "texto": "warning",
+      "fundo": "warning-container",
+      "razao": 5.98
+    },
+    {
+      "tema": "claro",
+      "texto": "info",
+      "fundo": "info-container",
+      "razao": 5.66
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-surface",
+      "fundo": "surface",
+      "razao": 13.32
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-surface-variant",
+      "fundo": "surface",
+      "razao": 9.21
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-surface-variant",
+      "fundo": "surface-container",
+      "razao": 7.63
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-primary",
+      "fundo": "primary",
+      "razao": 7.79
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-primary-container",
+      "fundo": "primary-container",
+      "razao": 8.12
+    },
+    {
+      "tema": "escuro",
+      "texto": "primary",
+      "fundo": "primary-container",
+      "razao": 6.14
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-secondary",
+      "fundo": "secondary",
+      "razao": 7.86
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-secondary-container",
+      "fundo": "secondary-container",
+      "razao": 7.83
+    },
+    {
+      "tema": "escuro",
+      "texto": "error",
+      "fundo": "error-container",
+      "razao": 6.77
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-error",
+      "fundo": "error",
+      "razao": 7.72
+    },
+    {
+      "tema": "escuro",
+      "texto": "on-secondary",
+      "fundo": "success",
+      "razao": 7.96
+    },
+    {
+      "tema": "escuro",
+      "texto": "warning",
+      "fundo": "warning-container",
+      "razao": 7.68
+    },
+    {
+      "tema": "escuro",
+      "texto": "info",
+      "fundo": "info-container",
+      "razao": 6.55
+    }
+  ],
+  "fontes": [
+    {
+      "familia": "Roboto",
+      "arquivo": "Roboto-latin.woff2",
+      "origem": "https://fonts.gstatic.com/s/roboto/v51/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2",
+      "licenca": "https://raw.githubusercontent.com/google/fonts/main/ofl/roboto/OFL.txt",
+      "bytes": 43136
+    },
+    {
+      "familia": "Roboto Mono",
+      "arquivo": "RobotoMono-latin.woff2",
+      "origem": "https://fonts.gstatic.com/s/robotomono/v31/L0x5DF4xlVMF-BfR8bXMIjhLq38.woff2",
+      "licenca": "https://raw.githubusercontent.com/google/fonts/main/ofl/robotomono/OFL.txt",
+      "bytes": 32796
+    }
+  ],
+  "hashesSha256": {
+    "Frontend/UI/src/index.css": "948c2346304053e6439b50944aa79906fc15d6283a68ee20f1136689426a6d0c",
+    "Frontend/UI/src/styles/fonts.css": "31437fefa65399e3e524a3bd7b3302ae8dd8878efa6bd5d8de65c3900f717ffa",
+    "Frontend/UI/src/styles/statusEquipamentos.css": "ca043a901a678d5be1f009d23993d4a2d2398108094cee21344a9fb83eae7c08",
+    "Frontend/UI/src/styles/material-theme.css": "b496435692ecd5675b4c42c4dfd529a60a9baac8ce313c11e29524bd293ae7fc",
+    "Frontend/UI/src/components/status-badge/StatusBadge.module.css": "bdc2bb33dbab1ac18a6816bd35e6f6d51553f06e1cb02272e3a2c959cabbf1d5",
+    "Frontend/UI/src/components/obra-status-badge/ObraStatusBadge.module.css": "bc1234265688d2746b9ea9d02dafe241b854fda79ff415aacaf1ba18af02f8c7",
+    "Frontend/UI/src/components/calibracao-equip-modal/CalibracaoEquipModal.module.css": "e2e96278cdf42d4a676f55958edc2bd1585194e09802fdbd12c3a977b1b91370",
+    "Frontend/UI/src/components/painel/ExportarRelatorioModal.module.css": "a00428892391f5b52bd08693589782dccd2dfbbc4ee175e0943f35361b9f3fe6",
+    "Frontend/UI/src/components/painel/ExportarAuditoria.module.css": "7b83e7626a45cca11309215d6ad516f08cf9fffe9d73c79365a2bb57db189d6a",
+    "Frontend/UI/src/components/painel/AndamentoSolicitacao.module.css": "9186bbf3d3cc665d96b90d2acbc431c330ce5b0020f42b8e0148eb4d60f21cbb",
+    "Frontend/UI/src/components/painel/TelaEquipamentos.module.css": "4774627b38d84d7326917e8a1f09acdc182d67d98475a43e8c726d08bb9e861b",
+    "Frontend/UI/src/components/painel/DetalhesSolicitacao.module.css": "b7079eee9eefab74de836be25f3c3e6087d498770d2378f22c59cf91dc1d3681",
+    "Frontend/UI/src/components/painel/TelaAtividades.module.css": "67a9a4736caac251ec2b535d22076a94e53ccad2ebfa723c494ecacf6b3c995b",
+    "Frontend/UI/src/components/painel/CancelamentoPedido.module.css": "31e325c43bf09a80141bab468548c9430779cfb58beb3dc0c3a0e36368b7e3ab",
+    "Frontend/UI/src/components/painel/KanbanRolavel.module.css": "61e0642d9a1a9080a4f1940084cbc874a35243e25b37e61d2d7dbbf5eb44d6a3",
+    "Frontend/UI/src/components/deposito-card/DepositoCard.module.css": "10cf47669f1aa1dbd893b8df7d95a66d90e76118294ef5d6cb96f10c0e1ad361",
+    "Frontend/UI/src/components/notificacoes/Notificacoes.module.css": "bd4aec43321e865f605f4268be7c81ca84d0bdaeb9d7cdf3edd3c626ec419164",
+    "Frontend/UI/src/components/notificacoes/SinoNotificacoes.module.css": "1523efd6416c6085afc1f2a14d4fdaedf9cbfaca78830313940e6f50633ba888",
+    "Frontend/UI/src/components/mover-equip-modal/MoverEquipModal.module.css": "07b179cad42bbc6d3b29979279899b88e57eb37b796ae9829bd46a36055996f7",
+    "Frontend/UI/src/components/tecnico-card/TecnicoCard.module.css": "6ab8b016f177106817a7f0985059d8f513958aa2dc179cd985718066f8d7862e",
+    "Frontend/UI/src/components/field/Field.module.css": "e842f67604f46381d9c7022c5cdfc775cd5e2425b5540e64d3ca875923a8d99c",
+    "Frontend/UI/src/components/tecnico/PainelTecnico.module.css": "a0a3cbaf7798b7726944fb0b1d66689be4408f85829906440e4d239289f9bf7f",
+    "Frontend/UI/src/components/manutencao-equip-modal/ManutencaoEquipModal.module.css": "b31213136fd1f527b5beb1bb17db0a64fdef9df381c1b8d011f5c9941feabee1",
+    "Frontend/UI/src/components/login/VisualizacaoSenha.css": "8c53a72fa4ebb7831484ebcbdea569e30e8bacb3d93218a502b680960d30cf1f",
+    "Frontend/UI/src/components/login/TelaLogin.module.css": "01a0f084be2f9b3e72e8ec0f1267fbc3daaed024e8b3143c1076c74722899b20",
+    "Frontend/UI/src/components/admin/PainelAdmin.module.css": "9683fa57e948bb1fd924bca4c81a87e62c85bed9ed9e866c825c1455e9553b79",
+    "Frontend/UI/src/components/estoque/SepararEquipamentosModal.module.css": "c5471df5c5a4acdb62e76e53b25cc93d923ab07bc3f990ee9e0c7853c27bfdff",
+    "Frontend/UI/src/components/estoque/FiltrosPedidosEstoque.module.css": "617961f4214d648566194d8ef86450e8cd139e4817bb1385293eff6b7a210623",
+    "Frontend/UI/src/components/estoque/OperacaoEstoque.module.css": "55f38e22c0488829740b0d2326f85cbe24e0c14dda7ddf4495cdc198d5f4c548",
+    "Frontend/UI/src/components/estoque/PainelEstoque.module.css": "cd7f345031ec297052446c3ba684171ee512912bd3219abf25c078517433d1e9",
+    "Frontend/UI/src/components/estoque/AtendimentoParcialModal.module.css": "65d7c6289b164981c51912c4be981cea4054001c1255d3ff01e2338c65b15cdf",
+    "Frontend/UI/src/components/auditorias-tecnico/TelaAuditorias.module.css": "5986365aae62d6bcc2e5f7a3db98ad5814953bd8336194c393079d5bab33040e",
+    "Frontend/UI/src/components/auditorias-tecnico/AuditoriasTecnicoModal.module.css": "9f27b86a573490c00a0358e53524e045a5d2f5407af2ee252ec1dd38a760e731",
+    "Frontend/UI/src/components/nova-obra-modal/NovaObraModal.module.css": "7f840c307362e0f4efa72c394bf63acba0e8e0257fe11c0f2b7bad0fa5609f14",
+    "Frontend/UI/src/components/novo-equip-modal/NovoEquipModal.module.css": "1b69c68bab327b7ce08f12b348dd6f8d0fd5a58eb0a0d9cb8f992e15933cdf39",
+    "Frontend/UI/src/components/editar-solicitacao-modal/EditarSolicitacaoModal.module.css": "5d0c449dcadb95c8f9f761c079b11ef89344f3f60be0705abe7cd21251bc4987",
+    "Frontend/UI/src/components/modal-shell/ModalShell.module.css": "ece246832b0727ebd787190f810e77f42bc7cc124cc74bafb69435b77051da40",
+    "Frontend/UI/src/components/stat-card/StatCard.module.css": "701e23a38293f5d905c8d297fc35125034d9b71dffd2c4bc4eaf1b884dcdb2ba",
+    "Frontend/UI/src/components/fibra-track/FibraTrack.module.css": "2ce85896b3e5ed55d392eeb4c686a4eb1295d40ba551eebab0cd6b44a4a2b5e0",
+    "Frontend/UI/src/assets/fonts/FONTES.md": "1a5e24dfdd721a70da9f413480be35f8caf14df6c87203bf153be8268cfde198",
+    "Frontend/UI/src/assets/fonts/RobotoMono-latin.woff2": "b81cd55177300649be8f95b3b747d721ce607e8ed2856e25bd0c630cfd631faf",
+    "Frontend/UI/src/assets/fonts/Roboto-latin-OFL.txt": "061402327a96aadb0bfb694a960ed289ecd38d383e396243831ab81feb109c41",
+    "Frontend/UI/src/assets/fonts/Roboto-latin.woff2": "1404ca348bd75ef836f4dd8b6f2cc719458642d1237c368296b2fc652dca47dc",
+    "Frontend/UI/src/assets/fonts/RobotoMono-latin-OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
+    "Frontend/UI/public/fonts/LICENSES.txt": "dbcb5c60e61d2c1ee91486e116e72f46a4ae3cd9c7701d57e7fb000bc4794a06",
+    "scripts/qa/executar.mjs": "6f1cd66c6237d99055684054326434a292637a34c7b9f63f32cdd2dd8d44e771"
+  },
+  "capturas": {
+    "test-results/material-era/tecnico-light.png": "3b7e1e5c8881a6514c297b1c567da0d2c6e2fd6210b1b785ca535a7b8c831a97",
+    "test-results/material-era/rh-light.png": "7f49f63bb051351cb053244172b4dddcac57a67c24c4132a576b08b6e600e6a8",
+    "test-results/material-era/financeiro-light.png": "8e590b8bc1581c20a30e9d26399095b43aa53dd29ec91527edc567bdbc2099f0",
+    "test-results/material-era/tst-dark.png": "46cab9f399ecc3a2ee1675bf18e0f37175e4e095c7e2e37125a8e34cc17a9c96",
+    "test-results/material-era/tst-light.png": "4fb65dadc5e49fa19a4f1488e5287662652572dc833bb537566513ccb6f88759",
+    "test-results/material-era/gerente-light.png": "dfe339a54f6863db33a4e41f590f49902953c7f2261114df39d97c5664fe919b",
+    "test-results/material-era/admin-dark.png": "a6aebdf1e8c937878b761723cb2d00d1d49677a9cc0e38fc1d8b28d5f62b8dac",
+    "test-results/material-era/gerente-mobile-light.png": "cb5bfc4540d120ad096e534e1b5a380dcba6a8a0eca6320ecd4817cab7c2db39",
+    "test-results/material-era/tecnico-dark.png": "d0720cdc96c55c8fd364fdcf64fe4605c1e17530076d5a3b9c1f83bd726f8231",
+    "test-results/material-era/gerente-mobile-dark.png": "0f01ccb0813fca95a10ba82d43b364ae7ae933bff90069b149351c347739fe49",
+    "test-results/material-era/estoque-dark.png": "33230fa068a80f5f50857d7a3068e7d48769785029146afa59d956b5cafcecf4",
+    "test-results/material-era/rh-dark.png": "4dd5a84338b9e5e423ec8928046fa30a309bf9fd7bf71b4faab38fdabd7a3c89",
+    "test-results/material-era/admin-light.png": "33f468ede3ab2e9127a2db9b5f3f7ba098ac62b9eb10751b602da08701cf7bb1",
+    "test-results/material-era/financeiro-dark.png": "6a09ecbba7ae11113afb424f9308ff7d9534eb6fc32d88cc6756dee4a5684a25",
+    "test-results/material-era/cadastro-mobile-320.png": "d0574635772babe950f80fa76d77151ee38f799558daf544876cb0bcfa9af2de",
+    "test-results/material-era/gerente-dark.png": "acb2dab0227f14b10b86158d191c8a18ffff6cb5a4a1528448b105e7ea754a0f",
+    "test-results/material-era/login.png": "8c40a9ef8303acaf8b32c0ce44a8e74e7c4b1d01056186e6861a46cd41182b37",
+    "test-results/material-era/estoque-light.png": "1a7e132a5fe3710035ed635786c4248495c9bcf929346e61421a540a1a764c3f",
+    "test-results/material-era/gerente-mobile-320.png": "cec88486640e93c9b888ade625cafd9772d58629ca1b37aafbf3a7d8c2c29139",
+    "test-results/material-era/gerente-modal-dark.png": "fad9c1f5bac09f5d2abdb2b1bce7b0ac6703e0bbbc91c7d35d9ab54326f9849d"
+  },
+  "galeria": "test-results/material-era/preview.html",
+  "ressalvas": [
+    "API simulada na regressão de interface; não é nova integração com PostgreSQL.",
+    "Não constitui auditoria integral de acessibilidade.",
+    "Nova imagem de publicação exige integração e varredura do fluxo de release antes do piloto.",
+    "Piloto e cópia real do banco permanecem adiados."
+  ],
+  "rodapeCadastro": "Botão inteiramente dentro do diálogo: conferência de limites em desktop e 320 px."
+}
