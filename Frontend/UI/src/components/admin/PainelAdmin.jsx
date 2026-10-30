@@ -13,6 +13,7 @@ import { ListaUsuariosAdmin, ListaFuncionariosAdmin } from './ListasAdministraca
 import { DetalhesUsuarioAdmin } from './DetalhesUsuarioAdmin';
 import { PERFIS_USUARIO, funcionarioAtivo, filtrarUsuariosAdmin, filtrarFuncionariosAdmin, formatarInstanteAdmin } from '../../utils/administracaoUsuarios';
 import estilos from './PainelAdmin.module.css';
+import logoEra from '../../assets/ERALTDA.png';
 import { FormularioEmailRecuperacao } from '../login/TelaEmailRecuperacao';
 import { EventosSegurancaAdmin } from './EventosSegurancaAdmin';
 
@@ -91,25 +92,25 @@ export function PainelAdmin() {
     catch(e){definirErroAcao(e.message);}finally{definirProcessando(false);}
   };
   const estatisticas = [
-    {nome:'Usuários cadastrados',valor:usuarios.length,nota:'Todos os perfis de acesso',Icone:Users,acao:()=>{limparFiltros();definirLista('usuarios');}},
+    {nome:'Usuários cadastrados',valor:usuarios.length,nota:'',Icone:Users,acao:()=>{limparFiltros();definirLista('usuarios');}},
     {nome:'Acessos ativos',valor:usuarios.filter(u=>u.ativo).length,nota:`${usuarios.filter(u=>!u.ativo).length} acesso(s) inativo(s)`,Icone:UserCheck,acao:()=>{limparFiltros();definirLista('usuarios');definirSituacao('ativos');}},
-    {nome:'Troca de senha pendente',valor:usuarios.filter(u=>u.deveAlterarSenha).length,nota:'Troca obrigatória no próximo login',Icone:KeyRound,acao:()=>{limparFiltros();definirLista('usuarios');definirSeguranca('troca');}},
-    {nome:'Funcionários sem vínculo',valor:funcionariosDisponiveis.length,nota:'Ativos disponíveis para vincular',Icone:UserPlus,acao:()=>{limparFiltros();definirLista('funcionarios');definirSituacao('ativos');definirVinculo('sem');}},
+    {nome:'Troca de senha pendente',valor:usuarios.filter(u=>u.deveAlterarSenha).length,nota:'',Icone:KeyRound,acao:()=>{limparFiltros();definirLista('usuarios');definirSeguranca('troca');}},
+    {nome:'Funcionários sem vínculo',valor:funcionariosDisponiveis.length,nota:'',Icone:UserPlus,acao:()=>{limparFiltros();definirLista('funcionarios');definirSituacao('ativos');definirVinculo('sem');}},
   ];
   const quantidade=lista==='usuarios'?usuariosFiltrados.length:funcionariosFiltrados.length;
   return <div className={estilos.pagina} data-theme={modoEscuro?'dark':'light'}>
     <header className={estilos.cabecalho}>
-      <div className={estilos.identidade}><ShieldCheck size={23}/><span>ERA<small>Admin</small></span></div>
+      <div className={estilos.identidade}><img src={logoEra} alt="ERA"/><span><small>Admin</small></span></div>
       <nav aria-label="Áreas administrativas">{AREAS.map(({id,rotulo,icone:Icone})=><button type="button" key={id} aria-current={area===id?'page':undefined} className={area===id?estilos.ativo:''} onClick={()=>selecionarArea(id)}><Icone size={16}/><span>{rotulo}</span></button>)}</nav>
+      <select className={estilos.seletorArea} aria-label="Escolher área administrativa" value={area} onChange={evento=>selecionarArea(evento.target.value)}>{AREAS.map(({id,rotulo})=><option key={id} value={id}>{rotulo}</option>)}</select>
       <div className={estilos.acoesCabecalho}><SinoNotificacoes temaEscuro={modoEscuro}/><button type="button" onClick={alternarTema} aria-label={modoEscuro?'Ativar tema claro':'Ativar tema escuro'}>{modoEscuro?<Sun size={18}/>:<Moon size={18}/>}</button><button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={18}/></button></div>
     </header>
     {mostrandoEventos&&<EventosSegurancaAdmin usuarios={usuarios} aoFechar={()=>definirMostrandoEventos(false)}/>}
     {gerenciandoRecuperacao&&<EstruturaModal titulo="Meu e-mail de recuperação" subtitulo="Configuração exclusiva da sua conta de administrador" aoFechar={()=>definirGerenciandoRecuperacao(false)}><FormularioEmailRecuperacao aoConcluir={()=>definirGerenciandoRecuperacao(false)}/></EstruturaModal>}
     {area==='usuarios'&&<main className={estilos.conteudo}>
-      <section className={estilos.titulo}><div><span className={estilos.sobretitulo}>Segurança e acessos</span><h1>Administração</h1><p>Usuários, perfis e vínculos de funcionários em um só lugar.</p><small>Conectado como <strong>{usuario.nome}</strong> · {usuario.login}</small></div><button type="button" className={estilos.primario} onClick={()=>abrirCriacao()} disabled={carregando}><UserPlus size={18}/>Criar usuário</button></section>
-      <section className={estilos.recuperacaoConta} aria-label="Recuperação da sua conta"><div><strong>Recuperação da sua conta</strong><p>{usuario.recuperacao?.emailVerificado ? `E-mail confirmado: ${usuario.recuperacao.emailVerificado}` : 'Envio por Gmail ainda não habilitado no servidor. O acesso com login e senha permanece disponível.'}</p></div><button type="button" onClick={()=>definirGerenciandoRecuperacao(true)}><Mail size={17}/>Meu e-mail de recuperação</button></section>
-      <div className={estilos.acoesSeguranca}><button type="button" className={estilos.atualizar} onClick={()=>definirMostrandoEventos(true)}><ShieldCheck size={17}/>Eventos de segurança</button></div>
-      <section className={estilos.estatisticas} aria-label="Resumo de acessos">{estatisticas.map(({nome,valor,nota,Icone,acao})=><button type="button" key={nome} onClick={acao} disabled={carregando}><span className={estilos.estatisticaTopo}>{nome}<Icone size={18}/></span><strong>{carregando?'—':valor}</strong><small>{nota}</small></button>)}</section>
+      <section className={estilos.titulo}><div><span className={estilos.sobretitulo}>Segurança e acessos</span><h1>Administração</h1><small>Conectado como <strong>{usuario.nome}</strong> · {usuario.login}</small></div><button type="button" className={estilos.primario} onClick={()=>abrirCriacao()} disabled={carregando}><UserPlus size={18}/>Criar usuário</button></section>
+      <div className={estilos.acoesSeguranca}><button type="button" className={estilos.atualizar} onClick={()=>definirGerenciandoRecuperacao(true)}><Mail size={17}/>Meu e-mail de recuperação</button><button type="button" className={estilos.atualizar} onClick={()=>definirMostrandoEventos(true)}><ShieldCheck size={17}/>Eventos de segurança</button></div>
+      <section className={estilos.estatisticas} aria-label="Resumo de acessos">{estatisticas.map(({nome,valor,nota,Icone,acao})=><button type="button" key={nome} onClick={acao} disabled={carregando}><span className={estilos.estatisticaTopo}>{nome}<Icone size={18}/></span><strong>{carregando?'—':valor}</strong>{nota&&<small>{nota}</small>}</button>)}</section>
       <section className={estilos.registros} aria-label="Gestão de acessos">
         <div className={estilos.barraRegistros}><div className={estilos.abas} role="group" aria-label="Listas administrativas"><button type="button" aria-pressed={lista==='usuarios'} onClick={()=>definirLista('usuarios')}>Usuários <b>{usuarios.length}</b></button><button type="button" aria-pressed={lista==='funcionarios'} onClick={()=>definirLista('funcionarios')}>Funcionários <b>{funcionarios.length}</b></button></div><button type="button" className={estilos.atualizar} onClick={carregar} disabled={carregando}><RefreshCw size={15}/>Atualizar</button></div>
         <div className={estilos.filtros}>
@@ -122,7 +123,7 @@ export function PainelAdmin() {
         {lista==='funcionarios'&&<p className={estilos.nota}>O vínculo com funcionário é obrigatório para Técnico e TST. Outros perfis não exigem vínculo. Cadastros de funcionários são gerenciados na Gerência.</p>}
         {carregando?<div className={estilos.vazio} role="status">Carregando usuários e funcionários…</div>:quantidade?lista==='usuarios'?<ListaUsuariosAdmin usuarios={usuariosFiltrados} funcionarios={funcionarios} usuarioAtualId={usuario.id} aoGerenciar={definirSelecionadoId}/>:<ListaFuncionariosAdmin funcionarios={funcionariosFiltrados} usuarios={usuarios} aoGerenciar={definirSelecionadoId} aoCriarAcesso={abrirCriacao}/>:<div className={estilos.vazio}><Search size={24}/><strong>Nenhum resultado encontrado</strong><span>{filtrosAtivos?'Ajuste os filtros ou limpe a pesquisa.':'Nenhum registro cadastrado nesta lista.'}</span>{filtrosAtivos&&<button type="button" onClick={limparFiltros}>Limpar filtros</button>}</div>}
       </section>
-      <p className={estilos.rodape}>Ativos, inativos e arquivados são exibidos em grupos separados.{atualizadoEm&&` Atualizado em ${formatarInstanteAdmin(atualizadoEm)} · Manaus.`}</p>
+      <p className={estilos.rodape}>{atualizadoEm&&` Atualizado em ${formatarInstanteAdmin(atualizadoEm)} · Manaus.`}</p>
     </main>}
     {area==='gerencia'&&<PainelControleAtivos incorporado temaEscuro={modoEscuro} aoAlternarTema={alternarTema}/>}
     {area==='rh'&&<PainelControleAtivos incorporado perfilVisualizado="RH" temaEscuro={modoEscuro} aoAlternarTema={alternarTema}/>}

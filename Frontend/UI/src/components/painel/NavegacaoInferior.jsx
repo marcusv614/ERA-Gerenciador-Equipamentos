@@ -3,7 +3,7 @@ import { Activity, Boxes, Building2, ClipboardCheck, Users, Warehouse } from 'lu
 const ITENS = [
   { id: 'equipamentos', rotulo: 'Equipamentos', icone: Boxes },
   { id: 'obras', rotulo: 'Obras', icone: Building2 },
-  { id: 'atividades', rotulo: 'Atividades', icone: Activity },
+  { id: 'atividades', rotulo: 'Solicitações', icone: Activity },
   { id: 'funcionarios', rotulo: 'Equipe', icone: Users },
   { id: 'auditorias', rotulo: 'Vistorias', icone: ClipboardCheck },
   { id: 'deposito', rotulo: 'Depósito', icone: Warehouse },

@@ -2,6 +2,8 @@ import { descreverLocalizacao } from '../../utils/localizacaoEquipamentos';
 import { IndicadorStatus } from '../status-badge/StatusBadge';
 import { Pencil, Wrench } from 'lucide-react';
 import { iconePorTipoEquipamento } from '../../data/constantesDominio';
+import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
+import { QuantidadesEquipamento } from '../painel/QuantidadesEquipamento';
 import styles from './DepositoCard.module.css';
 
 const TILE = {
@@ -23,8 +25,8 @@ export function CartaoDeposito({ equipamentos, obras, podeEditar, aoEditar }) {
     <div className={styles.card}>
       <div className={styles.header}>
         <div>
-          <h2 className={styles.title}>Depósito</h2>
-          <p className={styles.subtitle}>Itens fora de campo — {equipamentos.length} registros</p>
+          <h2 className={styles.title}>Inventário do depósito</h2>
+          <p className={styles.subtitle}>{equipamentos.length} {equipamentos.length === 1 ? 'registro' : 'registros'}</p>
         </div>
         <div className={styles.legend}>
           {LEGEND.map((l) => (
@@ -50,7 +52,8 @@ export function CartaoDeposito({ equipamentos, obras, podeEditar, aoEditar }) {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.model}>{equipamento.modelo}</div>
-                  <div className={styles.serie}>{equipamento.tipo} · {equipamento.medida || equipamento.serie} · {equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1} disponíveis{equipamento.quantidadeReservada > 0 ? ` · ${equipamento.quantidadeReservada} reservadas` : ''}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</div>
+                  <div className={styles.serie}>{[equipamento.tipo, equipamento.medida, identificacaoVisivel(equipamento.serie, equipamento.tipo), equipamento.notaFiscal ? `NF ${equipamento.notaFiscal}` : null].filter(Boolean).join(' · ')}</div>
+                  <QuantidadesEquipamento equipamento={equipamento} className={styles.quantidades} />
                 </div>
                 <IndicadorStatus status={equipamento.status} />
                 <div className={styles.local}>{descreverLocalizacao(equipamento,buscarObraPorId)}</div>

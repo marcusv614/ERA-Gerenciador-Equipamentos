@@ -7,6 +7,7 @@ import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import css from './TelaEquipamentos.module.css';
 import { ehFluke, resumoCalibracao } from '../../utils/calibracoes';
 import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
+import { QuantidadesEquipamento } from './QuantidadesEquipamento';
 
 const classePorTipo = { Fluke: 'tipoFluke', OTDR: 'tipoOtdr', Outro: 'tipoOutro' };
 const CHAVE_VISUALIZACAO = 'era-equipamentos-visualizacao';
@@ -58,12 +59,7 @@ function ListaEquipamentos({ grupo, buscarObraPorId, acoes, estilos }) {
             </div>
           </div></td>
           <td role="cell" data-coluna="Situação">{equipamento.arquivado ? <span className={estilos.seloArquivado}>Arquivado</span> : <IndicadorStatus status={equipamento.status} />}</td>
-          <td role="cell" data-coluna="Quantidades"><div className={css.quantidades}>
-            <span><small>Total cadastrado</small><strong>{equipamento.quantidade ?? 1}</strong></span>
-            <span><small>Disponível</small><strong>{equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1}</strong></span>
-            {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
-            {equipamento.quantidadeManutencao > 0 && <span><small>Em manutenção</small><strong>{equipamento.quantidadeManutencao}</strong></span>}
-          </div></td>
+          <td role="cell" data-coluna="Quantidades"><QuantidadesEquipamento equipamento={equipamento} className={css.quantidades} /></td>
           <td role="cell" data-coluna="Localização"><div className={css.localizacao}>
             <span><MapPin size={13} aria-hidden="true" />{descreverLocalizacao(equipamento, buscarObraPorId)}</span>
             {equipamento.tecnico && <small>Com {equipamento.tecnico}</small>}
@@ -95,7 +91,7 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
   const [filtroCalibracao, definirFiltroCalibracao] = useState('TODAS');
   const filtrados = equipamentos.filter(e => filtroCalibracao === 'TODAS' || ((ehFluke(e) || e.calibracoes?.length) && resumoCalibracao(e).chave === filtroCalibracao));
   const acoes = { podeEditar, aoEditar, aoAbrirHistorico, aoImprimirHistorico, aoMover, aoManutencao, aoCalibracao, estilos };
-  const grupos = [{ titulo: 'Ferramentas ativas', itens: filtrados.filter((e) => !e.arquivado) }, { titulo: 'Ferramentas arquivadas', itens: filtrados.filter((e) => e.arquivado) }];
+  const grupos = [{ titulo: 'Equipamentos ativos', itens: filtrados.filter((e) => !e.arquivado) }, { titulo: 'Equipamentos arquivados', itens: filtrados.filter((e) => e.arquivado) }];
   return <>
     <div className={css.barraFiltros}><div className={estilos.filters}>
       <select className={estilos.filterSelect} value={tipoSelecionado} onChange={(evento) => aoSelecionarTipo(evento.target.value)} aria-label="Filtrar por subcategoria">
@@ -116,12 +112,7 @@ export function TelaEquipamentos({ equipamentos, tiposDisponiveis, buscarObraPor
           <div className={estilos.equipHead}><div className={estilos.equipIdent}><div className={`${estilos.equipIconBox} ${estilos[classePorTipo[equipamento.tipo]] || ''}`}><IconeTipo size={16} /></div><div className={estilos.equipTitleWrap}><div className={estilos.equipModel}>{equipamento.modelo}</div>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <div className={estilos.equipSerie}>{equipamento.serie}</div>}<div className={estilos.equipTecnico}>{equipamento.tipo}{equipamento.medida ? ` · ${equipamento.medida}` : ''}{equipamento.observacoes ? ` · ${equipamento.observacoes}` : ''}</div></div></div>
             <div className={estilos.equipHeadActions}>{equipamento.arquivado ? <span className={estilos.seloArquivado}>Arquivado</span> : <IndicadorStatus status={equipamento.status} />}<AcoesEquipamento equipamento={equipamento} {...acoes} /></div>
           </div>
-          <div className={estilos.equipQuantidade} aria-label="Quantidade do equipamento">
-            <span><small>Total cadastrado</small><strong>{equipamento.quantidade ?? 1}</strong></span>
-            <span><small>Disponível</small><strong>{equipamento.quantidadeDisponivel ?? equipamento.quantidade ?? 1}</strong></span>
-            {equipamento.quantidadeReservada > 0 && <span><small>Reservado</small><strong>{equipamento.quantidadeReservada}</strong></span>}
-            {equipamento.quantidadeManutencao > 0 && <span><small>Em manutenção</small><strong>{equipamento.quantidadeManutencao}</strong></span>}
-          </div>
+          <QuantidadesEquipamento equipamento={equipamento} className={estilos.equipQuantidade} />
           <IndicadorCalibracao equipamento={equipamento}/><div className={`${estilos.equipFooter} ${css.rodape}`}><div className={estilos.equipLocation}><MapPin size={12} className={estilos.equipLocPin} /><span className={estilos.equipLocationText}>{descreverLocalizacao(equipamento, buscarObraPorId)}{equipamento.notaFiscal ? ` · NF ${equipamento.notaFiscal}` : ''}</span></div><div className={css.acoesRodape}><BotaoMover equipamento={equipamento} aoMover={aoMover} estilos={estilos} /><BotaoManutencao equipamento={equipamento} aoManutencao={aoManutencao} estilos={estilos} /><BotaoCalibracao equipamento={equipamento} aoCalibracao={aoCalibracao} estilos={estilos}/></div></div>
           {equipamento.tecnico && <div className={estilos.equipTecnico}>Com {equipamento.tecnico}</div>}
         </div>;

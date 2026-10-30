@@ -7,6 +7,7 @@
     "test": "node --test --test-isolation=none tests/*.test.js",
     "test:coverage": "node --experimental-test-coverage \"--test-coverage-include=src/**/*.js\" --test --test-isolation=none tests/*.test.js",
     "test:ui": "playwright test --config=qa-browser/playwright.config.mjs",
+    "test:ui:dashboards": "playwright test --config=qa-browser/dashboards.config.mjs",
     "test:e2e": "node ../../scripts/testar-integracao.mjs",
     "dev": "vite",
     "build": "vite build",

@@ -1,14 +1,14 @@
 /* ERA · papéis de cor e superfícies inspirados no Material Design 3. */
 :root, [data-theme='light'] {
-  --md-background: #f5f8f5;
+  --md-background: #f6f7f4;
   --md-surface: #ffffff;
-  --md-surface-low: #f0f5ef;
+  --md-surface-low: #f2f5f0;
   --md-surface-container: #e9f0e9;
   --md-surface-high: #e2ebe2;
   --md-on-surface: #1b2e22;
   --md-on-surface-variant: #506457;
   --md-outline: #738578;
-  --md-outline-variant: #d5e0d6;
+  --md-outline-variant: #dfe5dc;
   --md-primary: #ac4c00;
   --md-on-primary: #ffffff;
   --md-primary-container: #ffeadb;
@@ -24,6 +24,8 @@
   --md-success-container: #d4efde;
   --md-info: #315e72;
   --md-info-container: #d2eaf5;
+  --md-finance: #68508a;
+  --md-finance-container: #eee5fa;
   --md-warning: #795500;
   --md-warning-container: #fff0cd;
   --md-scrim: rgb(7 26 16 / 42%);
@@ -55,6 +57,8 @@ body:has([data-theme='dark']), [data-theme='dark'] {
   --md-success-container: #1c412d;
   --md-info: #9bcbde;
   --md-info-container: #183e4b;
+  --md-finance: #d5baf4;
+  --md-finance-container: #3e2e54;
   --md-warning: #f5ce83;
   --md-warning-container: #473719;
   --md-scrim: rgb(0 12 5 / 68%);

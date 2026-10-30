@@ -7,7 +7,7 @@ body { font-family: var(--font-body); color: var(--text); background: var(--bg);
 input, select, textarea, button { font-family: inherit; }
 button { transition: background-color var(--md-motion), color var(--md-motion), border-color var(--md-motion), box-shadow var(--md-motion); -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex='0']:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 3px; }
+button:focus-visible, summary:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex='0']:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 3px; }
 input, select, textarea { accent-color: var(--md-primary); }
 input::placeholder, textarea::placeholder { color: var(--text-muted); opacity: 1; }
 ::selection { color: var(--md-on-primary-container); background: var(--md-primary-container); }

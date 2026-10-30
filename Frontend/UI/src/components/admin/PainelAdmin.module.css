@@ -171,19 +171,31 @@ button.reativar { color:#276946; border-color:#b8d4bd; background:#edf7ed; }
 .eventosSeguranca .acoesModal { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; }
 
 
-/* Material ERA: cabeçalho, abas, cartões e ações administrativas. */
-.cabecalho { background:var(--md-surface); color:var(--text); border-bottom:1px solid var(--border); box-shadow:var(--md-elevation-1); }
-.identidade small { color:var(--text-muted); }
-.identidade > svg { color:var(--md-primary); }
-.cabecalho nav button { color:var(--text-muted); border-radius:var(--md-shape-full); }
-.cabecalho nav button:hover { background:var(--md-surface-container); }
-.cabecalho nav button.ativo { background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
-.acoesCabecalho > button { border-color:transparent; border-radius:var(--md-shape-full); background:var(--md-surface-container); color:var(--text); }
-.primario { border-radius:var(--md-shape-full); color:var(--md-on-primary); background:var(--md-primary); border-color:transparent; box-shadow:var(--md-elevation-1); }
-.estatisticas > button { border-radius:var(--md-shape-large); border-color:var(--md-outline-variant); box-shadow:var(--md-elevation-1); }
-.estatisticas > button:hover { background:var(--md-surface-low); box-shadow:var(--md-elevation-2); }
-.registros { border-radius:var(--md-shape-large); box-shadow:var(--md-elevation-1); }
-.abas button { border-radius:var(--md-shape-full); }
+/* A marca acompanha todas as áreas; o conteúdo usa superfícies neutras. */
+.cabecalho { background:#163b2b; color:#f3f7f4; border-bottom:1px solid #355744; box-shadow:none; }
+.identidade { gap:8px; }
+.identidade img { display:block; width:90px; padding:6px; background:#fff; border-radius:10px; }
+.identidade small { color:#bdcfc3; font-size:9px; }
+.cabecalho nav button { color:#bdcfc3; border-radius:999px; }
+.cabecalho nav button:hover { color:#fff; background:#244b38; }
+.cabecalho nav button.ativo { color:#fff0da; background:#3f5034; }
+.acoesCabecalho > button { border:0; border-radius:50%; background:#244b38; color:#f3f7f4; }
+.primario { border-radius:999px; color:var(--md-on-primary); background:var(--md-primary); border:0; box-shadow:none; }
+.acoesSeguranca { justify-content:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:24px; }
+.acoesSeguranca .atualizar { border:0; padding-inline:0; margin-right:20px; background:transparent; }
+.sobretitulo { color:var(--md-secondary); }
+.estatisticas { gap:16px; }
+.estatisticas > button { padding:22px; border-radius:20px; border-color:var(--border); box-shadow:none; align-content:start; }
+.estatisticas > button:hover { background:var(--md-surface-low); border-color:var(--border-strong); }
+.estatisticaTopo { color:var(--text-muted); font-size:13px; }
+.estatisticaTopo svg { color:var(--md-secondary); }
+.estatisticas strong { font-size:32px; font-weight:500; }
+.registros { border-radius:24px; box-shadow:none; }
+.abas button { border-radius:999px; }
 .abas button[aria-pressed='true'] { color:var(--md-on-secondary-container); background:var(--md-secondary-container); border-color:transparent; }
-.tabela th { background:var(--md-surface-low); font-weight:600; }
-.avatar { color:var(--md-on-primary-container); background:var(--md-primary-container); border-radius:var(--md-shape-full); }
+.tabela th { background:var(--md-surface-low); font-weight:500; }
+.avatar { color:var(--md-on-secondary-container); background:var(--md-secondary-container); border-radius:12px; }
+.gerenciar, .atualizar { border-radius:999px; }
+@media(max-width:640px) { .conteudo { width:calc(100% - 32px); padding-top:28px; } .estatisticas { gap:10px; } .estatisticas > button { padding:16px; border-radius:16px; } .estatisticaTopo { font-size:12px; } .identidade img { width:74px; } .identidade small { display:none; } }
+.seletorArea { display:none; }
+@media(max-width:768px) { .cabecalho { padding:10px 12px; gap:8px; } .cabecalho nav { display:none; } .seletorArea { display:block; flex:1; min-width:0; height:44px; padding:0 10px; border:1px solid #52705b; border-radius:12px; background:#244b38; color:#f3f7f4; font:500 14px var(--font-body); color-scheme:dark; } }

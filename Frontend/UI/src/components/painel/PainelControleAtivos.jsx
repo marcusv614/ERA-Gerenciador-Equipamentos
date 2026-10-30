@@ -4,7 +4,7 @@ import { AuditoriasTecnicoModal } from '../auditorias-tecnico/AuditoriasTecnicoM
 import { pesquisarSolicitacoes } from '../../utils/pesquisaSolicitacoes';
 import { pesquisarPedidosFinanceiros } from '../../utils/pedidosFinanceiros';
 import { pedidosDoPerfil } from '../../utils/acompanhamentoSolicitacao';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BarraSuperior } from './BarraSuperior';
 import { MenuLateral } from './MenuLateral';
@@ -40,7 +40,11 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
   const ehResumo = ehFinanceiro || ehRh;
   const controleAtivos = useControleAtivos(perfilPainel);
   const filtros = useFiltrosPainel(controleAtivos);
+  const conteudo = useRef(null);
   const [telaAtual, definirTelaAtual] = useState(() => ['FINANCEIRO','RH'].includes(perfilPainel) ? 'atividades' : 'equipamentos');
+  useLayoutEffect(() => {
+    conteudo.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [telaAtual]);
   const [menuLateralAberto, definirMenuLateralAberto] = useState(() => !window.matchMedia?.('(max-width: 768px)').matches);
   const [temaLocalEscuro, definirTemaLocalEscuro] = useState(() => {
     const temaSalvo = localStorage.getItem('era-tema-gerente');
@@ -164,12 +168,12 @@ export function PainelControleAtivos({ temaEscuro: temaControlado, aoAlternarTem
     </button>
     <main className={estilos.main}>
       <BarraSuperior aoVerPedidos={(id)=>verPedidosFinanceiros(`#${id}`)} financeiro={ehResumo} mostrarNotificacoes={!incorporado} telaAtual={telaAtual} recolhida={barraSuperiorRecolhida} modoEscuro={modoEscuro} termoBusca={filtros.termoBusca} resultadoBusca={resultadosPorTela[telaAtual]} ehAdmin={podeGerenciarCadastrosNoPainel} aoSair={encerrarSessao} aoAlternarRecolhimento={() => definirBarraSuperiorRecolhida((recolhida) => !recolhida)} aoAlternarTema={alternarTema} aoBuscar={filtros.definirTermoBusca} aoAbrirNovoEquipamento={() => definirModalNovoEquipamentoAberto(true)} aoAbrirNovaObra={() => definirModalNovaObraAberto(true)} aoAbrirNovoFuncionario={() => definirModalNovoFuncionarioAberto(true)} estilos={estilos} />
-      <div className={estilos.content}>
+      <div ref={conteudo} className={estilos.content}>
         {controleAtivos.carregandoDados && <div className={estilos.apiFeedback}>Sincronizando dados com a API...</div>}
         {controleAtivos.erroApi && <div className={`${estilos.apiFeedback} ${estilos.apiFeedbackErro}`} role="alert">Falha na comunicação com a API: {controleAtivos.erroApi}</div>}
         {buscaAtiva && <div className={`${estilos.searchFeedback} ${quantidadeResultados === 0 ? estilos.searchFeedbackEmpty : ''}`} role="status" aria-live="polite"><span>Pesquisa por <strong>“{filtros.termoBusca.trim()}”</strong></span><b>{quantidadeResultados} {quantidadeResultados === 1 ? 'resultado encontrado' : 'resultados encontrados'}</b><button type="button" onClick={() => filtros.definirTermoBusca('')}>Limpar pesquisa</button></div>}
         {!ehResumo && telaAtual === 'auditorias' && <TelaAuditorias funcionarios={controleAtivos.funcionarios} termoBusca={filtros.termoBusca} aoResultados={definirTotalAuditoriasBusca} />}
-        {!ehResumo && telaAtual === 'deposito' && <ResumoEquipamentos resumo={controleAtivos.resumoEquipamentos} estilos={estilos} />}
+        {!ehResumo && telaAtual === 'equipamentos' && <ResumoEquipamentos resumo={controleAtivos.resumoEquipamentos} estilos={estilos} />}
         {!ehResumo && telaAtual === 'equipamentos' && <TelaEquipamentos equipamentos={filtros.equipamentosFiltrados} tiposDisponiveis={tiposEquipamentoDisponiveis} buscarObraPorId={controleAtivos.buscarObraPorId} tipoSelecionado={filtros.tipoSelecionado} statusSelecionado={filtros.statusSelecionado} podeEditar={podeGerenciarCadastrosNoPainel} aoSelecionarTipo={filtros.definirTipoSelecionado} aoSelecionarStatus={filtros.definirStatusSelecionado} aoAbrirHistorico={definirEquipamentoComHistoricoAberto} aoImprimirHistorico={imprimirHistoricoDoEquipamento} aoEditar={definirEquipamentoEmEdicao} aoMover={ehFinanceiro ? undefined : definirEquipamentoParaMover} aoManutencao={ehFinanceiro ? undefined : definirEquipamentoParaManutencao} aoCalibracao={ehRh || ehFinanceiro ? undefined : definirEquipamentoParaCalibracao} estilos={estilos} />}
         {telaAtual === 'obras' && <TelaObras pedidosFinanceiros={ehResumo?controleAtivos.solicitacoes:undefined} aoExportarPedidos={exportarPedidosFinanceiros} aoVerPedidos={verPedidosFinanceiros} obras={filtros.obrasFiltradas} equipamentos={controleAtivos.equipamentos} podeEditarStatus={podeGerenciarCadastrosNoPainel} podeConsultarHistorico={!ehResumo} aoAlterarStatus={controleAtivos.atualizarStatusObra} aoArquivar={controleAtivos.arquivarObra} aoMoverEquipamento={ehFinanceiro ? undefined : definirEquipamentoParaMover} aoImprimirInventario={(obra) => imprimirInventarioObra(obra, controleAtivos.equipamentos, controleAtivos.buscarObraPorId)} aoImprimirHistorico={(obra) => imprimirHistoricoObra(obra, controleAtivos.equipamentos)} estilos={estilos} />}
         {telaAtual === 'funcionarios' && <TelaFuncionarios pedidosFinanceiros={ehResumo?controleAtivos.solicitacoes:undefined} aoExportarPedidos={exportarPedidosFinanceiros} aoVerPedidos={verPedidosFinanceiros} aoAuditarFuncionario={ehResumo ? undefined : definirTecnicoEmAuditoria} funcionarios={filtros.funcionariosFiltrados} obras={controleAtivos.obras} equipamentos={controleAtivos.equipamentos} podeEditar={podeGerenciarCadastrosNoPainel} aoEditarFuncionario={definirFuncionarioEmEdicao} estilos={estilos} />}

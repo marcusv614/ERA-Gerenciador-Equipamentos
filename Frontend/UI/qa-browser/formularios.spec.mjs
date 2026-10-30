@@ -165,7 +165,7 @@ test('QA-FORM-ARQUIVAR-EQUIP: confirmação mantém erro e permite retry sem per
   let falhar=true;const {mutacoes}=await preparar(page,async(r,p,m)=>{if(p!=='/api/equipamentos/1/arquivamento'||m!=='PATCH'||!falhar)return false;await r.fulfill({status:409,json:{mensagem:'Arquivamento recusado QA'}});return true;});
   await navegar(page,'Equipamentos');await page.getByRole('button',{name:'Editar Medidor QA',exact:true}).click();const d=dialogo(page,'Editar item do inventário');await d.getByRole('button',{name:'Arquivar registro',exact:true}).click();
   const confirmar=d.getByRole('alertdialog',{name:'Confirmar arquivamento do equipamento'});await confirmar.getByRole('button',{name:'Arquivar',exact:true}).click();await expect(confirmar.getByText('Arquivamento recusado QA')).toBeVisible();await expect(d).toBeVisible();
-  falhar=false;await confirmar.getByRole('button',{name:'Arquivar',exact:true}).click();await expect(d).toHaveCount(0);await expect(page.getByText('Ferramentas arquivadas',{exact:true})).toBeVisible();
+  falhar=false;await confirmar.getByRole('button',{name:'Arquivar',exact:true}).click();await expect(d).toHaveCount(0);await expect(page.getByText('Equipamentos arquivados',{exact:true})).toBeVisible();
   expect(mutacoes.filter(r=>r.rota==='/api/equipamentos/1/arquivamento')).toHaveLength(2);
 });
 test('QA-FORM-ARQUIVAR-FUNC: cancelamento da confirmação não envia; recusa mantém modal',async({page})=>{

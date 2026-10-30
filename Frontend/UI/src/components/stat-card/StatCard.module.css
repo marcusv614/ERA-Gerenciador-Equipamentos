@@ -1,29 +1,4 @@
-.card {
-  border-radius:var(--md-shape-medium);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-
-.label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
-.value {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  font-family: var(--font-display);
-}
-
-
-.card { border-radius:var(--md-shape-large); padding:20px; gap:8px; border:1px solid var(--md-outline-variant); box-shadow:var(--md-elevation-1); }
-.label { font-family:var(--font-body); text-transform:none; letter-spacing:.01em; font-size:13px; font-weight:500; }
-.value { font-size:32px; font-weight:500; letter-spacing:-.03em; }
+.card { display:flex; flex-direction:column-reverse; justify-content:flex-end; gap:10px; min-width:0; padding:18px; background:var(--surface); border:1px solid var(--border); border-radius:18px; }
+.label { color:var(--text-muted); font-size:12px; line-height:1.4; }
+.value { color:var(--text); font-size:28px; font-weight:500; line-height:1; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+@media(max-width:768px) { .card { padding:14px 10px; border-radius:14px; gap:8px; } .label { font-size:11px; } .value { font-size:24px; } }

@@ -27,7 +27,7 @@ async function preparar(page,{perfil='FINANCEIRO',status,dados=semente(perfil,st
 }
 const botao=(d,nome)=>d.getByRole('button',{name:nome,exact:true});
 const dialogo=(page,nome)=>page.getByRole('dialog',{name:nome,exact:true});
-async function abrir(page){await page.getByRole('button',{name:/Atividades/}).filter({visible:true}).first().click();await page.getByRole('button',{name:/Ana QA/}).filter({visible:true}).first().click();await page.getByRole('button',{name:/^Abrir solicitação 71,/}).click();return dialogo(page,'Solicitação #0071');}
+async function abrir(page){await page.getByRole('button',{name:/Solicitações/}).filter({visible:true}).first().click();await page.getByRole('button',{name:/Ana QA/}).filter({visible:true}).first().click();await page.getByRole('button',{name:/^Abrir solicitação 71,/}).click();return dialogo(page,'Solicitação #0071');}
 async function planejar(page,revisao=false){const d=await abrir(page);await botao(d,revisao?'Editar atendimento aprovado':'Definir transporte e compra').click();return dialogo(page,revisao?'Editar atendimento aprovado':'Planejar transporte e compra');}
 const aprovar=(d,perfil)=>botao(d,perfil==='RH'?'Aprovar e enviar ao Financeiro':'Aprovar plano e enviar ao estoque');
 const recusar=r=>r.fulfill({status:409,json:{mensagem:'Recusa financeira QA'}});

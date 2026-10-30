@@ -17,6 +17,7 @@ Validações disponíveis:
 ```bash
 npm run lint
 npm run build
+npm run test:ui:dashboards
 ```
 
 ## Organização
@@ -55,3 +56,5 @@ Endpoints esperados para o backend:
 - `GET /deposito/equipamentos`
 
 A lista completa e parametrizada está em `src/config/rotasApi.js`. As respostas podem usar diretamente o payload ou envolvê-lo em `{ "dados": ... }` ou `{ "data": ... }`.
+
+A revisão visual das dashboards está descrita em [refatoracao-ui.md](../../docs/refatoracao-ui.md), incluindo decisões de interface e reprodução das capturas de desktop e celular.

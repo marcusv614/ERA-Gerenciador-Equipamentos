@@ -15,7 +15,7 @@ for(const [indice,perfil] of ['ADMIN','GERENTE','RH','FINANCEIRO','ESTOQUE','TEC
     });
     await page.goto('/');await expect(page.getByRole('button',{name:'Sair do sistema'})).toBeVisible();
     if(['GERENTE','RH','FINANCEIRO'].includes(perfil)) {
-      await page.getByRole('button',{name:/Atividades/}).filter({visible:true}).first().click();
+      await page.getByRole('button',{name:/Solicitações/}).filter({visible:true}).first().click();
       await page.getByRole('button',{name:'Kanban',exact:true}).click();
       await expect(page.getByRole('region',{name:'Kanban de solicitações',exact:true})).toBeVisible();
     }

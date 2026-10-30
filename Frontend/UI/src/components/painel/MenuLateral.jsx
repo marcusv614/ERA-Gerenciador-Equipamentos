@@ -17,7 +17,8 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
     <aside className={`${estilos.sidebar} ${aberto ? estilos.sidebarOpen : estilos.sidebarClosed}`}>
       <div className={`${estilos.sidebarInner} ${aberto ? '' : estilos.sidebarInnerHidden}`} aria-hidden={!aberto} inert={!aberto}>
         <div className={estilos.brandRow}><img className={estilos.brandLogo} src={logoEra} alt="ERA Engenharia de Redes da Amazônia" /></div>
-        <nav className={estilos.nav}>
+        <span className={estilos.navLabel}>Espaço de trabalho</span>
+        <nav className={estilos.nav} aria-label="Navegação principal do painel">
           {!ocultarEquipamentos && <><button onClick={() => alternarGrupo('equipamentos', 'equipamentos')} className={`${estilos.navItem} ${telaAtual === 'equipamentos' ? estilos.navItemActive : ''}`}><Boxes size={16} /> Equipamentos {renderizarIndicadorGrupo('equipamentos')}</button>
           {grupoExpandido === 'equipamentos' && <div className={estilos.navSub}>
             <label className={estilos.navSubLabel} htmlFor="categoria-equipamento">Subcategoria</label>
@@ -35,7 +36,7 @@ export function MenuLateral({ aberto, telaAtual, tipoSelecionado, tiposEquipamen
           {grupoExpandido === 'funcionarios' && <div className={estilos.navSub}>
             {funcionarios.map((funcionario) => <button key={funcionario.id} onClick={() => { aoSelecionarTela('funcionarios'); aoSelecionarBusca(funcionario.nome); }} className={estilos.navSubItem}><UserRound size={13} /><span>{funcionario.nome}</span></button>)}
           </div>}
-          <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('atividades'); }} className={`${estilos.navItem} ${telaAtual === 'atividades' ? estilos.navItemActive : ''}`}><Activity size={16} /> Atividades {totalAtividadesPendentes > 0 && <span className={estilos.navBadge}>{totalAtividadesPendentes}</span>}</button>
+          <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('atividades'); }} className={`${estilos.navItem} ${telaAtual === 'atividades' ? estilos.navItemActive : ''}`}><Activity size={16} /> Solicitações {totalAtividadesPendentes > 0 && <span className={estilos.navBadge}>{totalAtividadesPendentes}</span>}</button>
           {!ocultarVistorias && <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('auditorias'); }} className={`${estilos.navItem} ${telaAtual === 'auditorias' ? estilos.navItemActive : ''}`}><ClipboardCheck size={16} /> Vistorias</button>}
           <button onClick={() => { definirGrupoExpandido(null); aoSelecionarTela('deposito'); }} className={`${estilos.navItem} ${telaAtual === 'deposito' ? estilos.navItemActive : ''}`}><Warehouse size={16} /> Depósito</button>
         </nav>

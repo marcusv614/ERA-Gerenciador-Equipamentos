@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, ShieldCheck, Sun, X } from 'lucide-react';
+import { ArrowRight, Box, Building2, Check, ChevronRight, ClipboardList, Clock3, LogOut, MapPin, Minus, Moon, PackageCheck, Plus, Search, Send, Sun, X } from 'lucide-react';
 import { useAutenticacao } from '../../contexto/ContextoAutenticacao';
 import { apiAtividades, apiEquipamentos, apiObras } from '../../services/api/servicoAtivosApi';
 import { obterDataAtual } from '../../utils/datas';
@@ -91,6 +91,10 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
   const [operacao, definirOperacao] = useState('');
   const [etapaMovimentacao, definirEtapaMovimentacao] = useState(1);
   const [mostrarObservacao, definirMostrarObservacao] = useState(false);
+  const pedidoEmAndamento = aba === 'solicitar' && etapaMovimentacao > 1;
+  useEffect(() => {
+    if (aba === 'solicitar') window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [aba, etapaMovimentacao]);
   useEffect(() => {
     if (aba !== 'acompanhar' || carregando || !pedidoParaAbrir || pedidoFocado.current === pedidoParaAbrir) return;
     const cartao = document.getElementById(`pedido-tecnico-${pedidoParaAbrir.id}`);
@@ -273,6 +277,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
         materiais,
       });
       definirSolicitacoes((atuais) => [criada, ...atuais]);
+      definirPedidoParaAbrir({ id: criada.id });
       apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
       definirItens([]); definirQuantidadesEmEdicao({}); definirObservacao(''); definirBusca(''); definirOperacao(''); definirEtapaMovimentacao(1); definirMostrarObservacao(false);
 
@@ -296,9 +301,9 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
     </header>}
 
     <main className={estilos.conteudo}>
-      <section className={estilos.introducao}>
-        <div><span className={estilos.selo}>Área do {ehTst ? 'TST' : 'técnico'}</span><h1>{modoAdministrador ? `Pedidos do ${ehTst ? 'TST' : 'técnico'}` : 'O que você precisa?'}</h1></div>
-        {!modoAdministrador && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>Material entregue</small></span><ChevronRight /></button>}
+      <section className={`${estilos.introducao} ${pedidoEmAndamento ? estilos.introducaoCompacta : ''}`}>
+        <div><span className={estilos.selo}>ERA · {ehTst ? 'Segurança do trabalho' : 'Equipe de campo'}</span><h1>{modoAdministrador ? `Pedidos do ${ehTst ? 'TST' : 'técnico'}` : aba === 'materiais' ? 'Materiais nas obras' : aba === 'acompanhar' ? 'Meus pedidos' : pedidoEmAndamento ? etapaMovimentacao === 4 ? 'Revisar pedido' : operacao === 'devolver' ? 'Devolver materiais' : 'Novo pedido' : 'Vamos fazer seu pedido?'}</h1></div>
+        {!modoAdministrador && !pedidoEmAndamento && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>Material entregue</small></span><ChevronRight /></button>}
       </section>
       <nav className={estilos.abas} aria-label={`Navegação do ${ehTst ? 'TST' : 'técnico'}`}>
         {!modoAdministrador && <button type="button" className={aba === 'solicitar' ? estilos.abaAtiva : ''} aria-current={aba === 'solicitar' ? 'page' : undefined} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Novo pedido</strong></span></button>}
@@ -310,14 +315,15 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
       {carregando && <div className={estilos.carregando} role="status" aria-live="polite"><i /><span>Sincronizando o campo...</span></div>}
 
       {!carregando && aba === 'solicitar' && <div className={`${estilos.gradePrincipal} ${etapaMovimentacao === 4 ? estilos.gradeRevisao : ''}`}>
+        <ol className={estilos.progresso} aria-label="Etapas do pedido">{['Pedido', 'Obra', 'Materiais', 'Revisão'].map((rotulo, indice) => <li key={rotulo} aria-current={etapaMovimentacao === indice + 1 ? 'step' : undefined} data-concluida={etapaMovimentacao > indice + 1}><span>{etapaMovimentacao > indice + 1 ? <Check size={14} /> : indice + 1}</span>{rotulo}</li>)}</ol>
         {etapaMovimentacao < 4 && <section className={estilos.formulario}>
-          {etapaMovimentacao === 1 && <div className={estilos.operacoes}><span className={estilos.selo}>Nova solicitação</span><h2>O que você precisa?</h2>{obrasAtivas.length ? <><button type="button" onClick={() => selecionarOperacao('receber')}><PackageCheck /><span><strong>Pedir {ehTst ? 'EPI' : 'material'}</strong><small>Informe o que precisa na sua obra.</small></span><ChevronRight /></button><button type="button" onClick={() => selecionarOperacao('devolver')}><Box /><span><strong>Devolver {ehTst ? 'EPI' : 'material'}</strong><small>Peça a retirada de um item da sua obra.</small></span><ChevronRight /></button></> : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra atribuída</strong><span>Peça ao {ehTst ? 'RH' : 'gerente'} para vincular uma obra ao seu usuário.</span></div>}</div>}
+          {etapaMovimentacao === 1 && <div className={estilos.operacoes}>{obrasAtivas.length ? <><button type="button" onClick={() => selecionarOperacao('receber')}><PackageCheck /><span><strong>Pedir {ehTst ? 'EPI' : 'material'}</strong><small>Receber na obra</small></span><ChevronRight /></button><button type="button" onClick={() => selecionarOperacao('devolver')}><Box /><span><strong>Devolver {ehTst ? 'EPI' : 'material'}</strong><small>Retirar da obra</small></span><ChevronRight /></button></> : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra atribuída</strong><span>Peça ao {ehTst ? 'RH' : 'gerente'} para vincular uma obra ao seu usuário.</span></div>}</div>}
           {etapaMovimentacao === 2 && <div className={estilos.escolhaObra}><span className={estilos.selo}>Escolha sua obra</span><h2>{operacao === 'receber' ? 'Destino do material:' : 'De onde o material deve ser retirado?'}</h2><div className={estilos.listaObrasEscolha}>{obrasAtivas.map((obra) => {
             const selecionada = String(obra.id) === (operacao === 'receber' ? destino : origem);
             return <button type="button" key={obra.id} className={selecionada ? estilos.obraSelecionada : ''} aria-pressed={selecionada} onClick={() => { if (operacao === 'receber') definirDestino(String(obra.id)); else trocarOrigem(String(obra.id)); }}><Building2 /><span><strong>{obra.nome}</strong><small>{obra.cidade}</small></span>{selecionada ? <Check /> : <ChevronRight />}</button>;
           })}</div><div className={estilos.acoesEtapa}><button type="button" onClick={() => definirEtapaMovimentacao(1)}>Voltar</button><button type="button" disabled={operacao === 'receber' ? !destino : !origem} onClick={() => definirEtapaMovimentacao(3)}>Continuar <ChevronRight /></button></div></div>}
 
-          {etapaMovimentacao === 3 && <><div className={estilos.tituloSimples}><span className={estilos.selo}>Escolha os materiais</span><h2>{operacao === 'receber' ? 'O que você precisa?' : 'O que deve ser retirado?'}</h2><p>{operacao === 'receber' ? 'Você não precisa saber onde o material está.' : `Mostrando apenas materiais de ${nomeLocal(origem)}.`}</p></div><div className={estilos.busca}><Search size={19} /><input type="search" aria-label="Buscar material" value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material" /></div>
+          {etapaMovimentacao === 3 && <><div className={estilos.tituloSimples}><h2>{operacao === 'receber' ? 'O que você precisa?' : 'O que deve ser retirado?'}</h2><p><MapPin size={15} />{nomeLocal(operacao === 'receber' ? destino : origem)}<button type="button" onClick={() => definirEtapaMovimentacao(2)}>Alterar obra</button></p></div><div className={estilos.busca}><Search size={19} /><input type="search" aria-label="Buscar material" value={busca} onChange={(evento) => definirBusca(evento.target.value)} placeholder="Buscar material" /></div>
             <div className={estilos.listaMateriais}>{materiaisParaSelecionar.length ? materiaisParaSelecionar.map((equipamento) => {
               const id = identificadorLocal(equipamento);
               const quantidade = itens.find((item) => item.id === id)?.quantidade || 0;
@@ -329,7 +335,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
                 alternarSelecao();
               }}>
                 <button type="button" className={estilos.selecionarMaterial} aria-pressed={selecionado} aria-label={`${selecionado ? 'Desmarcar' : 'Selecionar'} ${equipamento.modelo}`} onClick={alternarSelecao}>
-                <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small><span className={estilos.acaoMaterial}>{selecionado ? 'Selecionado' : 'Toque para selecionar'}</span></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
+                <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
                 </button>
                 <div className={estilos.quantidade} role="group" aria-label={`Quantidade de ${equipamento.modelo}`} data-controle-quantidade>
                   <span className={estilos.rotuloQuantidade}>Quantidade</span>
@@ -346,18 +352,18 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
           <div className={estilos.miniRota}><span><MapPin />{operacao === 'receber' ? `Entregar em ${nomeLocal(destino)}` : `Retirar de ${nomeLocal(origem)}`}</span></div>
           <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => {
             const limite = operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1);
-            return <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} /></div></div>;
+            return <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{equipamento.medida && <small>{equipamento.medida}</small>}{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} /></div></div>;
           })}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
           {!mostrarObservacao ? <button type="button" className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
           <button type="button" className={estilos.enviar} disabled={!podeEnviar} aria-busy={enviando} onClick={enviarSolicitacao}>{enviando ? 'Enviando...' : <><Send /> Enviar ao {ehTst ? 'RH' : 'gerente'} <ChevronRight /></>}</button>
-          <p className={estilos.seguranca}><ShieldCheck /> O {ehTst ? 'RH' : 'gerente'} aceitará ou rejeitará esta solicitação.</p>
+
           <button type="button" className={estilos.voltarRevisao} onClick={() => definirEtapaMovimentacao(3)}>Voltar e corrigir</button>
         </aside>}
       </div>}
 
       {!carregando && aba === 'acompanhar' && <section className={estilos.acompanhamento}>
-        <div className={estilos.cabecalhoHistorico}><div><h2>Meus pedidos</h2></div></div>
+
         <div className={estilos.listaSolicitacoes}>{solicitacoes.length ? solicitacoes.map((solicitacao) => {
           const materiais = agruparMateriaisPedido(solicitacao.materiais);
           const totalMateriais = materiais.reduce((total, material) => total + material.quantidade, 0);
@@ -384,7 +390,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
       </section>}
 
       {!carregando && aba === 'materiais' && <section className={estilos.materiaisObras}>
-        <header><h2>Materiais nas minhas obras</h2></header>
+
         <div className={estilos.listaObrasMateriais}>{obrasComMateriais.length ? obrasComMateriais.map(({ obra, materiais }) => <article key={obra.id} className={estilos.obraMateriais}>
           <header><span><Building2 /></span><strong>{obra.nome}</strong><b>{materiais.reduce((total, material) => total + (material.quantidade || 1), 0)}</b></header>
           {materiais.length ? <ul>{materiais.map((material) => <li key={material.id}><div><strong>{material.modelo}</strong>{material.medida && <small>{material.medida}</small>}<IndicadorCalibracao equipamento={material}/></div><b>{material.quantidade || 1}</b></li>)}</ul> : <p>Nenhum material nesta obra.</p>}

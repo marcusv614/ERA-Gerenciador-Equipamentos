@@ -43,7 +43,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
       </div>
 
       {!estoquista && <div className={styles.section}>
-        <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Obras sob responsabilidade</div><span>{obras.length}</span></div>
+        <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Obras</div><span>{obras.length}</span></div>
         {obras.length > 0 ? <div className={styles.obraList}>
           {obras.map((o) => (
               <div key={o.id} className={styles.obraRow}>
@@ -56,7 +56,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
 
       {financeiro&&!estoquista&&<section className={styles.section}><div className={styles.sectionHeading}><div className={styles.sectionTitle}>Pedidos do técnico</div><span>{pedidosFinanceiros.length}</span></div>{pedidosFinanceiros.length?<><div className={styles.tableWrap}><div className={styles.table}><div className={styles.rowHead}><span>Pedido</span><span>Solicitante</span><span>Situação</span><span>Obra</span><span>Data</span></div>{pedidosFinanceiros.map(p=><div className={styles.row} key={p.id}><span className={styles.rowModel} data-label="Pedido">#{String(p.id).padStart(4,'0')}</span><span className={styles.rowSerie} data-label="Solicitante">{p.solicitante}</span><span className={styles.rowStatus} data-label="Situação">{p.status==='Aprovada'?'Aprovado':p.status}</span><span className={styles.rowLocal} data-label="Obra">{p.obra}</span><span className={styles.rowData} data-label="Data">{formatarData(p.dataSolicitacao)}</span></div>)}</div></div><button type="button" className={styles.auditButton} onClick={()=>aoVerPedidos(nome)}>Consultar pedidos</button></>:<div className={styles.empty}>Nenhum pedido registrado.</div>}</section>}
       {!financeiro&&!estoquista && <div className={styles.section}>
-        <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Materiais registrados com o técnico</div><span>{equipamentos.length}</span></div>
+        <div className={styles.sectionHeading}><div className={styles.sectionTitle}>Materiais sob custódia</div><span>{equipamentos.length}</span></div>
         {equipamentos.length === 0 ? (
           <div className={styles.empty}>Nenhum material registrado no momento.</div>
         ) : (
@@ -78,10 +78,8 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
                       <PackageSearch size={13} className={styles.rowIcon} />
                       {e.modelo}
                     </span>
-                    <span className={styles.rowStatus}>
-                      <IndicadorStatus status={e.status} />
-                    </span>
                     <span className={styles.rowSerie} data-label="Série">{serie || '—'}</span>
+                    <span className={styles.rowStatus} data-label="Status"><IndicadorStatus status={e.status} /></span>
                     <span className={styles.rowLocal} data-label="Local">
                       {obra ? obra.nome : 'Depósito central'}
                     </span>
@@ -95,7 +93,7 @@ export function CartaoTecnico({ funcionario, obras, equipamentos, todasAsObras, 
       </div>}
       {status==='Ativo'&&!funcionario.arquivado&&<section className={styles.section}><ExportarAuditoria tipo="funcionario" id={funcionario.id} nome={nome}>Auditoria do funcionário · PDF / Planilha</ExportarAuditoria></section>}
       {!estoquista && aoAuditar && <section className={`${styles.section} ${styles.auditSection}`}>
-        <div className={styles.auditContent}><span className={styles.auditIcon}><ClipboardCheck size={18} aria-hidden="true" /></span><div><div className={styles.sectionTitle}>Vistorias dos materiais</div><p className={styles.auditHint}>{equipamentosAuditaveis === 0 ? 'Nenhum material marcado para vistoria.' : `${equipamentosAuditaveis} ${equipamentosAuditaveis === 1 ? 'material marcado' : 'materiais marcados'} para vistoria.`} Gere a ficha e registre as condições encontradas.</p></div></div>
+        <div className={styles.auditContent}><span className={styles.auditIcon}><ClipboardCheck size={18} aria-hidden="true" /></span><div><div className={styles.sectionTitle}>Vistorias dos materiais</div><p className={styles.auditHint}>{equipamentosAuditaveis === 0 ? 'Nenhum material marcado para vistoria.' : `${equipamentosAuditaveis} ${equipamentosAuditaveis === 1 ? 'material marcado' : 'materiais marcados'} para vistoria.`} </p></div></div>
         <button type="button" className={styles.auditButton} onClick={() => aoAuditar(funcionario)}><ClipboardCheck size={16} aria-hidden="true" /> Gerenciar vistorias</button>
       </section>}
     </div>

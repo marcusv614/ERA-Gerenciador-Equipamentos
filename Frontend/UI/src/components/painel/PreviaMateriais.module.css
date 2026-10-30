@@ -1,0 +1,5 @@
+.previa { display:grid; gap:6px; min-width:0; color:var(--text-muted); font-size:12px; line-height:1.45; }
+.previa > span { display:flex; gap:8px; min-width:0; }
+.previa b { color:var(--text); font-variant-numeric:tabular-nums; flex-shrink:0; }
+.previa > span > span { overflow-wrap:anywhere; }
+.previa small { font-size:11px; }

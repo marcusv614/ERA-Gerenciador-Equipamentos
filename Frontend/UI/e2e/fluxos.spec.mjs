@@ -15,7 +15,7 @@ async function semOverflow(page) {
 }
 async function atividades(page) {
   // No mobile a navegação inferior está visível; no desktop, a lateral.
-  await page.getByRole('button',{name:/Atividades/}).filter({visible:true}).first().click();
+  await page.getByRole('button',{name:/Solicitações/}).filter({visible:true}).first().click();
   await expect(page.getByRole('region',{name:'Solicitações',exact:true}).getByRole('heading',{name:'Solicitações',exact:true})).toBeVisible();
 }
 

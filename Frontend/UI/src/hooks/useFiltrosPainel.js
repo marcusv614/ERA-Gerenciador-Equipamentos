@@ -59,7 +59,7 @@ export function useFiltrosPainel({ obras, equipamentos, funcionarios }) {
       !equipamento.arquivado && equipamento.obraId === null && (
         !termoNormalizado ||
         equipamento.modelo.toLocaleLowerCase('pt-BR').includes(termoNormalizado) ||
-        equipamento.serie.toLocaleLowerCase('pt-BR').includes(termoNormalizado) ||
+        equipamento.serie?.toLocaleLowerCase('pt-BR').includes(termoNormalizado) ||
         equipamento.notaFiscal?.toLocaleLowerCase('pt-BR').includes(termoNormalizado)
       ));
   }, [equipamentos, termoBusca]);

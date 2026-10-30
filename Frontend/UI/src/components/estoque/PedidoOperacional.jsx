@@ -11,7 +11,7 @@ export function LinhaPedidoEstoque({ pedido, nomeLocal, aoAbrir }) {
   const origens = [...new Set([...itens.flatMap(m=>m.origens.map(o=>nomeLocal(o.obraOrigemId))), ...(itens.some(m=>m.recebida>0)&&!pedido.materiais.every(m=>m.identificacao) ? ['Depósito central'] : [])])];
   return <article className={css.linha}>
     <div className={css.identidade}><span>Pedido #{String(pedido.id).padStart(4,'0')} · {formatarData(pedido.dataSolicitacao)}</span><h3>{nomeLocal(pedido.obraDestinoId)}</h3><p>{pedido.tecnico}</p></div>
-    <ul className={css.previa}>{itens.slice(0,2).map(m=><li key={m.chave}><b>{m.quantidade}×</b><span>{m.nome}</span></li>)}{itens.length>2&&<li className={css.mais}>+{itens.length-2} materiais</li>}{origens.length>0&&<li className={css.origemResumo}><MapPin size={14}/><span>{['Em trânsito','Concluída','Rejeitada'].includes(pedido.status)?'Origem':'Retirar'}: {origens.join(' · ')}</span></li>}</ul>
+    <ul className={css.previa}>{itens.slice(0,2).map(m=><li key={m.chave}><b>{m.quantidade}×</b><span>{m.nome}</span></li>)}{itens.length>2&&<li className={css.mais}>+{itens.length-2} {itens.length===3?'material':'materiais'}</li>}{origens.length>0&&<li className={css.origemResumo}><MapPin size={14}/><span>{['Em trânsito','Concluída','Rejeitada'].includes(pedido.status)?'Origem':'Retirar'}: {origens.join(' · ')}</span></li>}</ul>
     <div className={css.abrir}><span className={css.situacao} data-etapa={etapa.chave}>{etapa.titulo}</span><button type="button" aria-label={`Atender pedido ${pedido.id}`} onClick={aoAbrir}>Ver pedido<ChevronRight size={16}/></button><ExportarAuditoria id={pedido.id} escopo="ESTOQUE"/></div>
   </article>;
 }

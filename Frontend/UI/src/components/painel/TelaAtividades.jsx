@@ -11,6 +11,7 @@ import { SepararEquipamentosModal } from '../estoque/SepararEquipamentosModal';
 import { DetalhesPedidoFinanceiro } from './DetalhesPedidoFinanceiro';
 import { COLUNAS_FINANCEIRAS } from '../../utils/pedidosFinanceiros';
 import { KanbanRolavel } from './KanbanRolavel';
+import { PreviaMateriais } from './PreviaMateriais';
 import css from './TelaAtividades.module.css';
 
 const CHAVE_VISUALIZACAO = 'era-atividades-visualizacao';
@@ -112,7 +113,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
     .sort(compararMaisRecentesPrimeiro);
   return <section className={css.painel} aria-label="Solicitações">
     <header className={css.cabecalho}>
-      <div><h2>Solicitações</h2><p>{visualizacao === 'kanban' ? 'Acompanhe os pedidos por etapa do fluxo.' : 'Selecione um técnico. Os pedidos mais recentes aparecem primeiro.'}</p></div>
+      <div><h2>Pedidos {financeiro ? 'para análise' : 'da equipe'}</h2></div>
       <div className={css.cabecalhoAcoes}>
         {aoNovaSolicitacao && <button type="button" className={css.novoPedido} onClick={aoNovaSolicitacao}><Plus size={16} />Nova solicitação</button>}
         {aoExportarPedidos && solicitacoesPorTecnico.length>0 && <ExportarAuditoria tipo="conjunto" id={solicitacoesPorTecnico.map(p=>p.id)}>Pedidos · PDF / Planilha</ExportarAuditoria>}
@@ -130,7 +131,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
           <label><span><Building2 size={14} /> {financeiro?'Obra do pedido':'Obra (origem ou destino)'}</span><select aria-label="Filtrar solicitações por obra" value={obraFiltro} onChange={(evento) => definirObraFiltro(evento.target.value)}><option value="todas">Todas as obras</option>{obrasDisponiveis.map((obra) => <option key={obra.id} value={obra.id}>{obra.nome}</option>)}</select></label>
         </div>
         <div className={css.filtrosEtapa} role="group" aria-label="Mostrar solicitações por situação">
-          {filtrosEtapa.map((filtro) => <button type="button" key={filtro.id} aria-pressed={etapaFiltro === filtro.id} className={etapaFiltro === filtro.id ? css.filtroEtapaAtivo : ''} onClick={() => definirEtapaFiltro(filtro.id)}><span>{filtro.rotulo}</span><b>{quantidadePorEtapa(filtro.id)}</b></button>)}
+          {filtrosEtapa.map((filtro) => <button type="button" key={filtro.id} data-etapa={filtro.id} aria-pressed={etapaFiltro === filtro.id} className={etapaFiltro === filtro.id ? css.filtroEtapaAtivo : ''} onClick={() => definirEtapaFiltro(filtro.id)}><span>{filtro.rotulo}</span><b>{quantidadePorEtapa(filtro.id)}</b></button>)}
         </div>
         {filtrosLocaisAtivos && <button type="button" className={css.limparFiltros} onClick={limparFiltros}><RotateCcw size={14} /> Limpar filtros</button>}
       </section>
@@ -149,8 +150,8 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
           {pedidos.length ? <><div className={css.colunas} aria-hidden="true"><span>Solicitação / data</span><span>Obra</span><span>Status</span><span /></div>
             {pedidos.map((pedido) => <button type="button" key={pedido.id} className={css.pedido} onClick={() => abrirSolicitacao(pedido.id)} aria-label={`Abrir solicitação ${pedido.id}, ${formatarData(pedido.dataSolicitacao)}, ${nomeObra(pedido)}, ${acompanhamentoSolicitacao(pedido).rotulo}`}>
               <span className={css.identificador}><strong>#{String(pedido.id).padStart(4, '0')}</strong><small>{formatarData(pedido.dataSolicitacao)}</small>{pedido.solicitacaoPaiId != null && <small>Pedido original #{String(pedido.solicitacaoPaiId).padStart(4, '0')}</small>}</span>
-              <span className={css.obra}><strong>{nomeObra(pedido)}</strong><small>{financeiro?'Pedido de materiais':pedido.obraDestinoId ? 'Entrega na obra' : 'Retirada para o depósito'}</small></span>
-              <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span><ChevronRight size={16} />
+              <span className={css.obra}><strong>{nomeObra(pedido)}</strong><PreviaMateriais pedido={pedido} /></span>
+              <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave} data-grupo={acompanhamentoSolicitacao(pedido).grupo}>{acompanhamentoSolicitacao(pedido).rotulo}</span><ChevronRight size={16} />
             </button>)}
           </> : <div className={css.vazio}><ClipboardList size={24} /><p>Nenhuma solicitação deste técnico{termo ? ' para esta busca' : ''}.</p></div>}
         </div>}
@@ -162,7 +163,7 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
           return <section key={coluna.id} className={css.kanbanColuna} data-etapa={coluna.id} aria-labelledby={`kanban-${coluna.id}`}>
             <header className={css.kanbanCabecalho}>
               <span className={css.kanbanIndicador} aria-hidden="true" />
-              <div><h3 id={`kanban-${coluna.id}`}>{coluna.titulo}</h3><p>{coluna.descricao}</p></div>
+              <div><h3 id={`kanban-${coluna.id}`} title={coluna.descricao}>{coluna.titulo}</h3></div>
               <b aria-label={`${pedidos.length} solicitações`}>{pedidos.length}</b>
             </header>
             <div className={css.kanbanCartoes}>
@@ -170,9 +171,10 @@ export function TelaAtividades({ solicitacoes: recebidas, todasSolicitacoes: tod
                 <span className={css.kanbanCartaoTopo}><strong>#{String(pedido.id).padStart(4, '0')}</strong><time dateTime={pedido.dataSolicitacao}><CalendarDays size={13} />{formatarData(pedido.dataSolicitacao)}</time></span>
                 <span className={css.kanbanObra}>{nomeObra(pedido)}</span>
                 <span className={css.kanbanTecnico}><UserRound size={14} />{pedido.tecnico}</span>
-                <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave}>{acompanhamentoSolicitacao(pedido).rotulo}</span>
+                <PreviaMateriais pedido={pedido} />
+                <span className={css.status} data-etapa={obterEtapaSolicitacao(pedido.status).chave} data-grupo={acompanhamentoSolicitacao(pedido).grupo}>{acompanhamentoSolicitacao(pedido).rotulo}</span>
                 {acompanhamentoSolicitacao(pedido).parcial && <small className={css.kanbanParcial}>Atendimento parcial · pedido original #{pedido.solicitacaoPaiId || pedido.id}</small>}
-                <span className={css.kanbanRodape}><span><Package2 size={14} />{pedido.materiais.length} {pedido.materiais.length === 1 ? 'material' : 'materiais'}</span><ChevronRight size={16} /></span>
+                <span className={css.kanbanRodape}><span><Package2 size={14} />{pedido.materiais.reduce((total, material) => total + Number(material.quantidadeSolicitada ?? material.quantidade ?? 0), 0)} un.</span><span>Ver pedido <ChevronRight size={16} /></span></span>
               </button>)}
               {!pedidos.length && <div className={css.kanbanVazio}><ClipboardList size={20} /><span>Nenhuma solicitação</span></div>}
             </div>
