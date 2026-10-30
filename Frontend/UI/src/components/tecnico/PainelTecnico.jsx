@@ -10,6 +10,11 @@ import { identificacaoVisivel } from '../../utils/identificacaoEquipamento';
 import { obterEtapaSolicitacao } from '../../utils/statusSolicitacao';
 import { IndicadorCalibracao } from '../calibracao-equip-modal/IndicadorCalibracao';
 import { SinoNotificacoes } from '../notificacoes/SinoNotificacoes';
+import { QuantidadeMaterialTecnico } from './QuantidadeMaterialTecnico';
+import { PedidosTecnicoCampo } from './CartaoSolicitacaoTecnico';
+import { ConfirmarRecebimentoTecnico } from './ConfirmarRecebimentoTecnico';
+import { erroQuantidadeTecnicoCampo } from '../../utils/quantidadeTecnicoCampo';
+import campo from './TecnicoCampo.module.css';
 
 const identificadorLocal = (equipamento) => String(equipamento.id);
 const localizacaoEquipamento = (equipamento) => equipamento.obraId == null ? 'deposito' : String(equipamento.obraId);
@@ -71,6 +76,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
   const { usuario, encerrarSessao } = useAutenticacao();
   const perfilPainel = perfilVisualizado || usuario.perfil;
   const ehTst = perfilPainel === 'TST';
+  const ehTecnicoCampo = usuario.perfil === 'TECNICO' && perfilPainel === 'TECNICO' && !modoAdministrador;
   const [obras, definirObras] = useState([]);
   const [equipamentos, definirEquipamentos] = useState([]);
   const [catalogoMateriais, definirCatalogoMateriais] = useState([]);
@@ -87,6 +93,11 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
   const [carregando, definirCarregando] = useState(true);
   const [enviando, definirEnviando] = useState(false);
   const [confirmandoRecebimentoId, definirConfirmandoRecebimentoId] = useState(null);
+  const [recebimentoSelecionadoId, definirRecebimentoSelecionadoId] = useState(null);
+  const recebimentoEmAndamento = useRef(false);
+  const envioEmAndamento = useRef(false);
+  const [tentativaCarga, definirTentativaCarga] = useState(0);
+  const pedidoRecebimento = ehTecnicoCampo ? solicitacoes.find(pedido => pedido.id === recebimentoSelecionadoId) : null;
   const [mensagem, definirMensagem] = useState(null);
   const [operacao, definirOperacao] = useState('');
   const [etapaMovimentacao, definirEtapaMovimentacao] = useState(1);
@@ -133,7 +144,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
       })
       .finally(() => { if (componenteAtivo) definirCarregando(false); });
     return () => { componenteAtivo = false; };
-  }, [ehTst, usuario.nome]);
+  }, [ehTst, usuario.nome, tentativaCarga]);
 
   useEffect(() => {
     let componenteAtivo = true;
@@ -180,6 +191,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
     if (!item || !/^\d+$/.test(valor)) return true;
     const quantidade = Number(valor);
     const limite = operacao === 'receber' ? 2147483647 : (item.equipamento.quantidadeDisponivel ?? 1);
+    if (ehTecnicoCampo) return Boolean(erroQuantidadeTecnicoCampo(valor, limite));
     return quantidade < 1 || quantidade > limite;
   });
   const podeEnviar = ((operacao === 'receber' && destino) || (operacao === 'devolver' && origem)) && itens.length > 0 && !quantidadeEmEdicaoInvalida && !enviando;
@@ -215,6 +227,17 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
     const quantidade = Number(valorNumerico);
     if (quantidade >= 1 && quantidade <= limite) definirQuantidade(id, quantidade);
   };
+  const editarQuantidadeCampo = (equipamento, valor, limite) => {
+    const id = identificadorLocal(equipamento);
+    definirQuantidadesEmEdicao(atuais => ({ ...atuais, [id]: valor }));
+    if (erroQuantidadeTecnicoCampo(valor, limite)) return;
+    const quantidade = Number(valor);
+    definirItens(atuais => atuais.some(item => item.id === id)
+      ? atuais.map(item => item.id === id ? { ...item, quantidade } : item)
+      : [...atuais, { id, equipamento, quantidade }]);
+  };
+  const erroQuantidadeCampo = (id, limite) => Object.prototype.hasOwnProperty.call(quantidadesEmEdicao, id)
+    ? erroQuantidadeTecnicoCampo(quantidadesEmEdicao[id], limite) : '';
   const valorQuantidade = (id, quantidade) => Object.prototype.hasOwnProperty.call(quantidadesEmEdicao, id)
     ? quantidadesEmEdicao[id]
     : String(quantidade);
@@ -241,19 +264,26 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
     definirEtapaMovimentacao(2);
   };
   const confirmarRecebimento = async (solicitacao) => {
-    if (confirmandoRecebimentoId !== null) return;
+    if (confirmandoRecebimentoId !== null || (ehTecnicoCampo && recebimentoEmAndamento.current)) return;
+    if (ehTecnicoCampo && (solicitacao.status !== 'Em trânsito' || !solicitacao.obraDestinoId)) return;
+    if (ehTecnicoCampo) recebimentoEmAndamento.current = true;
     definirConfirmandoRecebimentoId(solicitacao.id);
     definirMensagem(null);
     try {
       const atualizada = await apiAtividades.concluir(solicitacao.id);
       definirSolicitacoes((atuais) => atuais.map((item) => item.id === atualizada.id ? atualizada : item));
+      if (ehTecnicoCampo) {
+        definirRecebimentoSelecionadoId(null);
+        definirPedidoParaAbrir({ id: atualizada.id });
+      }
       apiEquipamentos.listar().then(definirEquipamentos).catch(() => {});
     } catch (erro) { definirMensagem({ tipo: 'erro', texto: erro.message }); }
-    finally { definirConfirmandoRecebimentoId(null); }
+    finally { recebimentoEmAndamento.current = false; definirConfirmandoRecebimentoId(null); }
   };
 
   const enviarSolicitacao = async () => {
-    if (!podeEnviar) return;
+    if (!podeEnviar || (ehTecnicoCampo && envioEmAndamento.current)) return;
+    if (ehTecnicoCampo) envioEmAndamento.current = true;
     definirEnviando(true);
     definirMensagem(null);
     try {
@@ -285,15 +315,16 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
     } catch (erro) {
       definirMensagem({ tipo: 'erro', texto: erro.message });
     } finally {
+      envioEmAndamento.current = false;
       definirEnviando(false);
     }
   };
 
-  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-administrador={modoAdministrador}>
+  return <div className={estilos.pagina} data-theme={temaEscuro ? 'dark' : 'light'} data-administrador={modoAdministrador} data-tecnico-campo={ehTecnicoCampo}>
     {!modoAdministrador && <header className={estilos.cabecalho}>
-      <div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>campo</span></div>
+      <div className={estilos.marca}><img src={logoEra} alt="ERA" /><span>{ehTecnicoCampo ? 'Técnico de Campo' : 'campo'}</span></div>
       <div className={estilos.usuario}>
-        <div><small>Olá, {ehTst ? 'TST' : 'técnico'}</small><strong>{usuario.nome}</strong></div>
+        <div><small>Olá, {ehTst ? 'TST' : ehTecnicoCampo ? 'Técnico de Campo' : 'técnico'}</small><strong>{usuario.nome}</strong></div>
         <SinoNotificacoes temaEscuro={temaEscuro} aoVerPedidos={(id) => { definirAba('acompanhar'); definirPedidoParaAbrir({ id }); }} />
         <button type="button" className={estilos.botaoTema} onClick={alternarTema} aria-label={temaEscuro ? 'Ativar tema claro' : 'Ativar tema escuro'} title={temaEscuro ? 'Tema claro' : 'Tema escuro'}>{temaEscuro ? <Sun size={18} /> : <Moon size={18} />}</button>
         <button type="button" onClick={encerrarSessao} aria-label="Sair do sistema" title="Sair do sistema"><LogOut size={19} /></button>
@@ -302,16 +333,16 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
 
     <main className={estilos.conteudo}>
       <section className={`${estilos.introducao} ${pedidoEmAndamento ? estilos.introducaoCompacta : ''}`}>
-        <div><span className={estilos.selo}>ERA · {ehTst ? 'Segurança do trabalho' : 'Equipe de campo'}</span><h1>{modoAdministrador ? `Pedidos do ${ehTst ? 'TST' : 'técnico'}` : aba === 'materiais' ? 'Materiais nas obras' : aba === 'acompanhar' ? 'Meus pedidos' : pedidoEmAndamento ? etapaMovimentacao === 4 ? 'Revisar pedido' : operacao === 'devolver' ? 'Devolver materiais' : 'Novo pedido' : 'Vamos fazer seu pedido?'}</h1></div>
-        {!modoAdministrador && !pedidoEmAndamento && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>Material entregue</small></span><ChevronRight /></button>}
+        <div><span className={estilos.selo}>ERA · {ehTst ? 'Segurança do trabalho' : ehTecnicoCampo ? 'Técnico de Campo' : 'Equipe de campo'}</span><h1>{modoAdministrador ? `Pedidos do ${ehTst ? 'TST' : 'técnico'}` : aba === 'materiais' ? 'Materiais nas obras' : aba === 'acompanhar' ? 'Meus pedidos' : pedidoEmAndamento ? etapaMovimentacao === 4 ? 'Revisar pedido' : operacao === 'devolver' ? 'Devolver materiais' : 'Novo pedido' : 'Vamos fazer seu pedido?'}</h1></div>
+        {!modoAdministrador && !pedidoEmAndamento && recebimentosPendentes > 0 && <button type="button" onClick={() => definirAba('acompanhar')}><PackageCheck /><span><strong>{recebimentosPendentes} para confirmar</strong><small>{ehTecnicoCampo ? 'Conferir recebimento' : 'Material entregue'}</small></span><ChevronRight /></button>}
       </section>
-      <nav className={estilos.abas} aria-label={`Navegação do ${ehTst ? 'TST' : 'técnico'}`}>
+      <nav className={estilos.abas} aria-label={`Navegação do ${ehTst ? 'TST' : ehTecnicoCampo ? 'Técnico de Campo' : 'técnico'}`}>
         {!modoAdministrador && <button type="button" className={aba === 'solicitar' ? estilos.abaAtiva : ''} aria-current={aba === 'solicitar' ? 'page' : undefined} onClick={() => definirAba('solicitar')}><ArrowRight /><span><strong>Novo pedido</strong></span></button>}
         <button type="button" className={aba === 'materiais' ? estilos.abaAtiva : ''} aria-current={aba === 'materiais' ? 'page' : undefined} onClick={() => definirAba('materiais')}><Box /><span><strong>Materiais</strong></span></button>
         <button type="button" className={aba === 'acompanhar' ? estilos.abaAtiva : ''} aria-current={aba === 'acompanhar' ? 'page' : undefined} onClick={() => definirAba('acompanhar')}><ClipboardList /><span><strong>Meus pedidos</strong></span>{pendentes + recebimentosPendentes > 0 && <b>{pendentes + recebimentosPendentes}</b>}</button>
       </nav>
 
-      {mensagem && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`} role={mensagem.tipo === 'erro' ? 'alert' : 'status'}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}<button type="button" aria-label="Fechar mensagem" onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
+      {mensagem && !(ehTecnicoCampo && pedidoRecebimento) && <div className={`${estilos.mensagem} ${estilos[mensagem.tipo]}`} role={mensagem.tipo === 'erro' ? 'alert' : 'status'}><span>{mensagem.tipo === 'sucesso' ? <Check /> : <X />}</span>{mensagem.texto}{ehTecnicoCampo && mensagem.tipo === 'erro' && !enviando && <button type="button" className={campo.tentarNovamente} onClick={() => { definirCarregando(true); definirMensagem(null); definirTentativaCarga(atual => atual + 1); }}>Atualizar dados</button>}<button type="button" aria-label="Fechar mensagem" onClick={() => definirMensagem(null)}><X size={16} /></button></div>}
       {carregando && <div className={estilos.carregando} role="status" aria-live="polite"><i /><span>Sincronizando o campo...</span></div>}
 
       {!carregando && aba === 'solicitar' && <div className={`${estilos.gradePrincipal} ${etapaMovimentacao === 4 ? estilos.gradeRevisao : ''}`}>
@@ -335,16 +366,19 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
                 alternarSelecao();
               }}>
                 <button type="button" className={estilos.selecionarMaterial} aria-pressed={selecionado} aria-label={`${selecionado ? 'Desmarcar' : 'Selecionar'} ${equipamento.modelo}`} onClick={alternarSelecao}>
-                <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small></span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
+                <span className={estilos.iconeMaterial}>{selecionado ? <Check /> : <Box />}</span><span className={estilos.dadosMaterial}><strong>{equipamento.modelo}</strong><small>{equipamento.tipo}{identificacaoVisivel(equipamento.serie, equipamento.tipo) ? ` · ${equipamento.serie}` : equipamento.medida ? ` · ${equipamento.medida}` : ''}</small>{ehTecnicoCampo && selecionado && <span className={campo.selecionado}><Check size={14} aria-hidden="true" />Selecionado</span>}</span>{operacao === 'devolver' && <span className={estilos.disponivel}><b>{equipamento.quantidadeDisponivel ?? 1}</b><small>na obra</small></span>}
                 </button>
+                {ehTecnicoCampo ? <QuantidadeMaterialTecnico nome={equipamento.modelo} quantidade={quantidade} valor={valorQuantidade(id, quantidade)} limite={limite} erro={erroQuantidadeCampo(id, limite)}
+                  aoEditar={valor => editarQuantidadeCampo(equipamento, valor, limite)} aoAjustar={valor => selecionado ? ajustarQuantidade(id, valor) : adicionarItem(equipamento)} /> : (
                 <div className={estilos.quantidade} role="group" aria-label={`Quantidade de ${equipamento.modelo}`} data-controle-quantidade>
                   <span className={estilos.rotuloQuantidade}>Quantidade</span>
                   <button type="button" className={estilos.ajusteQuantidade} disabled={!selecionado} aria-label={`Diminuir quantidade de ${equipamento.modelo}`} onClick={() => ajustarQuantidade(id, quantidade - 1)}><Minus /></button>
                   <input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} />
                   <button type="button" className={estilos.ajusteQuantidade} disabled={selecionado && quantidade >= limite} aria-label={`Aumentar quantidade de ${equipamento.modelo}`} onClick={() => selecionado ? ajustarQuantidade(id, quantidade + 1) : adicionarItem(equipamento)}><Plus /></button>
-                </div>
+                </div>)}
+
               </div>;
-            }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material encontrado</strong><span>Tente buscar por outro nome.</span></div>}</div><div className={estilos.acoesEtapa}><button type="button" onClick={() => definirEtapaMovimentacao(2)}>Voltar</button><button type="button" disabled={!itens.length || quantidadeEmEdicaoInvalida} onClick={() => definirEtapaMovimentacao(4)}>Revisar {quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'} <ChevronRight /></button></div></>}
+            }) : <div className={estilos.vazioMateriais}><PackageCheck /><strong>Nenhum material encontrado</strong><span>{!ehTecnicoCampo || busca.trim() ? 'Tente buscar por outro nome.' : operacao === 'devolver' ? 'Não há materiais disponíveis para devolver nesta obra.' : 'Fale com o responsável pelo estoque.'}</span></div>}</div><div className={estilos.acoesEtapa}><button type="button" onClick={() => definirEtapaMovimentacao(2)}>Voltar</button><button type="button" disabled={!itens.length || quantidadeEmEdicaoInvalida} onClick={() => definirEtapaMovimentacao(4)}>Revisar {quantidadeTotal} {quantidadeTotal === 1 ? 'item' : 'itens'} <ChevronRight /></button></div></>}
         </section>}
 
         {etapaMovimentacao === 4 && <aside className={estilos.resumoPedido} aria-label="Resumo da solicitação">
@@ -352,7 +386,8 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
           <div className={estilos.miniRota}><span><MapPin />{operacao === 'receber' ? `Entregar em ${nomeLocal(destino)}` : `Retirar de ${nomeLocal(origem)}`}</span></div>
           <div className={estilos.itensResumo}>{itens.map(({ id, equipamento, quantidade }) => {
             const limite = operacao === 'receber' ? 2147483647 : (equipamento.quantidadeDisponivel ?? 1);
-            return <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{equipamento.medida && <small>{equipamento.medida}</small>}{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div><div className={estilos.quantidade}><input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} /></div></div>;
+            return <div key={id} className={estilos.itemResumo}><div><strong>{equipamento.modelo}</strong>{equipamento.medida && <small>{equipamento.medida}</small>}{identificacaoVisivel(equipamento.serie, equipamento.tipo) && <small>{equipamento.serie}</small>}</div>{ehTecnicoCampo ? <QuantidadeMaterialTecnico nome={equipamento.modelo} quantidade={quantidade} valor={valorQuantidade(id, quantidade)} limite={limite} erro={erroQuantidadeCampo(id, limite)}
+              aoEditar={valor => editarQuantidadeCampo(equipamento, valor, limite)} aoAjustar={valor => ajustarQuantidade(id, valor)} /> : (<div className={estilos.quantidade}><input type="text" inputMode="numeric" pattern="[0-9]*" enterKeyHint="done" aria-label={`Quantidade de ${equipamento.modelo}`} value={valorQuantidade(id, quantidade)} onFocus={(evento) => evento.currentTarget.select()} onClick={(evento) => evento.currentTarget.select()} onKeyDown={(evento) => { if (evento.key === 'Enter') evento.currentTarget.blur(); }} onChange={(evento) => editarQuantidade(id, evento.target.value, limite)} onBlur={() => limparQuantidadeEmEdicao(id)} /></div>)}</div>;
           })}</div>
           {!itens.length && <div className={estilos.carrinhoVazio}><Box /><span>Os materiais selecionados aparecerão aqui.</span></div>}
           {!mostrarObservacao ? <button type="button" className={estilos.adicionarObservacao} onClick={() => definirMostrarObservacao(true)}><Plus /> Adicionar observação</button> : <label className={estilos.observacao}><span>Observação <small>opcional</small></span><textarea autoFocus value={observacao} onChange={(evento) => definirObservacao(evento.target.value)} placeholder="Ex.: entregar com o responsável da obra..." maxLength={500} /></label>}
@@ -362,7 +397,9 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
         </aside>}
       </div>}
 
-      {!carregando && aba === 'acompanhar' && <section className={estilos.acompanhamento}>
+      {!carregando && aba === 'acompanhar' && ehTecnicoCampo && <PedidosTecnicoCampo pedidos={solicitacoes} agruparMateriais={agruparMateriaisPedido} nomeLocal={nomeLocal} formatarData={formatarDataSolicitacao}
+        aoReceber={id => { definirMensagem(null); definirRecebimentoSelecionadoId(id); }} processando={confirmandoRecebimentoId !== null} aoNovoPedido={() => definirAba('solicitar')} />}
+      {!carregando && aba === 'acompanhar' && !ehTecnicoCampo && <section className={estilos.acompanhamento}>
 
         <div className={estilos.listaSolicitacoes}>{solicitacoes.length ? solicitacoes.map((solicitacao) => {
           const materiais = agruparMateriaisPedido(solicitacao.materiais);
@@ -397,5 +434,7 @@ export function PainelTecnico({ modoAdministrador = false, perfilVisualizado, te
         </article>) : <div className={estilos.semObraSimples}><Building2 /><strong>Nenhuma obra vinculada</strong><span>Fale com o {ehTst ? 'RH' : 'gerente'}.</span></div>}</div>
       </section>}
     </main>
+    {pedidoRecebimento && <ConfirmarRecebimentoTecnico pedido={pedidoRecebimento} materiais={agruparMateriaisPedido(pedidoRecebimento.materiais)} local={nomeLocal(pedidoRecebimento.obraDestinoId)}
+      ocupado={confirmandoRecebimentoId !== null} erro={mensagem?.tipo === 'erro' ? mensagem.texto : null} aoFechar={() => definirRecebimentoSelecionadoId(null)} aoConfirmar={() => confirmarRecebimento(pedidoRecebimento)} />}
   </div>;
 }

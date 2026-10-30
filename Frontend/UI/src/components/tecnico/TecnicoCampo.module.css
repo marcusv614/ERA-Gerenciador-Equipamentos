@@ -1,0 +1,63 @@
+/* Apresentação exclusiva do Técnico de Campo. Cores vêm dos tokens compartilhados. */
+.campoQuantidade { display:grid; gap:6px; justify-items:end; max-width:100%; }
+.campoQuantidade > label { font-size:13px; color:var(--text-muted); }
+.controlesQuantidade { display:flex; align-items:center; gap:2px; padding:4px; border:1px solid var(--border); border-radius:999px; background:var(--surface); }
+.controlesQuantidade button { display:grid; place-items:center; width:48px; height:48px; padding:0; border:0; border-radius:50%; color:var(--text); background:var(--surface-2); }
+.controlesQuantidade input { width:56px; height:48px; min-width:0; border:0; border-radius:10px; padding:0 3px; background:transparent; color:var(--text); font:600 18px var(--font-body); text-align:center; scroll-margin-block:120px; }
+.controlesQuantidade input[aria-invalid='true'] { outline:2px solid var(--md-error); outline-offset:0; background:var(--md-error-container); color:var(--md-error); }
+.erroQuantidade { max-width:260px; margin:0; color:var(--md-error); font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.selecionado { display:flex; align-items:center; gap:4px; color:var(--md-secondary); font-size:13px; font-weight:500; }
+.tentarNovamente { width:auto!important; padding-inline:12px!important; border:1px solid currentColor!important; border-radius:999px; min-height:44px; font:inherit; }
+.gruposPedidos { display:grid; gap:32px; }
+.tituloGrupo { display:flex; align-items:center; gap:10px; margin:0 0 16px; color:var(--text); font-size:20px; font-weight:500; }
+.tituloGrupo > span { display:grid; place-items:center; min-width:28px; height:28px; padding:0 8px; border-radius:999px; background:var(--surface-2); font-size:13px; color:var(--text-muted); }
+.gradePedidos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; align-items:start; }
+.pedido { min-width:0; padding:24px; border:1px solid var(--border); border-radius:24px; background:var(--surface); color:var(--text); scroll-margin-block:96px; }
+.pedido:focus-visible { outline:3px solid var(--md-primary); outline-offset:3px; }
+.topoPedido { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+.topoPedido h3 { margin:0; font-size:17px; font-weight:600; }
+.situacao { display:inline-flex; align-items:center; gap:6px; max-width:100%; padding:7px 10px; border-radius:10px; background:var(--surface-2); color:var(--text-muted); font-size:13px; line-height:1.4; }
+.situacao svg { flex-shrink:0; }
+.situacao[data-status='Pendente'], .situacao[data-status='Aguardando financeiro'], .situacao[data-status='Cancelamento solicitado'] { color:var(--md-warning); background:var(--md-warning-container); }
+.situacao[data-status='Em trânsito'], .situacao[data-status='Aprovada'], .situacao[data-status='Aguardando coleta'] { color:var(--md-info); background:var(--md-info-container); }
+.situacao[data-status='Concluída'] { color:var(--md-success); background:var(--md-success-container); }
+.situacao[data-status='Rejeitada'], .situacao[data-status='Cancelada'] { color:var(--md-error); background:var(--md-error-container); }
+.localPedido { display:flex; align-items:flex-start; gap:8px; margin:0 0 18px; color:var(--text-muted); font-size:14px; line-height:1.5; }
+.localPedido svg { flex-shrink:0; margin-top:2px; }
+.localPedido strong { color:var(--text); font-weight:500; overflow-wrap:anywhere; }
+.materiaisPedido { display:grid; gap:14px; margin:0; padding:0; list-style:none; }
+.materiaisPedido li { display:flex; align-items:flex-start; gap:12px; min-width:0; line-height:1.5; font-size:16px; }
+.materiaisPedido b { min-width:36px; flex-shrink:0; color:var(--text); font-weight:600; font-variant-numeric:tabular-nums; }
+.materiaisPedido li > span { min-width:0; overflow-wrap:anywhere; }
+.materiaisPedido small { display:block; margin-top:5px; color:var(--text-muted); font-size:13px; }
+.acaoPrincipal, .acaoSecundaria { display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; padding:12px 18px; border:1px solid var(--border); border-radius:999px; font:500 15px var(--font-body); cursor:pointer; }
+.acaoPrincipal { background:var(--md-primary); color:var(--md-on-primary); border-color:transparent; }
+.acaoPrincipal:hover:not(:disabled) { box-shadow:var(--md-elevation-1); }
+.acaoSecundaria { background:var(--surface); color:var(--text); }
+.pedido > .acaoPrincipal { width:100%; margin-top:22px; }
+.detalhesPedido { margin-top:20px; border-top:1px solid var(--border); }
+.detalhesPedido > summary { display:list-item; padding:16px 0; min-height:48px; font-size:14px; color:var(--md-secondary); cursor:pointer; }
+.detalhesPedido dl { display:grid; gap:14px; margin:0 0 22px; }
+.detalhesPedido dt { color:var(--text-muted); font-size:13px; }
+.detalhesPedido dd { margin:5px 0 0; font-size:14px; overflow-wrap:anywhere; }
+.detalhesPedido h4 { margin:20px 0 12px; font-size:15px; font-weight:500; }
+.detalhesPedido p { margin:8px 0; font-size:14px; line-height:1.6; overflow-wrap:anywhere; }
+.registros { display:grid; gap:14px; padding-left:20px; }
+.registros small, .registros time { display:block; color:var(--text-muted); font-size:13px; line-height:1.5; }
+.detalhesPedido > section:last-child { margin-top:20px; }
+.recebimento { display:grid; gap:22px; color:var(--text); }
+.recebimento > p { margin:0; font-size:16px; line-height:1.6; }
+.recebimento .materiaisPedido { padding:18px; border:1px solid var(--border); border-radius:16px; background:var(--md-surface-low); }
+.acoesRecebimento { display:flex; flex-wrap:wrap; gap:12px; }
+.acoesRecebimento > button { flex:1 1 180px; }
+.erroRecebimento { padding:14px; border-radius:12px; color:var(--md-error); background:var(--md-error-container); }
+.vazio { display:grid; justify-items:center; gap:20px; padding:40px 16px; color:var(--text-muted); text-align:center; }
+.vazio h2 { margin:0; color:var(--text); font-size:22px; font-weight:500; }
+@media(max-width:640px) {
+  .gradePedidos { grid-template-columns:minmax(0,1fr); }
+  .pedido { padding:20px; border-radius:20px; }
+  .campoQuantidade { margin-left:auto; }
+  .acoesRecebimento { flex-direction:column-reverse; }
+  .acoesRecebimento > button { flex-basis:auto; width:100%; }
+  .tituloGrupo { font-size:20px; }
+}

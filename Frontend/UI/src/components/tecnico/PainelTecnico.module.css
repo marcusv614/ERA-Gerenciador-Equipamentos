@@ -198,3 +198,19 @@
   .cartaoSolicitacao, .obraMateriais { padding:20px; border-radius:20px; }
   .observacao textarea, .busca input { font-size:16px; }
 }
+
+/* Escopo explícito: estas melhorias não se aplicam ao TST nem à consulta administrativa. */
+.pagina[data-tecnico-campo='true'] .usuario > button { min-width:48px; min-height:48px; }
+.pagina[data-tecnico-campo='true'] .dadosMaterial strong { font-size:16px; }
+.pagina[data-tecnico-campo='true'] .dadosMaterial small { font-size:13px; }
+.pagina[data-tecnico-campo='true'] .selecionarMaterial { min-height:48px; }
+.pagina[data-tecnico-campo='true'] .itemResumo { flex-wrap:wrap; }
+.pagina[data-tecnico-campo='true'] .itemResumo > div:first-child { flex:1 1 180px; }
+.pagina[data-tecnico-campo='true'] .mensagem { flex-wrap:wrap; font-size:15px; }
+.pagina[data-tecnico-campo='true'] .tituloSimples p button { min-height:48px; }
+.pagina[data-tecnico-campo='true'] .listaMateriais { padding-bottom:20px; }
+@media(max-width:640px) {
+  .pagina[data-tecnico-campo='true'] .marca img { width:76px; }
+  .pagina[data-tecnico-campo='true'] .material { gap:12px; }
+  .pagina[data-tecnico-campo='true'] .progresso li { font-size:12px; }
+}
